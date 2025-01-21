@@ -15,29 +15,36 @@ Employee Management:
 Employee registration and onboarding
 Employee profiles with detailed information
 Employee directory and search functionality
-Attendance
+
+
 Leave Management:
+Attendance
 Leave applications and approvals
 Leave tracking and reporting
 Leave policy management
+
 Performance Management:
 Performance reviews and appraisals
 Goal setting and tracking
 Employee feedback and recognition
+
 Payroll Processing:
 Salary calculations and processing
 Tax deductions and other statutory compliances
 Payslip generation and distribution
+
 Recruitment Management:
 Job postings and applications
 Candidate screening and interviews
 Offer letters and onboarding procedures
+
 Reporting and Analytics:
 Customizable reports on employee data, leave usage, performance, and payroll.
+
 User Roles and Permissions:
 Granular access control for different user roles (e.g., HR Admin, Employees, Managers)
 
-5. Technologies Used
+4. Technologies Used
 Backend: Laravel 10 (PHP)
 Frontend: HTML, CSS, JavaScript, Bootstrap, jQuery
 Database: MySQL/PostgreSQL (or other suitable database)
