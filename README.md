@@ -11,27 +11,26 @@ Improve Data Security: Ensure the confidentiality and integrity of sensitive emp
 Provide User-Friendly Interface: Offer an intuitive and easy-to-use experience for all users.
 
 3. Key Features
-Employee Management:
-Employee registration and onboarding
-Employee profiles with detailed information
-Employee directory and search functionality
-
-
-Leave Management:
-Attendance
-Leave applications and approvals
-Leave tracking and reporting
-Leave policy management
-
-Performance Management:
-Performance reviews and appraisals
-Goal setting and tracking
-Employee feedback and recognition
-
-Payroll Processing:
-Salary calculations and processing
-Tax deductions and other statutory compliances
-Payslip generation and distribution
+   1.  Employee Management:
+       a).  Employee registration and onboarding
+       b).  Employee profiles with detailed information
+       c).  Employee directory and search functionality
+       
+   3.  Leave Management:
+       a).  Attendance
+       b.)  Leave applications and approvals
+       c).  Leave tracking and reporting
+       d).  Leave policy management
+       
+  4.  Performance Management:
+      a).  Performance reviews and appraisals
+      b).  Goal setting and tracking
+      c).  Employee feedback and recognition
+      
+  6.  Payroll Processing:
+      a).  Salary calculations and processing
+      b).  Tax deductions and other statutory compliances
+      c).  Payslip generation and distribution
 
 Recruitment Management:
 Job postings and applications
