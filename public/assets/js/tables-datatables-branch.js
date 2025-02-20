@@ -80,15 +80,17 @@ $(function () {
 
   if (dt_basic_table.length) {
     dt_basic = dt_basic_table.DataTable({
-      ajax: assetsPath + 'json/table-datatable.json',
+      ajax: {
+          url: "/branch-list",  // Fetch from Laravel API
+          type: "GET",
+          dataType: "json",
+          dataSrc: "data"
+      },
       columns: [
         { data: '' },
         { data: 'id' },
         { data: 'id' },
-        { data: 'full_name' },
-        { data: 'email' },
-        { data: 'start_date' },
-        { data: 'salary' },
+        { data: 'branch' },
         { data: 'status' },
         { data: '' }
       ],
@@ -123,71 +125,10 @@ $(function () {
           searchable: false,
           visible: false
         },
-        {
-          // Avatar image/badge, Name and post
-          targets: 3,
-          responsivePriority: 4,
-          render: function (data, type, full, meta) {
-            var $user_img = full['avatar'],
-              $name = full['full_name'],
-              $post = full['post'];
-            if ($user_img) {
-              // For Avatar image
-              var $output =
-                '<img src="' + assetsPath + 'img/avatars/' + $user_img + '" alt="Avatar" class="rounded-circle">';
-            } else {
-              // For Avatar badge
-              var stateNum = Math.floor(Math.random() * 6);
-              var states = ['success', 'danger', 'warning', 'info', 'primary', 'secondary'];
-              var $state = states[stateNum],
-                $name = full['full_name'],
-                $initials = $name.match(/\b\w/g) || [];
-              $initials = (($initials.shift() || '') + ($initials.pop() || '')).toUpperCase();
-              $output = '<span class="avatar-initial rounded-circle bg-label-' + $state + '">' + $initials + '</span>';
-            }
-            // Creates full output for row
-            var $row_output =
-              '<div class="d-flex justify-content-start align-items-center user-name">' +
-              '<div class="avatar-wrapper">' +
-              '<div class="avatar me-2">' +
-              $output +
-              '</div>' +
-              '</div>' +
-              '<div class="d-flex flex-column">' +
-              '<span class="emp_name text-truncate">' +
-              $name +
-              '</span>' +
-              '<small class="emp_post text-truncate text-muted">' +
-              $post +
-              '</small>' +
-              '</div>' +
-              '</div>';
-            return $row_output;
-          }
-        },
+      
         {
           responsivePriority: 1,
           targets: 4
-        },
-        {
-          // Label
-          targets: -2,
-          render: function (data, type, full, meta) {
-            var $status_number = full['status'];
-            var $status = {
-              1: { title: 'Current', class: 'bg-label-primary' },
-              2: { title: 'Professional', class: ' bg-label-success' },
-              3: { title: 'Rejected', class: ' bg-label-danger' },
-              4: { title: 'Resigned', class: ' bg-label-warning' },
-              5: { title: 'Applied', class: ' bg-label-info' }
-            };
-            if (typeof $status[$status_number] === 'undefined') {
-              return data;
-            }
-            return (
-              '<span class="badge ' + $status[$status_number].class + '">' + $status[$status_number].title + '</span>'
-            );
-          }
         },
         {
           // Actions
