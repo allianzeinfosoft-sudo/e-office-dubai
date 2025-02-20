@@ -35,5 +35,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/roles/{role}/permissions', [RoleController::class, 'getRolePermissions']);
     Route::resource('departments',DepartmentController::class);
     Route::resource('branchs',BranchController::class);
+    Route::get('branch-list',[BranchController::class, 'getBranches']);
 });
 
