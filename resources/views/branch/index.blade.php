@@ -65,7 +65,7 @@
                         type="text"
                         id="basicBranchname"
                         class="form-control dt-branch-name"
-                        name="branchname"
+                        name="branch"
                         placeholder=""
                         aria-label=""
                         aria-describedby="basicBranchname" />
