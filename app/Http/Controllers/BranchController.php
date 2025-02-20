@@ -2,21 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use Illuminate\Http\Request;
 
 class BranchController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct()
     {
+        $this->middleware('auth');
+        $this->middleware('role:admin'); // Restrict access to admin role
+    }
+
+    public function index()
+    { 
       return view('branch.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function getBranches()
+    {
+        $branch = Branch::all()->map(function ($branch) {
+            return [
+                'id' => $branch->id,
+                'branch' => $branch->name,
+                 
+            ];
+        });
+
+        $response = response()->json(['data' => $branch]);
+        $json_data = json_decode($response->getContent(), true)['data'];
+        return json_encode(['data' => $json_data]);
+    }
+
     public function create()
     {
         //
