@@ -49,7 +49,7 @@
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-root-font-size: 16px;
   --bs-body-font-family: var(--bs-font-sans-serif);
-  --bs-body-font-size: 0.9375rem;
+  --bs-body-font-size: 0.7375rem;
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.47;
   --bs-body-color: #6f6b7d;
@@ -17407,7 +17407,7 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
   padding: 0.561rem 1rem;
 }
 .menu-vertical .menu-item .menu-link {
-  font-size: 0.9375rem;
+  font-size: 0.8375rem;
 }
 .menu-vertical .menu-item .menu-toggle {
   padding-right: calc(1rem + 1.26em);
