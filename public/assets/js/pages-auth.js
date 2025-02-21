@@ -1,7 +1,6 @@
 /**
  *  Pages Authentication
  */
-
 'use strict';
 const formAuthentication = document.querySelector('#formAuthentication');
 
@@ -35,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           'email-username': {
             validators: {
               notEmpty: {
-                message: 'Please enter email / username'
+                message: 'Please enter email'
               },
               stringLength: {
                 min: 6,
