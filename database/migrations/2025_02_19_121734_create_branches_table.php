@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('branch')->unique();
+            $table->string('location');
             $table->boolean('status')->default(1);
             $table->timestamps();
         });
@@ -22,7 +23,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down(): void 
     {
         Schema::dropIfExists('branches');
     }
