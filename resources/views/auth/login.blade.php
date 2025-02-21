@@ -59,13 +59,13 @@
             </a>
           </div>
           <!-- /Logo -->
-          <h3 class="mb-1 fw-bold">Welcome to Vuexy! 👋</h3>
-          <p class="mb-4">Please sign-in to your account and start the adventure</p> 
+          <h3 class="mb-1 fw-bold">{{ __('en.welcome') }} </h3>
+          <p class="mb-4">{{ __('en.slogan') }}</p> 
           <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}">
             @csrf
             <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Enter your email or username" autofocus>
+              <label for="email" class="form-label">{{ __('en.email')}}</label>
+              <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="{{ __('en.email_placeholder')}}" autofocus tabindex="1" >
                 @error('email')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -74,15 +74,15 @@
             </div>
             <div class="mb-3 form-password-toggle">
               <div class="d-flex justify-content-between">
-                <label class="form-label" for="password">Password</label>
+                <label class="form-label" for="password">{{ __('en.password')}} </label>
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}">
-                    <small>Forgot Password?</small>
+                    <a href="{{ route('password.request') }}" tabindex="3">
+                    <small>{{ __('en.forgot_password')}}</small>
                     </a>
                 @endif
               </div>
               <div class="input-group input-group-merge">
-                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required  placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"  aria-describedby="password" autocomplete="current-password">
+                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required  placeholder="{{ __('en.password_placeholder')}}"  aria-describedby="password" autocomplete="current-password" tabindex="2">
                 @error('password')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -93,39 +93,22 @@
             </div>
             <div class="mb-3">
               <div class="form-check"> 
-                <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} tabindex="4">
                 <label class="form-check-label" for="remember">
-                    {{ __('Remember Me') }}
+                    {{ __('en.remember_me') }}
                 </label>
               </div>
             </div>
-            <button  type="submit" class="btn btn-primary d-grid w-100">{{ __('Login') }}</button>
+            <button  type="submit" class="btn btn-primary d-grid w-100" tabindex="5">{{ __('en.login') }}</button>
           </form>
 
           <p class="text-center">
             <span>New on our platform?</span>
-            <a href="auth-register-cover.html">
-              <span>Create an account</span>
+            <a href="{{ route('register') }}" tabindex="6">
+              <span>{{ __('en.register')}}</span>
             </a>
           </p>
 
-          <div class="divider my-4">
-            <div class="divider-text">or</div>
-          </div>
-
-          <div class="d-flex justify-content-center">
-            <a href="javascript:;" class="btn btn-icon btn-label-facebook me-3">
-              <i class="tf-icons fa-brands fa-facebook-f fs-5"></i>
-            </a>
-
-            <a href="javascript:;" class="btn btn-icon btn-label-google-plus me-3">
-              <i class="tf-icons fa-brands fa-google fs-5"></i>
-            </a>
-
-            <a href="javascript:;" class="btn btn-icon btn-label-twitter">
-              <i class="tf-icons fa-brands fa-twitter fs-5"></i>
-            </a>
-          </div>
         </div>
       </div>
       <!-- /Login -->
