@@ -164,7 +164,7 @@
    
  
     @if(request()->is('home'))
-        <script src="{{ asset('assets/js/dashboards-analytics.js') }}') }}"></script>
+        <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script>
     @endif
     @if(request()->is('roles'))
         <script src="{{ asset('assets/js/app-access-roles.js') }}"></script>

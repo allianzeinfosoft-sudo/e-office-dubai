@@ -39,15 +39,15 @@
 
     <div class="menu-inner-shadow"></div>
 
-    <ul class="menu-inner py-1">
+    <ul class="menu-inner py-1 text-uppercase">
       <!-- Dashboards -->
-      <li class="menu-item active open">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
+      <li class="menu-item active open text-uppercase">
+        <a href="{{ route('home') }}" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-smart-home"></i>
           <div data-i18n="Dashboards">Dashboards</div>
           <div class="badge bg-label-primary rounded-pill ms-auto">3</div>
         </a>
-        <ul class="menu-sub">
+        {{-- <ul class="menu-sub">
           <li class="menu-item active">
             <a href="index.html" class="menu-link">
               <div data-i18n="Analytics">Analytics</div>
@@ -63,17 +63,17 @@
               <div data-i18n="eCommerce">eCommerce</div>
             </a>
           </li>
-        </ul>
+        </ul> --}}
       </li>
 
       <!-- Layouts -->
       <li class="menu-item">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
+        {{-- <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
           <div data-i18n="Layouts">Layouts</div>
-        </a>
+        </a> --}}
 
-        <ul class="menu-sub">
+        {{-- <ul class="menu-sub">
           <li class="menu-item">
             <a href="layouts-collapsed-menu.html" class="menu-link">
               <div data-i18n="Collapsed menu">Collapsed menu</div>
@@ -119,66 +119,143 @@
               <div data-i18n="Blank">Blank</div>
             </a>
           </li>
-        </ul>
+        </ul> --}}
       </li>
 
       <!-- Apps & Pages -->
-      <li class="menu-header small text-uppercase">
+      {{-- <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Apps &amp; Pages</span>
-      </li>
+      </li> --}}
       <li class="menu-item">
         <a href="app-email.html" class="menu-link">
           <i class="menu-icon tf-icons ti ti-mail"></i>
-          <div data-i18n="Email">Email</div>
-        </a>
-      </li>
-      <li class="menu-item">
-        <a href="app-chat.html" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-messages"></i>
-          <div data-i18n="Chat">Chat</div>
-        </a>
-      </li>
-      <li class="menu-item">
-        <a href="app-calendar.html" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-calendar"></i>
-          <div data-i18n="Calendar">Calendar</div>
-        </a>
-      </li>
-      <li class="menu-item">
-        <a href="app-kanban.html" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-layout-kanban"></i>
-          <div data-i18n="Kanban">Kanban</div>
+          <div data-i18n="Attendance">Attendance</div>
         </a>
       </li>
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons ti ti-file-dollar"></i>
-          <div data-i18n="Invoice">Invoice</div>
-          <div class="badge bg-label-danger rounded-pill ms-auto">4</div>
+          <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
+          <div data-i18n="Work">Work</div>
         </a>
+
         <ul class="menu-sub">
           <li class="menu-item">
-            <a href="app-invoice-list.html" class="menu-link">
-              <div data-i18n="List">List</div>
+            <a href="layouts-collapsed-menu.html" class="menu-link">
+              <div data-i18n="Work Status">Work Status</div>
             </a>
           </li>
           <li class="menu-item">
-            <a href="app-invoice-preview.html" class="menu-link">
-              <div data-i18n="Preview">Preview</div>
+            <a href="layouts-content-navbar.html" class="menu-link">
+              <div data-i18n="SDU Project Status">SDU Project Status</div>
             </a>
           </li>
           <li class="menu-item">
-            <a href="app-invoice-edit.html" class="menu-link">
-              <div data-i18n="Edit">Edit</div>
+            <a href="layouts-content-navbar-with-sidebar.html" class="menu-link">
+              <div data-i18n="Temporary Status">Temporary Status</div>
             </a>
           </li>
           <li class="menu-item">
-            <a href="app-invoice-add.html" class="menu-link">
-              <div data-i18n="Add">Add</div>
+            <a href="../horizontal-menu-template" class="menu-link" target="_blank">
+              <div data-i18n="Entry Open Markin">Entry Open Markin</div>
             </a>
           </li>
         </ul>
       </li>
+      <li class="menu-item">
+        <a href="app-email.html" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-mail"></i>
+          <div data-i18n="Gallery">Gallery</div>
+        </a>
+      </li>
+
+      <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
+          <div data-i18n="Report">Report</div>
+        </a>
+
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="layouts-collapsed-menu.html" class="menu-link">
+              <div data-i18n="My Overview">My Overview</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="layouts-content-navbar.html" class="menu-link">
+              <div data-i18n="My Attendance">My Attendance</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="layouts-content-navbar-with-sidebar.html" class="menu-link">
+              <div data-i18n="My Work Report">My Work Report</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="../horizontal-menu-template" class="menu-link" target="_blank">
+              <div data-i18n="My Emergency Report">My Emergency Report</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="../horizontal-menu-template" class="menu-link" target="_blank">
+              <div data-i18n="Salary Slip">Salary Slip</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+      <li class="menu-item"> 
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons ti ti-file-dollar"></i>
+          <div data-i18n="Survey">Survey</div>
+          {{-- <div class="badge bg-label-danger rounded-pill ms-auto">4</div> --}}
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="app-invoice-list.html" class="menu-link">
+              <div data-i18n="View Survey">View Survey</div>
+            </a>
+          </li>
+        </ul>  
+      </li>
+      <li class="menu-item"> 
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons ti ti-file-dollar"></i>
+          <div data-i18n="PAR">PAR</div>
+          {{-- <div class="badge bg-label-danger rounded-pill ms-auto">4</div> --}}
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="app-invoice-list.html" class="menu-link">
+              <div data-i18n="View PAR">View PAR</div>
+            </a>
+          </li>
+        </ul>  
+      </li>
+  
+      <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons ti ti-file-dollar"></i>
+          <div data-i18n="Leave">Leave</div>
+          {{-- <div class="badge bg-label-danger rounded-pill ms-auto">4</div> --}}
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="app-invoice-list.html" class="menu-link">
+              <div data-i18n="Apply Leave">Apply Leave</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="app-invoice-preview.html" class="menu-link">
+              <div data-i18n="Leave Status">Leave Status</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="app-invoice-edit.html" class="menu-link">
+              <div data-i18n="Leave Summary">Leave Summary</div>
+            </a>
+          </li> 
+        </ul>
+      </li>
+
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-users"></i>
@@ -242,418 +319,251 @@
           </li>
         </ul>
       </li>
+
+      
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-file"></i>
-          <div data-i18n="Pages">Pages</div>
+          <div data-i18n="View">View</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="User Profile">User Profile</div>
+            <a href="javascript:void(0);" class="menu-link">
+              <div data-i18n="Thought of the Day">Thought of the Day</div>
             </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="pages-profile-user.html" class="menu-link">
-                  <div data-i18n="Profile">Profile</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-profile-teams.html" class="menu-link">
-                  <div data-i18n="Teams">Teams</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-profile-projects.html" class="menu-link">
-                  <div data-i18n="Projects">Projects</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-profile-connections.html" class="menu-link">
-                  <div data-i18n="Connections">Connections</div>
-                </a>
-              </li>
-            </ul>
           </li>
           <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Account Settings">Account Settings</div>
+            <a href="javascript:void(0);" class="menu-link">
+              <div data-i18n="Appreciation">Appreciation</div>
             </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="pages-account-settings-account.html" class="menu-link">
-                  <div data-i18n="Account">Account</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-account-settings-security.html" class="menu-link">
-                  <div data-i18n="Security">Security</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-account-settings-billing.html" class="menu-link">
-                  <div data-i18n="Billing & Plans">Billing & Plans</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-account-settings-notifications.html" class="menu-link">
-                  <div data-i18n="Notifications">Notifications</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-account-settings-connections.html" class="menu-link">
-                  <div data-i18n="Connections">Connections</div>
-                </a>
-              </li>
-            </ul>
           </li>
           <li class="menu-item">
             <a href="pages-faq.html" class="menu-link">
-              <div data-i18n="FAQ">FAQ</div>
+              <div data-i18n="Birthdays">Birthdays</div>
             </a>
           </li>
           <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Help Center">Help Center</div>
+            <a href="javascript:void(0);" class="menu-link">
+              <div data-i18n="Announcement">Announcement</div>
             </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="pages-help-center-landing.html" class="menu-link">
-                  <div data-i18n="Landing">Landing</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-help-center-categories.html" class="menu-link">
-                  <div data-i18n="Categories">Categories</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-help-center-article.html" class="menu-link">
-                  <div data-i18n="Article">Article</div>
-                </a>
-              </li>
-            </ul>
           </li>
           <li class="menu-item">
             <a href="pages-pricing.html" class="menu-link">
-              <div data-i18n="Pricing">Pricing</div>
+              <div data-i18n="Company Policies">Company Policies</div>
             </a>
           </li>
           <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Misc">Misc</div>
+            <a href="javascript:void(0);" class="menu-link">
+              <div data-i18n="Events">Events</div>
             </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="pages-misc-error.html" class="menu-link" target="_blank">
-                  <div data-i18n="Error">Error</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-misc-under-maintenance.html" class="menu-link" target="_blank">
-                  <div data-i18n="Under Maintenance">Under Maintenance</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-misc-comingsoon.html" class="menu-link" target="_blank">
-                  <div data-i18n="Coming Soon">Coming Soon</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="pages-misc-not-authorized.html" class="menu-link" target="_blank">
-                  <div data-i18n="Not Authorized">Not Authorized</div>
-                </a>
-              </li>
-            </ul>
+          </li>
+          <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link">
+              <div data-i18n="Holidays">Holidays</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link">
+              <div data-i18n="Holidays">User Reminder List</div>
+            </a>
           </li>
         </ul>
-      </li>
+      </li> 
+      
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-lock"></i>
-          <div data-i18n="Authentications">Authentications</div>
+          <div data-i18n="Others">Others</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Login">Login</div>
+            <a href="javascript:void(0);" class="menu-link">
+              <div data-i18n="Seen Status Report">Seen Status Report</div>
             </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="auth-login-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Basic</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="auth-login-cover.html" class="menu-link" target="_blank">
-                  <div data-i18n="Cover">Cover</div>
-                </a>
-              </li>
-            </ul>
+          
           </li>
           <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Register">Register</div>
+              <div data-i18n="Thoughts">Thoughts</div>
             </a>
             <ul class="menu-sub">
               <li class="menu-item">
                 <a href="auth-register-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Basic</div>
+                  <div data-i18n="Add Thought of the day">Add Thought of the day</div>
                 </a>
               </li>
               <li class="menu-item">
                 <a href="auth-register-cover.html" class="menu-link" target="_blank">
-                  <div data-i18n="Cover">Cover</div>
+                  <div data-i18n="View Thoughts">View Thoughts</div>
                 </a>
-              </li>
-              <li class="menu-item">
-                <a href="auth-register-multisteps.html" class="menu-link" target="_blank">
-                  <div data-i18n="Multi-steps">Multi-steps</div>
-                </a>
-              </li>
+              </li> 
             </ul>
           </li>
           <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Verify Email">Verify Email</div>
+              <div data-i18n="Appreciation">Appreciation</div>
             </a>
             <ul class="menu-sub">
               <li class="menu-item">
                 <a href="auth-verify-email-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Basic</div>
+                  <div data-i18n="Add Appreciation">Add Appreciation</div>
                 </a>
               </li>
               <li class="menu-item">
                 <a href="auth-verify-email-cover.html" class="menu-link" target="_blank">
-                  <div data-i18n="Cover">Cover</div>
+                  <div data-i18n="View Appreciation">View Appreciation</div>
                 </a>
               </li>
             </ul>
           </li>
           <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Reset Password">Reset Password</div>
+              <div data-i18n="Policies">Policies</div>
             </a>
             <ul class="menu-sub">
               <li class="menu-item">
                 <a href="auth-reset-password-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Basic</div>
+                  <div data-i18n="Add Policy">Add Policy</div>
                 </a>
               </li>
               <li class="menu-item">
                 <a href="auth-reset-password-cover.html" class="menu-link" target="_blank">
-                  <div data-i18n="Cover">Cover</div>
+                  <div data-i18n="View Policy">View Policy</div>
                 </a>
               </li>
             </ul>
           </li>
           <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Forgot Password">Forgot Password</div>
+              <div data-i18n="Announcement">Announcement</div>
             </a>
             <ul class="menu-sub">
               <li class="menu-item">
                 <a href="auth-forgot-password-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Basic</div>
+                  <div data-i18n="Add Announcement">Add Announcement</div>
                 </a>
               </li>
               <li class="menu-item">
                 <a href="auth-forgot-password-cover.html" class="menu-link" target="_blank">
-                  <div data-i18n="Cover">Cover</div>
+                  <div data-i18n="Add Banner">Add Banner</div>
+                </a>
+              </li>
+              <li class="menu-item">
+                <a href="auth-forgot-password-cover.html" class="menu-link" target="_blank">
+                  <div data-i18n="View Announcement">View Announcement</div>
+                </a>
+              </li>
+              <li class="menu-item">
+                <a href="auth-forgot-password-cover.html" class="menu-link" target="_blank">
+                  <div data-i18n="View Banner">View Banner</div>
                 </a>
               </li>
             </ul>
           </li>
           <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Two Steps">Two Steps</div>
+              <div data-i18n="Events">Events</div>
             </a>
             <ul class="menu-sub">
               <li class="menu-item">
                 <a href="auth-two-steps-basic.html" class="menu-link" target="_blank">
-                  <div data-i18n="Basic">Basic</div>
+                  <div data-i18n="Add Events">Add Events</div>
                 </a>
               </li>
               <li class="menu-item">
                 <a href="auth-two-steps-cover.html" class="menu-link" target="_blank">
-                  <div data-i18n="Cover">Cover</div>
+                  <div data-i18n="View Events">View Events</div>
                 </a>
               </li>
             </ul>
           </li>
         </ul>
       </li>
+ 
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-forms"></i>
-          <div data-i18n="Wizard Examples">Wizard Examples</div>
+          <div data-i18n="Conference Hall">Conference Hall</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
             <a href="wizard-ex-checkout.html" class="menu-link">
-              <div data-i18n="Checkout">Checkout</div>
+              <div data-i18n="Booking">Booking</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="wizard-ex-property-listing.html" class="menu-link">
-              <div data-i18n="Property Listing">Property Listing</div>
+              <div data-i18n="View Bookings">View Bookings</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="wizard-ex-create-deal.html" class="menu-link">
-              <div data-i18n="Create Deal">Create Deal</div>
+              <div data-i18n="My Booking">My Booking</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="wizard-ex-create-deal.html" class="menu-link">
+              <div data-i18n="Assigned Bookings">Assigned Bookings</div>
             </a>
           </li>
         </ul>
       </li>
-      <li class="menu-item">
-        <a href="modal-examples.html" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-square"></i>
-          <div data-i18n="Modal Examples">Modal Examples</div>
-        </a>
-      </li>
+      
 
       <!-- Components -->
-      <li class="menu-header small text-uppercase">
+      {{-- <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Components</span>
-      </li>
+      </li>   --}}
       <!-- Cards -->
-      <li class="menu-item">
+     <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-id"></i>
-          <div data-i18n="Cards">Cards</div>
+          <div data-i18n="Feedback">Feedback</div>
           <div class="badge bg-label-primary rounded-pill ms-auto">6</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
             <a href="cards-basic.html" class="menu-link">
-              <div data-i18n="Basic">Basic</div>
+              <div data-i18n="Feedback Form">Feedback Form</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="cards-advance.html" class="menu-link">
-              <div data-i18n="Advance">Advance</div>
+              <div data-i18n="Feedback Reviews">Feedback Reviews</div>
             </a>
-          </li>
-          <li class="menu-item">
-            <a href="cards-statistics.html" class="menu-link">
-              <div data-i18n="Statistics">Statistics</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="cards-analytics.html" class="menu-link">
-              <div data-i18n="Analytics">Analytics</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="cards-actions.html" class="menu-link">
-              <div data-i18n="Actions">Actions</div>
-            </a>
-          </li>
+          </li> 
         </ul>
       </li>
+
+      <li class="menu-item">
+        <a href="app-email.html" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-mail"></i>
+          <div data-i18n="My Projects">My Projects</div>
+        </a>
+      </li>
+
       <!-- User interface -->
       <li class="menu-item">
         <a href="javascript:void(0)" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-color-swatch"></i>
-          <div data-i18n="User interface">User interface</div>
+          <div data-i18n="My Account">My Account</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
             <a href="ui-accordion.html" class="menu-link">
-              <div data-i18n="Accordion">Accordion</div>
+              <div data-i18n="My Profile">My Profile</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="ui-alerts.html" class="menu-link">
-              <div data-i18n="Alerts">Alerts</div>
+              <div data-i18n="Change Password">Change Password</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="ui-badges.html" class="menu-link">
-              <div data-i18n="Badges">Badges</div>
+              <div data-i18n="Edit Profile">Edit Profile</div>
             </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-buttons.html" class="menu-link">
-              <div data-i18n="Buttons">Buttons</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-carousel.html" class="menu-link">
-              <div data-i18n="Carousel">Carousel</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-collapse.html" class="menu-link">
-              <div data-i18n="Collapse">Collapse</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-dropdowns.html" class="menu-link">
-              <div data-i18n="Dropdowns">Dropdowns</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-footer.html" class="menu-link">
-              <div data-i18n="Footer">Footer</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-list-groups.html" class="menu-link">
-              <div data-i18n="List Groups">List groups</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-modals.html" class="menu-link">
-              <div data-i18n="Modals">Modals</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-navbar.html" class="menu-link">
-              <div data-i18n="Navbar">Navbar</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-offcanvas.html" class="menu-link">
-              <div data-i18n="Offcanvas">Offcanvas</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-pagination-breadcrumbs.html" class="menu-link">
-              <div data-i18n="Pagination & Breadcrumbs">Pagination &amp; Breadcrumbs</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-progress.html" class="menu-link">
-              <div data-i18n="Progress">Progress</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-spinners.html" class="menu-link">
-              <div data-i18n="Spinners">Spinners</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-tabs-pills.html" class="menu-link">
-              <div data-i18n="Tabs & Pills">Tabs &amp; Pills</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-toasts.html" class="menu-link">
-              <div data-i18n="Toasts">Toasts</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-tooltips-popovers.html" class="menu-link">
-              <div data-i18n="Tooltips & Popovers">Tooltips &amp; popovers</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="ui-typography.html" class="menu-link">
-              <div data-i18n="Typography">Typography</div>
-            </a>
-          </li>
+          </li> 
         </ul>
       </li>
 
@@ -661,81 +571,25 @@
       <li class="menu-item">
         <a href="javascript:void(0)" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-components"></i>
-          <div data-i18n="Extended UI">Extended UI</div>
+          <div data-i18n="Tools">Tools</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
             <a href="extended-ui-avatar.html" class="menu-link">
-              <div data-i18n="Avatar">Avatar</div>
+              <div data-i18n="Quick Notes">Quick Notes</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="extended-ui-blockui.html" class="menu-link">
-              <div data-i18n="BlockUI">BlockUI</div>
+              <div data-i18n="Event Calendar">Event Calendar</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="extended-ui-drag-and-drop.html" class="menu-link">
-              <div data-i18n="Drag & Drop">Drag &amp; Drop</div>
+              <div data-i18n="KSP">KSP</div>
             </a>
           </li>
-          <li class="menu-item">
-            <a href="extended-ui-media-player.html" class="menu-link">
-              <div data-i18n="Media Player">Media Player</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="extended-ui-perfect-scrollbar.html" class="menu-link">
-              <div data-i18n="Perfect Scrollbar">Perfect scrollbar</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="extended-ui-star-ratings.html" class="menu-link">
-              <div data-i18n="Star Ratings">Star Ratings</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="extended-ui-sweetalert2.html" class="menu-link">
-              <div data-i18n="SweetAlert2">SweetAlert2</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="extended-ui-text-divider.html" class="menu-link">
-              <div data-i18n="Text Divider">Text Divider</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-              <div data-i18n="Timeline">Timeline</div>
-            </a>
-            <ul class="menu-sub">
-              <li class="menu-item">
-                <a href="extended-ui-timeline-basic.html" class="menu-link">
-                  <div data-i18n="Basic">Basic</div>
-                </a>
-              </li>
-              <li class="menu-item">
-                <a href="extended-ui-timeline-fullscreen.html" class="menu-link">
-                  <div data-i18n="Fullscreen">Fullscreen</div>
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="menu-item">
-            <a href="extended-ui-tour.html" class="menu-link">
-              <div data-i18n="Tour">Tour</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="extended-ui-treeview.html" class="menu-link">
-              <div data-i18n="Treeview">Treeview</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="extended-ui-misc.html" class="menu-link">
-              <div data-i18n="Miscellaneous">Miscellaneous</div>
-            </a>
-          </li>
+          
         </ul>
       </li>
 
@@ -743,86 +597,62 @@
       <li class="menu-item">
         <a href="javascript:void(0)" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-brand-tabler"></i>
-          <div data-i18n="Icons">Icons</div>
+          <div data-i18n="Jobs">Jobs</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
             <a href="icons-tabler.html" class="menu-link">
-              <div data-i18n="Tabler">Tabler</div>
+              <div data-i18n="My Jobs">My Jobs</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="icons-font-awesome.html" class="menu-link">
-              <div data-i18n="Fontawesome">Fontawesome</div>
+              <div data-i18n="Assign a Job">Assign a Job</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="icons-font-awesome.html" class="menu-link">
+              <div data-i18n="Jobs Assigned By You">Jobs Assigned By You</div>
             </a>
           </li>
         </ul>
       </li>
 
       <!-- Forms & Tables -->
-      <li class="menu-header small text-uppercase">
+      {{-- <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Forms &amp; Tables</span>
-      </li>
+      </li> --}}
       <!-- Forms -->
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-toggle-left"></i>
-          <div data-i18n="Form Elements">Form Elements</div>
+          <div data-i18n="Email">Email</div>
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
             <a href="forms-basic-inputs.html" class="menu-link">
-              <div data-i18n="Basic Inputs">Basic Inputs</div>
+              <div data-i18n="Inbox">Inbox</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="forms-input-groups.html" class="menu-link">
-              <div data-i18n="Input groups">Input groups</div>
+              <div data-i18n="Starred">Starred</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="forms-custom-options.html" class="menu-link">
-              <div data-i18n="Custom Options">Custom Options</div>
+              <div data-i18n="Sent Email">Sent Email</div>
             </a>
           </li>
           <li class="menu-item">
             <a href="forms-editors.html" class="menu-link">
-              <div data-i18n="Editors">Editors</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="forms-file-upload.html" class="menu-link">
-              <div data-i18n="File Upload">File Upload</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="forms-pickers.html" class="menu-link">
-              <div data-i18n="Pickers">Pickers</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="forms-selects.html" class="menu-link">
-              <div data-i18n="Select & Tags">Select &amp; Tags</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="forms-sliders.html" class="menu-link">
-              <div data-i18n="Sliders">Sliders</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="forms-switches.html" class="menu-link">
-              <div data-i18n="Switches">Switches</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="forms-extras.html" class="menu-link">
-              <div data-i18n="Extras">Extras</div>
+              <div data-i18n="Trash">Trash</div>
             </a>
           </li>
         </ul>
       </li>
-      <li class="menu-item">
+
+      {{-- <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-layout-navbar"></i>
           <div data-i18n="Form Layouts">Form Layouts</div>
@@ -844,8 +674,8 @@
             </a>
           </li>
         </ul>
-      </li>
-      <li class="menu-item">
+      </li> --}}
+      {{-- <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-text-wrap-disabled"></i>
           <div data-i18n="Form Wizard">Form Wizard</div>
@@ -862,22 +692,22 @@
             </a>
           </li>
         </ul>
-      </li>
-      <li class="menu-item">
+      </li> --}}
+      {{-- <li class="menu-item">
         <a href="form-validation.html" class="menu-link">
           <i class="menu-icon tf-icons ti ti-checkbox"></i>
           <div data-i18n="Form Validation">Form Validation</div>
         </a>
-      </li>
+      </li> --}}
       <!-- Tables -->
-      <li class="menu-item">
+      {{-- <li class="menu-item">
         <a href="tables-basic.html" class="menu-link">
           <i class="menu-icon tf-icons ti ti-table"></i>
           <div data-i18n="Tables">Tables</div>
         </a>
-      </li>
+      </li> --}}
 
-      <li class="menu-item">
+      {{-- <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-layout-grid"></i>
           <div data-i18n="Datatables">Datatables</div>
@@ -899,13 +729,13 @@
             </a>
           </li>
         </ul>
-      </li>
+      </li> --}}
 
       <!-- Charts & Maps -->
-      <li class="menu-header small text-uppercase">
+      {{-- <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Charts &amp; Maps</span>
-      </li>
-      <li class="menu-item">
+      </li> --}}
+      {{-- <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-chart-pie"></i>
           <div data-i18n="Charts">Charts</div>
@@ -922,13 +752,13 @@
             </a>
           </li>
         </ul>
-      </li>
-      <li class="menu-item">
+      </li> --}}
+      {{-- <li class="menu-item">
         <a href="maps-leaflet.html" class="menu-link">
           <i class="menu-icon tf-icons ti ti-map"></i>
           <div data-i18n="Leaflet Maps">Leaflet Maps</div>
         </a>
-      </li>
+      </li> --}}
 
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
