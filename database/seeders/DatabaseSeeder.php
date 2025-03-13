@@ -18,23 +18,25 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
          // Create roles
-        $adminRole = Role::create(['name' => 'admin']);
-        $userRole = Role::create(['name' => 'user']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $userRole = Role::firstOrCreate(['name' => 'user']);
 
         // Create permissions
-        $manageRoles = Permission::create(['name' => 'manage roles']);
-        $managePermissions = Permission::create(['name' => 'manage permissions']);
+        $manageRoles = Permission::firstOrCreate(['name' => 'manage roles']);
+        $managePermissions = Permission::firstOrCreate(['name' => 'manage permissions']);
 
         // Assign permissions to roles
         $adminRole->givePermissionTo([$manageRoles, $managePermissions]);
 
         // Create admin user
-        User::create([
-            'name' => 'administrator',
-            'email' => 'admin@mail.com',
-            'role' => 'admin',
-            'password' => Hash::make('password')
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@mail.com'], // Search criteria
+            [
+                'username' => 'administrator',
+                'role' => 'admin',
+                'password' => Hash::make('password') // Ensures password is always hashed
+            ]
+        );
 
         // Assign role to a user
         $admin = User::where('email', 'admin@mail.com')->first();

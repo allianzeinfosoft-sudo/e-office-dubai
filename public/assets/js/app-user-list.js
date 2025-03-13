@@ -6,7 +6,7 @@
 
 // Datatable (jquery)
 $(function () {
-  let borderColor, bodyBg, headingColor;
+  let borderColor, bodyBg, headingColor, userView;
 
   if (isDarkStyle) {
     borderColor = config.colors_dark.borderColor;
@@ -21,11 +21,13 @@ $(function () {
   // Variable declaration for table
   var dt_user_table = $('.datatables-users'),
     select2 = $('.select2'),
-    userView = 'app-user-view-account.html',
+   
     statusObj = {
-      1: { title: 'Pending', class: 'bg-label-warning' },
+      1: { title: 'New User', class: 'bg-label-warning' },
       2: { title: 'Active', class: 'bg-label-success' },
-      3: { title: 'Inactive', class: 'bg-label-secondary' }
+      3: { title: 'Inactive', class: 'bg-label-secondary' },
+      4: { title: 'Resigned', class: 'bg-label-danger'},
+      5: { title: 'Admin', class: 'bg-label-primary'}
     };
 
   if (select2.length) {
@@ -39,16 +41,24 @@ $(function () {
   // Users datatable
   if (dt_user_table.length) {
     var dt_user = dt_user_table.DataTable({
-      ajax: assetsPath + 'json/user-list.json', // JSON file to add data
+      // ajax: assetsPath + 'json/user-list.json', // JSON file to add data
+     
+      ajax: {
+        url: "/user-list",  // Fetch from Laravel API
+        type: "GET",
+        dataType: "json",
+        dataSrc: "data"
+    },
+
       columns: [
         // columns according to JSON
         { data: '' },
         { data: 'full_name' },
-        { data: 'role' },
-        { data: 'current_plan' },
-        { data: 'billing' },
+        { data: 'employeeID' },
+        { data: 'username' },
+        { data: 'phonenumber' },
         { data: 'status' },
-        { data: 'action' }
+        { data: 'role' }
       ],
       columnDefs: [
         {
@@ -67,13 +77,14 @@ $(function () {
           targets: 1,
           responsivePriority: 4,
           render: function (data, type, full, meta) {
+            let userView = "/user/profile/"+full['id'];
             var $name = full['full_name'],
               $email = full['email'],
               $image = full['avatar'];
             if ($image) {
               // For Avatar image
               var $output =
-                '<img src="' + assetsPath + 'img/avatars/' + $image + '" alt="Avatar" class="rounded-circle">';
+                '<img src="img/avatars/' + $image + '" alt="Avatar" class="rounded-circle">';
             } else {
               // For Avatar badge
               var stateNum = Math.floor(Math.random() * 6);
@@ -110,31 +121,11 @@ $(function () {
           // User Role
           targets: 2,
           render: function (data, type, full, meta) {
-            var $role = full['role'];
-            var roleBadgeObj = {
-              Subscriber:
-                '<span class="badge badge-center rounded-pill bg-label-warning w-px-30 h-px-30 me-2"><i class="ti ti-user ti-sm"></i></span>',
-              Author:
-                '<span class="badge badge-center rounded-pill bg-label-success w-px-30 h-px-30 me-2"><i class="ti ti-circle-check ti-sm"></i></span>',
-              Maintainer:
-                '<span class="badge badge-center rounded-pill bg-label-primary w-px-30 h-px-30 me-2"><i class="ti ti-chart-pie-2 ti-sm"></i></span>',
-              Editor:
-                '<span class="badge badge-center rounded-pill bg-label-info w-px-30 h-px-30 me-2"><i class="ti ti-edit ti-sm"></i></span>',
-              Admin:
-                '<span class="badge badge-center rounded-pill bg-label-secondary w-px-30 h-px-30 me-2"><i class="ti ti-device-laptop ti-sm"></i></span>'
-            };
-            return "<span class='text-truncate d-flex align-items-center'>" + roleBadgeObj[$role] + $role + '</span>';
+            let $role = full['role']; 
+            return "<span class='text-truncate d-flex align-items-center'>" + $role + '</span>';
           }
         },
-        {
-          // Plans
-          targets: 3,
-          render: function (data, type, full, meta) {
-            var $plan = full['current_plan'];
-
-            return '<span class="fw-semibold">' + $plan + '</span>';
-          }
-        },
+        
         {
           // User Status
           targets: 5,
@@ -376,7 +367,7 @@ $(function () {
       initComplete: function () {
         // Adding role filter once table initialized
         this.api()
-          .columns(2)
+          .columns(3)
           .every(function () {
             var column = this;
             var select = $(
@@ -397,27 +388,27 @@ $(function () {
               });
           });
         // Adding plan filter once table initialized
-        this.api()
-          .columns(3)
-          .every(function () {
-            var column = this;
-            var select = $(
-              '<select id="UserPlan" class="form-select text-capitalize"><option value=""> Select Plan </option></select>'
-            )
-              .appendTo('.user_plan')
-              .on('change', function () {
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                column.search(val ? '^' + val + '$' : '', true, false).draw();
-              });
+        // this.api()
+        //   .columns(3)
+        //   .every(function () {
+        //     var column = this;
+        //     var select = $(
+        //       '<select id="UserPlan" class="form-select text-capitalize"><option value=""> Select Plan </option></select>'
+        //     )
+        //       .appendTo('.user_plan')
+        //       .on('change', function () {
+        //         var val = $.fn.dataTable.util.escapeRegex($(this).val());
+        //         column.search(val ? '^' + val + '$' : '', true, false).draw();
+        //       });
 
-            column
-              .data()
-              .unique()
-              .sort()
-              .each(function (d, j) {
-                select.append('<option value="' + d + '">' + d + '</option>');
-              });
-          });
+        //     column
+        //       .data()
+        //       .unique()
+        //       .sort()
+        //       .each(function (d, j) {
+        //         select.append('<option value="' + d + '">' + d + '</option>');
+        //       });
+        //   });
         // Adding status filter once table initialized
         this.api()
           .columns(5)
