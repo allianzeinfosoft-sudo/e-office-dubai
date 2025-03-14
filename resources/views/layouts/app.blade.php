@@ -83,8 +83,9 @@
     <script src="{{ asset('assets/vendor/libs/node-waves/node-waves.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/hammer/hammer.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/i18n/i18n.js') }}"></script>
-
     <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
+
+
     <!-- endbuild -->
 
     <!-- Vendors JS -->
@@ -112,6 +113,11 @@
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
+
+   <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
+   <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
+
+
     <!-- Main JS -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
@@ -160,8 +166,9 @@
     <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script>
     @endif
 
+    <script src="{{ asset('assets/js/app-access-leave.js') }} "></script>
     @if(Route::is('leaves.*'))
-        <script src="{{ asset('assets/js/app-access-leave.js') }} "></script>
+
         <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script>
     @endif
      <!-- Vendors JS -->

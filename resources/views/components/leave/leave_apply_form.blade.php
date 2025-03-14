@@ -1,5 +1,5 @@
               <div class="card mb-4">
-                <form class="card-body" method="post" action="{{ route('leaves.store') }}">
+                <form id="leaveForm" class="card-body" method="post" action="{{ route('leaves.store') }}">
                     @csrf
                   <div class="row g-3">
                     <div class="col-md-6">
@@ -16,13 +16,8 @@
                     </div>
                     <div class="col-md-12">
                         <label class="form-label" for="multicol-username">Leave Reason</label>
-                        <div class="card">
-                            <div class="card-body">
-                                <div id="full-editor">
-                                    <textarea name="leave_reason" id="leave_reason" class="form-control"></textarea>
-                                </div>
-                            </div>
-                        </div>
+                            <div id="leave-editor"></div>
+                            <input type="hidden" name="reason" id="reason">
                     </div>
 
                     <div class="row mt-3">
@@ -57,3 +52,17 @@
                 </form>
               </div>
 
+
+
+<script>
+    (function () {
+            document.getElementById("leaveForm").addEventListener("submit", function (event) {
+                let quill = new Quill("#leave-editor", {
+                    theme: "snow"
+                });
+                document.querySelector("#reason").value = quill.root.innerHTML;
+                this.submit(); // Manually submit the form
+            });
+
+    })();
+</script>
