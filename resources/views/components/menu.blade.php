@@ -126,12 +126,11 @@
       {{-- <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Apps &amp; Pages</span>
       </li> --}}
-      <li class="menu-item">
-        <a href="app-email.html" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-mail"></i>
-          <div data-i18n="Attendance">Attendance</div>
-        </a>
+      
+      <li class="menu-item active">
+        <a href="{{ url('mark-in') }}" class="menu-link"> <i class="menu-icon tf-icons ti ti-mail"></i> <div data-i18n="Attendance">Attendance</div></a>
       </li>
+
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>

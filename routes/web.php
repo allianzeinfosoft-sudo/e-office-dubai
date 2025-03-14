@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermissionController;
@@ -36,5 +37,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('departments',DepartmentController::class);
     Route::resource('branchs',BranchController::class);
     Route::get('branch-list',[BranchController::class, 'getBranches']);
+    
+    /* Attendance Routs */
+    Route::get('mark-in',[AttendanceController::class, 'index'])->name('mark-in');
 });
 
