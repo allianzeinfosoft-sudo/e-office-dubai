@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('leaves', function (Blueprint $table) {
             $table->id();
+            $table->date('leave_from');
+            $table->date('leave_to');
+            $table->integer('user_id');
+            $table->string('leave_type');
+            $table->text('reason');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('leaves');

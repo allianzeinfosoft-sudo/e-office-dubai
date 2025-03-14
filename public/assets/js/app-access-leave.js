@@ -1,7 +1,6 @@
 /**
  * App user list
  */
-
 'use strict';
 
 // Datatable (jquery)
@@ -239,6 +238,7 @@ $(function () {
   }, 300);
 });
 
+
 (function () {
   // On edit role click, update text
   var roleEditList = document.querySelectorAll('.role-edit-modal'),
@@ -371,6 +371,12 @@ $(document).ready(function () {
           }
       });
     });
+
+
+
+
+
+
 });
 
 

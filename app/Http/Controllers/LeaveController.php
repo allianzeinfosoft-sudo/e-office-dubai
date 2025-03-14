@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Leave;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveController extends Controller
 {
@@ -27,7 +30,19 @@ class LeaveController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        $user_id = Auth::user()->id;
+        $leaveData = [
+            'user_id'     => $user_id,
+            'leave_from'  => $request->leave_from,
+            'leave_to'    => $request->leave_to,
+            'reason'      => $request->reason,
+            'leave_type'  => $request->leave_type,
+            'leave_category' => $request->leave_category,
+        ];
+
+        $leave = Leave::create($leaveData);
+        return redirect()->back()->with('success', 'Leave created successfully!');
+
     }
 
     /**
