@@ -3,53 +3,48 @@
                     @csrf
                   <div class="row g-3">
                     <div class="col-md-6">
-                      <label class="form-label" for="multicol-username">Leave From</label>
+                      <label class="form-label" for="leave_from">Leave From</label>
                       <div class="input-group input-group-merge">
-                        <input type="date" name="leave_from" class="form-control " placeholder="YYYY-MM-DD" id="flatpickr-date" />
+                        <input type="text" name="leave_from" class="form-control" placeholder="YYYY-MM-DD" id="leave-from" />
                       </div>
                     </div>
                     <div class="col-md-6">
-                      <label class="form-label" for="multicol-email">Leave To</label>
+                      <label class="form-label" for="leave_to">Leave To</label>
                       <div class="input-group input-group-merge">
-                        <input type="date" name="leave_to" class="form-control " placeholder="YYYY-MM-DD" id="flatpickr-date" />
-
+                        <input type="text" name="leave_to" class="form-control" placeholder="YYYY-MM-DD" id="leave-to" />
                       </div>
                     </div>
                     <div class="col-md-12">
-                         <!-- Full Editor -->
-                         <label class="form-label" for="multicol-username">Leave Reason</label>
-                                <div class="card">
-
-                                <div class="card-body">
-                                    <div id="full-editor">
-                                    <p>
-                                         content
-                                    </p>
-                                    </div>
+                        <label class="form-label" for="multicol-username">Leave Reason</label>
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="full-editor">
+                                    <textarea name="leave_reason" id="leave_reason" class="form-control"></textarea>
                                 </div>
-                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row mt-3">
                         <label class="form-label" for="multicol-username">Leave type(full/half)</label>
                         <div class="col-md-4">
                             <div class="form-check">
-                                <input name="default-radio-1" class="form-check-input" type="radio" value="" id="defaultRadio1" />
-                                <label class="form-check-label" for="defaultRadio1"> Unchecked </label>
+                                <input name="leave_type" class="form-check-input" type="radio" value="full_day" id="defaultRadio1" />
+                                <label class="form-check-label" for="defaultRadio1"> Full Day </label>
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-check">
-                                <input name="default-radio-1" class="form-check-input" type="radio" value="" id="defaultRadio2" checked />
-                                <label class="form-check-label" for="defaultRadio2"> Checked </label>
+                                <input name="leave_type" class="form-check-input" type="radio" value="half_day" id="defaultRadio2" checked />
+                                <label class="form-check-label" for="defaultRadio2"> Half Day </label>
                             </div>
                         </div>
 
                         <div class="col-md-4">
                             <div class="form-check">
-                                <input name="default-radio-1" class="form-check-input" type="radio" value="" id="defaultRadio3" />
-                                <label class="form-check-label" for="defaultRadio3"> Checked </label>
+                                <input name="leave_type" class="form-check-input" type="radio" value="off_day" id="defaultRadio3" />
+                                <label class="form-check-label" for="defaultRadio3"> Off Day </label>
                             </div>
                         </div>
                     </div>

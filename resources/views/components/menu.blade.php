@@ -239,7 +239,7 @@
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
-            <a href="app-invoice-list.html" class="menu-link">
+            <a href="{{ route('leaves.create') }}" class="menu-link">
               <div data-i18n="Apply Leave">Apply Leave</div>
             </a>
           </li>

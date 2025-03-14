@@ -21,10 +21,8 @@
 
 
           <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Forms/</span> Leave Application Form</h4>
-
+            <h4 class="fw-bold py-3 mb-4">Apply Leave</h4>
                 @include('components.leave.leave_apply_form');
-
           </div>
 
           <!-- / Content -->

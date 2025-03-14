@@ -9,14 +9,9 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
 
-
-    <!-- Fonts -->
-        {{-- <link rel="dns-prefetch" href="//fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet"> --}}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
       rel="stylesheet" />
 
       <!-- Icons -->
@@ -33,6 +28,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bs-stepper/bs-stepper.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/swiper/swiper.css') }}" />
@@ -59,15 +55,11 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
 
-
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
-
     <script src="{{ asset('assets/js/config.js') }}"></script>
-
     <!-- Scripts -->
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
-
 </head>
 <body>
     <div id="app">
@@ -82,14 +74,13 @@
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js') }}"></script> --}}
 
-    <script src="{{ asset('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/node-waves/node-waves.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/hammer/hammer.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/i18n/i18n.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/typeahead-js/typeahead.js') }}"></script>
 
     <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
     <!-- endbuild -->
@@ -109,7 +100,7 @@
     <script src="{{ asset('assets/vendor/libs/cleavejs/cleave-phone.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/swiper/swiper.js') }}"></script>
-    <script src="{{ asset('https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
@@ -122,6 +113,7 @@
 
    <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
    <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
+   <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
     <!-- Main JS -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
@@ -151,8 +143,6 @@
         <script src="{{ asset('assets/js/app-user-view.js') }}"></script>
         <script src="{{ asset('assets/js/app-user-view-account.js') }}"></script>
     @endif
-
-
     @if(request()->is('branchs'))
         <script src="{{ asset('assets/js/tables-datatables-branch.js') }}"></script>
     @endif
