@@ -122,3 +122,40 @@
 .mr-20{
   margin-right: 20px;
 }
+
+.mr-5{
+  margin-right: 5px;
+}
+
+.bg-aqua{
+    background-color: aqua;
+}
+
+.bg-aquamarine{
+    background-color: aquamarine;
+}
+
+.bg-blanchedalmond{
+    background-color: blanchedalmond;
+}
+
+.bg-deepskyblue{
+    background-color: deepskyblue;
+}
+.bg-lemonchiffon{
+    background-color: lemonchiffon;
+}
+.bg-paleturquoise{
+    background-color: paleturquoise;
+}
+
+.bg-turquoise{
+    background-color: turquoise;
+}
+
+.border-radius-12{
+    border-radius: 12px;
+}
+
+
+

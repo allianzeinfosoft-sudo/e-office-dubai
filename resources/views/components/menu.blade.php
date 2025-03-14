@@ -1,4 +1,4 @@
-<!-- Menu --> 
+<!-- Menu -->
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
       <a href="index.html" class="app-brand-link">
@@ -201,7 +201,7 @@
           </li>
         </ul>
       </li>
-      <li class="menu-item"> 
+      <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-file-dollar"></i>
           <div data-i18n="Survey">Survey</div>
@@ -213,9 +213,9 @@
               <div data-i18n="View Survey">View Survey</div>
             </a>
           </li>
-        </ul>  
+        </ul>
       </li>
-      <li class="menu-item"> 
+      <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-file-dollar"></i>
           <div data-i18n="PAR">PAR</div>
@@ -227,9 +227,9 @@
               <div data-i18n="View PAR">View PAR</div>
             </a>
           </li>
-        </ul>  
+        </ul>
       </li>
-  
+
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-file-dollar"></i>
@@ -238,7 +238,7 @@
         </a>
         <ul class="menu-sub">
           <li class="menu-item">
-            <a href="app-invoice-list.html" class="menu-link">
+            <a href="{{ route('leaves.create') }}" class="menu-link">
               <div data-i18n="Apply Leave">Apply Leave</div>
             </a>
           </li>
@@ -248,10 +248,10 @@
             </a>
           </li>
           <li class="menu-item">
-            <a href="app-invoice-edit.html" class="menu-link">
+            <a href="{{ route('leaves.index') }}" class="menu-link">
               <div data-i18n="Leave Summary">Leave Summary</div>
             </a>
-          </li> 
+          </li>
         </ul>
       </li>
 
@@ -264,6 +264,11 @@
           <li class="menu-item">
             <a href="{{ route('users.index') }}" class="menu-link">
               <div data-i18n="List">List</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="{{ route('users.create') }}" class="menu-link">
+              <div data-i18n="Add User">Add User</div>
             </a>
           </li>
           <li class="menu-item">
@@ -319,7 +324,7 @@
         </ul>
       </li>
 
-      
+
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-file"></i>
@@ -367,8 +372,8 @@
             </a>
           </li>
         </ul>
-      </li> 
-      
+      </li>
+
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-lock"></i>
@@ -379,7 +384,7 @@
             <a href="javascript:void(0);" class="menu-link">
               <div data-i18n="Seen Status Report">Seen Status Report</div>
             </a>
-          
+
           </li>
           <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -395,7 +400,7 @@
                 <a href="auth-register-cover.html" class="menu-link" target="_blank">
                   <div data-i18n="View Thoughts">View Thoughts</div>
                 </a>
-              </li> 
+              </li>
             </ul>
           </li>
           <li class="menu-item">
@@ -478,7 +483,7 @@
           </li>
         </ul>
       </li>
- 
+
       <li class="menu-item">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-forms"></i>
@@ -507,7 +512,7 @@
           </li>
         </ul>
       </li>
-      
+
 
       <!-- Components -->
       {{-- <li class="menu-header small text-uppercase">
@@ -530,7 +535,7 @@
             <a href="cards-advance.html" class="menu-link">
               <div data-i18n="Feedback Reviews">Feedback Reviews</div>
             </a>
-          </li> 
+          </li>
         </ul>
       </li>
 
@@ -562,7 +567,7 @@
             <a href="ui-badges.html" class="menu-link">
               <div data-i18n="Edit Profile">Edit Profile</div>
             </a>
-          </li> 
+          </li>
         </ul>
       </li>
 
@@ -588,7 +593,7 @@
               <div data-i18n="KSP">KSP</div>
             </a>
           </li>
-          
+
         </ul>
       </li>
 
@@ -771,22 +776,19 @@
               <div data-i18n="Branch & Department">Branch & Department</div>
             </a>
           </li>
-         
-          {{-- <li class="menu-item">
-            <a href="tables-datatables-advanced.html" class="menu-link">
-              <div data-i18n="Advanced">Advanced</div>
+
+          <li class="menu-item">
+            <a href="{{ route('workshift') }}" class="menu-link">
+              <div data-i18n="Work Shift">Work Shift</div>
             </a>
           </li>
-          <li class="menu-item">
-            <a href="tables-datatables-extensions.html" class="menu-link">
-              <div data-i18n="Extensions">Extensions</div>
-            </a>
-          </li> --}}
+
+
         </ul>
       </li>
       <li class="menu-item">
         &nbsp;
-      </li>  
+      </li>
       <!-- Misc -->
     </ul>
   </aside>

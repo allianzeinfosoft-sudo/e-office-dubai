@@ -125,10 +125,10 @@
                   <thead>
                     <tr>
                       <th></th>
-                      <th>User</th>
+                      <th>Name</th>
                       <th>Role</th>
-                      <th>Plan</th>
-                      <th>Billing</th>
+                      <th>Username</th>
+                      <th>Contact Number</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>

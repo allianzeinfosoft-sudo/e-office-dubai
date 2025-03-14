@@ -20,25 +20,55 @@
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-semibold mb-4">Branch & Department List</h4>
+            {{-- <h4 class="fw-semibold mb-4"></h4> --}}
  
             <!-- Permission Table -->
             <div class="card">
               <div class="card-datatable table-responsive pt-0">
                 <table class="datatables-basic table">
                   <thead>
-                    <tr>
-                      <th></th>
-                      <th></th>
+                    <tr> 
                       <th>id</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Date</th>
-                      <th>Salary</th>
-                      <th>Status</th>
+                      <th>Branch</th>
+                      <th>Department</th>
+                      <th>Designation</th>
                       <th>Action</th>
                     </tr>
                   </thead>
+                  @php $count = 1; @endphp
+                  @foreach($branches as $branch)
+                      @if($branch->departments->isNotEmpty())
+                          @foreach($branch->departments as $department)
+                              @if($department->designations->isNotEmpty())
+                                  @foreach($department->designations as $designation)
+                                      <tr>
+                                          <td>{{ $count++ }}</td>
+                                          <td>{{ $branch->branch }}</td>
+                                          <td>{{ $department->department }}</td>
+                                          <td>{{ $designation->designation }}</td>
+                                          <td></td>
+                                      </tr>
+                                  @endforeach
+                              @else
+                                  <tr>
+                                      <td>{{ $count++ }}</td>
+                                      <td>{{ $branch->name }}</td>
+                                      <td>{{ $department->department }}</td>
+                                      <td class="text-muted">No Designations</td>
+                                      <td></td>
+                                  </tr>
+                              @endif
+                          @endforeach
+                      @else
+                          <tr>
+                              <td>{{ $count++ }}</td>
+                              <td>{{ $branch->name }}</td>
+                              <td class="text-muted">No Departments</td>
+                              <td class="text-muted">No Designations</td>
+                              <td></td>
+                          </tr>
+                      @endif
+                  @endforeach
                 </table>
               </div>
             </div>
@@ -56,32 +86,111 @@
                   aria-label="Close"></button>
               </div>
               <div class="offcanvas-body flex-grow-1">
-                <form class="add-new-branch pt-0 row g-2" id="form-add-new-branch" onsubmit="return false">
+                <form class="add-new-branch pt-0 row g-2" method="post" action="{{ route('branchs.store') }}" id="form-add-new-branch" onsubmit="return false">
+                  @csrf
                   <div class="col-sm-12">
                     <label class="form-label" for="basicBranchname">Branch Name</label>
                     <div class="input-group input-group-merge">
                       <span id="basicBranchname2" class="input-group-text"><i class="ti ti-user"></i></span>
-                      <input
-                        type="text"
-                        id="basicBranchname"
-                        class="form-control dt-branch-name"
-                        name="branch"
-                        placeholder=""
-                        aria-label=""
-                        aria-describedby="basicBranchname" />
+                      <input type="text" id="basicBranchname" class="form-control dt-branch-name" name="branch" aria-describedby="basicBranchname" />
                     </div>
                   </div> 
                   <div class="col-sm-12">
                     <label class="form-label" for="location">Location</label>
                     <div class="input-group input-group-merge">
                       <span class="input-group-text"><i class="ti ti-mail"></i></span>
-                      <input
-                        type="text"
-                        id="location"
-                        name="location"
-                        class="form-control dt-location"
-                        placeholder=""
-                        aria-label="" />
+                      <input type="text" id="location" name="location" class="form-control dt-location"/>
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <button type="submit" class="btn btn-primary data-submit me-sm-3 me-1">Submit</button>
+                    <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!--/ DataTable with Buttons -->
+
+            <!-- Modal to add new department -->
+            <div class="offcanvas offcanvas-end" id="add-new-department">
+              <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title" id="exampleModalLabel">New Department</h5>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"></button>
+              </div>
+              <div class="offcanvas-body flex-grow-1">
+                <form class="add-new-department pt-0 row g-2" method="post" action="{{ route('department.store') }}" id="form-add-new-department" onsubmit="return false">
+                  @csrf
+                  <div class="col-sm-12">
+                    <label class="form-label" for="basicBranchname2">Branch Name</label>
+                    <div class="input-group input-group-merge">
+                      {{-- <span id="basicBranchname2" class="input-group-text"><i class="ti ti-user"></i></span> --}}
+                      <select id="basicBranchname2" class="select2 form-select  dt-branch-name1" name="branch_id">
+                        <option value="">Select</option>
+                        @foreach ($branches as $branch)
+                          <option value="{{ $branch->id }}">{{ $branch->branch ?? '-'}}</option>
+                        @endforeach 
+                      </select>
+                    </div>
+                  </div> 
+                  <div class="col-sm-12">
+                    <label class="form-label" for="department">Department</label>
+                    <div class="input-group input-group-merge">
+                      {{-- <span class="input-group-text"><i class="ti ti-department"></i></span> --}}
+                      <input type="text" id="department" name="department" class="form-control dt-department-name"/>
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <button type="submit" class="btn btn-primary data-submit me-sm-3 me-1">Submit</button>
+                    <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!--/ DataTable with Buttons -->
+
+            <!-- Modal to add new designation -->
+            <div class="offcanvas offcanvas-end" id="add-new-designation">
+              <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title" id="exampleModalLabel">New Designation</h5>
+                <button
+                  type="button"
+                  class="btn-close text-reset"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"></button>
+              </div>
+              <div class="offcanvas-body flex-grow-1">
+                <form class="add-new-designation pt-0 row g-2" method="post" action="{{ route('designation.store') }}" id="form-add-new-designation" onsubmit="return false">
+                  @csrf
+                  <div class="col-sm-12">
+                    <label class="form-label" for="basicBranchname3">Branch Name</label>
+                    <div class="input-group input-group-merge">
+                      {{-- <span id="basicBranchname2" class="input-group-text"><i class="ti ti-user"></i></span> --}}
+                      <select id="basicBranchname3" class="select2 form-select  dt-branch-name2" name="branch_id">
+                        <option value="">Select</option>
+                        @foreach ($branches as $branch)
+                          <option value="{{ $branch->id }}">{{ $branch->branch ?? '-'}}</option>
+                        @endforeach 
+                      </select>
+                    </div>
+                  </div> 
+                  <div class="col-sm-12">
+                    <label class="form-label" for="department1">Department</label>
+                    <div class="input-group input-group-merge">
+                      {{-- <span class="input-group-text"><i class="ti ti-department"></i></span> --}} 
+                      <select id="department1" class="select2 form-select  dt-department-name1" name="department_id">
+                        <option value="">Select</option> 
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <label class="form-label" for="designation1">Designation</label>
+                    <div class="input-group input-group-merge">
+                      {{-- <span class="input-group-text"><i class="ti ti-department"></i></span> --}}
+                      <input type="text" id="designation1" name="designation" class="form-control dt-designation-name1"/>
                     </div>
                   </div>
                   <div class="col-sm-12">
