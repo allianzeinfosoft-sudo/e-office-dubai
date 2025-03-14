@@ -350,6 +350,8 @@ if (typeof $ !== 'undefined') {
       searchInput = $('.search-input'),
       contentBackdrop = $('.content-backdrop');
 
+     
+
     // Open search input on click of search icon
     if (searchToggler.length) {
       searchToggler.on('click', function () {
@@ -404,7 +406,7 @@ if (typeof $ !== 'undefined') {
       };
 
       // Search JSON
-      var searchJson = 'search-vertical.json'; // For vertical layout
+      var searchJson = '../json/search-vertical.json'; // For vertical layout
       if ($('#layout-menu').hasClass('menu-horizontal')) {
         var searchJson = 'search-horizontal.json'; // For vertical layout
       }
@@ -414,6 +416,7 @@ if (typeof $ !== 'undefined') {
         dataType: 'json',
         async: false
       }).responseJSON;
+
       // Init typeahead on searchInput
       searchInput.each(function () {
         var $this = $(this);

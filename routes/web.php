@@ -58,5 +58,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
+    Route::post('/attendance/mark-in',[AttendanceController::class, 'markIn'])->name('attendance.mark-in');
+    Route::post('/attendance/mark-out',[AttendanceController::class, 'markOut'])->name('attendance.mark-out');
 });
 

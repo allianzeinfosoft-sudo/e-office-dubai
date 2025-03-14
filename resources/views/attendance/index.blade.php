@@ -1,9 +1,16 @@
 @extends('layouts.app')
 
+@section('css')
+
+@stop
+
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container">
-        <x-menu /> <!-- Load the menu component here -->
+
+  <div class="layout-container">
+    
+    <x-menu /> <!-- Load the menu component here -->
+
       <!-- Layout container -->
       <div class="layout-page">
         <!-- Navbar -->
@@ -18,28 +25,37 @@
 
           <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row">
-              <!-- Website Analytics -->
               <div class="col-lg-6 mb-4">
                 <div class="card bg-primary text-white">
                     <div class="card-header">
                         <div class="d-flex justify-content-between">
-                            <small class="d-block mb-1 text-white">Jerson George</small>
+                            <small class="d-block mb-1 text-white"> {{ ucfirst(Auth::user()->username ?? 'N/A') }} </small>
                         </div>
-                        <h4 class="card-title mb-1 text-white"> <i class="ti ti-clock ti-sm"></i> {{ $data['meta_title']}}</h4>
+                        <h4 class="card-title mb-1 text-white"> <i class="ti ti-clock ti-sm"></i> {{ $meta_title }}</h4>
                     </div>
                     <div class="card-body">
                       <div class="row">
-                        <div class="alert alert-success" role="alert">Last punch In Time: 09:00 AM</div>  
+
+                        @if($attendance && $attendance->status =='mark-in')
+                        <div class="alert alert-success" id="last-punch-time" role="alert">Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}</div>
+                        @endif
+
+                        @if($attendance && $attendance->status =='mark-out')
+                        <div class="alert alert-danger" id="last-punch-time" role="alert">Last punch Out Time: {{ date('H:i A', strtotime($attendance->signout_time)) }}. You don't have permission to mark-in again </div>
+                        @endif
+                        
                         <div class="text-center d-grid gap-2 col-lg-12">
-                          <button type="button" class="btn rounded-pill btn-success waves-effect waves-light"> <i class="ti ti-login ti-sm"></i> Mark-in </button>
-                          <button type="button" class="btn rounded-pill btn-danger waves-effect waves-light"> <i class="ti ti-logout ti-sm"></i> Mark-out</button>
+                          @if(!$attendance || $attendance->status !='mark-in')
+                          <button type="button" id="mark-in-btn" class="btn rounded-pill btn-success waves-effect waves-light"><i class="ti ti-login ti-sm"></i> Mark-in </button>
+                          @else
+                          <button type="button" id="mark-out-btn" class="btn rounded-pill btn-danger waves-effect waves-light"> <i class="ti ti-logout ti-sm"></i> Mark-out</button>
+                          @endif
                         </div>
                       </div>
                     </div>
                 </div>
               </div>
-              <!--/ Website Analytics -->
-
+              
               <!-- Sales Overview -->
               <div class="col-lg-3 col-sm-6 mb-4">
                 <div class="card">
@@ -184,3 +200,64 @@
   </div>
   <!-- / Layout wrapper -->
 @endsection
+
+
+@section('js')
+<script>
+  $(function(){
+    /* Mark in function */
+    $('#mark-in-btn').on('click', function() {
+      $.ajax({
+          url: '{{ route('attendance.mark-in') }}',
+          type: 'POST',
+          headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          contentType: 'application/json',
+          data: JSON.stringify({}),
+          success: function(data) {
+              if (data.success) {
+                  alert(data.message);
+                  $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+              } else {
+                  alert(data.message);
+                  if (data.data.signin_time) {
+                      $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+                  }
+              }
+          },
+          error: function(xhr, status, error) {
+              console.error('Error:', error);
+          }
+      });
+    });
+
+    /* Mark out function */
+
+    $('#mark-out-btn').on('click', function() {
+      $.ajax({
+            url: '{{ route('attendance.mark-out') }}',
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            contentType: 'application/json',
+            data: JSON.stringify({}),
+            success: function(data) {
+                if (data.success) {
+                    alert(data.message);
+                    $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
+                    $('#mark-out-btn').prop('disabled', true);
+                } else {
+                    alert(data.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+    
+  });
+</script>
+@stop

@@ -128,7 +128,7 @@
       </li> --}}
       
       <li class="menu-item active">
-        <a href="{{ url('mark-in') }}" class="menu-link"> <i class="menu-icon tf-icons ti ti-mail"></i> <div data-i18n="Attendance">Attendance</div></a>
+        <a href="{{ url('attendance') }}" class="menu-link"> <i class="menu-icon tf-icons ti ti-mail"></i> <div data-i18n="Attendance">Attendance</div></a>
       </li>
 
       <li class="menu-item">
