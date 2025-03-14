@@ -90,4 +90,18 @@
     },
     theme: 'snow'
   });
+
+
+
+  const leaveEditor = new Quill('#leave-editor', {
+    bounds: '#leave-editor',
+    placeholder: 'Type reason...',
+    modules: {
+      formula: true,
+      toolbar: fullToolbar
+    },
+    theme: 'snow'
+  });
+
+
 })();
