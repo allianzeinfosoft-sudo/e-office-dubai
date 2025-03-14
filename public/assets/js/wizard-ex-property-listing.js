@@ -1,9 +1,5 @@
-/**
- *  Form Wizard
- */
 
 'use strict';
-
 (function () {
   // Init custom option check
   window.Helpers.initCustomOptionCheck();

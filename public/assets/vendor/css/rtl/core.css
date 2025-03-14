@@ -12509,6 +12509,11 @@ html:not([dir=rtl]) .card .card-separator {
   background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
 }
 
+.bg-light-1 {
+    --bs-bg-opacity: 1;
+    background-color: rgb(223 223 227 / 38%) !important
+  }
+
 .bg-dark {
   --bs-bg-opacity: 1;
   background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;

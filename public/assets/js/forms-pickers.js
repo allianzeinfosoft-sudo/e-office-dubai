@@ -14,7 +14,23 @@
     flatpickrRange = document.querySelector('#flatpickr-range'),
     flatpickrInline = document.querySelector('#flatpickr-inline'),
     flatpickrFriendly = document.querySelector('#flatpickr-human-friendly'),
-    flatpickrDisabledRange = document.querySelector('#flatpickr-disabled-range');
+    flatpickrDisabledRange = document.querySelector('#flatpickr-disabled-range'),
+    leave_from = document.querySelector('#leave-from'),
+    leave_to = document.querySelector('#leave-to');
+
+    // Date
+    if (leave_from) {
+        leave_from.flatpickr({
+            monthSelectorType: 'static'
+        });
+    }
+
+    // Date
+    if (leave_to) {
+        leave_to.flatpickr({
+            monthSelectorType: 'static'
+        });
+    }
 
   // Date
   if (flatpickrDate) {
