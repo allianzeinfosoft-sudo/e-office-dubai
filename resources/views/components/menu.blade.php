@@ -244,8 +244,13 @@
             </a>
           </li>
           <li class="menu-item">
-            <a href="app-invoice-preview.html" class="menu-link">
+            <a href="{{ route('leaves.status.show') }}" class="menu-link">
               <div data-i18n="Leave Status">Leave Status</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="{{ route('leaves.pending.show') }}" class="menu-link">
+              <div data-i18n="Pending Requests">Pending Requests</div>
             </a>
           </li>
           <li class="menu-item">

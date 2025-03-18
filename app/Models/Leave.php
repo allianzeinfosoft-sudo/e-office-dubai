@@ -14,7 +14,12 @@ class Leave extends Model
 
     public function user()
     {
-        $this->hasOne(User::class,'user_id','id');
+        return $this->belongsTo(User::class,'user_id','id');
+    }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class,'user_id','user_id');
     }
 
 }

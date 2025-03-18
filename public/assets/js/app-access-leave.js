@@ -1,32 +1,30 @@
 /**
- * App user list
+ * App leave summary list
  */
 'use strict';
-
-// Datatable (jquery)
 $(function () {
-  var dtUserTable = $('.datatables-users'),
-    statusObj = {
-      1: { title: 'Pending', class: 'bg-label-warning' },
-      2: { title: 'Active', class: 'bg-label-success' },
-      3: { title: 'Inactive', class: 'bg-label-secondary' }
-    };
+  var dtLeaveTable = $('.datatables-leave-summary')
 
-  var userView = 'app-user-view-account.html';
-
-  // Users List datatable
-  if (dtUserTable.length) {
-    var dtUser = dtUserTable.DataTable({
-      ajax: assetsPath + 'json/user-list.json', // JSON file to add data
+  // Leave List datatable
+  if (dtLeaveTable.length) {
+    var dtLeave = dtLeaveTable.DataTable({
+        ajax: {
+            url: "/leave-list",  // Fetch from Laravel API
+            type: "GET",
+            dataType: "json",
+            dataSrc: "data"
+        },
       columns: [
         // columns according to JSON
         { data: '' },
-        { data: 'full_name' },
-        { data: 'role' },
-        { data: 'current_plan' },
-        { data: 'billing' },
-        { data: 'status' },
-        { data: '' }
+        { data: 'leave_from' },
+        { data: 'leave_to' },
+        { data: 'leave_count' },
+        { data: 'leave_type' },
+        { data: 'leave_reason' },
+        { data: 'apply_date' },
+        { data: 'approved_cancel_date'},
+        { data: 'status' }
       ],
       columnDefs: [
         {
@@ -41,116 +39,121 @@ $(function () {
           }
         },
         {
-          // User full name and email
+            //leave from
           targets: 1,
-          responsivePriority: 4,
           render: function (data, type, full, meta) {
-            var $name = full['full_name'],
-              $email = full['email'],
-              $image = full['avatar'];
-            if ($image) {
-              // For Avatar image
-              var $output =
-                '<img src="' + assetsPath + 'img/avatars/' + $image + '" alt="Avatar" class="rounded-circle">';
-            } else {
-              // For Avatar badge
-              var stateNum = Math.floor(Math.random() * 6);
-              var states = ['success', 'danger', 'warning', 'info', 'primary', 'secondary'];
-              var $state = states[stateNum],
-                $name = full['full_name'],
-                $initials = $name.match(/\b\w/g) || [];
-              $initials = (($initials.shift() || '') + ($initials.pop() || '')).toUpperCase();
-              $output = '<span class="avatar-initial rounded-circle bg-label-' + $state + '">' + $initials + '</span>';
-            }
-            // Creates full output for row
-            var $row_output =
-              '<div class="d-flex justify-content-left align-items-center">' +
-              '<div class="avatar-wrapper">' +
-              '<div class="avatar avatar-sm me-3">' +
-              $output +
-              '</div>' +
-              '</div>' +
-              '<div class="d-flex flex-column">' +
-              '<a href="' +
-              userView +
-              '" class="text-body text-truncate"><span class="fw-semibold">' +
-              $name +
-              '</span></a>' +
-              '<small class="text-muted">@' +
-              $email +
-              '</small>' +
-              '</div>' +
-              '</div>';
-            return $row_output;
+            var $leave_from = full['leave_from'];
+
+            return '<span class="fw-semibold">' + $leave_from + '</span>';
           }
         },
         {
-          // User Role
+          // leave to
           targets: 2,
           render: function (data, type, full, meta) {
-            var $role = full['role'];
-            var roleBadgeObj = {
-              Subscriber:
-                '<span class="badge badge-center rounded-pill bg-label-warning me-3 w-px-30 h-px-30"><i class="ti ti-user ti-sm"></i></span>',
-              Author:
-                '<span class="badge badge-center rounded-pill bg-label-success me-3 w-px-30 h-px-30"><i class="ti ti-settings ti-sm"></i></span>',
-              Maintainer:
-                '<span class="badge badge-center rounded-pill bg-label-primary me-3 w-px-30 h-px-30"><i class="ti ti-chart-pie-2 ti-sm"></i></span>',
-              Editor:
-                '<span class="badge badge-center rounded-pill bg-label-info me-3 w-px-30 h-px-30"><i class="ti ti-edit ti-sm"></i></span>',
-              Admin:
-                '<span class="badge badge-center rounded-pill bg-label-secondary me-3 w-px-30 h-px-30"><i class="ti ti-device-laptop ti-sm"></i></span>'
-            };
-            return "<span class='text-truncate d-flex align-items-center'>" + roleBadgeObj[$role] + $role + '</span>';
+
+            var $leave_to = full['leave_to'];
+            return '<span class="fw-semibold">' + $leave_to + '</span>';
           }
         },
         {
-          // Plans
+          // leave count
           targets: 3,
           render: function (data, type, full, meta) {
-            var $plan = full['current_plan'];
 
-            return '<span class="fw-semibold">' + $plan + '</span>';
+            var $leave_day_count = full['leave_count'];
+            if($leave_day_count > 1)
+            {
+                return '<button class="btn btn-sm btn-success">' + $leave_day_count + ' days</button>';
+
+            }else{
+                return '<button class="btn btn-sm btn-secondary">' + $leave_day_count + ' day</button>';
+            }
           }
         },
         {
-          // User Status
-          targets: 5,
+          // leave type
+          targets: 4,
           render: function (data, type, full, meta) {
-            var $status = full['status'];
 
-            return (
-              '<span class="badge ' +
-              statusObj[$status].class +
-              '" text-capitalized>' +
-              statusObj[$status].title +
-              '</span>'
-            );
+            var $leave_type = full['leave_type'];
+            if($leave_type == 'off_day')
+            {
+                return '<button class="btn btn-sm btn-danger">Off</button>';
+            }
+
+            if($leave_type == 'full_day')
+            {
+                return '<button class="btn btn-sm btn-primary">Full</button>';
+            }
+
+            if($leave_type == 'half_day')
+            {
+                return '<button class="btn btn-sm btn-success">Half</button>';
+            }
           }
         },
         {
-          // Actions
-          targets: -1,
-          title: 'Actions',
-          searchable: false,
-          orderable: false,
-          render: function (data, type, full, meta) {
-            return (
-              '<div class="d-flex align-items-center">' +
-              '<a href="' +
-              userView +
-              '" class="btn btn-sm btn-icon"><i class="ti ti-eye"></i></a>' +
-              '<a href="javascript:;" class="text-body delete-record"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
-              '<a href="javascript:;" class="text-body dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical ti-sm mx-1"></i></a>' +
-              '<div class="dropdown-menu dropdown-menu-end m-0">' +
-              '<a href="javascript:;"" class="dropdown-item">Edit</a>' +
-              '<a href="javascript:;" class="dropdown-item">Suspend</a>' +
-              '</div>' +
-              '</div>'
-            );
+            // leave reason
+            targets: 5,
+            render: function (data, type, full, meta) {
+
+              var $leave_reason = full['leave_reason'];
+              return '<span class="fw-semibold">' + $leave_reason + '</span>';
+
+            }
+          },
+          {
+            // leave apply date
+            targets: 6,
+            render: function (data, type, full, meta) {
+
+              var $apply_date = full['apply_date'];
+              return '<span class="fw-semibold">' + $apply_date + '</span>';
+
+            }
+          },
+          {
+            // Leave approved / cancel date
+            targets: 7,
+            render: function (data, type, full, meta) {
+
+              var $approved_cancel_date = full['approved_cancel_date'];
+              return '<span class="fw-semibold">' + $approved_cancel_date + '</span>';
+
+            }
+          },
+          {
+            // User Status
+            targets: 8,
+            render: function (data, type, full, meta) {
+
+              var $status = full['status'];
+              if($status == 1)
+              {
+                return '<button class="btn btn-sm btn-warning">Pending</button>';
+              }
+              if($status == 2)
+              {
+                return '<button class="btn btn-sm btn-success">Accept</button>';
+              }
+
+              if($status == 3)
+              {
+                return '<button class="btn btn-sm btn-danger">Reject</button>';
+              }
+
+              if($status == 4)
+              {
+                return '<button class="btn btn-sm btn-primary">Cancelled by user</button>';
+              }
+
+            }
           }
-        }
+
       ],
+
+
       order: [[1, 'desc']],
       dom:
         '<"row mx-2"' +
@@ -172,7 +175,7 @@ $(function () {
           display: $.fn.dataTable.Responsive.display.modal({
             header: function (row) {
               var data = row.data();
-              return 'Details of ' + data['full_name'];
+              return 'Details of ' + full['full_name'];
             }
           }),
           type: 'column',
@@ -226,8 +229,8 @@ $(function () {
     });
   }
   // Delete Record
-  $('.datatables-users tbody').on('click', '.delete-record', function () {
-    dtUser.row($(this).parents('tr')).remove().draw();
+  $('.datatables-leave-summary tbody').on('click', '.delete-record', function () {
+    dtLeave.row($(this).parents('tr')).remove().draw();
   });
 
   // Filter form control to default size
@@ -239,145 +242,489 @@ $(function () {
 });
 
 
-(function () {
-  // On edit role click, update text
-  var roleEditList = document.querySelectorAll('.role-edit-modal'),
-    roleAdd = document.querySelector('.add-new-role'),
-    roleTitle = document.querySelector('.role-title');
-
-  roleAdd.onclick = function () {
-    roleTitle.innerHTML = 'Add New Role'; // reset text
-  };
-  if (roleEditList) {
-    roleEditList.forEach(function (roleEditEl) {
-      roleEditEl.onclick = function () {
-        roleTitle.innerHTML = 'Edit Role'; // reset text
-      };
-    });
-  }
-})();
 
 
-$(document).ready(function () {
+/** leave pending table  **/
 
-  $(".add-role-model").on("click", function () {
-    $("#permissionsTable").html("");
-        $.ajax({
-          url: '/permissions-list', // Replace with your actual API endpoint
-          method: 'GET',
-          dataType: 'json',
-          success: function(response) {
-
-            console.log(response);
-              var permissionsHtml = `
-                  <table class="table table-flush-spacing">
-                      <tbody>
-                          <tr>
-                                <td>
-                                  <div class="form-check">
-                                      <input class="form-check-input" type="checkbox" id="selectAll" />
-                                      <label class="text-nowrap fw-semibold">Administrator Access
-                                            <i class="ti ti-info-circle"
-                                                data-bs-toggle="tooltip"
-                                                data-bs-placement="top"
-                                                title="Allows full access to the system"></i>
-                                      </label>
-                                  </div>
-                              </td>
-                          </tr>`;
-
-              response.data.forEach(function (permission) {
-                  permissionsHtml += `
-                      <tr>
-                            <td>
-                              <div class="d-flex">
-                                  <div class="form-check me-3 me-lg-5">
-                                      <input class="form-check-input" type="checkbox" name="permissions[]" id="perm_r_${permission.id}" value="${permission.name}" />
-                                      <label class="form-check-label" for="perm_r_${permission.id}">${permission.name}</label>
-                                  </div>
-
-                              </div>
-                          </td>
-                      </tr>`;
-              });
-
-              permissionsHtml += `</tbody></table>`;
-
-              // Insert the generated table into the element with id 'permissionsTable'
-              $("#permissionsTable").html(permissionsHtml);
-
-              document.getElementById("selectAll").addEventListener("change", function () {
-                  document.querySelectorAll(".perm-checkbox").forEach(cb => {
-                      cb.checked = this.checked;
-                  });
-              });
-
+$(function () {
+    var dtLeavePendingTable = $('.datatables-leave-pending');
+    // Users List datatable
+    if (dtLeavePendingTable.length) {
+      var dtLeavePending = dtLeavePendingTable.DataTable({
+          ajax: {
+              url: "/leave-pending",
+              type: "GET",
+              dataType: "json",
+              dataSrc: "data"
           },
-          error: function(error) {
-              console.error('Error fetching data:', error);
+        columns: [
+          // columns according to JSON
+          { data: '' },
+          { data: 'leave_from' },
+          { data: 'leave_to' },
+          { data: 'leave_count' },
+          { data: 'leave_type' },
+          { data: 'leave_reason' },
+          { data: 'apply_date' },
+          { data: 'approved_cancel_date'},
+          { data: 'status' }
+        ],
+        columnDefs: [
+          {
+            // For Responsive
+            className: 'control',
+            orderable: false,
+            searchable: false,
+            responsivePriority: 2,
+            targets: 0,
+            render: function (data, type, full, meta) {
+              return '';
+            }
+          },
+          {
+              //leave from
+            targets: 1,
+            render: function (data, type, full, meta) {
+              var $leave_from = full['leave_from'];
+
+              return '<span class="fw-semibold">' + $leave_from + '</span>';
+            }
+          },
+          {
+            // leave to
+            targets: 2,
+            render: function (data, type, full, meta) {
+
+              var $leave_to = full['leave_to'];
+              return '<span class="fw-semibold">' + $leave_to + '</span>';
+            }
+          },
+          {
+            // leave count
+            targets: 3,
+            render: function (data, type, full, meta) {
+
+              var $leave_day_count = full['leave_count'];
+              if($leave_day_count > 1)
+              {
+                  return '<button class="btn btn-sm btn-success">' + $leave_day_count + ' days</button>';
+
+              }else{
+                  return '<button class="btn btn-sm btn-secondary">' + $leave_day_count + ' day</button>';
+              }
+            }
+          },
+          {
+            // leave type
+            targets: 4,
+            render: function (data, type, full, meta) {
+
+              var $leave_type = full['leave_type'];
+              if($leave_type == 'off_day')
+              {
+                  return '<button class="btn btn-sm btn-danger">Off</button>';
+              }
+
+              if($leave_type == 'full_day')
+              {
+                  return '<button class="btn btn-sm btn-primary">Full</button>';
+              }
+
+              if($leave_type == 'half_day')
+              {
+                  return '<button class="btn btn-sm btn-success">Half</button>';
+              }
+            }
+          },
+          {
+              // leave reason
+              targets: 5,
+              render: function (data, type, full, meta) {
+
+                var $leave_reason = full['leave_reason'];
+                return '<span class="fw-semibold">' + $leave_reason + '</span>';
+
+              }
+            },
+            {
+              // leave apply date
+              targets: 6,
+              render: function (data, type, full, meta) {
+
+                var $apply_date = full['apply_date'];
+                return '<span class="fw-semibold">' + $apply_date + '</span>';
+
+              }
+            },
+            {
+              // Leave approved / cancel date
+              targets: 7,
+              render: function (data, type, full, meta) {
+
+                var $approved_cancel_date = full['approved_cancel_date'];
+                return '<span class="fw-semibold">' + $approved_cancel_date + '</span>';
+
+              }
+            },
+            {
+              // User Status
+              targets: 8,
+              render: function (data, type, full, meta) {
+
+                var $status = full['status'];
+                if($status == 1)
+                {
+                  return '<button class="btn btn-sm btn-warning">Pending</button>';
+                }
+                if($status == 2)
+                {
+                  return '<button class="btn btn-sm btn-success">Accept</button>';
+                }
+
+                if($status == 3)
+                {
+                  return '<button class="btn btn-sm btn-danger">Reject</button>';
+                }
+
+                if($status == 4)
+                {
+                  return '<button class="btn btn-sm btn-primary">Cancelled by user</button>';
+                }
+
+              }
+            }
+
+        ],
+
+
+        order: [[1, 'desc']],
+        dom:
+          '<"row mx-2"' +
+          '<"col-sm-12 col-md-4 col-lg-6" l>' +
+          '<"col-sm-12 col-md-8 col-lg-6"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-md-end justify-content-center align-items-center flex-sm-nowrap flex-wrap me-1"<"me-3"f><"user_role w-px-200 pb-3 pb-sm-0">>>' +
+          '>t' +
+          '<"row mx-2"' +
+          '<"col-sm-12 col-md-6"i>' +
+          '<"col-sm-12 col-md-6"p>' +
+          '>',
+        language: {
+          sLengthMenu: 'Show _MENU_',
+          search: 'Search',
+          searchPlaceholder: 'Search..'
+        },
+        // For responsive popup
+        responsive: {
+          details: {
+            display: $.fn.dataTable.Responsive.display.modal({
+              header: function (row) {
+                var data = row.data();
+                return 'Details of ' + full['full_name'];
+              }
+            }),
+            type: 'column',
+            renderer: function (api, rowIdx, columns) {
+              var data = $.map(columns, function (col, i) {
+                return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+                  ? '<tr data-dt-row="' +
+                      col.rowIndex +
+                      '" data-dt-column="' +
+                      col.columnIndex +
+                      '">' +
+                      '<td>' +
+                      col.title +
+                      ':' +
+                      '</td> ' +
+                      '<td>' +
+                      col.data +
+                      '</td>' +
+                      '</tr>'
+                  : '';
+              }).join('');
+
+              return data ? $('<table class="table"/><tbody />').append(data) : false;
+            }
           }
+        },
+        initComplete: function () {
+          // Adding role filter once table initialized
+          this.api()
+            .columns(2)
+            .every(function () {
+              var column = this;
+              var select = $(
+                '<select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option></select>'
+              )
+                .appendTo('.user_role')
+                .on('change', function () {
+                  var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                  column.search(val ? '^' + val + '$' : '', true, false).draw();
+                });
+
+              column
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                  select.append('<option value="' + d + '" class="text-capitalize">' + d + '</option>');
+                });
+            });
+        }
       });
+    }
+    // Delete Record
+    $('.datatables-leave-pending tbody').on('click', '.delete-record', function () {
+      dtLeavePending.row($(this).parents('tr')).remove().draw();
+    });
+
+    // Filter form control to default size
+    // ? setTimeout used for multilingual table initialization
+    setTimeout(() => {
+      $('.dataTables_filter .form-control').removeClass('form-control-sm');
+      $('.dataTables_length .form-select').removeClass('form-select-sm');
+    }, 300);
   });
 
 
 
 
-  $(".role-edit-modal").on("click", function () {
-      var roleId = $(this).data("role-id");
-      // Clear previous permissions
-      $("#permissionsTable").html("");
-      $("#modalRoleName").val("");
 
-      $.ajax({
-          url: "/roles/" + roleId + "/permissions",
-          type: "GET",
-          success: function (response) {
+/** leave status table  **/
 
-              $("#modalRoleName").val(response.role.name); // Set Role Name
-              var permissionsHtml = `<table class="table table-flush-spacing">
-                                      <tbody>
-                                          <tr>
-                                                <td>
-                                                  <div class="form-check">
-                                                      <input class="form-check-input" type="checkbox" id="selectAll" />
-                                                      <label class="text-nowrap fw-semibold">Administrator Access
-                                                            <i class="ti ti-info-circle"
-                                                                data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                title="Allows full access to the system"></i>
-                                                      </label>
-                                                  </div>
-                                              </td>
-                                          </tr>`;
+$(function () {
+    var dtLeaveStatusTable = $('.datatables-leave-status');
+    var userId = document.querySelector('meta[name="auth-user-id"]').getAttribute('content');
+    // Users List datatable
+    if (dtLeaveStatusTable.length) {
+      var dtLeaveStatus = dtLeaveStatusTable.DataTable({
+          ajax: {
+              url: "/leave-status/" + userId,
+              type: "GET",
+              dataType: "json",
+              dataSrc: "data"
+          },
+        columns: [
+          // columns according to JSON
+          { data: '' },
+          { data: 'leave_from' },
+          { data: 'leave_to' },
+          { data: 'leave_count' },
+          { data: 'leave_type' },
+          { data: 'leave_reason' },
+          { data: 'apply_date' },
+          { data: 'approved_cancel_date'},
+          { data: 'status' }
+        ],
+        columnDefs: [
+          {
+            // For Responsive
+            className: 'control',
+            orderable: false,
+            searchable: false,
+            responsivePriority: 2,
+            targets: 0,
+            render: function (data, type, full, meta) {
+              return '';
+            }
+          },
+          {
+              //leave from
+            targets: 1,
+            render: function (data, type, full, meta) {
+              var $leave_from = full['leave_from'];
 
-              response.permissions.forEach(function (permission) {
-                  permissionsHtml += `
-                      <tr>
-                          <td>
-                              <div class="d-flex">
-                                <div class="form-check me-3 me-lg-5">
-                                  <label class="form-check-label" for="perm_${permission.id}"> ${permission.name} </label>
-                                  <input class="form-check-input" name="permissions[]" type="checkbox" value="${permission.name}" id="perm_r_${permission.id}" ${permission.assigned ? "checked" : ""}>
-                                </div>
-                              </div>
-                          </td>
-                      </tr>`;
-              });
+              return '<span class="fw-semibold">' + $leave_from + '</span>';
+            }
+          },
+          {
+            // leave to
+            targets: 2,
+            render: function (data, type, full, meta) {
 
-              permissionsHtml += `</tbody>`;
-              permissionsHtml += `</table>`;
+              var $leave_to = full['leave_to'];
+              return '<span class="fw-semibold">' + $leave_to + '</span>';
+            }
+          },
+          {
+            // leave count
+            targets: 3,
+            render: function (data, type, full, meta) {
 
-              $("#permissionsTable").html(permissionsHtml);
+              var $leave_day_count = full['leave_count'];
+              if($leave_day_count > 1)
+              {
+                  return '<button class="btn btn-sm btn-success">' + $leave_day_count + ' days</button>';
+
+              }else{
+                  return '<button class="btn btn-sm btn-secondary">' + $leave_day_count + ' day</button>';
+              }
+            }
+          },
+          {
+            // leave type
+            targets: 4,
+            render: function (data, type, full, meta) {
+
+              var $leave_type = full['leave_type'];
+              if($leave_type == 'off_day')
+              {
+                  return '<button class="btn btn-sm btn-danger">Off</button>';
+              }
+
+              if($leave_type == 'full_day')
+              {
+                  return '<button class="btn btn-sm btn-primary">Full</button>';
+              }
+
+              if($leave_type == 'half_day')
+              {
+                  return '<button class="btn btn-sm btn-success">Half</button>';
+              }
+            }
+          },
+          {
+              // leave reason
+              targets: 5,
+              render: function (data, type, full, meta) {
+
+                var $leave_reason = full['leave_reason'];
+                return '<span class="fw-semibold">' + $leave_reason + '</span>';
+
+              }
+            },
+            {
+              // leave apply date
+              targets: 6,
+              render: function (data, type, full, meta) {
+
+                var $apply_date = full['apply_date'];
+                return '<span class="fw-semibold">' + $apply_date + '</span>';
+
+              }
+            },
+            {
+              // Leave approved / cancel date
+              targets: 7,
+              render: function (data, type, full, meta) {
+
+                var $approved_cancel_date = full['approved_cancel_date'];
+                return '<span class="fw-semibold">' + $approved_cancel_date + '</span>';
+
+              }
+            },
+            {
+              // User Status
+              targets: 8,
+              render: function (data, type, full, meta) {
+
+                var $status = full['status'];
+                if($status == 1)
+                {
+                  return '<button class="btn btn-sm btn-warning">Pending</button>';
+                }
+                if($status == 2)
+                {
+                  return '<button class="btn btn-sm btn-success">Accept</button>';
+                }
+
+                if($status == 3)
+                {
+                  return '<button class="btn btn-sm btn-danger">Reject</button>';
+                }
+
+                if($status == 4)
+                {
+                  return '<button class="btn btn-sm btn-primary">Cancelled by user</button>';
+                }
+
+              }
+            }
+
+        ],
+
+
+        order: [[1, 'desc']],
+        dom:
+          '<"row mx-2"' +
+          '<"col-sm-12 col-md-4 col-lg-6" l>' +
+          '<"col-sm-12 col-md-8 col-lg-6"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-md-end justify-content-center align-items-center flex-sm-nowrap flex-wrap me-1"<"me-3"f><"user_role w-px-200 pb-3 pb-sm-0">>>' +
+          '>t' +
+          '<"row mx-2"' +
+          '<"col-sm-12 col-md-6"i>' +
+          '<"col-sm-12 col-md-6"p>' +
+          '>',
+        language: {
+          sLengthMenu: 'Show _MENU_',
+          search: 'Search',
+          searchPlaceholder: 'Search..'
+        },
+        // For responsive popup
+        responsive: {
+          details: {
+            display: $.fn.dataTable.Responsive.display.modal({
+              header: function (row) {
+                var data = row.data();
+                return 'Details of ' + full['full_name'];
+              }
+            }),
+            type: 'column',
+            renderer: function (api, rowIdx, columns) {
+              var data = $.map(columns, function (col, i) {
+                return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+                  ? '<tr data-dt-row="' +
+                      col.rowIndex +
+                      '" data-dt-column="' +
+                      col.columnIndex +
+                      '">' +
+                      '<td>' +
+                      col.title +
+                      ':' +
+                      '</td> ' +
+                      '<td>' +
+                      col.data +
+                      '</td>' +
+                      '</tr>'
+                  : '';
+              }).join('');
+
+              return data ? $('<table class="table"/><tbody />').append(data) : false;
+            }
           }
+        },
+        initComplete: function () {
+          // Adding role filter once table initialized
+          this.api()
+            .columns(2)
+            .every(function () {
+              var column = this;
+              var select = $(
+                '<select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option></select>'
+              )
+                .appendTo('.user_role')
+                .on('change', function () {
+                  var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                  column.search(val ? '^' + val + '$' : '', true, false).draw();
+                });
+
+              column
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                  select.append('<option value="' + d + '" class="text-capitalize">' + d + '</option>');
+                });
+            });
+        }
       });
+    }
+    // Delete Record
+    $('.datatables-leave-status tbody').on('click', '.delete-record', function () {
+      dtLeaveStatus.row($(this).parents('tr')).remove().draw();
     });
 
-
-
-
-
-
-});
-
-
-
+    // Filter form control to default size
+    // ? setTimeout used for multilingual table initialization
+    setTimeout(() => {
+      $('.dataTables_filter .form-control').removeClass('form-control-sm');
+      $('.dataTables_length .form-select').removeClass('form-select-sm');
+    }, 300);
+  });

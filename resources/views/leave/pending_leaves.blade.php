@@ -20,15 +20,14 @@
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-semibold mb-4">Leave Summary</h4>
+            <h4 class="fw-semibold mb-4">Pending Requests</h4>
             <!-- Role cards -->
             <div class="row g-4">
-                @include('components.leave.leave_summary_head');
                 <div class="col-12">
                     <!-- Role Table -->
                     <div class="card">
                       <div class="card-datatable table-responsive">
-                        <table class="datatables-leave-summary table border-top">
+                        <table class="datatables-leave-pending table border-top">
                           <thead>
                             <tr>
                               <th></th>
