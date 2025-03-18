@@ -143,7 +143,7 @@
                   <div class="card-body">
                     <div class="row">
                       <div class="d-grid gap-2 col-lg-12">
-                        <button class="btn rounded-pill btn-warning btn-lg waves-effect waves-light" type="button">Custom</button>
+                        <button class="btn rounded-pill btn-warning btn-lg waves-effect waves-light" onclick="openModal()" type="button">Custom</button>
                         <button class="btn rounded-pill btn-primary btn-lg waves-effect waves-light" type="button">Emergency</button>
                       </div>
                     </div>
@@ -183,11 +183,53 @@
     <div class="drag-target"></div>
   </div>
   <!-- / Layout wrapper -->
+
+<div class="modal fade" id="modalCenter" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-top" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">Custom Marking</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row">
+          <form action="" method="post">
+            @csrf
+            <div class="col-12 mb-3">
+              <label for="signin_date" class="form-label">Date</label>
+              <input type="date" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Date" disabled readonly />
+            </div>
+  
+            <div class="col-12 mb-3">
+              <label for="signin_time" class="form-label">Time</label>
+              <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
+            </div>
+  
+            <div class="col-12 mb-3">
+              <label for="signin_late_note" class="form-label">Reason</label>
+              <textarea id="signin_late_note" name="signin_late_note" class="form-control"  placeholder="Reason" rows="3"></textarea>
+            </div>
+          </form>
+
+        </div>
+        
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal"> Close </button>
+        <button type="button" class="btn btn-primary"> Submit </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 
 @section('js')
 <script>
+  
   $(function(){
 
     /* Mark in function */
@@ -330,7 +372,7 @@
     }
     
     // Support Tracker - Radial Bar Chart
-    
+
   const todayProgressPercentage = @json($todayProgressPercentage);
   const todayWorkedHours = @json($todayWorkedHours);
 
@@ -430,9 +472,11 @@
     supportTracker.render();
   }
 
-
   });
 
+  function openModal(){
+    $('#modalCenter').modal('show');
+  }
 
 
 </script>
