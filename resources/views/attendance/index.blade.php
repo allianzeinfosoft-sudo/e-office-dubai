@@ -38,21 +38,30 @@
                     <div class="card-body">
                       <div class="row">
 
-                        @if($attendance && $attendance->status =='mark-in')
-                        <div class="alert alert-success" id="last-punch-time" role="alert">Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}</div>
+                        @if($attendance)
+                            @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
+                                <div class="alert alert-success" id="last-punch-time" role="alert">
+                                    Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}
+                                </div>
+                            @elseif($attendance->status === 'mark-out')
+                                <div class="alert alert-warning" id="last-punch-time" role="alert">
+                                    <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
+                                </div>
+                            @endif
                         @endif
 
-                        @if($attendance && $attendance->status =='mark-out')
-                        <div class="alert alert-warning" id="last-punch-time" role="alert"><strong>Next Punchin Tomorrow : </strong> Please Co-operate. </div>
-                        @endif
-                        
                         <div class="text-center d-grid gap-2 col-lg-12">
-                          @if(!$attendance || $attendance->status !='mark-in')
-                          <button type="button" id="mark-in-btn" class="btn rounded-pill btn-success waves-effect waves-light"><i class="ti ti-login ti-sm"></i> Mark-in </button>
-                          @else
-                          <button type="button" id="mark-out-btn" class="btn rounded-pill btn-danger waves-effect waves-light"> <i class="ti ti-logout ti-sm"></i> Mark-out</button>
-                          @endif
+                            @if(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
+                                <button type="button" id="mark-in-btn" class="btn rounded-pill btn-success waves-effect waves-light">
+                                    <i class="ti ti-login ti-sm"></i> Mark-in
+                                </button>
+                            @else
+                                <button type="button" id="mark-out-btn" class="btn rounded-pill btn-danger waves-effect waves-light">
+                                    <i class="ti ti-logout ti-sm"></i> Mark-out
+                                </button>
+                            @endif
                         </div>
+
                       </div>
                     </div>
                 </div>
@@ -143,8 +152,8 @@
                   <div class="card-body">
                     <div class="row">
                       <div class="d-grid gap-2 col-lg-12">
-                        <button class="btn rounded-pill btn-warning btn-lg waves-effect waves-light" onclick="openModal()" type="button">Custom</button>
-                        <button class="btn rounded-pill btn-primary btn-lg waves-effect waves-light" type="button">Emergency</button>
+                        <button class="btn rounded-pill btn-warning btn-lg waves-effect waves-light" onclick="customModal()" type="button">Custom</button>
+                        <button class="btn rounded-pill btn-primary btn-lg waves-effect waves-light" onclick="emergencyModal()" type="button">Emergency</button>
                       </div>
                     </div>
 
@@ -184,31 +193,33 @@
   </div>
   <!-- / Layout wrapper -->
 
-<div class="modal fade" id="modalCenter" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+  <!-- Custom Marking Model -->
+<div class="modal fade" id="modelCustom" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-top" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalCenterTitle">Custom Marking</h5>
+        <h5 class="modal-title" id="modelCustomTitle">Custom Marking</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       
       <div class="modal-body">
         <div class="row">
-          <form action="" method="post">
+          <form id="customMarkingForm" action="{{ route('attendance.custom-mark-in') }}" method="post">
             @csrf
             <div class="col-12 mb-3">
               <label for="signin_date" class="form-label">Date</label>
-              <input type="date" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Date" disabled readonly />
+              <input type="text" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Date" disabled readonly />
             </div>
   
             <div class="col-12 mb-3">
               <label for="signin_time" class="form-label">Time</label>
-              <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
+              <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
+              <input type="hidden" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
             </div>
   
             <div class="col-12 mb-3">
               <label for="signin_late_note" class="form-label">Reason</label>
-              <textarea id="signin_late_note" name="signin_late_note" class="form-control"  placeholder="Reason" rows="3"></textarea>
+              <textarea id="signin_late_note" name="signin_late_note" class="form-control"  placeholder="Reason" rows="5"></textarea>
             </div>
           </form>
 
@@ -218,11 +229,52 @@
 
       <div class="modal-footer">
         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal"> Close </button>
-        <button type="button" class="btn btn-primary"> Submit </button>
+        <button type="submit" onclick="customMarking()"  class="btn btn-primary"> Submit </button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Emergency Marking Model -->
+<div class="modal fade" id="emergencyMarking" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-top" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="emergencyTitle">Emergency Marking</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row">
+          <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
+            @csrf
+            <div class="col-12 mb-3">
+              <label for="signin_date" class="form-label">Date</label>
+              <input type="date" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
+            </div>
+
+            <div class="col-12 mb-3">
+              <label for="signin_late_note" class="form-label">Reason</label>
+              <textarea id="signin_late_note" name="signin_late_note" class="form-control" placeholder="Reason" rows="5"></textarea>
+            </div>
+  
+            <div class="col-12 mb-3">
+              <label for="time_in_out" class="form-label">Time</label>
+              <input type="time" id="time_in_out" name="time_in_out" class="form-control" value="{{ date('H:i:s') }}" placeholder="Time" />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" onclick="emergencyMarkIn()" class="btn btn-success">Mark In</button>
+        <button type="button" onclick="emergencyMarkOut()" class="btn btn-danger">Mark Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 @endsection
 
@@ -244,13 +296,49 @@
           data: JSON.stringify({}),
           success: function(data) {
               if (data.success) {
-                  alert(data.message);
-                  $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+                  toastr["success"](data.message);
+                  toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": false,
+                  "positionClass": "toast-top-right",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+                $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+                window.location.reload();
               } else {
-                  alert(data.message);
-                  if (data.data.signin_time) {
-                      $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
-                  }
+                  toastr["warning"](data.message);
+                  toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": false,
+                  "positionClass": "toast-top-right",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+                if (data.data.signout_time) {
+                  $('#last-punch-time').text(`Last punch In Time: ${data.data.signout_time}`);
+                }
+                window.location.reload();
               }
           },
           error: function(xhr, status, error) {
@@ -271,11 +359,47 @@
             data: JSON.stringify({}),
             success: function(data) {
                 if (data.success) {
-                    alert(data.message);
+                      toastr["success"](data.message);
+                      toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": false,
+                      "positionClass": "toast-top-right",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                    }
                     $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
                     $('#mark-out-btn').prop('disabled', true);
+                    window.location.reload();
                 } else {
-                    alert(data.message);
+                  toastr["error"](data.message);
+                      toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": false,
+                      "positionClass": "toast-top-right",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                    }
+                    window.location.reload();
                 }
             },
             error: function(xhr, status, error) {
@@ -472,11 +596,116 @@
     supportTracker.render();
   }
 
+
   });
 
-  function openModal(){
-    $('#modalCenter').modal('show');
+  function customModal(){
+    $('#modelCustom').modal('show');
   }
+
+  function emergencyModal(){
+    $('#emergencyMarking').modal('show');
+  }
+
+  function customMarking() {
+    const formData = {
+        _token: $('input[name="_token"]').val(), // CSRF token
+        signin_time: $('#signin_time').val(),
+        signin_date: $('#signin_date').val(),
+        signin_late_note: $('#signin_late_note').val()
+    };
+
+    $.ajax({
+        type: "POST",
+        url: $('#customMarkingForm').attr('action'),
+        data: formData,
+        dataType: "json",
+        success: function (response) {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            if (response.success) {
+                toastr.success(response.message);
+                $('#customMarkingForm')[0].reset(); // Clear form after success
+                $('#modelCustom').modal('hide'); // Close modal after success
+            } else {
+                toastr.error(response.message);
+            }
+        },
+        error: function (xhr) {
+            let errors = xhr.responseJSON?.errors;
+            if (errors) {
+                let errorMessages = Object.values(errors).flat().join('\n');
+                toastr.error('Error:\n' + errorMessages);
+            } else {
+                toastr.error('An error occurred. Please try again.');
+            }
+        }
+    });
+}
+
+/* Emergency marking section js */
+
+function emergencyMarkIn() {
+    emergencyMark('mark-in');
+}
+
+function emergencyMarkOut() {
+    emergencyMark('mark-out');
+}
+
+function emergencyMark(type) {
+    const formData = {
+        _token: $('input[name="_token"]').val(),
+        signin_date: $('#signin_date').val(),
+        signin_late_note: $('#signin_late_note').val(),
+        time_in_out: $('#time_in_out').val(),
+        type: type // 'mark-in' or 'mark-out'
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: $('#emergencyMarkingForm').attr('action'),
+        data: formData,
+        dataType: 'json',
+        success: function (response) {
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                positionClass: 'toast-top-right',
+                timeOut: '4000',
+                extendedTimeOut: '1000',
+                showMethod: 'fadeIn',
+                hideMethod: 'fadeOut'
+            };
+
+            if (response.success) {
+                toastr.success(response.message);
+                $('#emergencyMarkingForm')[0].reset(); // Clear form after success
+                $('#emergencyMarking').modal('hide'); // Close modal after success
+            } else {
+                toastr.error(response.message);
+            }
+        },
+        error: function (xhr) {
+            let errors = xhr.responseJSON?.errors;
+            if (errors) {
+                let errorMessages = Object.values(errors).flat().join('\n');
+                toastr.error('Error:\n' + errorMessages);
+            } else {
+                toastr.error('An error occurred. Please try again.');
+            }
+        }
+    });
+}
+
 
 
 </script>

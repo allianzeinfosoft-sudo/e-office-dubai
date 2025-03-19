@@ -235,6 +235,71 @@ class AttendanceController extends Controller{
         ]);
     }
 
+    public function customMarkIn(Request $request) {
+        $existingAttendance = Attendance::where('emp_id', Auth::user()->id)->where('signin_date', now()->format('Y-m-d'))->first();
+        if ($existingAttendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already marked attendance today.',
+                'data' => [
+                    'signin_time' => date('h:i A', strtotime($existingAttendance->signin_time))
+                ]
+            ]);
+        }
+
+        $attendance = Attendance::create([
+            'username' => Auth::user()->username,
+            'emp_id' => Auth::user()->id,
+            'signin_date' => date('Y-m-d', strtotime($request->signin_date)),
+            'signin_time' => $request->signin_time,
+            'signin_late_note' => $request->signin_late_note,
+            'punchin_type' => 'Custom',
+            'ipaddress' => $request->ip(),
+            'status' => 'custom'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Attendance marked successfully',
+            'data' => [
+                'signin_time' => date('h:i A', strtotime($attendance->signin_time))
+            ]
+        ]);
+    }
+
+    /* Emergency mark-in mark-out*/
+    public function emergencyMark(Request $request)
+    {
+        
+        $data = [
+            'username' => Auth::user()->username,
+            'signin_time' => $request->type === 'mark-in' ? $request->time_in_out : null,
+            'signin_late_note' => $request->type === 'mark-in' ? $request->signin_late_note : null,
+            'signout_late_note' => $request->type === 'mark-out' ? $request->signin_late_note : null,
+            'signout_time' => $request->type === 'mark-out' ? $request->time_in_out : null,
+            'status' => 'emergency',
+            'punchin_type' => $request->type === 'mark-in' ? 'emergency' : null,
+            'punchout_type' => $request->type === 'mark-out' ? 'emergency' : null,
+        ];
+
+        if($request->type === 'mark-in'){
+            $data['signin_date'] = date('Y-m-d', strtotime($request->signin_date)); 
+        }else{
+            $data['signout_date'] = date('Y-m-d', strtotime($request->signin_date)); 
+        }
+
+        Attendance::updateOrCreate(
+            ['username' => Auth::user()->username, 'signin_date' => $request->signin_date],
+            $data
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => $request->type === 'mark-in' ? 'Marked In successfully!' : 'Marked Out successfully!'
+        ]);
+    }
+
+
     /**
      * Display the specified resource.
      */

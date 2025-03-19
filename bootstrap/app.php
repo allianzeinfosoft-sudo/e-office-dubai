@@ -52,4 +52,8 @@ $app->singleton(
 |
 */
 
+$app->bind(Illuminate\Http\Request::class, function () {
+    return Illuminate\Http\Request::capture();
+});
+
 return $app;
