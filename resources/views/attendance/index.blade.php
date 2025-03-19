@@ -296,49 +296,13 @@
           data: JSON.stringify({}),
           success: function(data) {
               if (data.success) {
-                  toastr["success"](data.message);
-                  toastr.options = {
-                  "closeButton": false,
-                  "debug": false,
-                  "newestOnTop": false,
-                  "progressBar": false,
-                  "positionClass": "toast-top-right",
-                  "preventDuplicates": false,
-                  "onclick": null,
-                  "showDuration": "300",
-                  "hideDuration": "1000",
-                  "timeOut": "5000",
-                  "extendedTimeOut": "1000",
-                  "showEasing": "swing",
-                  "hideEasing": "linear",
-                  "showMethod": "fadeIn",
-                  "hideMethod": "fadeOut"
-                }
-                $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
-                window.location.reload();
+                  alert(data.message);
+                  $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
               } else {
-                  toastr["warning"](data.message);
-                  toastr.options = {
-                  "closeButton": false,
-                  "debug": false,
-                  "newestOnTop": false,
-                  "progressBar": false,
-                  "positionClass": "toast-top-right",
-                  "preventDuplicates": false,
-                  "onclick": null,
-                  "showDuration": "300",
-                  "hideDuration": "1000",
-                  "timeOut": "5000",
-                  "extendedTimeOut": "1000",
-                  "showEasing": "swing",
-                  "hideEasing": "linear",
-                  "showMethod": "fadeIn",
-                  "hideMethod": "fadeOut"
-                }
-                if (data.data.signout_time) {
-                  $('#last-punch-time').text(`Last punch In Time: ${data.data.signout_time}`);
-                }
-                window.location.reload();
+                  alert(data.message);
+                  if (data.data.signin_time) {
+                      $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+                  }
               }
           },
           error: function(xhr, status, error) {
@@ -381,25 +345,7 @@
                     $('#mark-out-btn').prop('disabled', true);
                     window.location.reload();
                 } else {
-                  toastr["error"](data.message);
-                      toastr.options = {
-                      "closeButton": false,
-                      "debug": false,
-                      "newestOnTop": false,
-                      "progressBar": false,
-                      "positionClass": "toast-top-right",
-                      "preventDuplicates": false,
-                      "onclick": null,
-                      "showDuration": "300",
-                      "hideDuration": "1000",
-                      "timeOut": "5000",
-                      "extendedTimeOut": "1000",
-                      "showEasing": "swing",
-                      "hideEasing": "linear",
-                      "showMethod": "fadeIn",
-                      "hideMethod": "fadeOut"
-                    }
-                    window.location.reload();
+                    alert(data.message);
                 }
             },
             error: function(xhr, status, error) {

@@ -28,6 +28,7 @@
                 <span class="menu-header-text">{{ $item['header'] }}</span>
             </li>
         @else
+        
           @php
           $currentPath = trim(request()->path(), '/');
           $routePath = isset($item['route']) ? trim(parse_url($item['route'], PHP_URL_PATH), '/') : '';
