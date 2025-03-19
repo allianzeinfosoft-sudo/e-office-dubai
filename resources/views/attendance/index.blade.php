@@ -25,8 +25,10 @@
 
           <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row">
-              <div class="col-lg-6 mb-4">
-                <div class="card bg-primary text-white">
+
+              <div class="col-lg-7 mb-4">
+                <!-- Attendance Marking Card -->
+                <div class="card bg-primary text-white mb-4">
                     <div class="card-header">
                         <div class="d-flex justify-content-between">
                             <small class="d-block mb-1 text-white"> {{ ucfirst(Auth::user()->username ?? 'N/A') }} </small>
@@ -36,69 +38,36 @@
                     <div class="card-body">
                       <div class="row">
 
-                        @if($attendance && $attendance->status =='mark-in')
-                        <div class="alert alert-success" id="last-punch-time" role="alert">Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}</div>
+                        @if($attendance)
+                            @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
+                                <div class="alert alert-success" id="last-punch-time" role="alert">
+                                    Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}
+                                </div>
+                            @elseif($attendance->status === 'mark-out')
+                                <div class="alert alert-warning" id="last-punch-time" role="alert">
+                                    <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
+                                </div>
+                            @endif
                         @endif
 
-                        @if($attendance && $attendance->status =='mark-out')
-                        <div class="alert alert-danger" id="last-punch-time" role="alert">Last punch Out Time: {{ date('H:i A', strtotime($attendance->signout_time)) }}. You don't have permission to mark-in again </div>
-                        @endif
-                        
                         <div class="text-center d-grid gap-2 col-lg-12">
-                          @if(!$attendance || $attendance->status !='mark-in')
-                          <button type="button" id="mark-in-btn" class="btn rounded-pill btn-success waves-effect waves-light"><i class="ti ti-login ti-sm"></i> Mark-in </button>
-                          @else
-                          <button type="button" id="mark-out-btn" class="btn rounded-pill btn-danger waves-effect waves-light"> <i class="ti ti-logout ti-sm"></i> Mark-out</button>
-                          @endif
+                            @if(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
+                                <button type="button" id="mark-in-btn" class="btn rounded-pill btn-success waves-effect waves-light">
+                                    <i class="ti ti-login ti-sm"></i> Mark-in
+                                </button>
+                            @else
+                                <button type="button" id="mark-out-btn" class="btn rounded-pill btn-danger waves-effect waves-light">
+                                    <i class="ti ti-logout ti-sm"></i> Mark-out
+                                </button>
+                            @endif
                         </div>
+
                       </div>
                     </div>
                 </div>
-              </div>
-              
-              <!-- Sales Overview -->
-              <div class="col-lg-3 col-sm-6 mb-4">
-                <div class="card">
-                  <div class="card-body">
 
-                    <div class="card-icon mb-3">
-                      <span class="badge bg-label-success rounded-pill p-2">
-                        <i class="ti ti-settings ti-sm"></i>
-                      </span>
-                    </div>
-                    
-                    <div class="row">
-                      <div class="d-grid gap-2 col-lg-12">
-                        <button class="btn rounded-pill btn-warning btn-lg waves-effect waves-light" type="button">Custom</button>
-                        <button class="btn rounded-pill btn-primary btn-lg waves-effect waves-light" type="button">Emergency</button>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-              <!--/ Sales Overview -->
-
-              <!-- Revenue Generated -->
-              <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
-                <div class="card">
-                  <div class="card-body pb-0">
-                    <div class="card-icon">
-                      <span class="badge bg-label-warning rounded-pill p-2">
-                        <i class="ti ti-hourglass ti-sm"></i>
-                      </span>
-                    </div>
-                    <h5 class="card-title mb-0 mt-2">5.30</h5>
-                    <small>Total Hours you Spent </small>
-                  </div>
-                  <div id="revenueGenerated"></div>
-                </div>
-              </div>
-              <!--/ Revenue Generated -->
-
-              <!-- Earning Reports -->
-              <div class="col-lg-6 mb-4">
-                <div class="card h-100">
+                <!-- Attendance summary report -->
+                <div class="card mb-4">
                   <div class="card-header pb-0 d-flex justify-content-between mb-lg-n4">
                     <div class="card-title mb-0">
                       <h5 class="mb-0">No of Working Days</h5>
@@ -124,7 +93,7 @@
                     <div class="row">
                       <div class="col-12 col-md-4 d-flex flex-column align-self-end">
                         <div class="d-flex gap-2 align-items-center mb-2 pb-1 flex-wrap">
-                          <h1 class="mb-0">10</h1>
+                          <h1 class="mb-0">{{ $days_of_worked ?? '0' }}</h1>
                           <div class="badge rounded bg-label-success">Days</div>
                         </div>
                         <small class="text-muted">You informed of this week compared to last week</small>
@@ -140,42 +109,66 @@
                             <div class="badge rounded bg-label-primary p-1">
                               <i class="ti ti-calendar ti-sm"></i>
                             </div>
-                            <h6 class="mb-0">Working Days</h6>
+                            <h6 class="mb-0"> Working Days</h6>
                           </div>
-                          <h4 class="my-2 pt-1">10</h4>
+                          <h4 class="my-2 pt-1"> {{ $days_of_worked ?? '0' }} </h4>
                           <div class="progress w-75" style="height: 4px">
-                            <div class="progress-bar" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar" role="progressbar" style="width: {{ $totalWorkingDays > 0 ? ($days_of_worked * 100) / $totalWorkingDays : 0 }}%" aria-valuenow="{{ $days_of_worked }}" aria-valuemin="0" aria-valuemax="{{ $totalWorkingDays }}"></div>
                           </div>
                         </div>
 
                         <div class="col-12 col-sm-4">
                           <div class="d-flex gap-2 align-items-center">
                             <div class="badge rounded bg-label-info p-1"><i class="ti ti-hourglass ti-sm"></i></div>
-                            <h6 class="mb-0">Working Hours</h6>
+                            <h6 class="mb-0"> Total Worked Hours</h6>
                           </div>
-                          <h4 class="my-2 pt-1">38.25</h4>
+                          <h4 class="my-2 pt-1">{{ $totalWorkedHours ?? '0' }}</h4>
                           <div class="progress w-75" style="height: 4px">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ $progressPercentage }}%" aria-valuenow="{{ $progressPercentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                           </div>
                         </div>
                         <div class="col-12 col-sm-4">
                           <div class="d-flex gap-2 align-items-center">
                             <div class="badge rounded bg-label-danger p-1">
-                              <i class="ti ti-brand-paypal ti-sm"></i>
+                              <i class="ti ti-clock ti-sm"></i>
                             </div>
                             <h6 class="mb-0">Avg. Working Hours</h6>
                           </div>
-                          <h4 class="my-2 pt-1">$74.19</h4>
+                          <h4 class="my-2 pt-1">{{ $avgWorkedHours ?? '0' }}</h4>
                           <div class="progress w-75" style="height: 4px">
-                            <div class="progress-bar bg-danger" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $avgProgressPercentage }}%" aria-valuenow="{{ $avgProgressPercentage }}" aria-valuemin="0" aria-valuemax="100"></div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+
               </div>
-              <!--/ Earning Reports -->
+              
+              <!-- Attendance Options -->
+              <div class="col-lg-5 col-sm-6 mb-4">
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="d-grid gap-2 col-lg-12">
+                        <button class="btn rounded-pill btn-warning btn-lg waves-effect waves-light" onclick="customModal()" type="button">Custom</button>
+                        <button class="btn rounded-pill btn-primary btn-lg waves-effect waves-light" onclick="emergencyModal()" type="button">Emergency</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="card mb-4">
+                  <div class="card-body pb-0">
+                    <h5 class="card-title mb-0 mt-2">Total Hours</h5>
+                  </div>
+                  <div id="supportTracker"></div>
+                </div>
+
+              </div>
+              <!--/ Attendance Options -->
 
             </div>
           </div>
@@ -199,12 +192,98 @@
     <div class="drag-target"></div>
   </div>
   <!-- / Layout wrapper -->
+
+  <!-- Custom Marking Model -->
+<div class="modal fade" id="modelCustom" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-top" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modelCustomTitle">Custom Marking</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row">
+          <form id="customMarkingForm" action="{{ route('attendance.custom-mark-in') }}" method="post">
+            @csrf
+            <div class="col-12 mb-3">
+              <label for="signin_date" class="form-label">Date</label>
+              <input type="text" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Date" disabled readonly />
+            </div>
+  
+            <div class="col-12 mb-3">
+              <label for="signin_time" class="form-label">Time</label>
+              <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
+              <input type="hidden" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
+            </div>
+  
+            <div class="col-12 mb-3">
+              <label for="signin_late_note" class="form-label">Reason</label>
+              <textarea id="signin_late_note" name="signin_late_note" class="form-control"  placeholder="Reason" rows="5"></textarea>
+            </div>
+          </form>
+
+        </div>
+        
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal"> Close </button>
+        <button type="submit" onclick="customMarking()"  class="btn btn-primary"> Submit </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Emergency Marking Model -->
+<div class="modal fade" id="emergencyMarking" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-top" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="emergencyTitle">Emergency Marking</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row">
+          <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
+            @csrf
+            <div class="col-12 mb-3">
+              <label for="signin_date" class="form-label">Date</label>
+              <input type="date" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
+            </div>
+
+            <div class="col-12 mb-3">
+              <label for="signin_late_note" class="form-label">Reason</label>
+              <textarea id="signin_late_note" name="signin_late_note" class="form-control" placeholder="Reason" rows="5"></textarea>
+            </div>
+  
+            <div class="col-12 mb-3">
+              <label for="time_in_out" class="form-label">Time</label>
+              <input type="time" id="time_in_out" name="time_in_out" class="form-control" value="{{ date('H:i:s') }}" placeholder="Time" />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" onclick="emergencyMarkIn()" class="btn btn-success">Mark In</button>
+        <button type="button" onclick="emergencyMarkOut()" class="btn btn-danger">Mark Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 @endsection
 
 
 @section('js')
 <script>
+  
   $(function(){
+
     /* Mark in function */
     $('#mark-in-btn').on('click', function() {
       $.ajax({
@@ -233,7 +312,6 @@
     });
 
     /* Mark out function */
-
     $('#mark-out-btn').on('click', function() {
       $.ajax({
             url: '{{ route('attendance.mark-out') }}',
@@ -245,9 +323,27 @@
             data: JSON.stringify({}),
             success: function(data) {
                 if (data.success) {
-                    alert(data.message);
+                      toastr["success"](data.message);
+                      toastr.options = {
+                      "closeButton": false,
+                      "debug": false,
+                      "newestOnTop": false,
+                      "progressBar": false,
+                      "positionClass": "toast-top-right",
+                      "preventDuplicates": false,
+                      "onclick": null,
+                      "showDuration": "300",
+                      "hideDuration": "1000",
+                      "timeOut": "5000",
+                      "extendedTimeOut": "1000",
+                      "showEasing": "swing",
+                      "hideEasing": "linear",
+                      "showMethod": "fadeIn",
+                      "hideMethod": "fadeOut"
+                    }
                     $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
                     $('#mark-out-btn').prop('disabled', true);
+                    window.location.reload();
                 } else {
                     alert(data.message);
                 }
@@ -258,6 +354,305 @@
         });
     });
     
+    const categories = @json($categories);
+    const seriesData = @json($seriesData);
+    const weeklyEarningReportsEl = document.querySelector('#weeklyEarningReports');
+    
+    const weeklyEarningReportsConfig = {
+      chart: {
+        height: 202,
+        parentHeightOffset: 0,
+        type: 'bar',
+        toolbar: { show: false }
+      },
+      plotOptions: {
+        bar: {
+          barHeight: '60%',
+          columnWidth: '38%',
+          startingShape: 'rounded',
+          endingShape: 'rounded',
+          borderRadius: 4,
+          distributed: true
+        }
+      },
+      grid: {
+        show: false,
+        padding: {
+          top: -30,
+          bottom: 0,
+          left: -10,
+          right: -10
+        }
+      },
+      colors: ['#28a745'], // Green for working days
+      dataLabels: {
+        enabled: false
+      },
+      series: [
+        {
+          name: 'Worked Hours',
+          data: seriesData
+        }
+      ],
+      legend: {
+        show: false
+      },
+      xaxis: {
+        categories: categories,
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: {
+          style: {
+            colors: '#6c757d',
+            fontSize: '10px',
+            fontFamily: 'Public Sans'
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: '#6c757d',
+            fontSize: '10px',
+            fontFamily: 'Public Sans'
+          }
+        }
+      },
+      tooltip: {
+        enabled: true,
+        y: {
+          formatter: (value) => `${value} hrs`
+        }
+      },
+      responsive: [
+        {
+          breakpoint: 1025,
+          options: {
+            chart: {
+              height: 199
+            }
+          }
+        }
+      ]
+    };
+
+    if (typeof weeklyEarningReportsEl !== undefined && weeklyEarningReportsEl !== null) {
+      const weeklyEarningReports = new ApexCharts(weeklyEarningReportsEl, weeklyEarningReportsConfig);
+      weeklyEarningReports.render();
+    }
+    
+    // Support Tracker - Radial Bar Chart
+
+  const todayProgressPercentage = @json($todayProgressPercentage);
+  const todayWorkedHours = @json($todayWorkedHours);
+
+  const supportTrackerEl = document.querySelector('#supportTracker'),
+    supportTrackerOptions = {
+      series: [todayProgressPercentage],
+      labels: [`Total Worked Hrs (${todayWorkedHours})`],
+      chart: {
+        height: 360,
+        type: 'radialBar'
+      },
+      plotOptions: {
+        radialBar: {
+          offsetY: 10,
+          startAngle: -140,
+          endAngle: 130,
+          hollow: {
+            size: '65%'
+          },
+          track: {
+            background: '#fff',
+            strokeWidth: '100%'
+          },
+          dataLabels: {
+            name: {
+              offsetY: -20,
+              color: '#a5a3ae',
+              fontSize: '13px',
+              fontWeight: '400',
+              fontFamily: 'Public Sans'
+            },
+            value: {
+              offsetY: 10,
+              color: '#5d596c',
+              fontSize: '38px',
+              fontWeight: '600',
+              fontFamily: 'Public Sans'
+            }
+          }
+        }
+      },
+      colors: [config.colors.primary],
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          shadeIntensity: 0.5,
+          gradientToColors: [config.colors.primary],
+          inverseColors: true,
+          opacityFrom: 1,
+          opacityTo: 0.6,
+          stops: [30, 70, 100]
+        }
+      },
+      stroke: {
+        dashArray: 10
+      },
+      grid: {
+        padding: {
+          top: -20,
+          bottom: 5
+        }
+      },
+      states: {
+        hover: {
+          filter: {
+            type: 'none'
+          }
+        },
+        active: {
+          filter: {
+            type: 'none'
+          }
+        }
+      },
+      responsive: [
+        {
+          breakpoint: 1025,
+          options: {
+            chart: {
+              height: 330
+            }
+          }
+        },
+        {
+          breakpoint: 769,
+          options: {
+            chart: {
+              height: 280
+            }
+          }
+        }
+      ]
+    };
+  if (typeof supportTrackerEl !== undefined && supportTrackerEl !== null) {
+    const supportTracker = new ApexCharts(supportTrackerEl, supportTrackerOptions);
+    supportTracker.render();
+  }
+
+
   });
+
+  function customModal(){
+    $('#modelCustom').modal('show');
+  }
+
+  function emergencyModal(){
+    $('#emergencyMarking').modal('show');
+  }
+
+  function customMarking() {
+    const formData = {
+        _token: $('input[name="_token"]').val(), // CSRF token
+        signin_time: $('#signin_time').val(),
+        signin_date: $('#signin_date').val(),
+        signin_late_note: $('#signin_late_note').val()
+    };
+
+    $.ajax({
+        type: "POST",
+        url: $('#customMarkingForm').attr('action'),
+        data: formData,
+        dataType: "json",
+        success: function (response) {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            if (response.success) {
+                toastr.success(response.message);
+                $('#customMarkingForm')[0].reset(); // Clear form after success
+                $('#modelCustom').modal('hide'); // Close modal after success
+            } else {
+                toastr.error(response.message);
+            }
+        },
+        error: function (xhr) {
+            let errors = xhr.responseJSON?.errors;
+            if (errors) {
+                let errorMessages = Object.values(errors).flat().join('\n');
+                toastr.error('Error:\n' + errorMessages);
+            } else {
+                toastr.error('An error occurred. Please try again.');
+            }
+        }
+    });
+}
+
+/* Emergency marking section js */
+
+function emergencyMarkIn() {
+    emergencyMark('mark-in');
+}
+
+function emergencyMarkOut() {
+    emergencyMark('mark-out');
+}
+
+function emergencyMark(type) {
+    const formData = {
+        _token: $('input[name="_token"]').val(),
+        signin_date: $('#signin_date').val(),
+        signin_late_note: $('#signin_late_note').val(),
+        time_in_out: $('#time_in_out').val(),
+        type: type // 'mark-in' or 'mark-out'
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: $('#emergencyMarkingForm').attr('action'),
+        data: formData,
+        dataType: 'json',
+        success: function (response) {
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                positionClass: 'toast-top-right',
+                timeOut: '4000',
+                extendedTimeOut: '1000',
+                showMethod: 'fadeIn',
+                hideMethod: 'fadeOut'
+            };
+
+            if (response.success) {
+                toastr.success(response.message);
+                $('#emergencyMarkingForm')[0].reset(); // Clear form after success
+                $('#emergencyMarking').modal('hide'); // Close modal after success
+            } else {
+                toastr.error(response.message);
+            }
+        },
+        error: function (xhr) {
+            let errors = xhr.responseJSON?.errors;
+            if (errors) {
+                let errorMessages = Object.values(errors).flat().join('\n');
+                toastr.error('Error:\n' + errorMessages);
+            } else {
+                toastr.error('An error occurred. Please try again.');
+            }
+        }
+    });
+}
+
+
+
 </script>
 @stop

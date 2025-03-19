@@ -47,18 +47,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/user-list',[UserController::class, 'getUsers']);
     Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
     Route::post('/check-email', [UserController::class, 'checkEmail']);
-
     Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
     Route::post('/settings/workshift/save',[SettingsController::class, 'store_work_shift'])->name('store.workshift');
     Route::get('/settings/userstastus',[SettingsController::class, 'list_user_status'])->name('userstatus');
-    
     // leave route
     Route::resource('leaves',LeaveController::class);
-
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
     Route::post('/attendance/mark-in',[AttendanceController::class, 'markIn'])->name('attendance.mark-in');
     Route::post('/attendance/mark-out',[AttendanceController::class, 'markOut'])->name('attendance.mark-out');
+    Route::post('/attendance/custom-mark-in',[AttendanceController::class, 'customMarkIn'])->name('attendance.custom-mark-in');
+    Route::post('/attendance/emergency-mark',[AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
 });
 
