@@ -21,7 +21,7 @@ $(function () {
   // Variable declaration for table
   var dt_user_table = $('.datatables-users'),
     select2 = $('.select2'),
-   
+
     statusObj = {
       1: { title: 'New User', class: 'bg-label-warning' },
       2: { title: 'Active', class: 'bg-label-success' },
@@ -42,7 +42,7 @@ $(function () {
   if (dt_user_table.length) {
     var dt_user = dt_user_table.DataTable({
       // ajax: assetsPath + 'json/user-list.json', // JSON file to add data
-     
+
       ajax: {
         url: "/user-list",  // Fetch from Laravel API
         type: "GET",
@@ -80,11 +80,12 @@ $(function () {
             let userView = "/user/profile/"+full['id'];
             var $name = full['full_name'],
               $email = full['email'],
-              $image = full['avatar'];
+              $image = full['profile_image'];
+
             if ($image) {
+
               // For Avatar image
-              var $output =
-                '<img src="img/avatars/' + $image + '" alt="Avatar" class="rounded-circle">';
+              var $output = '<img src="/storage/' + $image + '" alt="Avatar" class="rounded-circle">';
             } else {
               // For Avatar badge
               var stateNum = Math.floor(Math.random() * 6);
@@ -121,11 +122,11 @@ $(function () {
           // User Role
           targets: 2,
           render: function (data, type, full, meta) {
-            let $role = full['role']; 
+            let $role = full['role'];
             return "<span class='text-truncate d-flex align-items-center'>" + $role + '</span>';
           }
         },
-        
+
         {
           // User Status
           targets: 5,
@@ -148,11 +149,12 @@ $(function () {
           searchable: false,
           orderable: false,
           render: function (data, type, full, meta) {
+            const user_id =  full['id'];
             return (
               '<div class="d-flex align-items-center">' +
               '<a href="javascript:;" class="text-body"><i class="ti ti-edit ti-sm me-2"></i></a>' +
-              '<a href="javascript:;" class="text-body delete-record"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
-              '<a href="javascript:;" class="text-body dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical ti-sm mx-1"></i></a>' +
+              '<a href="javascript:;" class="text-body delete-user" data-role-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
+              '<a href="javascript:;" class="text-body dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-eye ti-sm mx-1"></i></a>' +
               '<div class="dropdown-menu dropdown-menu-end m-0">' +
               '<a href="' +
               userView +
@@ -443,8 +445,63 @@ $(function () {
 
   // Delete Record
   $('.datatables-users tbody').on('click', '.delete-record', function () {
+
+
     dt_user.row($(this).parents('tr')).remove().draw();
+
+
   });
+
+
+
+   // destroy user
+
+ document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".delete-user").forEach((element) => {
+        element.addEventListener("click", function () {
+            let userId = this.getAttribute("data-user-id");
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send DELETE request
+                    fetch(`/user-delete/${userId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                            "Content-Type": "application/json"
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire("Deleted!", "Role has been deleted.", "success").then(() => {
+                                location.reload(); // Reload page after deletion
+                            });
+                        } else {
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        Swal.fire("Error!", "Could not delete role.", "error");
+                    });
+                }
+            });
+        });
+    });
+});
+
+
+
+
 
   // Filter form control to default size
   // ? setTimeout used for multilingual table initialization

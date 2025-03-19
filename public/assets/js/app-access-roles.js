@@ -436,3 +436,51 @@ $(document).ready(function () {
     });
 
 });
+
+
+
+
+ // destroy role
+
+ document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".delete-role").forEach((element) => {
+        element.addEventListener("click", function () {
+            let roleId = this.getAttribute("data-role-id");
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send DELETE request
+                    fetch(`/roles/${roleId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                            "Content-Type": "application/json"
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire("Deleted!", "Role has been deleted.", "success").then(() => {
+                                location.reload(); // Reload page after deletion
+                            });
+                        } else {
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        Swal.fire("Error!", "Could not delete role.", "error");
+                    });
+                }
+            });
+        });
+    });
+});

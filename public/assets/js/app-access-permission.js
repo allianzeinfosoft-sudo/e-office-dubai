@@ -25,7 +25,7 @@ $(function () {
         { data: '' },
         { data: 'id' },
         { data: 'name' },
-        { data: 'category'},
+        { data: 'category_name'},
         { data: 'assigned_to' },
         { data: '' }
       ],
@@ -59,7 +59,7 @@ $(function () {
             // Name
             targets: 3,
             render: function (data, type, full, meta) {
-              var $category = full['category'];
+              var $category = full['category_name'];
               return '<span class="text-nowrap">' + $category + '</span>';
             }
           },
@@ -190,7 +190,18 @@ $(function () {
     let id = $(this).data('id'); // Get the record ID
     let row = $(this).closest('tr'); // Get the row element
 
-    if (confirm("Are you sure you want to delete this record?")) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+
         $.ajax({
             url: '/permissions/' + id,
             type: 'DELETE',
@@ -199,13 +210,19 @@ $(function () {
             },
             success: function (response) {
                 dt_permission.row(row).remove().draw();
-                alert(response.message);
+                Swal.fire("Deleted!", "Permission has been deleted.", "success").then(() => {
+                    location.reload(); // Reload page after deletion
+                });
             },
             error: function (xhr) {
-                alert("Error: " + xhr.responseJSON.message);
+                Swal.fire("Error!", "Something went wrong.", "error");
             }
         });
-    }
+
+            }
+        });
+
+
 
   });
 

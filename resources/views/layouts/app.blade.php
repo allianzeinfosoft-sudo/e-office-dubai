@@ -156,8 +156,8 @@
 
 
     <script src="{{ asset('assets/js/general.js') }}"></script>
-    {{-- <script src="{{ asset('assets/js/form-wizard-numbered.js') }}"></script>
-    <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script> --}}
+    <script src="{{ asset('assets/js/form-wizard-numbered.js') }}"></script>
+    <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script>
 
     <script src="{{ asset('assets/js/app-access-leave.js') }} "></script>
     @if(Route::is('leaves.*'))
@@ -165,6 +165,7 @@
         <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script>
     @endif
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>
+
      <!-- Vendors JS -->
 
 </body>

@@ -185,7 +185,7 @@ class UserController extends Controller
                         'phonenumber' => $users->phonenumber,
                         'email' => $users->email,
                         'current_plan' => 'Enterprise',
-                        'avatar' => $users->profile_image,
+                        'profile_image' => $users->profile_image,
                         'status' => $users->status,
                          "avatar" => "",
                     ];
@@ -194,6 +194,7 @@ class UserController extends Controller
 
 
         $response = response()->json(['data' => $users]);
+
         $json_data = json_decode($response->getContent(), true)['data'];
         return json_encode(['data' => $json_data]);
     }

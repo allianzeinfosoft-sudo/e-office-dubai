@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -36,15 +37,15 @@ class RoleController extends Controller
     {
 
         $request->validate([
-            'name' => 'required|unique:roles,name',
-            'permissions' => 'array',
-            // 'permissions.*' => 'exists:permissions,id'
+
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,name'
         ]);
 
         // Create or update the role
         $user_role = Role::updateOrCreate(
-            ['id' => $request->id], // If ID exists, update; otherwise, create
-            ['name' => $request->name, 'guard_name' => $request->guard_name]
+            ['name' => $request->name], // If ID exists, update; otherwise, create
+            ['guard_name' => $request->guard_name]
         );
 
         // Assign permissions
@@ -87,10 +88,20 @@ class RoleController extends Controller
 
     }
 
-    public function destroy(Role $role)
+    public function destroy($id)
     {
-        $role->delete();
-        return redirect()->route('roles.index')->with('success', 'Role deleted successfully.');
+
+        $role = Role::find($id);
+
+        if (!$role) {
+            return response()->json(['success' => false, 'message' => 'Role not found'], 404);
+        }
+
+        $role->permissions()->detach(); // Remove associated permissions
+        $role->delete(); // Delete role
+        Cache::forget('roles');
+        return response()->json(['success' => true, 'message' => 'Role deleted successfully.']);
+
     }
 
     public function getRolePermissions($id)

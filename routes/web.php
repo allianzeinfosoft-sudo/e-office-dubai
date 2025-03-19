@@ -32,11 +32,14 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('roles', RoleController::class);
     Route::get('/user/roles',[RoleController::class, 'getroles']);
+    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
 
     Route::resource('permissions', PermissionController::class);
     Route::delete('/permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
 
     Route::resource('users', UserController::class);
+    Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
+
     Route::get('/permissions-list', [PermissionController::class, 'getPermissions']);
     Route::get('/roles/{role}/permissions', [RoleController::class, 'getRolePermissions']);
     Route::resource('departments',DepartmentController::class);
