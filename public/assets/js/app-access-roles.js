@@ -257,118 +257,182 @@ $(function () {
   }
 })();
 
- 
+
 $(document).ready(function () {
 
-  $(".add-role-model").on("click", function () {
-    $("#permissionsTable").html(""); 
+    $(".add-role-model").on("click", function () {
+        $("#permissionsTable").html("");
         $.ajax({
           url: '/permissions-list', // Replace with your actual API endpoint
           method: 'GET',
           dataType: 'json',
           success: function(response) {
-
             console.log(response);
-              var permissionsHtml = `
-                  <table class="table table-flush-spacing">
-                      <tbody>
-                          <tr>
-                                <td>
-                                  <div class="form-check">
-                                      <input class="form-check-input" type="checkbox" id="selectAll" />
-                                      <label class="text-nowrap fw-semibold">Administrator Access
-                                            <i class="ti ti-info-circle"
-                                                data-bs-toggle="tooltip"
-                                                data-bs-placement="top"
-                                                title="Allows full access to the system"></i>
-                                      </label>
-                                  </div>
-                              </td> 
-                          </tr>`;
-      
-              response.data.forEach(function (permission) {
-                  permissionsHtml += `
-                      <tr>
-                            <td>
-                              <div class="d-flex">
-                                  <div class="form-check me-3 me-lg-5">
-                                      <input class="form-check-input" type="checkbox" name="permissions[]" id="perm_r_${permission.id}" value="${permission.name}" />
-                                      <label class="form-check-label" for="perm_r_${permission.id}">${permission.name}</label>
-                                  </div> 
-                                   
-                              </div>
-                          </td>  
-                      </tr>`;
-              });
-      
-              permissionsHtml += `</tbody></table>`;
-      
-              // Insert the generated table into the element with id 'permissionsTable'
-              $("#permissionsTable").html(permissionsHtml);
 
-              document.getElementById("selectAll").addEventListener("change", function () {
-                  document.querySelectorAll(".perm-checkbox").forEach(cb => {
-                      cb.checked = this.checked;
-                  });
+            let categories = {};
+
+            // Group permissions by category
+            response.data.forEach(function (permission) {
+              if (!categories[permission.category_id]) {
+                categories[permission.category_id] = {
+                  name: permission.category_name, // Assuming API returns category_name
+                  permissions: []
+                };
+              }
+              categories[permission.category_id].permissions.push(permission);
+            });
+
+            let permissionsHtml = `
+              <div class="table-responsive">
+                <table class="table table-flush-spacing">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="selectAll" />
+                          <label class="text-nowrap fw-semibold">Administrator Access
+                            <i class="ti ti-info-circle"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Allows full access to the system"></i>
+                          </label>
+                        </div>
+                      </td>
+                    </tr>`;
+
+            // Loop through each category
+            for (let categoryId in categories) {
+              let category = categories[categoryId];
+
+              // Display Category Name
+              permissionsHtml += `
+                <tr>
+                  <td>
+                    <strong>${category.name}</strong>
+                  </td>
+                </tr>`;
+
+              // Create a flex container for permissions
+              permissionsHtml += `<tr><td><div class="permission-container">`;
+
+              // Loop through permissions under this category
+              category.permissions.forEach(function (permission) {
+                permissionsHtml += `
+                  <div class="permission-item">
+                    <div class="form-check">
+                      <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" id="perm_r_${permission.id}" value="${permission.name}" />
+                      <label class="form-check-label" for="perm_r_${permission.id}">${permission.name}</label>
+                    </div>
+                  </div>`;
               });
- 
+
+              permissionsHtml += `</div></td></tr>`; // Close flex container
+            }
+
+            permissionsHtml += `</tbody></table></div>`;
+
+            // Insert the generated table into the element with id 'permissionsTable'
+            $("#permissionsTable").html(permissionsHtml);
+
+            // Select All Checkbox Functionality
+            $("#selectAll").on("change", function () {
+              $(".perm-checkbox").prop("checked", this.checked);
+            });
+
           },
           error: function(error) {
-              console.error('Error fetching data:', error);
+            console.error('Error fetching data:', error);
           }
-      }); 
-  });
-
-
-
- 
-  $(".role-edit-modal").on("click", function () {
-      var roleId = $(this).data("role-id"); 
-      // Clear previous permissions
-      $("#permissionsTable").html("");
-      $("#modalRoleName").val("");
-
-      $.ajax({
-          url: "/roles/" + roleId + "/permissions",
-          type: "GET",
-          success: function (response) {
-
-              $("#modalRoleName").val(response.role.name); // Set Role Name 
-              var permissionsHtml = `<table class="table table-flush-spacing">
-                                      <tbody>
-                                          <tr>
-                                                <td>
-                                                  <div class="form-check">
-                                                      <input class="form-check-input" type="checkbox" id="selectAll" />
-                                                      <label class="text-nowrap fw-semibold">Administrator Access
-                                                            <i class="ti ti-info-circle"
-                                                                data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                title="Allows full access to the system"></i>
-                                                      </label>
-                                                  </div>
-                                              </td> 
-                                          </tr>`;
-
-              response.permissions.forEach(function (permission) {
-                  permissionsHtml += `
-                      <tr> 
-                          <td>
-                              <div class="d-flex">
-                                <div class="form-check me-3 me-lg-5">
-                                  <label class="form-check-label" for="perm_${permission.id}"> ${permission.name} </label>
-                                  <input class="form-check-input" name="permissions[]" type="checkbox" value="${permission.name}" id="perm_r_${permission.id}" ${permission.assigned ? "checked" : ""}> 
-                                </div>  
-                              </div>
-                          </td>
-                      </tr>`;
-              });
-
-              permissionsHtml += `</tbody>`;
-              permissionsHtml += `</table>`; 
-              
-              $("#permissionsTable").html(permissionsHtml);
-          }
+        });
       });
+
+
+
+
+      $(".role-edit-modal").on("click", function () {
+        var roleId = $(this).data("role-id");
+
+        // Clear previous data
+        $("#permissionsTable").html("");
+        $("#modalRoleName").val("");
+
+        $.ajax({
+            url: "/roles/" + roleId + "/permissions",
+            type: "GET",
+            success: function (response) {
+                $("#modalRoleName").val(response.role.name); // Set Role Name
+
+                let categories = {};
+
+                // Group permissions by category
+                response.permissions.forEach(function (permission) {
+                    if (!categories[permission.category_id]) {
+                        categories[permission.category_id] = {
+                            name: permission.category_name,
+                            permissions: []
+                        };
+                    }
+                    categories[permission.category_id].permissions.push(permission);
+                });
+
+                let permissionsHtml = `
+                    <div class="table-responsive">
+                        <table class="table table-flush-spacing">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAll" />
+                                            <label class="text-nowrap fw-semibold">Administrator Access
+                                                <i class="ti ti-info-circle"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    title="Allows full access to the system"></i>
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>`;
+
+                // Loop through each category
+                for (let categoryId in categories) {
+                    let category = categories[categoryId];
+
+                    // Display Category Name
+                    permissionsHtml += `
+                        <tr>
+                            <td><strong>${category.name}</strong></td>
+                        </tr>`;
+
+                    // Create a flex container for permissions
+                    permissionsHtml += `<tr><td><div class="permission-container">`;
+
+                    // Loop through permissions under this category
+                    category.permissions.forEach(function (permission) {
+                        permissionsHtml += `
+                            <div class="permission-item">
+                                <div class="form-check">
+                                    <input class="form-check-input perm-checkbox" type="checkbox" name="permissions[]" id="perm_r_${permission.id}" value="${permission.name}" ${permission.assigned ? "checked" : ""} />
+                                    <label class="form-check-label" for="perm_r_${permission.id}">${permission.name}</label>
+                                </div>
+                            </div>`;
+                    });
+
+                    permissionsHtml += `</div></td></tr>`; // Close flex container
+                }
+
+                permissionsHtml += `</tbody></table></div>`;
+
+                $("#permissionsTable").html(permissionsHtml);
+
+                // Select All Checkbox Functionality
+                $("#selectAll").on("change", function () {
+                    $(".perm-checkbox").prop("checked", this.checked);
+                });
+            },
+            error: function (error) {
+                console.error("Error fetching data:", error);
+            }
+        });
     });
+
 });

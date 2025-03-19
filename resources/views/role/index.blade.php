@@ -6,13 +6,13 @@
     <div class="layout-container">
       <!-- Menu -->
       <x-menu /> <!-- Load the menu component here -->
-      
+
       <!-- / Menu -->
 
       <!-- Layout container -->
       <div class="layout-page">
         <!-- Navbar -->
-        <x-header /> 
+        <x-header />
         <!-- / Navbar -->
 
         <!-- Content wrapper -->
@@ -27,7 +27,7 @@
               assigned role an administrator can have access to what user needs.
             </p>
             <!-- Role cards -->
-            <div class="row g-4"> 
+            <div class="row g-4">
 
 
                 @foreach ($roles as $role )
@@ -37,7 +37,7 @@
                         <div class="d-flex justify-content-between">
                           <h6 class="fw-normal mb-2">Total 2 users</h6>
                           <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
-    
+
                             <li
                               data-bs-toggle="tooltip"
                               data-popup="tooltip-custom"
@@ -46,7 +46,7 @@
                               class="avatar avatar-sm pull-up">
                               <img class="rounded-circle" src="../../assets/img/avatars/10.png" alt="Avatar" />
                             </li>
-                            
+
                           </ul>
                         </div>
                         <div class="d-flex justify-content-between align-items-end mt-1">
@@ -172,7 +172,7 @@
           <!-- / Content -->
 
           <!-- Footer -->
-          <x-footer /> 
+          <x-footer />
           <!-- / Footer -->
 
           <div class="content-backdrop fade"></div>

@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -25,7 +25,7 @@ class RoleController extends Controller
     }
 
     public function create()
-    { 
+    {
         $permissions = Cache::remember('permissions', now()->addMinutes(60), function () {
             return Permission::all();
         });
@@ -33,25 +33,25 @@ class RoleController extends Controller
     }
 
     public function store(Request $request)
-    {  
+    {
+
         $request->validate([
             'name' => 'required|unique:roles,name',
-            'permissions' => 'array'
+            'permissions' => 'array',
             // 'permissions.*' => 'exists:permissions,id'
         ]);
-        
+
         // Create or update the role
         $user_role = Role::updateOrCreate(
-            ['name' => $request->name],
-            ['guard_name' => $request->guard_name]
+            ['id' => $request->id], // If ID exists, update; otherwise, create
+            ['name' => $request->name, 'guard_name' => $request->guard_name]
         );
-        
-    
+
         // Assign permissions
-        // if ($request->has('permissions')) { 
-            $user_role->syncPermissions($request->permissions);
+        // if ($request->has('permissions')) {
+            $user_role->syncPermissions($request->permissions ?? []);
         // }
-    
+
         // Clear role cache
         Cache::forget('roles');
         return redirect()->route('roles.index')->with('success', 'Role saved successfully.');
@@ -77,12 +77,12 @@ class RoleController extends Controller
         $request->validate([
             'name' => 'required|unique:roles,name,' . $role->id,
             'permissions' => 'array|required',
-        ]); 
+        ]);
         $role->update(['name' => $request->name]);
-        $role->syncPermissions($request->permissions); 
+        $role->syncPermissions($request->permissions);
         return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
 
-       
+
 
 
     }
@@ -96,11 +96,14 @@ class RoleController extends Controller
     public function getRolePermissions($id)
     {
         $role = Role::findOrFail($id);
-        $permissions = Permission::all()->map(function ($permission) use ($role) {
+        $permissions = Permission::with('category','roles')->get()->map(function ($permission) use ($role) {
             return [
                 'id' => $permission->id,
                 'name' => $permission->name,
-                'assigned' => $role->hasPermissionTo($permission->name)
+                'category_id' => optional($permission->category)->id,
+                'category_name' => optional($permission->category)->name,
+                'assigned' => $role->hasPermissionTo($permission->name),
+                'created_date' => $permission->created_at->format("d M Y, g:i A"),
             ];
         });
 

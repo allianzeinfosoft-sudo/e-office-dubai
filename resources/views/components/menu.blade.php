@@ -324,7 +324,7 @@
           </li>
           <li class="menu-item">
             <a href="{{ route('permissions.index') }}" class="menu-link">
-              <div data-i18n="Permission">Permission</div>
+              <div data-i18n="Permissions">Permissions</div>
             </a>
           </li>
         </ul>
