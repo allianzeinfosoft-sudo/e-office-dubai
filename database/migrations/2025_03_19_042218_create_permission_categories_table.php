@@ -11,19 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('leaves', function (Blueprint $table) {
+        Schema::create('permission_categories', function (Blueprint $table) {
             $table->id();
-            $table->date('leave_from');
-            $table->date('leave_to');
-            $table->integer('user_id');
-            $table->string('leave_type');
-            $table->text('reason');
-            $table->timestamps();
+            $table->string('name');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('leaves');
+        Schema::dropIfExists('permission_categories');
     }
 };

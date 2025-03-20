@@ -18,19 +18,19 @@
     leave_from = document.querySelector('#leave-from'),
     leave_to = document.querySelector('#leave-to');
 
-    // Date
-    if (leave_from) {
-        leave_from.flatpickr({
+
+    if (document.querySelector("#leave-from")) {
+        flatpickr("#leave-from", {
             monthSelectorType: 'static'
         });
     }
 
-    // Date
-    if (leave_to) {
-        leave_to.flatpickr({
+    if (document.querySelector("#leave-to")) {
+        flatpickr("#leave-to", {
             monthSelectorType: 'static'
         });
     }
+
 
   // Date
   if (flatpickrDate) {
@@ -66,11 +66,11 @@
   }
 
   // Range
-  if (typeof flatpickrRange != undefined) {
-    flatpickrRange.flatpickr({
-      mode: 'range'
-    });
-  }
+//   if (typeof flatpickrRange != undefined) {
+//     flatpickrRange.flatpickr({
+//       mode: 'range'
+//     });
+//   }
 
   // Inline
   if (flatpickrInline) {

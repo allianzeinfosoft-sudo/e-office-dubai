@@ -24,9 +24,11 @@
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
+            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
             <div class="row">
 
               <div class="col-lg-7 mb-4">
+
                 <!-- Attendance Marking Card -->
                 <div class="card bg-primary text-white mb-4">
                     <div class="card-header">
@@ -295,11 +297,48 @@
           contentType: 'application/json',
           data: JSON.stringify({}),
           success: function(data) {
-              if (data.success) {
-                  alert(data.message);
-                  $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+            if (data.success) {
+                
+                toastr["success"](data.message);
+                toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": false,
+                  "positionClass": "toast-top-right",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+                //  alert(data.message);
+                $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+                window.location.reload();
               } else {
-                  alert(data.message);
+                toastr["success"](data.message);
+                toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": false,
+                  "positionClass": "toast-top-right",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
                   if (data.data.signin_time) {
                       $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
                   }

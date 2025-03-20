@@ -94,17 +94,13 @@
                     <div class="col-md-4 mb-3">
                       <label for="blood_group" class="form-label">Blood Group:</label>
                       <div class="input-group input-group-merge">
-                      <select class="form-select" id="blood_group" name="blood_group" aria-label="Default select example">
-                        <option selected>Please select</option>
-                        <option value="O-ve">O-ve</option>
-                        <option value="O+ve">O+ve</option>
-                        <option value="A-ve">A-ve</option>
-                        <option value="A+ve">A+ve</option>
-                        <option value="B-ve">B-ve</option>
-                        <option value="B+ve">B+ve</option>
-                        <option value="AB-ve">AB-ve</option>
-                        <option value="AB-ve">AB-ve</option>
-                      </select>
+                        <select class="form-select" id="blood_group" name="blood_group" aria-label="Default select example">
+                            <option selected>Please select</option>
+
+                            @foreach (["O-ve", "O+ve", "A-ve", "A+ve", "B-ve", "B+ve", "AB-ve"] as $group)
+                                <option value="{{ $group }}">{{ $group }}</option>";
+                            @endforeach
+                          </select>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">

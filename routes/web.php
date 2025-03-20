@@ -33,8 +33,15 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('roles', RoleController::class);
     Route::get('/user/roles',[RoleController::class, 'getroles']);
+    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+
     Route::resource('permissions', PermissionController::class);
+    Route::delete('/permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+
     Route::resource('users', UserController::class);
+    Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::get('/user-edit/{id}', [UserController::class, 'edit'])->name('user.edit');
+
     Route::get('/permissions-list', [PermissionController::class, 'getPermissions']);
     Route::get('/roles/{role}/permissions', [RoleController::class, 'getRolePermissions']);
     Route::resource('departments',DepartmentController::class);
@@ -59,5 +66,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/attendance/mark-out',[AttendanceController::class, 'markOut'])->name('attendance.mark-out');
     Route::post('/attendance/custom-mark-in',[AttendanceController::class, 'customMarkIn'])->name('attendance.custom-mark-in');
     Route::post('/attendance/emergency-mark',[AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
+    Route::get('/leave-list',[LeaveController::class, 'leave_list']);
+    Route::get('leave-status-show',[LeaveController::class,'show_leave_status'])->name('leaves.status.show');
+    Route::get('/leave-status/{user_id}',[LeaveController::class, 'leave_status'])->name('leave.status');
+    Route::get('leave-pending-show',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
+    Route::get('/leave-pending',[LeaveController::class, 'pending_leaves'])->name('leaves.pending');
 });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller{
     
@@ -18,27 +19,19 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
-        $data['meta_title'] = 'Attendance';
-    
-        $data['attendance'] = Attendance::where([
-            'username' => Auth::user()->username, 
-            'signin_date' => now()->format('Y-m-d')
-        ])->first();
-    
-        $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)
-            ->whereMonth('signin_date', now()->month)
-            ->count();
-    
-        $daysInMonth = now()->daysInMonth;
-        $workedHours = [];
-        $categories = [];
-        $weekOffDays = [];
-        $totalMinutes = 0;
-        $workedDays = 0;
+        $data['meta_title']     = 'Attendance';
+        $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+        $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
+
+        $daysInMonth    = now()->daysInMonth;
+        $workedHours    = [];
+        $categories     = [];
+        $weekOffDays    = [];
+        $totalMinutes   = 0;
+        $workedDays     = 0;
 
         if (!empty($data['attendance']->signout_time)) {
-            $todayMinutes = Attendance::where('username', Auth::user()->username)
-            ->whereDate('signin_date', now())
+            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
             ->selectRaw("
                 COALESCE(
                     SUM(
@@ -53,8 +46,7 @@ class AttendanceController extends Controller{
             ->value('today_minutes') ?? 0;
         } else {
             // If signout_time is not available, calculate up to current time
-            $todayMinutes = Attendance::where('username', Auth::user()->username)
-                ->whereDate('signin_date', now())
+            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
                 ->selectRaw("
                     COALESCE(
                         SUM(
@@ -147,8 +139,21 @@ class AttendanceController extends Controller{
         $data['seriesData'] = $workedHours;
         $data['weekOffDays'] = $weekOffDays;
         $data['totalWorkingDays'] = $totalWorkingDays;
-    
-        return view('attendance.index', $data);
+
+        $missingReports = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
+            $query->select(DB::raw(1))
+                ->from('work_reports')
+                ->whereColumn('work_reports.report_date', 'attendances.signin_date')
+                ->whereColumn('work_reports.username', 'attendances.username');
+        })->get();
+
+        if ($missingReports->isNotEmpty()) {
+            $data['meta_title']     = 'Add Work Report';
+            $data['missingReports'] = $missingReports;
+            return view('attendance.work_report', $data);
+        }else{
+            return view('attendance.index', $data);
+        }
     }
     
 
