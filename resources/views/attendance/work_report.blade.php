@@ -98,17 +98,18 @@
                                                 <table class="table table-bordered table-striped table-hover">
                                                     <thead>
                                                         <tr>
-                                                            <th width="11.11%">Project Name</th>
-                                                            <th width="11.11%">Type of Work</th>
-                                                            <th width="11.11%">Total Records / Tasks</th>
-                                                            <th width="11.11%">No. of Hours</th>
-                                                            <th width="11.11%">Productivity / Hour</th>
-                                                            <th width="11.11%">Grade</th>
-                                                            <th width="11.11%">Performance</th>
-                                                            <th width="11.11%">Comments</th>
-                                                            <th width="11.11%">Action</th>
+                                                            <th class="align-middle" width="11.11%">Project Name</th>
+                                                            <th class="align-middle" width="11.11%">Type of Work</th>
+                                                            <th class="align-middle" width="11.11%">Total Records / Tasks</th>
+                                                            <th class="align-middle" width="11.11%">No. of Hours</th>
+                                                            <th class="align-middle" width="11.11%">Productivity / Hour</th>
+                                                            <th class="align-middle" width="11.11%">Grade</th>
+                                                            <th class="align-middle" width="11.11%">Performance</th>
+                                                            <th class="align-middle" width="17.22%">Comments</th>
+                                                            <th class="align-middle" width="5%">Action</th>
                                                         </tr>                                                    
                                                     </thead>
+                                                    
                                                     <tbody>
                                                         <tr>
                                                             <td></td>

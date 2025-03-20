@@ -63,6 +63,21 @@ return [
         ]
     ],
     [
+        'title' => 'Projects',
+        'icon' => 'ti ti-briefcase',
+        'route' => 'javascript:void(0);',
+        'submenu' => [
+            [
+                'title' => 'Projects',
+                'route' =>  'projects',
+            ],  
+            [
+                'title' => 'Create',
+                'route' =>  'project/create',
+            ],  
+        ]
+    ],
+    [
         'title' => 'Reports',
         'icon' => 'ti ti-printer',
         'route' => 'javascript:void(0);',
@@ -121,15 +136,15 @@ return [
         'submenu' => [
             [
                 'title' => 'Apply Leave',
-                'route' =>  '#',
+                'route' =>  'leaves',
             ],  
             [
                 'title' => 'Leave Status',
-                'route' =>  '#',
+                'route' =>  'leave-status-show',
             ],  
             [
                 'title' => 'Leave Summary',
-                'route' =>  '#',
+                'route' =>  'leave-pending-show',
             ],  
         ]
     ],
@@ -305,13 +320,17 @@ return [
         'header' => 'Settings',
     ],
     [
-        'title' => 'Shifts',
+        'title' => 'Settings',
         'icon' => 'ti ti-switch-3',
         'route' => 'javascript:void(0);',
         'submenu' => [
             [
-                'title' => 'Shift List ',
-                'route' =>  'workshift',
+                'title' => 'Work Shift',
+                'route' =>  'settings/workshift',
+            ],  
+            [
+                'title' => 'Branches',
+                'route' =>  'branchs',
             ],  
         ]
     ],
