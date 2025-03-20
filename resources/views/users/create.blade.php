@@ -176,7 +176,7 @@
                   <div class="card-body">
 
                     <div class="mt-3 d-flex justify-content-center align-items-center" style="background-color: #625acc; height: 200px;">
-                      <img id="imagePreview" src="" alt="" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover; display: none; border: 2px solid #ddd;"/>
+                      <img id="imagePreview" src="" alt="" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;  border: 2px solid #ddd;"/>
                     </div>
                     <div class="mb-3 mt-15">
                       <div class="input-group input-group-merge">
@@ -276,7 +276,7 @@
                         <select class="form-select" id="role" name="role" aria-label="Default select">
                             <option selected value="">Please select</option>
                             @foreach ($roles as $role)
-                                <option selected value="{{ $role->id }}">{{ $role->name ?? '' }}</option>
+                                <option selected value="{{ $role->name }}">{{ $role->name ?? '' }}</option>
                             @endforeach
                         </select>
                       </div>

@@ -137,11 +137,9 @@
         <script src="{{ asset('assets/js/modal-edit-permission.js') }}"></script>
     @endif
 
-    @if(Route::is('users.*'))
+    @if(Route::is('users.*') || Route::is('user.edit'))
         <script src="{{ asset('assets/js/app-user-list.js') }}"></script>
         <script src="{{ asset('assets/js/app-user-add.js')}}"></script>
-
-        <script src="{{ asset('assets/js/modal-edit-user.js') }}"></script>
         <script src="{{ asset('assets/js/app-user-view.js') }}"></script>
         <script src="{{ asset('assets/js/app-user-view-account.js') }}"></script>
     @endif
@@ -152,8 +150,6 @@
     @if(request()->is('settings/workshift'))
         <script src="{{ asset('assets/js/tables-datatables-workshift.js') }}"></script>
     @endif
-
-
 
     <script src="{{ asset('assets/js/general.js') }}"></script>
     <script src="{{ asset('assets/js/form-wizard-numbered.js') }}"></script>
