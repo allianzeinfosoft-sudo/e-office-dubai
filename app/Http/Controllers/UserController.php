@@ -143,7 +143,13 @@ class UserController extends Controller
 
     public function edit(string $id)
     {
-        //
+        $user = User::with('employee')->findOrFail($id);
+        $employees = User::with('employee')->get();
+        $departments = Department::all();
+        $work_shifts = Workshift::all();
+        $roles = Role::all();
+        $user_statuses = UserStatus::all();
+        return view('users.edit', compact('user','employees','departments','work_shifts','roles','user_statuses'));
     }
 
 
@@ -155,7 +161,14 @@ class UserController extends Controller
 
     public function destroy(string $id)
     {
-        //
+        $role = User::find($id);
+        if (!$role) {
+            return response()->json(['success' => false, 'message' => 'Role not found'], 404);
+        }
+
+        $role->delete(); // Delete role
+        Cache::forget('users');
+        return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
     }
 
 

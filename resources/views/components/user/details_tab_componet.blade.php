@@ -112,7 +112,7 @@
                     <label class="form-label" for="first-name-modern">Department</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value=" {{ $user->employee->department->department ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                 <label class="form-label" for="first-name-modern">Designation</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-person-badge"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value=" {{ $user->employee->designation->designation ?? 'N/A' }}" readonly />
                     </div>
               </div>
@@ -130,7 +130,7 @@
                 <label class="form-label" for="first-name-modern">Join Date</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-calendar-check"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                     value="{{ $user->employee->join_date ? \Carbon\Carbon::parse($user->employee->join_date)->format('d-m-Y') : 'N/A' }}"
                     readonly />
                     </div>
@@ -140,7 +140,7 @@
                 <label class="form-label" for="first-name-modern">Shift No</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-clock"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->workshift->shift_id ?? 'N/A' }}" readonly />
                     </div>
               </div>
@@ -149,7 +149,7 @@
                 <label class="form-label" for="first-name-modern">User Status</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-person-check"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->userStatus->status_name ?? 'N/A' }}" readonly />
                     </div>
               </div>
@@ -158,7 +158,7 @@
                 <label class="form-label" for="first-name-modern">Login Limited Time</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-clock-history"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->login_limited_time ?? 'N/A' }}" readonly />
                     </div>
               </div>
@@ -167,7 +167,7 @@
                 <label class="form-label" for="first-name-modern">Leave Carry Info</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-calendar-check"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="20" readonly />
                     </div>
               </div>
@@ -176,7 +176,7 @@
                 <label class="form-label" for="first-name-modern">Appointment Status</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-calendar-check"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->appointment_status ?? 'N/A' }}" readonly />
                     </div>
               </div>
@@ -185,7 +185,7 @@
                 <label class="form-label" for="first-name-modern">Team Lead</label>
                 <div class="input-group">
                 <span class="input-group-text bg-light-1"><i class="bi bi-people"></i></span>
-                <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                         value="{{ $user->employee->team_lead ?? 'N/A' }}" readonly />
                 </div>
               </div>
@@ -213,7 +213,7 @@
                     <label class="form-label" for="first-name-modern">Employee ID</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-person-badge"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->employeeID ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -222,7 +222,7 @@
                     <label class="form-label" for="first-name-modern">Personal Email</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-envelope"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->personal_email ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -231,7 +231,7 @@
                     <label class="form-label" for="first-name-modern">Gender</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-gender-ambiguous"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->gender ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -240,7 +240,7 @@
                     <label class="form-label" for="first-name-modern">Blood Group</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-droplet"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->blood_group ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -249,7 +249,7 @@
                     <label class="form-label" for="first-name-modern">Qualification</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-mortarboard"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->qualification ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -258,7 +258,7 @@
                     <label class="form-label" for="first-name-modern">ESI No: </label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-shield-check"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->esi_no ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -267,7 +267,7 @@
                     <label class="form-label" for="first-name-modern">Aadhaar</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-fingerprint"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->aadhaar ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -276,7 +276,7 @@
                     <label class="form-label" for="first-name-modern">PF No</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-bank"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->pf_no ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -285,7 +285,7 @@
                     <label class="form-label" for="first-name-modern">Electoral ID</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-person-vcard"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->electoral_id ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -294,7 +294,7 @@
                     <label class="form-label" for="first-name-modern">PAN</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-person-vcard"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->pan ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -303,7 +303,7 @@
                     <label class="form-label" for="first-name-modern">Date of Birth</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-calendar"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->dob ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -312,7 +312,7 @@
                     <label class="form-label" for="first-name-modern">Group</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-people"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->group ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -322,7 +322,7 @@
                     <label class="form-label" for="first-name-modern">Address</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-geo-alt"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->address ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -334,7 +334,7 @@
                     <label class="form-label" for="first-name-modern">Mobile Number</label>
                     <div class="input-group">
                         <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->mobile_number ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -343,7 +343,7 @@
                     <label class="form-label" for="first-name-modern">Mobile Contact Person</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->mobile_relationship ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -352,7 +352,7 @@
                     <label class="form-label" for="first-name-modern">Landline</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->landline ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -361,7 +361,7 @@
                     <label class="form-label" for="first-name-modern">Landline Contact person</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->landline_relationship ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -373,7 +373,7 @@
                     <label class="form-label" for="first-name-modern">Bank Name</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->bank_name ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -382,7 +382,7 @@
                     <label class="form-label" for="first-name-modern">Branch</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->bank_branch ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -391,7 +391,7 @@
                     <label class="form-label" for="first-name-modern">Beneficiary Name</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->beneficiary_name ?? 'N/A' }}" readonly />
                     </div>
                 </div>
@@ -400,7 +400,7 @@
                     <label class="form-label" for="first-name-modern">Account Number</label>
                     <div class="input-group">
                     <span class="input-group-text bg-light-1"><i class="bi bi-building"></i></span>
-                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 fw-bold border-0"
+                    <input type="text" id="first-name-modern" class="form-control shadow-sm text-center bg-light-1 border-0"
                            value="{{ $user->employee->account_number ?? 'N/A' }}" readonly />
                     </div>
                 </div>

@@ -20,7 +20,7 @@
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
-
+            <meta name="csrf-token" content="{{ csrf_token() }}">
             <!-- Users List Table -->
             <div class="card">
               <div class="card-header border-bottom">

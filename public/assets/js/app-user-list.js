@@ -152,9 +152,8 @@ $(function () {
             const user_id =  full['id'];
             return (
               '<div class="d-flex align-items-center">' +
-              '<a href="javascript:;" class="text-body"><i class="ti ti-edit ti-sm me-2"></i></a>' +
-              '<a href="javascript:;" class="text-body delete-user" data-role-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
-              '<a href="javascript:;" class="text-body dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-eye ti-sm mx-1"></i></a>' +
+              '<a href="javascript:;" class="text-body edit-user" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
+              '<a href="javascript:;" class="text-body delete-user" data-user-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
               '<div class="dropdown-menu dropdown-menu-end m-0">' +
               '<a href="' +
               userView +
@@ -445,21 +444,20 @@ $(function () {
 
   // Delete Record
   $('.datatables-users tbody').on('click', '.delete-record', function () {
-
-
-    dt_user.row($(this).parents('tr')).remove().draw();
-
-
+        dt_user.row($(this).parents('tr')).remove().draw();
   });
 
+  window.onload = function () {
+    console.log("Window is fully loaded!");
+};
 
 
    // destroy user
+   window.onload = function () {
 
- document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".delete-user").forEach((element) => {
         element.addEventListener("click", function () {
-            let userId = this.getAttribute("data-user-id");
+            let userId = this.getAttribute("data-user-id"); // Corrected
 
             Swal.fire({
                 title: "Are you sure?",
@@ -471,7 +469,6 @@ $(function () {
                 confirmButtonText: "Yes, delete it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Send DELETE request
                     fetch(`/user-delete/${userId}`, {
                         method: "DELETE",
                         headers: {
@@ -482,7 +479,7 @@ $(function () {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            Swal.fire("Deleted!", "Role has been deleted.", "success").then(() => {
+                            Swal.fire("Deleted!", "User has been deleted.", "success").then(() => {
                                 location.reload(); // Reload page after deletion
                             });
                         } else {
@@ -491,14 +488,24 @@ $(function () {
                     })
                     .catch(error => {
                         console.error("Error:", error);
-                        Swal.fire("Error!", "Could not delete role.", "error");
+                        Swal.fire("Error!", "Could not delete user.", "error");
                     });
                 }
             });
         });
     });
-});
+}
 
+
+window.onload = function () {
+    document.querySelectorAll(".edit-user").forEach((element) => {
+        element.addEventListener("click", function () {
+            let userId = this.getAttribute("data-edit-user-id"); // Corrected
+            // Redirect to the edit page
+            window.location.href = `/user-edit/${userId}`;
+        });
+    });
+}
 
 
 
