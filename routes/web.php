@@ -91,5 +91,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/project/create', [ProjectController::class, 'create'])->name('project.create');
     Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
+    Route::get('/project/{project}/edit', [ProjectController::class, 'edit'])->name('project.edit');
+    Route::post('/project/{project}/update', [ProjectController::class, 'update'])->name('project.update');
+    Route::delete('/project/{projectId}/destroy', [ProjectController::class, 'destroy'])->name('projects.destroy');
+
 });
 

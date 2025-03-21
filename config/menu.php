@@ -66,15 +66,14 @@ return [
         'title' => 'Projects',
         'icon' => 'ti ti-briefcase',
         'route' => 'javascript:void(0);',
+        'isActive' => ['projects*', 'project*'],
         'submenu' => [
             [
                 'title' => 'Projects',
                 'route' =>  'projects',
+                'isActive' => ['projects*', 'project*'],
             ],  
-            [
-                'title' => 'Create',
-                'route' =>  'project/create',
-            ],  
+              
         ]
     ],
     [

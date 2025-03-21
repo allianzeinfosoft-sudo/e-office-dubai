@@ -23,13 +23,13 @@
                         <div class="col-sm-8">
                             <div class="card">
                                 <div class="card-body">
-                                    <form action="{{ route('project.store') }}" method="post">
+                                    <form action="{{ route('project.update', $project->id) }}" method="post">
                                         @csrf
                                         <div class="row">
                                             <div class="col-sm-12 mb-3">
                                                 <div class="form-group">
                                                     <label for="project_name">Project Name</label>
-                                                    <input type="text" name="project_name" id="project_name" class="form-control" placeholder="Project Name" />
+                                                    <input type="text" name="project_name" id="project_name" class="form-control" placeholder="Project Name" value="{{ $project->project_name }}" />
                                                 </div>
                                             </div>
     
@@ -40,7 +40,7 @@
                                                         <option value=""></option>
                                                         @if($users->isNotEmpty()) 
                                                             @foreach($users as $user) 
-                                                                <option value="{{ $user->id }}">{{ $user->username }}</option>
+                                                                <option value="{{ $user->id }}" {{ $project->project_add_person == $user->id ? 'selected' : '' }}>{{ $user->username }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
@@ -54,7 +54,7 @@
                                                         <option value=""></option>
                                                         @if($departments->isNotEmpty()) 
                                                             @foreach($departments as $department) 
-                                                                <option value="{{ $department->id }}">{{ $department->department }}</option>
+                                                                <option value="{{ $department->id }}" {{ $project->department_id == $department->id ? 'selected' : '' }}>{{ $department->department }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
@@ -64,28 +64,28 @@
                                             <div class="col-sm-6 mb-3">
                                                 <div class="form-group">
                                                     <label for="start_date">Start Date</label>
-                                                    <input type="text" name="start_date" id="start_date" class="form-control datepicker" placeholder="Start Date" />
+                                                    <input type="text" name="start_date" id="start_date" class="form-control datepicker" placeholder="Start Date" value="{{ $project->start_date }}" />
                                                 </div>
                                             </div>
     
                                             <div class="col-sm-6 mb-3">
                                                 <div class="form-group">
                                                     <label for="end_date">End Date</label>
-                                                    <input type="text" name="end_date" id="end_date" class="form-control datepicker" placeholder="End Date" />
+                                                    <input type="text" name="end_date" id="end_date" class="form-control datepicker" placeholder="End Date" value="{{ $project->end_date }}" />
                                                 </div>
                                             </div>
     
                                             <div class="col-sm-6 mb-3">
                                                 <div class="form-group">
                                                     <label for="total_hours">Total Hours</label>
-                                                    <input type="text" name="total_hours" id="total_hours" class="form-control" placeholder="Total Hours" />
+                                                    <input type="text" name="total_hours" id="total_hours" class="form-control" placeholder="Total Hours" value="{{ $project->total_hours }}" />
                                                 </div>
                                             </div>
     
                                             <div class="col-sm-6 mb-3">
                                                 <div class="form-group">
                                                     <label for="total_day">Total days</label>
-                                                    <input type="text" name="total_day" id="total_day" class="form-control" placeholder="Total Days" />
+                                                    <input type="text" name="total_day" id="total_day" class="form-control" placeholder="Total Days" value="{{ $project->total_day }}" />
                                                 </div>
                                             </div>
     

@@ -145,6 +145,10 @@
 
 
                 </div>
+
+                <!-- Footer -->
+                <x-footer />
+                <!-- / Footer -->
             </div>
         </div>
     </div>
