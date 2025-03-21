@@ -71,16 +71,3 @@
               </div>
 
 
-
-<script>
-    (function () {
-            document.getElementById("leaveForm").addEventListener("submit", function (event) {
-                let quill = new Quill("#leave-editor", {
-                    theme: "snow"
-                });
-                document.querySelector("#reason").value = quill.root.innerHTML;
-                this.submit(); // Manually submit the form
-            });
-
-    })();
-</script>

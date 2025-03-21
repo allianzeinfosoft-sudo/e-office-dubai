@@ -14,6 +14,11 @@ trait DateFormatter
         return Carbon::parse($timestamp)->format('F d, Y, h:i:s A'); // e.g., "March 17, 2025, 05:14:06 PM"
     }
 
+    public function formatDateDayMonthYear(?string $date): ?string
+    {
+        return $date ? Carbon::parse($date)->format('d F Y') : null;
+    }
+
     public function getDaysBetween(string $startDate, string $endDate): ?int
     {
         try {

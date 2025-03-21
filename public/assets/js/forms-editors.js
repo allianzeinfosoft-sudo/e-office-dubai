@@ -1,72 +1,21 @@
-/**
- * Form Editors
- */
-
 'use strict';
 
 (function () {
-
-  // Full Toolbar
-  // --------------------------------------------------------------------
+  // Full Toolbar Configuration
   const fullToolbar = [
-    [
-      {
-        font: []
-      },
-      {
-        size: []
-      }
-    ],
+    [{ font: [] }, { size: [] }],
     ['bold', 'italic', 'underline', 'strike'],
-    [
-      {
-        color: []
-      },
-      {
-        background: []
-      }
-    ],
-    [
-      {
-        script: 'super'
-      },
-      {
-        script: 'sub'
-      }
-    ],
-    [
-      {
-        header: '1'
-      },
-      {
-        header: '2'
-      },
-      'blockquote',
-      'code-block'
-    ],
-    [
-      {
-        list: 'ordered'
-      },
-      {
-        list: 'bullet'
-      },
-      {
-        indent: '-1'
-      },
-      {
-        indent: '+1'
-      }
-    ],
+    [{ color: [] }, { background: [] }],
+    [{ script: 'super' }, { script: 'sub' }],
+    [{ header: '1' }, { header: '2' }, 'blockquote', 'code-block'],
+    [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
     [{ direction: 'rtl' }],
     ['link', 'image', 'video', 'formula'],
     ['clean']
   ];
 
-
-
-
-  const leaveEditor = new Quill('#leave-editor', {
+  // Initialize Quill Editor
+  new Quill('#leave-editor', {
     bounds: '#leave-editor',
     placeholder: 'Type reason...',
     modules: {
@@ -76,8 +25,4 @@
     theme: 'snow'
   });
 
-
 })();
-
-
-// });

@@ -154,7 +154,7 @@
     @endif
 
     <script src="{{ asset('assets/js/general.js') }}"></script>
-    
+
     @if (!request()->is('attendance'))
     <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
     <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
@@ -163,9 +163,7 @@
     <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script>
     @endif
 
-    <script src="{{ asset('assets/js/app-access-leave.js') }} "></script>
     @if(Route::is('leaves.*'))
-
         <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script>
     @endif
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>

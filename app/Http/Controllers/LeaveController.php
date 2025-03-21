@@ -24,29 +24,19 @@ class LeaveController extends Controller
     public function leave_list()
     {
 
-        $leaves = Leave::select(
-                    'leaves.id',
-                    'leaves.leave_from',
-                    'leaves.leave_to',
-                    'leaves.leave_type',
-                    'leaves.reason',
-                    'leaves.approved_cancel_date',
-                    'leaves.created_at',
-                    'leaves.status'
-                )->where('status','!=',1)
-                ->with('employee','user') // Ensure roles relationship is loaded
+        $leaves = Leave::with('employee','user')
                 ->get()
                 ->map(function ($leaves) {
                     return [
                         'id' => $leaves->id,
                         'full_name' => $leaves->employee->full_name ?? '',
                         'employee_id' => $leaves->employee->id ?? '',
-                        'leave_from' => $leaves->leave_from ?? '',
-                        'leave_to' => $leaves->leave_to ?? '',
+                        'leave_from' => $leaves->leave_from ? $this->formatDateDayMonthYear($leaves->leave_from) : '',
+                        'leave_to' => $leaves->leave_to ? $this->formatDateDayMonthYear($leaves->leave_to) : '',
                         'leave_type' => $leaves->leave_type ?? '',
                         'leave_reason' => $leaves->reason ?? '',
-                        'apply_date' => $leaves->created_at ? $this->formatDateTime12Hour($leaves->created_at) : '',
-                        'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateTime12Hour($leaves->approved_cancel_date) : '',
+                        'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
+                        'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
                         'leave_count' => $this->getDaysBetween($leaves->leave_from, $leaves->leave_to) ?? '',
                         'status' => $leaves->status ?? ''
                     ];
@@ -123,16 +113,8 @@ class LeaveController extends Controller
     public function leave_status($user_id)
     {
 
-        $leaves = Leave::select(
-            'leaves.id',
-            'leaves.leave_from',
-            'leaves.leave_to',
-            'leaves.leave_type',
-            'leaves.reason',
-            'leaves.approved_cancel_date',
-            'leaves.created_at',
-            'leaves.status'
-        )->where('status','=',1)->where('user_id',$user_id)
+        $leaves = Leave::with('employee','user')
+        ->where('status','=',1)->where('user_id',$user_id)
         ->with('employee','user') // Ensure roles relationship is loaded
         ->get()
         ->map(function ($leaves) {
@@ -140,12 +122,12 @@ class LeaveController extends Controller
                 'id' => $leaves->id,
                 'full_name' => $leaves->employee->full_name ?? '',
                 'employee_id' => $leaves->employee->id ?? '',
-                'leave_from' => $leaves->leave_from ?? '',
-                'leave_to' => $leaves->leave_to ?? '',
+                'leave_from' => $leaves->leave_from ? $this->formatDateDayMonthYear($leaves->leave_from) : '',
+                'leave_to' => $leaves->leave_to ? $this->formatDateDayMonthYear($leaves->leave_to) : '',
                 'leave_type' => $leaves->leave_type ?? '',
                 'leave_reason' => $leaves->reason ?? '',
-                'apply_date' => $leaves->created_at ? $this->formatDateTime12Hour($leaves->created_at) : '',
-                'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateTime12Hour($leaves->approved_cancel_date) : '',
+                'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
+                'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
                 'leave_count' => $this->getDaysBetween($leaves->leave_from, $leaves->leave_to) ?? '',
                 'status' => $leaves->status ?? ''
             ];
@@ -164,38 +146,95 @@ class LeaveController extends Controller
 
     public function pending_leaves()
     {
+        $currentMonthStart = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
+        // Get count of leaves for this month
+        $thisMonthLeaveCount = Leave::where('status', 1)
+                            ->get()
+                            ->sum(function ($leave) use ($currentMonthStart, $currentMonthEnd) {
+                                $leaveFrom = Carbon::parse($leave->leave_from);
+                                $leaveTo = Carbon::parse($leave->leave_to);
 
-            $leaves = Leave::select(
-                'leaves.id',
-                'leaves.leave_from',
-                'leaves.leave_to',
-                'leaves.leave_type',
-                'leaves.reason',
-                'leaves.approved_cancel_date',
-                'leaves.created_at',
-                'leaves.status'
-            )->where('status','=',1)
-            ->with('employee','user') // Ensure roles relationship is loaded
+                                // Get the effective leave period within this month
+                                $effectiveFrom = $leaveFrom->greaterThanOrEqualTo($currentMonthStart) ? $leaveFrom : $currentMonthStart;
+                                $effectiveTo = $leaveTo->lessThanOrEqualTo($currentMonthEnd) ? $leaveTo : $currentMonthEnd;
+
+                                // Ensure valid range
+                                if ($effectiveFrom->greaterThan($effectiveTo)) {
+                                    return 0;
+                                }
+
+                                // Calculate the number of leave days in this month
+                                return $effectiveFrom->diffInDays($effectiveTo) + 1;
+                            });
+
+
+            $leaves = Leave::with('employee','user')
+            ->where('status','=',1)
             ->get()
-            ->map(function ($leaves) {
+            ->map(function ($leaves) use ($thisMonthLeaveCount) {
                 return [
                     'id' => $leaves->id,
-                    'full_name' => $leaves->employee->full_name ?? '',
-                    'employee_id' => $leaves->employee->id ?? '',
-                    'leave_from' => $leaves->leave_from ?? '',
-                    'leave_to' => $leaves->leave_to ?? '',
+                    'user_id' =>$leaves->user_id,
+                    'full_name' => $leaves->employee->full_name ?? 'N/A',
+                    'avatar' => $leaves->employee->profile_image ?? '',
+                    'employee_id' => $leaves->employee->id ?? 'N/A',
+                    'leave_from' => $this->formatDateDayMonthYear($leaves->leave_from) ?? '',
+                    'leave_to' => $this->formatDateDayMonthYear($leaves->leave_to) ?? '',
                     'leave_type' => $leaves->leave_type ?? '',
                     'leave_reason' => $leaves->reason ?? '',
-                    'apply_date' => $leaves->created_at ? $this->formatDateTime12Hour($leaves->created_at) : '',
-                    'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateTime12Hour($leaves->approved_cancel_date) : '',
+                    'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
+                    'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
                     'leave_count' => $this->getDaysBetween($leaves->leave_from, $leaves->leave_to) ?? '',
-                    'status' => $leaves->status ?? ''
+                    'status' => $leaves->status ?? '',
+                    'this_month_leave_count' => $thisMonthLeaveCount,
                 ];
             });
 
         $response = response()->json(['data' => $leaves]);
         $json_data = json_decode($response->getContent(), true)['data'];
+
         return json_encode(['data' => $json_data]);
+
+    }
+
+
+    public function leave_action(Request $request)
+    {
+        $request->validate([
+
+            'modalLeaveId' => 'required',
+            'modalFunctionType' => 'required'
+        ]);
+
+        $id = $request['modalLeaveId'];
+        $action = $request['modalFunctionType'];
+
+        if($action == 1)
+        {
+
+            $leave = Leave::find($id);
+            if ($leave) {
+                $leave->status = 2;
+                $leave->save();
+                return redirect()->back()->with('success', 'Leave Approved successfully!');
+            } else {
+                return redirect()->back()->with('error', 'Invalid user!');
+            }
+        }
+        elseif($action == 2)
+        {
+            $leave = Leave::find($id);
+            if ($leave) {
+                $leave->status = 3;
+                $leave->save();
+                return redirect()->back()->with('success', 'Leave Rejected successfully!');
+            } else {
+                return redirect()->back()->with('error', 'Invalid user!');
+            }
+        }
+
+
 
     }
 

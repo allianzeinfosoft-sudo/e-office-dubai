@@ -59,7 +59,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
     Route::get('/settings/userstastus',[SettingsController::class, 'list_user_status'])->name('userstatus');
     Route::post('/check-email', [UserController::class, 'checkEmail']);
-    
+
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
@@ -68,7 +68,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('branchs',BranchController::class);
     Route::get('/branch-list',[BranchController::class, 'getBranches']);
     Route::get('/branches/{branch}/departments', [BranchController::class, 'getDepartments'])->name('branch.departments');
-    
+
     /* designiations */
     Route::get('/departments/{department}/designations', [BranchController::class, 'getDesignations'])->name('department.designations');
     Route::post('/designation/save',[BranchController::class, 'designation_store'])->name('designation.store');
@@ -77,14 +77,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
     Route::post('/settings/workshift/save',[SettingsController::class, 'store_work_shift'])->name('store.workshift');
-    
+
     // leave route
     Route::resource('leaves',LeaveController::class);
     Route::get('/leave-list',[LeaveController::class, 'leave_list']);
-    Route::get('leave-status-show',[LeaveController::class,'show_leave_status'])->name('leaves.status.show');
+    Route::get('leave-status',[LeaveController::class,'show_leave_status'])->name('leaves.status');
     Route::get('/leave-status/{user_id}',[LeaveController::class, 'leave_status'])->name('leave.status');
     Route::get('/pending-leaves',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
     Route::get('/leave-pending',[LeaveController::class, 'pending_leaves'])->name('leaves.pending');
+    Route::post('leave/action', [LeaveController::class, 'leave_action'])->name('leaves.leave_action');
 
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
