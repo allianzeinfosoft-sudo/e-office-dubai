@@ -37,6 +37,7 @@ return [
         'title' => 'Attendance',
         'icon' => 'ti ti-alarm',
         'route' => 'attendance',
+        'isActive' => ['attendance*'],
     ],
     [
         'title' => 'Works',
@@ -66,12 +67,17 @@ return [
         'title' => 'Projects',
         'icon' => 'ti ti-briefcase',
         'route' => 'javascript:void(0);',
-        'isActive' => ['projects*', 'project*'],
+        'isActive' => ['projects*', 'project*', 'tasks-project*'],
         'submenu' => [
             [
                 'title' => 'Projects',
                 'route' =>  'projects',
-                'isActive' => ['projects*', 'project*'],
+                'isActive' => ['projects', 'project*'],
+            ],  
+            [
+                'title' => 'Project Tasks',
+                'route' =>  'tasks-project',
+                'isActive' => ['tasks-project*'],
             ],  
               
         ]

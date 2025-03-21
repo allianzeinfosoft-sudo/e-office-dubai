@@ -94,6 +94,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/project/{project}/edit', [ProjectController::class, 'edit'])->name('project.edit');
     Route::post('/project/{project}/update', [ProjectController::class, 'update'])->name('project.update');
     Route::delete('/project/{projectId}/destroy', [ProjectController::class, 'destroy'])->name('projects.destroy');
-
+    
+    /* Project Tasks */
+    Route::get('/tasks-project', [ProjectTaskController::class, 'index'])->name('tasks-project.index');
+    Route::get('/tasks-project/create', [ProjectTaskController::class, 'create'])->name('tasks-project.create');
+    Route::post('/tasks-project/store', [ProjectTaskController::class, 'store'])->name('tasks-project.store');
+    Route::get('/tasks-project/{projectTask}/edit', [ProjectTaskController::class, 'edit'])->name('tasks-project.edit');
+    Route::post('/tasks-project/{projectTask}/update', [ProjectTaskController::class, 'update'])->name('tasks-project.update');
+    Route::delete('/tasks-project/{projectTask}/destroy', [ProjectTaskController::class, 'destroy'])->name('tasks-project.destroy');
+    
 });
 
