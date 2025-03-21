@@ -60,6 +60,8 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <!-- Scripts -->
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
+
+    @yield('css')
 </head>
 <body>
     <div id="app">
@@ -152,8 +154,14 @@
     @endif
 
     <script src="{{ asset('assets/js/general.js') }}"></script>
+    
+    @if (!request()->is('attendance'))
+    <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
+    <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="{{ asset('assets/js/form-wizard-numbered.js') }}"></script>
     <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script>
+    @endif
 
     <script src="{{ asset('assets/js/app-access-leave.js') }} "></script>
     @if(Route::is('leaves.*'))
@@ -163,6 +171,8 @@
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>
 
      <!-- Vendors JS -->
+
+     @yield('js')
 
 </body>
 </html>
