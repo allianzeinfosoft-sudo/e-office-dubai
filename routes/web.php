@@ -66,7 +66,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/leave-list',[LeaveController::class, 'leave_list']);
     Route::get('leave-status-show',[LeaveController::class,'show_leave_status'])->name('leaves.status.show');
     Route::get('/leave-status/{user_id}',[LeaveController::class, 'leave_status'])->name('leave.status');
-    Route::get('leave-pending-show',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
+    Route::get('/pending-leaves',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
     Route::get('/leave-pending',[LeaveController::class, 'pending_leaves'])->name('leaves.pending');
 });
 
