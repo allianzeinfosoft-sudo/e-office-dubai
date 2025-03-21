@@ -31,14 +31,19 @@
                                     <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> {{ $meta_title }}</h4>
                                 </div>
                                 <div class="card-body">
-                                    <form action="#" method="POST">
+                                    <form id="workReportForm" action="{{ route('work-report.store') }}" method="POST">
                                         @csrf
                                         <div class="row">
                                             <div class="col-sm-3 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="Project">Project</label>
-                                                    <select name="projects" id="projects" data-placeholder="Select Project" class="form-control select2">
+                                                    <label for="project_name">Project</label>
+                                                    <select name="project_name" id="project_name" data-placeholder="Select Project" class="form-control select2">
                                                         <option value=""></option>
+                                                        @if($projects->isNotEmpty())
+                                                            @foreach($projects as $project)
+                                                            <option value="{{ $project->id }}">{{ $project->project_name }}</option>
+                                                            @endforeach
+                                                        @endif
                                                     </select>
                                                 </div>
                                             </div>   
@@ -54,35 +59,38 @@
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="Project">Total Records / Tasks</label>
-                                                    <input type="text" name="" id="" placeholder="Totla Records / Tasks" class="form-control" />
+                                                    <label for="total_records">Total Records / Tasks</label>
+                                                    <input type="text" name="total_records" id="total_records" placeholder="Totla Records / Tasks" class="form-control" />
                                                 </div>
                                             </div>    
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="Project">Productivity Per Hour</label>
-                                                    <input type="text" name="" id="" placeholder="Productivity per hour" class="form-control" />
+                                                    <label for="productivity_hour">Productivity Per Hour</label>
+                                                    <input type="text" name="productivity_hour" id="productivity_hour" placeholder="Productivity per hour" class="form-control" />
                                                 </div>
                                             </div>    
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="Project">No. of Hours</label>
-                                                    <input type="time" name="" id="" placeholder="No. of Hours" value="{{ date('H:i', strtotime('now')) }}" class="form-control" required />
+                                                    <label for="total_time">No. of Hours</label>
+                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" value="{{ date('H:i', strtotime('now')) }}" class="form-control" required />
                                                 </div>
                                             </div>    
 
                                             <div class="col-sm-12 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="Project">Comments</label>
-                                                    <textarea name="" id="" class="form-control" rows="5"></textarea>
+                                                    <label for="comments">Comments</label>
+                                                    <textarea name="comments" id="comments" class="form-control" rows="5"></textarea>
                                                 </div>
                                             </div>
                                             
                                             <div class="col-sm-12 mb-2 g-2 d-flex justify-content-end">
-                                                <button type="button" class="btn btn-primary"><i class="ti ti-plus"></i> Add</button>
+                                                <input type="hidden" name="emp_id" value="{{ $missingReport->emp_id }}" />
+                                                <input type="hidden" name="report_date" value="{{ $missingReport->signin_date }}" />
+                                                <button type="button" id="submitForm" class="btn btn-primary"><i class="ti ti-plus"></i> Add</button>
                                             </div>
+
                                         </div>
                                     </form>
                                 </div>
@@ -160,6 +168,55 @@
 <script>
     $(function() {
         $('.select2').select2();
+
+        $('#project_name').on('change', function () {
+            let project_id = $(this).val();
+            if (project_id) {
+                let url = `{{ route('tasks-project.get-tasks-by-project', ':project_id') }}`.replace(':project_id', project_id);
+
+                $.ajax({
+                    type: "GET",
+                    url: url, // ✅ Removed incorrect semicolon
+                    success: function (response) {
+                        if (response.success) {
+                            let options = '<option value="">Select a task</option>';
+                            response.data.forEach(task => {
+                                options += `<option value="${task.id}">${task.task_name}</option>`;
+                            });
+                            $('#type_of_work').html(options);
+                        }else{
+                            $('#type_of_work').html('<option value="">Select a task</option>');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
+        });
+
+        $('#submitForm').on('click', function(e){
+            e.preventDefault(); // Prevent default form submission
+            let formData = $('#workReportForm').serialize(); // Serialize form data
+
+            $.ajax({
+                type: "POST",
+                url: $('#workReportForm').attr('action'), // Get action URL from form
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        alert('Work report added successfully!');
+                        $('#workReportForm')[0].reset(); // Reset form after submission
+                    } else {
+                        alert('Something went wrong. Please try again.');
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseJSON.message);
+                }
+            });
+        });
+
     });
 </script>
 @stop

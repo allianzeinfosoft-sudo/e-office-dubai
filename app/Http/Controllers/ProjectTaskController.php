@@ -118,4 +118,14 @@ class ProjectTaskController extends Controller
         $projectTask->delete();
         return response()->json(['message' => 'Project deleted successfully']);
     }
+
+    public function getTasksByProject($project_id){
+
+        $projectTasks = ProjectTask::where('project_id', $project_id)->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $projectTasks,
+        ]);
+    }
 }

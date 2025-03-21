@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -140,18 +141,19 @@ class AttendanceController extends Controller{
         $data['weekOffDays'] = $weekOffDays;
         $data['totalWorkingDays'] = $totalWorkingDays;
 
-        $missingReports = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
+        $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
             $query->select(DB::raw(1))
                 ->from('work_reports')
                 ->whereColumn('work_reports.report_date', 'attendances.signin_date')
                 ->whereColumn('work_reports.username', 'attendances.username');
-        })->get();
+        })->first();
 
-        if ($missingReports->isNotEmpty()) {
-            $data['meta_title']     = 'Add Work Report';
-            $data['missingReports'] = $missingReports;
+        if ($missingReport) { // ✅ Use simple if-check instead of isNotEmpty()
+            $data['meta_title'] = 'Add Work Report';
+            $data['projects'] = Project::all();
+            $data['missingReport'] = $missingReport; // ✅ Store it as a single object
             return view('attendance.work_report', $data);
-        }else{
+        } else {
             return view('attendance.index', $data);
         }
     }
@@ -336,4 +338,5 @@ class AttendanceController extends Controller{
     {
         //
     }
+
 }
