@@ -28,7 +28,6 @@ class WorkReportController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request){
-
         $request->validate([
             'project_name'      => 'required',
             'type_of_work'      => 'required|string|max:255',
@@ -41,7 +40,7 @@ class WorkReportController extends Controller
             'report_date'       => 'required|date',
         ]);
         $productivity_hour = is_numeric($request->productivity_hour) ? (int) $request->productivity_hour : 0;
-        WorkReport::create([
+        $workReport = WorkReport::create([
             'username'          => Auth::user()->username,
             'emp_id'            => $request->emp_id,
             'project_name'      => $request->project_name,
@@ -56,6 +55,7 @@ class WorkReportController extends Controller
     
         return response()->json([
             'success' => true,
+            'data' => $workReport,
             'message' => 'Work report submitted successfully!',
         ]);
     }

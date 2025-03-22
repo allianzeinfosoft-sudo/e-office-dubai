@@ -22,7 +22,7 @@
 
                     <div class="row">
 
-                        <div class="col-lg-12 mb-4">
+                        <div class="col-lg-12 mb-4" id="workReportFormContainer">
                             <div class="card">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between">
@@ -36,8 +36,8 @@
                                         <div class="row">
                                             <div class="col-sm-3 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="project_name">Project</label>
-                                                    <select name="project_name" id="project_name" data-placeholder="Select Project" class="form-control select2">
+                                                    <label for="project_name" class="form-label">Project</label>
+                                                    <select name="project_name" id="project_name" data-placeholder="Select Project" class="select2 form-select" data-allow-clear="true">
                                                         <option value=""></option>
                                                         @if($projects->isNotEmpty())
                                                             @foreach($projects as $project)
@@ -50,8 +50,8 @@
 
                                             <div class="col-sm-3 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="type_of_work">Type of Work</label>
-                                                    <select name="type_of_work" data-placeholder="Select Type of Work" id="type_of_work" class="form-control select2">
+                                                    <label for="type_of_work" class="form-label">Type of Work</label>
+                                                    <select name="type_of_work" data-placeholder="Select Type of Work" id="type_of_work" class="select2 form-select" data-allow-clear="true">
                                                         <option value=""></option>
                                                     </select>
                                                 </div>
@@ -59,28 +59,28 @@
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="total_records">Total Records / Tasks</label>
+                                                    <label for="total_records" class="form-label">Total Records / Tasks</label>
                                                     <input type="text" name="total_records" id="total_records" placeholder="Totla Records / Tasks" class="form-control" />
                                                 </div>
                                             </div>    
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="productivity_hour">Productivity Per Hour</label>
+                                                    <label for="productivity_hour" class="form-label">Productivity Per Hour</label>
                                                     <input type="text" name="productivity_hour" id="productivity_hour" placeholder="Productivity per hour" class="form-control" />
                                                 </div>
                                             </div>    
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="total_time">No. of Hours</label>
-                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" value="{{ date('H:i', strtotime('now')) }}" class="form-control" required />
+                                                    <label for="total_time" class="form-label">No. of Hours</label>
+                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" value="{{ date('H:i:s', strtotime($missingReport->working_hours)) }}" class="form-control" required />
                                                 </div>
                                             </div>    
 
                                             <div class="col-sm-12 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="comments">Comments</label>
+                                                    <label for="comments" class="form-label">Comments</label>
                                                     <textarea name="comments" id="comments" class="form-control" rows="5"></textarea>
                                                 </div>
                                             </div>
@@ -99,11 +99,17 @@
 
                         <div class="col-sm-12">
                             <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between">
+                                        
+                                    </div>
+                                    <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> Work Report</h4>
+                                </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12 mb-2">
                                             <div class="table-responsive">
-                                                <table class="table table-bordered table-striped table-hover">
+                                                <table id="workReportTable" class="table table-bordered table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th class="align-middle" width="11.11%">Project Name</th>
@@ -118,29 +124,22 @@
                                                         </tr>                                                    
                                                     </thead>
                                                     
-                                                    <tbody>
+                                                    <tbody >
+
+                                                        @if($missingReport)
                                                         <tr>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
+                                                            <td><strong>Break</strong></td>
+                                                            <td><span class="badge bg-dark">NA</span></td>
+                                                            <td><span class="badge bg-dark">NA</span></td>
+                                                            <td>{{ $missingReport->break_time }}</td>
+                                                            <td><span class="badge bg-dark">NA</span></td>
+                                                            <td><span class="badge bg-dark">NA</span></td>
+                                                            <td><span class="badge bg-dark">NA</span></td>
+                                                            <td>Auto Break</td>
+                                                            <td><button type="button" class="btn btn-icon btn-warning waves-effect"><i class="ti ti-edit"></i></button></td>
                                                         </tr>
-                                                        <tr>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
+                                                        @endif
+
                                                     </tbody> 
                                                 </table>
                                             </div>
@@ -207,7 +206,7 @@
                     if (response.success) {
                         alert('Work report added successfully!');
                         $('#workReportForm')[0].reset(); 
-                        location.reload(); 
+                        getReportData(response.data);
                     } else {
                         alert('Something went wrong. Please try again.');
                     }
@@ -219,5 +218,25 @@
         });
 
     });
+
+    function getReportData(workReport) {
+        if (!workReport) return;
+        var html = '';
+        html += '<tr>';
+        html += "<td><strong>" + workReport.project_name + "</strong></td>";
+        html += "<td><strong>" + workReport.type_of_work + "</strong></td>";
+        html += "<td><strong>" + workReport.total_records + "</strong></td>";
+        html += "<td><strong>" + workReport.time_of_work + "</strong></td>";
+        html += "<td><strong>" + workReport.productivity_hour + "</strong></td>";
+        html += "<td><strong>" + (workReport.grade || "-") + "</strong></td>"; // Handle missing grade
+        html += "<td><strong>" + (workReport.performance || "-") + "</strong></td>"; // Handle missing performance
+        html += "<td><strong>" + (workReport.comments || "No comments") + "</strong></td>";
+        html += '<td>';
+        html += '<button type="button" class="btn btn-sm btn-icon btn-primary waves-effect"><i class="ti ti-edit"></i></button>';
+        html += '<button type="button" class="btn btn-sm btn-icon btn-danger waves-effect"><i class="ti ti-trash"></i></button>';
+        html += '</td>';
+        html += '</tr>';
+        $("#workReportTable tbody").append(html);
+    }
 </script>
 @stop
