@@ -201,12 +201,13 @@
 
             $.ajax({
                 type: "POST",
-                url: $('#workReportForm').attr('action'), // Get action URL from form
+                url: $('#workReportForm').attr('action'), 
                 data: formData,
                 success: function(response) {
                     if (response.success) {
                         alert('Work report added successfully!');
-                        $('#workReportForm')[0].reset(); // Reset form after submission
+                        $('#workReportForm')[0].reset(); 
+                        location.reload(); 
                     } else {
                         alert('Something went wrong. Please try again.');
                     }

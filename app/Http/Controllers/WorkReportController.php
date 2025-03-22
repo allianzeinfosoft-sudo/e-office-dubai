@@ -30,16 +30,17 @@ class WorkReportController extends Controller
     public function store(Request $request){
 
         $request->validate([
-            'project_name'  => 'required',
-            'type_of_work'  => 'required|string|max:255',
-            'total_tasks'   => 'nullable|integer',
-            'productivity'  => 'nullable|numeric',
-            'hours'         => 'nullable',
-            'comments'      => 'nullable|string',
-            'emp_id'        => 'required|integer',
-            'report_date'   => 'required|date',
+            'project_name'      => 'required',
+            'type_of_work'      => 'required|string|max:255',
+            'total_tasks'       => 'nullable|integer',
+            'productivity_hour' => 'nullable|numeric',
+            'time_of_work'      => 'nullable',
+            'total_records'      => 'nullable',
+            'comments'          => 'nullable|string',
+            'emp_id'            => 'required|integer',
+            'report_date'       => 'required|date',
         ]);
-    
+        $productivity_hour = is_numeric($request->productivity_hour) ? (int) $request->productivity_hour : 0;
         WorkReport::create([
             'username'          => Auth::user()->username,
             'emp_id'            => $request->emp_id,
@@ -50,7 +51,7 @@ class WorkReportController extends Controller
             'comments'          => $request->comments,
             'report_date'       => $request->report_date,
             'total_records'     => $request->total_records,
-            'productivity_hour' => $request->productivity_hour,
+            'productivity_hour' => $productivity_hour,
         ]);
     
         return response()->json([
