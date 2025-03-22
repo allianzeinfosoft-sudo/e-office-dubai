@@ -52,6 +52,8 @@ class WorkReportController extends Controller
             'total_records'     => $request->total_records,
             'productivity_hour' => $productivity_hour,
         ]);
+
+        $workReport->load(['user', 'project', 'projectTask']);
     
         return response()->json([
             'success' => true,

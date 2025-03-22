@@ -136,7 +136,7 @@
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td>Auto Break</td>
-                                                            <td><button type="button" class="btn btn-icon btn-warning waves-effect"><i class="ti ti-edit"></i></button></td>
+                                                            <td><button type="button" class="btn btn-sm btn-icon btn-warning waves-effect"><i class="ti ti-edit"></i></button></td>
                                                         </tr>
                                                         @endif
 
@@ -144,6 +144,13 @@
                                                 </table>
                                             </div>
                                         </div>                                                        
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between"></div>
+                                        <div class="d-flex align-items-right justify-content-end">
+                                            <button type="button" onclick="submitReport()" class="btn btn-primary waves-effect"><i class="ti ti-save ti-sm"></i> Submit Report</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -221,12 +228,14 @@
 
     function getReportData(workReport) {
         if (!workReport) return;
+
+        $('#workReportFormContainer').hide();
         var html = '';
         html += '<tr>';
-        html += "<td><strong>" + workReport.project_name + "</strong></td>";
-        html += "<td><strong>" + workReport.type_of_work + "</strong></td>";
+        html += "<td><strong>" + workReport.project.project_name + "</strong></td>";
+        html += "<td><strong>" + workReport.project_task.task_name + "</strong></td>";
         html += "<td><strong>" + workReport.total_records + "</strong></td>";
-        html += "<td><strong>" + workReport.time_of_work + "</strong></td>";
+        html += "<td><strong>" + workReport.total_time + "</strong></td>";
         html += "<td><strong>" + workReport.productivity_hour + "</strong></td>";
         html += "<td><strong>" + (workReport.grade || "-") + "</strong></td>"; // Handle missing grade
         html += "<td><strong>" + (workReport.performance || "-") + "</strong></td>"; // Handle missing performance
@@ -237,6 +246,11 @@
         html += '</td>';
         html += '</tr>';
         $("#workReportTable tbody").append(html);
+        
+    }
+
+    function submitReport() {
+        window.location.reload();
     }
 </script>
 @stop
