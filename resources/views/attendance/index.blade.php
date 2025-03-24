@@ -75,35 +75,22 @@
                       <h5 class="mb-0">No of Working Days</h5>
                       <small class="text-muted">Weekly Earnings Overview</small>
                     </div>
-                    <div class="dropdown">
-                      <button
-                        class="btn p-0"
-                        type="button"
-                        id="earningReportsId"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false">
-                        <i class="ti ti-dots-vertical ti-sm text-muted"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="earningReportsId">
-                        <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-                      </div>
-                    </div>
-                    <!-- </div> -->
                   </div>
+
                   <div class="card-body">
                     <div class="row">
-                      <div class="col-12 col-md-4 d-flex flex-column align-self-end">
+                      <div class="col-12 col-md-3 d-flex flex-column align-self-end">
                         <div class="d-flex gap-2 align-items-center mb-2 pb-1 flex-wrap">
                           <h1 class="mb-0">{{ $days_of_worked ?? '0' }}</h1>
                           <div class="badge rounded bg-label-success">Days</div>
                         </div>
-                        <small class="text-muted">You informed of this week compared to last week</small>
+                        <small class="text-muted">Completed</small>
                       </div>
-                      <div class="col-12 col-md-8">
+                      <div class="col-12 col-md-9">
                         <div id="weeklyEarningReports"></div>
                       </div>
                     </div>
+
                     <div class="border rounded p-3 mt-2">
                       <div class="row gap-4 gap-sm-0">
                         <div class="col-12 col-sm-4">
@@ -397,14 +384,14 @@
     const weeklyEarningReportsEl = document.querySelector('#weeklyEarningReports');
     
     const weeklyEarningReportsConfig = {
-      chart: {
-        height: 202,
+      chart: { 
+        height: 202, 
         parentHeightOffset: 0,
         type: 'bar',
         toolbar: { show: false }
       },
-      plotOptions: {
-        bar: {
+      plotOptions: { 
+        bar: { 
           barHeight: '60%',
           columnWidth: '38%',
           startingShape: 'rounded',
@@ -414,12 +401,12 @@
         }
       },
       grid: {
-        show: false,
+        show: true,
         padding: {
-          top: -30,
+          top: 10,
           bottom: 0,
-          left: -10,
-          right: -10
+          left: 10,
+          right: 10
         }
       },
       colors: ['#28a745'], // Green for working days
@@ -619,6 +606,7 @@
                 toastr.success(response.message);
                 $('#customMarkingForm')[0].reset(); // Clear form after success
                 $('#modelCustom').modal('hide'); // Close modal after success
+                window.location.reload();
             } else {
                 toastr.error(response.message);
             }
@@ -674,6 +662,7 @@ function emergencyMark(type) {
                 toastr.success(response.message);
                 $('#emergencyMarkingForm')[0].reset(); // Clear form after success
                 $('#emergencyMarking').modal('hide'); // Close modal after success
+                window.location.reload();
             } else {
                 toastr.error(response.message);
             }

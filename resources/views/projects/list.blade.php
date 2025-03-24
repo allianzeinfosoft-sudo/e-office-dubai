@@ -32,7 +32,7 @@
                             </a>
                         </div>
 
-                        <table class="datatables-basic datatables-projects table border-top">
+                        <table class="datatables-basic datatables-projects table border-top table-stripedc">
                             <thead>
                                 <tr>
                                     <th>Project</th>
@@ -47,6 +47,10 @@
                     </div>  
                 </div>
             </div>
+
+            <!-- Footer -->
+            <x-footer />
+            <!-- / Footer -->
         </div>
       </div>
     </div>
@@ -71,25 +75,45 @@
                 },
                 columns: [
                     { data: 'project_name', title: 'Project Name' },
-                    { data: 'department_id', title: 'Department ID' },
-                    { data: 'project_add_person', title: 'Added By' },
+                    { data: 'department_name', title: 'Department' },
+                    { data: 'user_name', title: 'Added By' },
                     { data: 'start_date', title: 'Start Date' },
                     { data: 'end_date', title: 'End Date' },
                     { 
                         data: null, 
                         title: 'Actions',
                         render: function (data, type, row) {
+                            const editUrl = "{{ route('project.edit', ':id') }}".replace(':id', row.id);
                             return `
-                                <button class="btn btn-sm btn-primary edit-project" data-id="${row.id}">Edit</button>
-                                <button class="btn btn-sm btn-danger delete-project" data-id="${row.id}">Delete</button>
+                                <a href="${editUrl}" class="btn btn-sm btn-primary edit-project">Edit</a>
+                                <button type="button" class="btn btn-sm btn-danger delete-project" onclick="deleteProject(${row.id})" data-id="${row.id}">Delete</button>
                             `;
                         }
                     }
                 ]
             });
         }
+    });
 
-    })
+    function deleteProject(projectId) {
+        if (confirm('Are you sure you want to delete this project?')) {
+            $.ajax({
+                url: "{{ route('projects.destroy', ':id') }}".replace(':id', projectId), // ✅ Correct route name
+                type: "DELETE",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    alert(response.message);
+                    $('.datatables-projects').DataTable().ajax.reload(); // ✅ Ensure correct table ID
+                },
+                error: function(xhr) {
+                    alert("Error deleting project. Please try again.");
+                }
+            });
+        }
+    }
+    
 </script>
 
 @stop

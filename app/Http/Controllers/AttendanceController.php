@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Project;
+use App\Models\CustomAttendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\CustomHelper;
 
 class AttendanceController extends Controller{
     
@@ -66,6 +69,18 @@ class AttendanceController extends Controller{
         $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
+        $missingMarkOut = Attendance::where('username', Auth::user()->username)
+        ->where('signin_date', '<', now()->format('Y-m-d')) // Check dates before today
+        ->whereNull('signout_time') // No sign-out time means the user has not marked out
+        ->first();
+
+        if ($missingMarkOut) {
+            // If there's a missing mark-out, don't allow marking in
+            $data['meta_title'] = 'Mark Out First';
+            $data['missingMarkOut'] = $missingMarkOut; // Pass the missing mark-out date to the view
+            return view('attendance.markOut', $data); // Show a page telling the user to mark out first
+        }
+
     
         for ($day = 1; $day <= $daysInMonth; $day++) {
             $date = now()->format('Y-m-') . str_pad($day, 2, '0', STR_PAD_LEFT);
@@ -121,6 +136,8 @@ class AttendanceController extends Controller{
         $data['progressPercentage'] = $possibleMinutes > 0 
             ? round(($totalMinutes / $possibleMinutes) * 100) 
             : 0;
+
+        
     
         // Calculate average worked hours per day
         if ($workedDays > 0) {
@@ -140,18 +157,19 @@ class AttendanceController extends Controller{
         $data['weekOffDays'] = $weekOffDays;
         $data['totalWorkingDays'] = $totalWorkingDays;
 
-        $missingReports = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
+        $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
             $query->select(DB::raw(1))
                 ->from('work_reports')
                 ->whereColumn('work_reports.report_date', 'attendances.signin_date')
                 ->whereColumn('work_reports.username', 'attendances.username');
-        })->get();
+        })->first();
 
-        if ($missingReports->isNotEmpty()) {
-            $data['meta_title']     = 'Add Work Report';
-            $data['missingReports'] = $missingReports;
+        if ($missingReport) { // ✅ Use simple if-check instead of isNotEmpty()
+            $data['meta_title'] = 'Add Work Report';
+            $data['projects'] = Project::all();
+            $data['missingReport'] = $missingReport; // ✅ Store it as a single object
             return view('attendance.work_report', $data);
-        }else{
+        } else {
             return view('attendance.index', $data);
         }
     }
@@ -187,6 +205,7 @@ class AttendanceController extends Controller{
             'signin_date' => now()->format('Y-m-d'),
             'signin_time' => now()->format('H:i:s'),
             'punchin_type' => 'Web',
+            'break_time' => '1:00:00',
             'ipaddress' => $request->ip(),
             'status' => 'mark-in'
         ]);
@@ -223,12 +242,14 @@ class AttendanceController extends Controller{
                 ]
             ]);
         }
+        $workingTime = CustomHelper::calculateTotalWorkingTime($attendance->signin_date, $attendance->signin_time, now()->format('Y-m-d'), now()->format('H:i:s'), $attendance->break_time);
 
         $attendance->update([
             'signout_time' => now()->format('H:i:s'),
             'signout_date' => now()->format('Y-m-d'),
             'punchout_type' => 'Web',
-            'status' => 'mark-out'
+            'status' => 'mark-out',
+            'working_hours' => $workingTime['total_working_time']
         ]);
 
         return response()->json([
@@ -260,7 +281,19 @@ class AttendanceController extends Controller{
             'signin_late_note' => $request->signin_late_note,
             'punchin_type' => 'Custom',
             'ipaddress' => $request->ip(),
-            'status' => 'custom'
+            'status' => 'custom',
+            'custom_status' => '1'
+        ]);
+
+        // Store data in `custom_attendances` table
+        $customAttendance = CustomAttendance::create([
+            'username' => Auth::user()->username,
+            'emp_id' => Auth::user()->id,
+            'picktime' => $request->signin_time,
+            'reason' => $request->signin_late_note,
+            'signin_date' => date('Y-m-d', strtotime($request->signin_date)),
+            'status' => 0, // Assuming 0 means pending status
+            'approved_by' => null
         ]);
 
         return response()->json([
@@ -271,6 +304,26 @@ class AttendanceController extends Controller{
             ]
         ]);
     }
+
+    public function customMarkOut(Request $request, $id) {
+        $request->validate([
+            'signout_time' => 'required',
+            'signout_late_note' => 'required',
+        ]);
+
+        $markOut = Attendance::findOrFail($id);
+        $workingTime = CustomHelper::calculateTotalWorkingTime($markOut->signin_date, $markOut->signin_time, $request->signout_date, $request->signout_time, $markOut->break_time);
+        $markOut->signout_time = $request->signout_time;
+        $markOut->signout_date = $request->signout_date;
+        $markOut->signout_late_note = $request->signout_late_note;
+        $markOut->status = 'mark-out';
+        $markOut->punchout_type = 'custom';
+        $markOut->working_hours = $workingTime['total_working_time'] ?? 0;
+        $markOut->save();
+
+        return response()->json(['success' => true, 'message' => 'Mark out updated successfully.']);
+    }
+    
 
     /* Emergency mark-in mark-out*/
     public function emergencyMark(Request $request)
@@ -336,4 +389,5 @@ class AttendanceController extends Controller{
     {
         //
     }
+
 }

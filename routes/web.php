@@ -10,6 +10,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
+use App\Http\Controllers\WorkReportController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -39,7 +40,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/attendance/mark-out',[AttendanceController::class, 'markOut'])->name('attendance.mark-out');
     Route::post('/attendance/custom-mark-in',[AttendanceController::class, 'customMarkIn'])->name('attendance.custom-mark-in');
     Route::post('/attendance/emergency-mark',[AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
-
+    Route::post('/attendance/custom-mark-out/{id}',[AttendanceController::class, 'customMarkOut'])->name('attendance.custom-mark-out');
+    
     /* roles */
     Route::resource('roles', RoleController::class);
     Route::get('/user/roles',[RoleController::class, 'getroles']);
@@ -92,5 +94,21 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/project/create', [ProjectController::class, 'create'])->name('project.create');
     Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
+    Route::get('/project/{project}/edit', [ProjectController::class, 'edit'])->name('project.edit');
+    Route::post('/project/{project}/update', [ProjectController::class, 'update'])->name('project.update');
+    Route::delete('/project/{projectId}/destroy', [ProjectController::class, 'destroy'])->name('projects.destroy');
+    
+    /* Project Tasks */
+    Route::get('/tasks-project', [ProjectTaskController::class, 'index'])->name('tasks-project.index');
+    Route::get('/tasks-project/create', [ProjectTaskController::class, 'create'])->name('tasks-project.create');
+    Route::post('/tasks-project/store', [ProjectTaskController::class, 'store'])->name('tasks-project.store');
+    Route::get('/tasks-project/{projectTask}/edit', [ProjectTaskController::class, 'edit'])->name('tasks-project.edit');
+    Route::post('/tasks-project/{projectTask}/update', [ProjectTaskController::class, 'update'])->name('tasks-project.update');
+    Route::delete('/tasks-project/{projectTask}/destroy', [ProjectTaskController::class, 'destroy'])->name('tasks-project.destroy');
+    Route::get('/tasks-project/{project_id}/get-tasks-by-project', [ProjectTaskController::class, 'getTasksByProject'])->name('tasks-project.get-tasks-by-project');
+
+    /* Work Report */
+    Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
+    
 });
 
