@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\Department;
+use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\LeaveAllocation;
 use App\Models\User;
@@ -50,8 +51,24 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
+
+        $validatedData = $request->validate([
+
+            'employeeID' => 'required|unique:employees,employeeID',
+            'username' => 'required|unique:users,username',
+            'email' => 'required|unique:users,email|email',
+            'full_name' => 'required',
+            'phonenumber' => 'required|unique:employees',
+            'mobile_number' => 'unique:employees',
+            'personal_email' => 'email|unique:employees|email',
+            'aadhaar' => 'unique:employees',
+            'date_of_birth' => 'date',
+            'join_date' => 'date',
+            'profile_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+
+        ]);
 
         $user = User::create([
             'username'  => $request->username,
@@ -75,7 +92,7 @@ class UserController extends Controller
                 'employeeID' => $request->employeeID,
                 'full_name' => $request->full_name,
                 'phonenumber' => $request->phonenumber,
-                'reporting_to' => $request->reporting_to,
+                'reporting_to' => !empty($request->reporting_to) ? $request->reporting_to : null,
                 'personal_email' => $request->personal_email,
                 'gender'    => $request->gender,
                 'blood_group' => $request->blood_group,
@@ -101,7 +118,7 @@ class UserController extends Controller
                 'status' => $request->status,
                 'login_limited_time' => $request->login_limited_time,
                 'appointment_status' => $request->appointment_status,
-                'team_lead' => $request->team_lead,
+                'team_lead' => !empty($request->team_lead) ? $request->reporting_to : null,
                 'bank_name' => $request->bank_name,
                 'bank_branch' => $request->bank_branch,
                 'beneficiary_name' => $request->beneficiary_name,
@@ -144,29 +161,104 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::with('employee')->findOrFail($id);
-        $employees = User::with('employee')->get();
+        if($user->employee->department_id != null)
+        {
+            $departmentId = $user->employee->department_id;
+            $designations = Designation::where('department_id',$departmentId)->get();
+        } else { $designations = []; }
+        $employees = Employee::all();
         $departments = Department::all();
         $work_shifts = Workshift::all();
         $roles = Role::all();
         $user_statuses = UserStatus::all();
-        return view('users.edit', compact('user','employees','departments','work_shifts','roles','user_statuses'));
+        return view('users.edit', compact('user','employees','departments','work_shifts','roles','user_statuses','designations'));
     }
 
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user)
     {
-        //
+
+        $request->validate([
+            'username'  => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email,' . $user->id,
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Update user details
+        $user->update([
+            'username'  => $request->username,
+            'email'     => $request->email,
+        ]);
+
+        // Update the user's role if needed
+        $user->syncRoles([$request->role ?? 'user']);
+
+        // Handle profile image update
+        if ($request->hasFile('profile_image')) {
+            $file = $request->file('profile_image');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $profileImagePath = $file->storeAs('profile_pics', $filename, 'public');
+
+            // Update profile_image in the Employee record
+            $user->employee->update(['profile_image' => $profileImagePath]);
+        }
+
+        // Update Employee details
+        $user->employee->update([
+            'employeeID' => $request->employeeID,
+            'full_name' => $request->full_name,
+            'phonenumber' => $request->phonenumber,
+            'reporting_to' => !empty($request->reporting_to) ? $request->reporting_to : null,
+            'personal_email' => $request->personal_email,
+            'gender' => $request->gender,
+            'blood_group' => $request->blood_group,
+            'qualification' => $request->qualification,
+            'esi_no' => $request->esi_no,
+            'aadhaar' => $request->aadhaar,
+            'pf_no' => $request->pf_no,
+            'electoral_id' => $request->electoral_id,
+            'pan' => $request->pan,
+            'dob' => $request->dob,
+            'group' => $request->group,
+            'address' => $request->address,
+            'mobile_number' => $request->mobile_number,
+            'mobile_relationship' => $request->mobile_relationship,
+            'landline' => $request->landline,
+            'landline_relationship' => $request->landline_relationship,
+            'department_id' => $request->department_id,
+            'designation_id' => $request->designation_id,
+            'join_date' => $request->join_date,
+            'shift_id' => $request->shift_id,
+            'role' => $request->role,
+            'status' => $request->status,
+            'login_limited_time' => $request->login_limited_time,
+            'appointment_status' => $request->appointment_status,
+            'team_lead' => !empty($request->team_lead) ? $request->reporting_to : null,
+            'bank_name' => $request->bank_name,
+            'bank_branch' => $request->bank_branch,
+            'beneficiary_name' => $request->beneficiary_name,
+            'account_number' => $request->account_number,
+        ]);
+
+        return redirect()->route('users.edit', $user->id)->with('success', 'User details updated successfully!');
+
+
+
     }
 
 
     public function destroy(string $id)
     {
-        $role = User::find($id);
-        if (!$role) {
-            return response()->json(['success' => false, 'message' => 'Role not found'], 404);
+        $user = User::find($id);
+        $employee = Employee::where('user_id',$id)->fist();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found'], 404);
         }
-
-        $role->delete(); // Delete role
+        if (!$employee) {
+            return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
+        }
+        $employee->delete();
+        $user->delete();
         Cache::forget('users');
         return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
     }
@@ -215,13 +307,12 @@ class UserController extends Controller
     public function userProfile($userid)
     {
         $user = User::with('employee')->find($userid);
-        // dd($user);
         return view('users.profile', compact('user'));
     }
 
     public function checkEmail(Request $request)
     {
-        dd($request->email);
+
         $exists = User::where('email', $request->email)->exists();
         return response()->json($exists ? false : true);
     }

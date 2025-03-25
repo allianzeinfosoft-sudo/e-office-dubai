@@ -13,6 +13,8 @@ class Kernel extends HttpKernel
      *
      * @var array<int, class-string|string>
      */
+    protected $middlewareDisabled = false;
+
     protected $middleware = [
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
@@ -70,5 +72,5 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
-    
+
 }

@@ -60,7 +60,7 @@ return [
             [
                 'title' => 'Entry Open Markin',
                 'route' => '#'
-            ],   
+            ],
         ]
     ],
     [
@@ -73,13 +73,13 @@ return [
                 'title' => 'Projects',
                 'route' =>  'projects',
                 'isActive' => ['projects', 'project*'],
-            ],  
+            ],
             [
                 'title' => 'Project Tasks',
                 'route' =>  'tasks-project',
                 'isActive' => ['tasks-project*'],
-            ],  
-              
+            ],
+
         ]
     ],
     [
@@ -94,20 +94,20 @@ return [
             [
                 'title' => 'My Attendance',
                 'route' => '#'
-            ],   
+            ],
             [
                 'title' => 'My Work Report',
                 'route' => '#'
-            ],   
+            ],
             [
                 'title' => 'My Emergency Report',
                 'route' => '#'
-            ],   
+            ],
             [
                 'title' => 'Salary Slip',
                 'route' => '#',
                 'badge' => 'new',
-            ],   
+            ],
         ]
     ],
     [
@@ -119,7 +119,7 @@ return [
             [
                 'title' => 'View Survey',
                 'route' => '#',
-            ],  
+            ],
         ]
     ],
     [
@@ -131,7 +131,7 @@ return [
             [
                 'title' => 'View PAR',
                 'route' => '#',
-            ],  
+            ],
         ]
     ],
     [
@@ -141,16 +141,24 @@ return [
         'submenu' => [
             [
                 'title' => 'Apply Leave',
-                'route' =>  'leaves',
-            ],  
+                'route' =>  '/leaves/create',
+            ],
+            [
+                'title' => 'Pending Request',
+                'route' =>  'pending-leaves',
+            ],
             [
                 'title' => 'Leave Status',
-                'route' =>  'leave-status-show',
-            ],  
+                'route' =>  'leave-status',
+            ],
             [
                 'title' => 'Leave Summary',
-                'route' =>  'leave-pending-show',
-            ],  
+                'route' =>  'leaves',
+            ],
+            [
+                'title' => 'Leave Allocation',
+                'route' =>  '/leave-allocation',
+            ],
         ]
     ],
     [
@@ -166,19 +174,19 @@ return [
             [
                 'title' => 'Thought Of The Day',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => ' Appreciation',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Birthdays',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'Announcement',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'Company Policies ',
                 'route' =>  '#',
@@ -187,15 +195,15 @@ return [
             [
                 'title' => 'Events',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'Holidays',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'User Reminder List',
                 'route' =>  '#',
-            ],   
+            ],
         ]
     ],
     [
@@ -206,19 +214,19 @@ return [
             [
                 'title' => 'Booking',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'View Bookings',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'My Bookings',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'Assigned Bookings',
                 'route' =>  '#',
-            ],   
+            ],
         ]
     ],
     [
@@ -229,11 +237,11 @@ return [
             [
                 'title' => 'Feedback Form',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Feedback Reviews',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -249,15 +257,15 @@ return [
             [
                 'title' => 'My Profile',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Change Password',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'Edit Profile',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -268,15 +276,15 @@ return [
             [
                 'title' => 'Quick Notes',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Event Calendar',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'KSP',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -287,15 +295,15 @@ return [
             [
                 'title' => 'My Jobs',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Assign A job',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'Jobs Assigned by You',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -306,19 +314,19 @@ return [
             [
                 'title' => 'Inbox',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Starred',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'Sent Email',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'Trash',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -332,11 +340,15 @@ return [
             [
                 'title' => 'Work Shift',
                 'route' =>  'settings/workshift',
-            ],  
+            ],
             [
                 'title' => 'Branches',
                 'route' =>  'branchs',
-            ],  
+            ],
+            [
+                'title' => 'Holidays',
+                'route' =>  'holidays',
+            ],
         ]
     ],
     [
@@ -347,11 +359,11 @@ return [
             [
                 'title' => 'Roles',
                 'route' =>  'roles',
-            ],  
+            ],
             [
                 'title' => 'Permission',
                 'route' =>  'permissions',
-            ],   
+            ],
         ]
     ],
     [
@@ -360,9 +372,13 @@ return [
         'route' => 'javascript:void(0);',
         'submenu' => [
             [
-                'title' => 'List',
+                'title' => 'Users',
                 'route' =>  'users',
-            ], 
+            ],
+            [
+                'title' => 'Add Users',
+                'route' =>  '/users/create',
+            ],
         ]
     ],
     [

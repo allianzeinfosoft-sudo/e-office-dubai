@@ -1,7 +1,7 @@
 /**
  * Edit User
  */
-
+alert(0);
 'use strict';
 
 // Select2 (jquery)

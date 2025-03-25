@@ -31,14 +31,15 @@
                         <table class="datatables-leave-summary table border-top">
                           <thead>
                             <tr>
-                              <th></th>
+                              <th>S.No</th>
+                              <th>Name</th>
                               <th>Leave From</th>
                               <th>Leave To</th>
                               <th>Leave Count</th>
                               <th>Leave Type</th>
                               <th>Leave Reason</th>
                               <th>Apply Date</th>
-                              <th>Approved/Cancel</th>
+                              <th>Accepeted/Rejected</th>
                               <th>Status</th>
                             </tr>
                           </thead>
@@ -47,56 +48,8 @@
                     </div>
                     <!--/ Role Table -->
                   </div>
-
-
             </div>
-            <!--/ Role cards -->
 
-            <!-- Add Role Modal -->
-            <div class="modal fade" id="addRoleModal" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog modal-lg modal-dialog-centered modal-add-new-role">
-                <div class="modal-content p-3 p-md-5">
-                  <button
-                    type="button"
-                    class="btn-close btn-pinned"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-                  <div class="modal-body">
-                    <div class="text-center mb-4">
-                      <h3 class="role-title mb-2">Add New Role</h3>
-                      <p class="text-muted">Set role permissions</p>
-                    </div>
-                    <!-- Add role form -->
-                    <form id="addRoleForm" method="post" action="{{ route('roles.store') }}" class="row g-3" onsubmit="return false">
-                      @csrf
-                      <div class="col-12 mb-4">
-                        <label class="form-label" for="name">Role Name</label>
-                        <input type="text" id="modalRoleName" name="name" class="form-control" placeholder="Enter a role name"
-                          tabindex="-1" />
-                        <input type="hidden" name="guard_name" value="web"/>
-                      </div>
-                      <div class="col-12">
-                        <h5>Role Permissions</h5>
-                        <!-- Permission table -->
-                        <div class="table-responsive" id="permissionsTable">
-                        </div>
-                        <!-- Permission table -->
-                      </div>
-                      <div class="col-12 text-center mt-4">
-                        <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>
-                        <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                    <!--/ Add role form -->
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!--/ Add Role Modal -->
-
-            <!-- / Add Role Modal -->
           </div>
           <!-- / Content -->
 
@@ -119,3 +72,108 @@
   </div>
   <!-- / Layout wrapper -->
 @endsection
+
+
+@section('js')
+<script>
+$(function () {
+
+  var dtLeaveTable = $('.datatables-leave-summary')
+
+// Leave List datatable
+if (dtLeaveTable.length) {
+  var dtLeave = dtLeaveTable.DataTable({
+      ajax: {
+          url: "/leave-list",  // Fetch from Laravel API
+          type: "GET",
+          dataType: "json",
+          dataSrc: "data"
+      },
+    columns: [
+      // columns according to JSON
+      {
+        data: null, title: 'S.No',
+        render: function (data, type, row, meta){
+            return meta.row+1;
+        }
+      },
+      { data: 'full_name', title: 'Name' },
+      { data: 'leave_from', title: 'Leave From' },
+      { data: 'leave_to', title:  'Leave To'},
+      {
+        targets: 4,
+            render: function(data, type, full, meta){
+                let leave_count = full['leave_count'];
+                if(leave_count > 1)
+                {
+                    $showCount = `<button class="btn btn-sm btn-primary">${leave_count}</button> days`
+                }
+                else
+                {
+                    $showCount = `<button class="btn btn-sm btn-secondary">${leave_count}</button> day`
+                }
+
+                return $showCount;
+            }
+      },
+      {
+        targets: 5,
+            render: function(data, type, full, meta){
+                let leaveType = full['leave_type'];
+                let displayType = 'N/A';
+                if(leaveType === 'half_day')
+                {
+                    displayType = `<button class="btn btn-sm btn-warning">Half</button>`;
+                }
+                else if(leaveType === 'full_day')
+                {
+                    displayType = `<button class="btn btn-sm btn-info">Full</button>`;
+                }
+
+                return displayType;
+            }
+      },
+      { data: 'leave_reason', title: 'Leave Reason' },
+      { data: 'apply_date', title: 'Apply Date' },
+      { data: 'approved_cancel_date', title: 'Accepeted/Rejected'},
+      {
+        targets:9,
+        render: function(data, type, full, row, meta){
+            let status = full['status'];
+
+            if(status == 1)
+            {
+                $status_show = `<button type="button" class="btn btn-label-linkedin waves-effect">
+                            Pending
+                          </button>`;
+            }
+            else if(status == 2)
+            {
+                $status_show = `<button type="button" class="btn btn-label-linkedin waves-effect">
+                              Permission Granted
+                          </button>`;
+            }
+            else if(status == 3)
+            {
+                $status_show = `<button type="button" class="btn btn-label-linkedin waves-effect">
+                              Reject
+                          </button>`;
+            }
+            else if(status == 4)
+            {
+                $status_show = `<button type="button" class="btn btn-label-linkedin waves-effect">
+                             Cancelled by user
+                          </button>`;
+            }
+
+            return $status_show;
+        }
+      }
+    ]
+  });
+}
+
+});
+</script>
+@stop
+

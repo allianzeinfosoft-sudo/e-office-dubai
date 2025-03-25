@@ -494,10 +494,7 @@ $(function () {
             });
         });
     });
-}
 
-
-window.onload = function () {
     document.querySelectorAll(".edit-user").forEach((element) => {
         element.addEventListener("click", function () {
             let userId = this.getAttribute("data-edit-user-id"); // Corrected

@@ -168,6 +168,10 @@
     min-width: 200px; /* Minimum width */
   }
 
+  .mandatory{
+    color: red;
+  }
+
 
 
 

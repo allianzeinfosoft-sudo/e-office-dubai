@@ -18,6 +18,11 @@ class LeaveAllocation extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'user_id','user_id');
+    }
+
     public function leaves()
     {
         return $this->hasMany(Leave::class, 'user_id');

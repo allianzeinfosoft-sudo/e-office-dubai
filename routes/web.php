@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
@@ -42,7 +43,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/attendance/custom-mark-in',[AttendanceController::class, 'customMarkIn'])->name('attendance.custom-mark-in');
     Route::post('/attendance/emergency-mark',[AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
     Route::post('/attendance/custom-mark-out/{id}',[AttendanceController::class, 'customMarkOut'])->name('attendance.custom-mark-out');
-    
+
     /* roles */
     Route::resource('roles', RoleController::class);
     Route::get('/user/roles',[RoleController::class, 'getroles']);
@@ -62,7 +63,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
     Route::get('/settings/userstastus',[SettingsController::class, 'list_user_status'])->name('userstatus');
     Route::post('/check-email', [UserController::class, 'checkEmail']);
-    
+
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
@@ -71,7 +72,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('branchs',BranchController::class);
     Route::get('/branch-list',[BranchController::class, 'getBranches']);
     Route::get('/branches/{branch}/departments', [BranchController::class, 'getDepartments'])->name('branch.departments');
-    
+
     /* designiations */
     Route::get('/departments/{department}/designations', [BranchController::class, 'getDesignations'])->name('department.designations');
     Route::post('/designation/save',[BranchController::class, 'designation_store'])->name('designation.store');
@@ -80,15 +81,23 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
     Route::post('/settings/workshift/save',[SettingsController::class, 'store_work_shift'])->name('store.workshift');
-    
+
     // leave route
     Route::resource('leaves',LeaveController::class);
     Route::get('/leave-list',[LeaveController::class, 'leave_list']);
-    Route::get('leave-status-show',[LeaveController::class,'show_leave_status'])->name('leaves.status.show');
+    Route::get('leave-status',[LeaveController::class,'show_leave_status'])->name('leaves.status');
     Route::get('/leave-status/{user_id}',[LeaveController::class, 'leave_status'])->name('leave.status');
-    Route::get('leave-pending-show',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
+    Route::get('/pending-leaves',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
     Route::get('/leave-pending',[LeaveController::class, 'pending_leaves'])->name('leaves.pending');
     
+    Route::post('leave/action', [LeaveController::class, 'leave_action'])->name('leaves.leave_action');
+    Route::get('/leave-allocation',[LeaveController::class,'leave_allocation'])->name('leaves.allocation');
+    Route::get('/allocated-leaves', [LeaveController::class, 'allocated_leaves'])->name('leaves.allocated_leaves');
+    Route::post('/leave_allocate',[LeaveController::class,'leave_allocate'])->name('leaves.leave_allocate');
+    Route::post('/check-leave' ,[LeaveController::class, 'checkLeave'])->name('check.leave');
+    Route::post('/get-leave-details',[LeaveController::class, 'getLeaveDetails'])->name('leave.leave.details');
+    Route::post('/update-leave-allocation',[LeaveController::class, 'updateLeaveAllocation'])->name('leave.update_leave_allocation');
+
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
@@ -97,7 +106,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/project/{project}/edit', [ProjectController::class, 'edit'])->name('project.edit');
     Route::post('/project/{project}/update', [ProjectController::class, 'update'])->name('project.update');
     Route::delete('/project/{projectId}/destroy', [ProjectController::class, 'destroy'])->name('projects.destroy');
-    
+
     /* Project Tasks */
     Route::get('/tasks-project', [ProjectTaskController::class, 'index'])->name('tasks-project.index');
     Route::get('/tasks-project/create', [ProjectTaskController::class, 'create'])->name('tasks-project.create');
@@ -117,5 +126,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
     Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
     Route::get('works/temporary-status',[WorksController::class, 'temporaryStatus'])->name('works.temporary-status');
+
+    /* Holiday */
+    Route::resource('holidays',HolidayController::class);
+    Route::get('/holiday/list', [HolidayController::class, 'getHolidayList'])->name('holiday.list');
+    Route::delete('/holiday-delete/{holidayId}', [HolidayController::class, 'destroy'])->name('holiday.destroy');
 });
 
