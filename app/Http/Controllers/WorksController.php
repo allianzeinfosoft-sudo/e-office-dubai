@@ -171,4 +171,8 @@ class WorksController extends Controller
         return view('works.temporaray_status', $data);
     
     }
+
+    public function entryOpen(){
+        
+    }
 }
