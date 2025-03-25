@@ -108,6 +108,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
+    Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
+    Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
+    Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
     
 });
 
