@@ -18,7 +18,7 @@
 
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Attendance /</span>{{ $meta_title }}</h4>
+                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Works /</span>{{ $meta_title }}</h4>
 
                     <div class="row">
 
@@ -77,7 +77,7 @@
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_time" class="form-label">No. of Hours</label>
-                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" step="2" value="{{ date('H:i:s', strtotime($missingReport->balance_time)) }}" class="form-control" required />
+                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" step="2" value="" class="form-control" required />
                                                 </div>
                                             </div>    
 
@@ -89,8 +89,8 @@
                                             </div>
                                             
                                             <div class="col-sm-12 mb-2 g-2 d-flex justify-content-end">
-                                                <input type="hidden" name="emp_id" value="{{ $missingReport->emp_id }}" />
-                                                <input type="hidden" name="report_date" value="{{ $missingReport->signin_date }}" />
+                                                <input type="hidden" name="emp_id" value="{{ Auth::user()->id }}" />
+                                                <input type="hidden" name="report_date" value="{{ now()->format('Y-m-d') }}" />
                                                 <button type="button" id="submitForm" class="btn btn-primary"><i class="ti ti-plus"></i> Add</button>
                                             </div>
 
@@ -264,7 +264,7 @@
         if (!workReport) return;
 
         // Convert Blade variable to a number (only if this script is inside a Blade template)
-        let totalWorkedTime = parseTimeToSeconds("{{ date('H:i:s', strtotime($missingReport->working_hours)) }}");
+        let totalWorkedTime = parseTimeToSeconds("{{ date('H:i:s', strtotime(now()->format('Y-m-d'))) }}");
         // Convert workReport total_time to seconds (Assuming it's in H:i:s format)
         let reportedTime = parseTimeToSeconds(workReport.total_time);
         // Hide form container if the reported time is greater than or equal to total worked time

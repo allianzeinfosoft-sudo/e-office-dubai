@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\WorkReportController;
+use App\Http\Controllers\WorksController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -47,12 +48,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/user/roles',[RoleController::class, 'getroles']);
     Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
     Route::get('/roles/{role}/permissions', [RoleController::class, 'getRolePermissions']);
-
+    
     /* Permissions */
     Route::resource('permissions', PermissionController::class);
     Route::delete('/permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
     Route::get('/permissions-list', [PermissionController::class, 'getPermissions']);
-
+    
     /* users */
     Route::resource('users', UserController::class);
     Route::get('/user-list',[UserController::class, 'getUsers']);
@@ -65,7 +66,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
-
+    
     /* Branches */
     Route::resource('branchs',BranchController::class);
     Route::get('/branch-list',[BranchController::class, 'getBranches']);
@@ -74,7 +75,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     /* designiations */
     Route::get('/departments/{department}/designations', [BranchController::class, 'getDesignations'])->name('department.designations');
     Route::post('/designation/save',[BranchController::class, 'designation_store'])->name('designation.store');
-
+    
     /* shifts */
     Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
@@ -87,7 +88,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/leave-status/{user_id}',[LeaveController::class, 'leave_status'])->name('leave.status');
     Route::get('leave-pending-show',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
     Route::get('/leave-pending',[LeaveController::class, 'pending_leaves'])->name('leaves.pending');
-
+    
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
@@ -105,12 +106,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/tasks-project/{projectTask}/update', [ProjectTaskController::class, 'update'])->name('tasks-project.update');
     Route::delete('/tasks-project/{projectTask}/destroy', [ProjectTaskController::class, 'destroy'])->name('tasks-project.destroy');
     Route::get('/tasks-project/{project_id}/get-tasks-by-project', [ProjectTaskController::class, 'getTasksByProject'])->name('tasks-project.get-tasks-by-project');
-
+    
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
     Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
     
+    /* Works Module */
+    Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
+    Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
+    Route::get('works/temporary-status',[WorksController::class, 'temporaryStatus'])->name('works.temporary-status');
 });
 
