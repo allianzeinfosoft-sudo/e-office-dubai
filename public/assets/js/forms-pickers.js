@@ -17,7 +17,7 @@
     flatpickrDisabledRange = document.querySelector('#flatpickr-disabled-range'),
     leave_from = document.querySelector('#leave-from'),
     leave_to = document.querySelector('#leave-to');
-
+    holiday_date = document.querySelector('#holiday-date');
 
     if (document.querySelector("#leave-from")) {
         flatpickr("#leave-from", {
@@ -31,6 +31,11 @@
         });
     }
 
+    if(document.querySelector("#holiday-date")){
+        flatpickr("#holiday-date", {
+            monthSelectorType: 'static'
+        });
+    }
 
   // Date
   if (flatpickrDate) {

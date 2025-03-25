@@ -51,8 +51,24 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
+
+        $validatedData = $request->validate([
+
+            'employeeID' => 'required|unique:employees,employeeID',
+            'username' => 'required|unique:users,username',
+            'email' => 'required|unique:users,email|email',
+            'full_name' => 'required',
+            'phonenumber' => 'required|unique:employees',
+            'mobile_number' => 'unique:employees',
+            'personal_email' => 'email|unique:employees|email',
+            'aadhaar' => 'unique:employees',
+            'date_of_birth' => 'date',
+            'join_date' => 'date',
+            'profile_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+
+        ]);
 
         $user = User::create([
             'username'  => $request->username,
@@ -76,7 +92,7 @@ class UserController extends Controller
                 'employeeID' => $request->employeeID,
                 'full_name' => $request->full_name,
                 'phonenumber' => $request->phonenumber,
-                'reporting_to' => $request->reporting_to,
+                'reporting_to' => !empty($request->reporting_to) ? $request->reporting_to : null,
                 'personal_email' => $request->personal_email,
                 'gender'    => $request->gender,
                 'blood_group' => $request->blood_group,
@@ -102,7 +118,7 @@ class UserController extends Controller
                 'status' => $request->status,
                 'login_limited_time' => $request->login_limited_time,
                 'appointment_status' => $request->appointment_status,
-                'team_lead' => $request->team_lead,
+                'team_lead' => !empty($request->team_lead) ? $request->reporting_to : null,
                 'bank_name' => $request->bank_name,
                 'bank_branch' => $request->bank_branch,
                 'beneficiary_name' => $request->beneficiary_name,
@@ -192,7 +208,7 @@ class UserController extends Controller
             'employeeID' => $request->employeeID,
             'full_name' => $request->full_name,
             'phonenumber' => $request->phonenumber,
-            'reporting_to' => $request->reporting_to,
+            'reporting_to' => !empty($request->reporting_to) ? $request->reporting_to : null,
             'personal_email' => $request->personal_email,
             'gender' => $request->gender,
             'blood_group' => $request->blood_group,
@@ -217,7 +233,7 @@ class UserController extends Controller
             'status' => $request->status,
             'login_limited_time' => $request->login_limited_time,
             'appointment_status' => $request->appointment_status,
-            'team_lead' => $request->team_lead,
+            'team_lead' => !empty($request->team_lead) ? $request->reporting_to : null,
             'bank_name' => $request->bank_name,
             'bank_branch' => $request->bank_branch,
             'beneficiary_name' => $request->beneficiary_name,

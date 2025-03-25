@@ -155,6 +155,10 @@ return [
                 'title' => 'Leave Summary',
                 'route' =>  'leaves',
             ],
+            [
+                'title' => 'Leave Allocation',
+                'route' =>  '/leave-allocation',
+            ],
         ]
     ],
     [
@@ -341,6 +345,10 @@ return [
                 'title' => 'Branches',
                 'route' =>  'branchs',
             ],
+            [
+                'title' => 'Holidays',
+                'route' =>  'holidays',
+            ],
         ]
     ],
     [
@@ -364,8 +372,12 @@ return [
         'route' => 'javascript:void(0);',
         'submenu' => [
             [
-                'title' => 'List',
+                'title' => 'Users',
                 'route' =>  'users',
+            ],
+            [
+                'title' => 'Add Users',
+                'route' =>  '/users/create',
             ],
         ]
     ],
