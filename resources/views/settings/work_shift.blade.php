@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
- <!-- Layout wrapper -->
- <div class="layout-wrapper layout-content-navbar">
+<!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
       <!-- Menu -->
       <x-menu /> <!-- Load the menu component here -->
@@ -40,15 +40,12 @@
               </table>
             </div>
           </div>
+
           <!-- Modal to add new record -->
           <div class="offcanvas offcanvas-end" id="add-new-shift">
             <div class="offcanvas-header border-bottom">
               <h5 class="offcanvas-title" id="exampleModalLabel">New Work Shift</h5>
-              <button
-                type="button"
-                class="btn-close text-reset"
-                data-bs-dismiss="offcanvas"
-                aria-label="Close"></button>
+              <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body flex-grow-1">
               <form class="add-new-record pt-0 row g-2" method="post" action="{{ route('store.workshift') }}" id="form-add-new-shift" onsubmit="return false">

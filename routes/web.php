@@ -13,6 +13,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\WorkReportController;
 use App\Http\Controllers\WorksController;
+use App\Http\Controllers\HomeController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -34,8 +35,9 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
     Route::post('/attendance/mark-in',[AttendanceController::class, 'markIn'])->name('attendance.mark-in');
@@ -89,7 +91,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/leave-status/{user_id}',[LeaveController::class, 'leave_status'])->name('leave.status');
     Route::get('/pending-leaves',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
     Route::get('/leave-pending',[LeaveController::class, 'pending_leaves'])->name('leaves.pending');
-    
     Route::post('leave/action', [LeaveController::class, 'leave_action'])->name('leaves.leave_action');
     Route::get('/leave-allocation',[LeaveController::class,'leave_allocation'])->name('leaves.allocation');
     Route::get('/allocated-leaves', [LeaveController::class, 'allocated_leaves'])->name('leaves.allocated_leaves');
@@ -126,6 +127,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
     Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
     Route::get('works/temporary-status',[WorksController::class, 'temporaryStatus'])->name('works.temporary-status');
+    Route::get('works/entry-open',[WorksController::class, 'entryOpen'])->name('works.entry-open');
 
     /* Holiday */
     Route::resource('holidays',HolidayController::class);

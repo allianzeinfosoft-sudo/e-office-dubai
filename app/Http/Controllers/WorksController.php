@@ -161,6 +161,7 @@ class WorksController extends Controller
             // $missingReport->balance_time = $formattedBalanceTime;
         
             $data['missingReport'] = $missingReport;
+            $data['attendance'] = $attendance;
             $data['repots_posted'] = WorkReport::with(['project', 'projectTask'])
                 ->where('username', Auth::user()->username)
                 ->where('report_date', now()->format('Y-m-d'))
@@ -173,6 +174,8 @@ class WorksController extends Controller
     }
 
     public function entryOpen(){
-        
+        $data['meta_title'] = 'Entry Open';
+        $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+        return view('works.entry_open', $data);
     }
 }

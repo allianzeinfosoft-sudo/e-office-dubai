@@ -129,12 +129,12 @@
                                                     
                                                     <tbody >
 
-                                                        @if($missingReport)
+                                                        @if($attendance)
                                                         <tr>
                                                             <td><strong>Break</strong></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
-                                                            <td><strong>{{ $missingReport->break_time }}</strong></td>
+                                                            <td><strong>{{ $attendance->break_time }}</strong></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>

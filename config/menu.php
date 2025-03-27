@@ -59,7 +59,7 @@ return [
             ],   
             [
                 'title' => 'Entry Open Markin',
-                'route' => '#'
+                'route' => 'works/entry-open'
             ],
         ]
     ],
