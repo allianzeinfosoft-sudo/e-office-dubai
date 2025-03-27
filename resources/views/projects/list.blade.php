@@ -1,7 +1,24 @@
 @extends('layouts.app')
 
 @section('css')
+<style>
 
+  .w-35 {
+    width: 35% !important;
+  }
+  .w-45 {
+    width: 45% !important;
+  }
+  .offcanvas-close{
+    position: absolute;
+    top: 0px;
+    left: -32px;  /* Moves the button outside the offcanvas */
+    z-index: 1055; /* Ensures it stays on top */
+    padding: 28px 10px;
+    border-radius: 0px;
+  }
+
+</style>
 @stop
 
 @section('content')
@@ -17,22 +34,26 @@
 
         <div class="content-wrapper">
             <div class="container-xxl flex-grow-1 container-p-y">
-                <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
+                <h4 class="fw-bold py-3"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
+
+                <div class="row">
+                    <div class="col-sm-12 d-flex justify-content-end mb-3">
+                        <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="addProject()">
+                            <!-- {{ route('project.create') }} -->
+                            <span>
+                                <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
+                                <span class="d-none d-sm-inline-block"> New</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
 
                 <div class="card">
                     <div class="card-datatable table-responsive">
                         <div class=" float-end mt-15 mr-20">
-                            <a href="{{ route('project.create') }}">
-                                <button class="btn btn-secondary add-new btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button">
-                                    <span>
-                                        <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                        <span class="d-none d-sm-inline-block">Add New</span>
-                                    </span>
-                                </button>
-                            </a>
                         </div>
 
-                        <table class="datatables-basic datatables-projects table border-top table-stripedc">
+                        <table class="datatables-basic datatables-projects table border-top table-stripedc table-hover table-striped">
                             <thead>
                                 <tr>
                                     <th>Project</th>
@@ -55,6 +76,23 @@
       </div>
     </div>
 </div>
+
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="add_projects_offcanvas" aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas-header bg-primary p-3">
+        <span class="d-flex justify-content-between align-items-center gap-2">
+            <i class="ti ti-file-plus fs-2 text-white"></i> 
+            <span class="">
+                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Project</h5>
+                <span class="text-white slogan">Create New Project</span>
+            </span>
+        </span>
+        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
+    </div>
+    <div class="offcanvas-body">
+        <div>I will not close if you click outside of me.</div>
+    </div>
+</div>
+
 
 @stop
 
@@ -85,8 +123,8 @@
                         render: function (data, type, row) {
                             const editUrl = "{{ route('project.edit', ':id') }}".replace(':id', row.id);
                             return `
-                                <a href="${editUrl}" class="btn btn-sm btn-primary edit-project">Edit</a>
-                                <button type="button" class="btn btn-sm btn-danger delete-project" onclick="deleteProject(${row.id})" data-id="${row.id}">Delete</button>
+                                <a href="${editUrl}" class="btn btn-sm btn-icon btn-primary edit-project"><i class="ti ti-edit"></i></a>
+                                <button type="button" class="btn btn-sm  btn-icon btn-danger delete-project" onclick="deleteProject(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
                             `;
                         }
                     }
@@ -112,6 +150,12 @@
                 }
             });
         }
+    }
+
+    function addProject() {
+        var offcanvasElement = $('#add_projects_offcanvas');
+        var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+        offcanvas.show();
     }
     
 </script>
