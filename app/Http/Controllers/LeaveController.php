@@ -18,10 +18,16 @@ use Illuminate\Support\Facades\Mail;
 class LeaveController extends Controller
 {
     use DateFormatter;
-
     public function index()
     {
-        return view('leave.summary');
+
+            $user_id = Auth::user()->id;
+            $current_year = date('Y');
+            $leave_account_details = LeaveAllocation::where(['user_id'=>$user_id, 'year' => $current_year])->first();
+            // dd($leave_account_details);
+            return view('leave.summary',compact('leave_account_details'));
+
+
     }
     public function leave_list()
     {
@@ -363,8 +369,7 @@ class LeaveController extends Controller
     {
         // Validate the incoming data
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'leave_id' => 'nullable|exists:leaves,id', // Allow null for new records
+            'user_id' => 'required', // Allow null for new records
             'year' => 'required|integer',
             'total_leaves' => 'required|integer|min:0',
             'remaining_leaves' => 'required|integer|min:0',

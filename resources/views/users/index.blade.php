@@ -47,11 +47,12 @@
                 <table class="datatables-users table border-top">
                   <thead>
                     <tr>
-                      <th></th>
+                      <th>S.No</th>
                       <th>Name</th>
-                      <th>Role</th>
+                      <th>Employee ID</th>
                       <th>Username</th>
                       <th>Contact Number</th>
+                      <th>Role</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>

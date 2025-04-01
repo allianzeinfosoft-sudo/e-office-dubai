@@ -234,7 +234,7 @@
                   <h5 class="card-header">Office Information</h5>
                   <div class="row card-body">
                     <div class="col-md-4 mb-3">
-                      <label for="department" class="form-label">Department:</label>
+                      <label for="department" class="form-label">Department:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                       <select id="department_id" name="department_id" class="form-select">
                         <option value="">Select Department</option>
@@ -245,7 +245,7 @@
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="designation" class="form-label">Designation:</label>
+                      <label for="designation" class="form-label">Designation:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                         <select id="designation_id" name="designation_id" class="form-select">
                           <option value="">Select Designation</option>
@@ -253,7 +253,7 @@
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="smallInput" class="form-label">Join Date:</label>
+                      <label for="smallInput" class="form-label">Join Date:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                         <input class="form-control" type="date" id="join_date" name="join_date" value="{{ old('join_date') }}"/>
                       </div>
@@ -288,7 +288,7 @@
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="status" class="form-label">Status:</label>
+                      <label for="status" class="form-label">Status:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                         <select class="form-select" id="status" name="status" aria-label="Default select">
                           <option selected value="">Please select</option>
@@ -306,7 +306,7 @@
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="appointment_status" class="form-label">Appointment Status:</label>
+                      <label for="appointment_status" class="form-label">Appointment Status:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                         <select class="form-select" id="appointment_status" name="appointment_status" aria-label="Default select">
                           <option selected value="">Please select</option>

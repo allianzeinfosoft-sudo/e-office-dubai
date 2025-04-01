@@ -28,16 +28,27 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::middleware(['web'])->group(function () {
+    Route::get('/', function () {
+        return view('auth/login');
+    });
+    Auth::routes();
 
-Route::get('/', function () {
-    return view('auth/login');
+    Route::post('/logout', function () {
+
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+        return redirect('/');
+         })->name('logout');
+
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
-
-Auth::routes();
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+Route::middleware(['auth.session','web', 'auth'])->group(function () {
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
     Route::post('/attendance/mark-in',[AttendanceController::class, 'markIn'])->name('attendance.mark-in');

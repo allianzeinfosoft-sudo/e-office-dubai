@@ -15,11 +15,11 @@ class BranchController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin'); // Restrict access to admin role
+
     }
 
     public function index()
-    { 
+    {
       $branches = Branch::all();
       return view('branch.index',compact('branches'));
     }
@@ -30,7 +30,7 @@ class BranchController extends Controller
             return [
                 'id' => $branch->id,
                 'branch' => $branch->name,
-                 
+
             ];
         });
 
@@ -49,7 +49,7 @@ class BranchController extends Controller
      */
     public function store(BranchRequest $request)
     {
-         
+
         $validatedData = $request->validated();
         Branch::create($validatedData);
         return back()->with('success', 'Branch created successfully!');
@@ -64,7 +64,7 @@ class BranchController extends Controller
 
     public function designation_store(DesignationRequest $request)
     {
-         
+
         $validatedData = $request->validated();
         Designation::create($validatedData);
         return back()->with('success', 'Designation created successfully!');
@@ -110,7 +110,7 @@ class BranchController extends Controller
 
     public function getDesignations($departmentId)
     {
-        
+
         $designations = Designation::select('id','designation')->where('department_id', $departmentId)->get();
         return response()->json($designations);
     }

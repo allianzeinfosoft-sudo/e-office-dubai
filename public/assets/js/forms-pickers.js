@@ -11,13 +11,11 @@
     flatpickrTime = document.querySelector('#flatpickr-time'),
     flatpickrDateTime = document.querySelector('#flatpickr-datetime'),
     flatpickrMulti = document.querySelector('#flatpickr-multi'),
-    flatpickrRange = document.querySelector('#flatpickr-range'),
+    /* flatpickrRange = document.querySelector('#flatpickr-range'), */
     flatpickrInline = document.querySelector('#flatpickr-inline'),
     flatpickrFriendly = document.querySelector('#flatpickr-human-friendly'),
-    flatpickrDisabledRange = document.querySelector('#flatpickr-disabled-range'),
-    leave_from = document.querySelector('#leave-from'),
-    leave_to = document.querySelector('#leave-to');
-    holiday_date = document.querySelector('#holiday-date');
+    flatpickrDisabledRange = document.querySelector('#flatpickr-disabled-range')
+
 
     if (document.querySelector("#leave-from")) {
         flatpickr("#leave-from", {
