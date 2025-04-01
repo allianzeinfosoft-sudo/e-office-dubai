@@ -47,19 +47,19 @@ return [
         'submenu' => [
             [
                 'title' => 'Work Status',
-                'route' => '#',
+                'route' => 'works/status',
             ],
             [
-                'title' => 'SDU Project Statu',
-                'route' => '#'
-            ],
+                'title' => 'SDU Project Status',
+                'route' => 'works/sud-project-status'
+            ],   
             [
                 'title' => 'Temporary Status',
-                'route' => '#'
-            ],
+                'route' => 'works/temporary-status'
+            ],   
             [
                 'title' => 'Entry Open Markin',
-                'route' => '#'
+                'route' => 'works/entry-open'
             ],
         ]
     ],

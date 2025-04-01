@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Project;
+use App\Models\workReport;
 use App\Models\CustomAttendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\CustomHelper;
-
+use Illuminate\Support\Facades\Log;
 class AttendanceController extends Controller{
 
     public function __construct()
@@ -157,17 +158,83 @@ class AttendanceController extends Controller{
         $data['weekOffDays'] = $weekOffDays;
         $data['totalWorkingDays'] = $totalWorkingDays;
 
-        $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
+         /* $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
             $query->select(DB::raw(1))
                 ->from('work_reports')
                 ->whereColumn('work_reports.report_date', 'attendances.signin_date')
                 ->whereColumn('work_reports.username', 'attendances.username');
-        })->first();
+        })->first();  */
 
-        if ($missingReport) { // ✅ Use simple if-check instead of isNotEmpty()
+        $missingReport = Attendance::leftJoin('work_reports', function ($join) {
+            $join->on('work_reports.report_date', '=', 'attendances.signin_date')
+                 ->on('work_reports.username', '=', 'attendances.username');
+        })
+        ->select(
+            'attendances.id',
+            'attendances.emp_id',
+            'attendances.username',
+            'attendances.signin_date',
+            'attendances.working_hours',
+            'attendances.break_time',
+            'attendances.status',
+            DB::raw('COALESCE(SUM(TIME_TO_SEC(work_reports.total_time)), 0) as total_reported_time'),
+            DB::raw('TIME_TO_SEC(attendances.working_hours) as total_attendance_time')
+        )
+        ->groupBy(
+            'attendances.id',
+            'attendances.emp_id',
+            'attendances.username',
+            'attendances.signin_date',
+            'attendances.working_hours',
+            'attendances.break_time',
+            'attendances.status'
+        )
+        ->havingRaw('total_reported_time < total_attendance_time') // Ensure reported time is less than attendance time
+        ->where('attendances.status', 'mark-out') 
+        ->first();
+
+        //dd($missingReport);
+
+        if ($missingReport) { 
+            $attendance = Attendance::where('emp_id', $missingReport->emp_id)
+                ->where('signin_date', $missingReport->signin_date)
+                ->first();
+            
+            // ✅ Ensure 'working_hours' is correctly converted to seconds
+            if (strpos($attendance->working_hours, ':') !== false) {
+                list($hours, $minutes, $seconds) = explode(":", $attendance->working_hours);
+            } else {
+                // Default seconds to 00 if missing
+                list($hours, $minutes) = explode(":", $attendance->working_hours);
+                $seconds = 0;
+            }
+            $totalAttendanceTime = ($hours * 3600) + ($minutes * 60) + $seconds;
+
+            // ✅ Sum reported time in seconds (using TIME_TO_SEC)
+            $totalReportedTime = WorkReport::where('emp_id', $missingReport->emp_id)
+                ->where('report_date', $missingReport->signin_date)
+                ->sum(DB::raw('TIME_TO_SEC(total_time)'));
+
+            // 🔍 Debug: Log values to check
+            Log::info("Attendance Time: {$attendance->working_hours} -> $totalAttendanceTime seconds");
+            Log::info("Reported Time: $totalReportedTime seconds");
+
+            // ✅ Calculate balance time
+            $balanceTime = max($totalAttendanceTime - $totalReportedTime, 0);
+            $formattedBalanceTime = gmdate("H:i:s", $balanceTime);
+
+            Log::info("Balance Time: $formattedBalanceTime");
+
+            $missingReport->balance_time = $formattedBalanceTime;
+        
             $data['meta_title'] = 'Add Work Report';
             $data['projects'] = Project::all();
-            $data['missingReport'] = $missingReport; // ✅ Store it as a single object
+            $data['missingReport'] = $missingReport;
+            $data['repots_posted'] = WorkReport::with(['project', 'projectTask'])
+                ->where('username', Auth::user()->username)
+                ->where('report_date', $missingReport->signin_date)
+                ->get();
+            
             return view('attendance.work_report', $data);
         } else {
             return view('attendance.index', $data);
@@ -205,7 +272,7 @@ class AttendanceController extends Controller{
             'signin_date' => now()->format('Y-m-d'),
             'signin_time' => now()->format('H:i:s'),
             'punchin_type' => 'Web',
-            'break_time' => '1:00:00',
+            'break_time' => '01:00:00',
             'ipaddress' => $request->ip(),
             'status' => 'mark-in'
         ]);

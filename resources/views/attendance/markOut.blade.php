@@ -42,7 +42,7 @@
                                 
                                             <div class="col-12 mb-3">
                                                 <label for="signout_time" class="form-label">Time</label>
-                                                <input type="time" id="signout_time" name="signout_time" class="form-control" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
+                                                <input type="time" id="signout_time" name="signout_time" class="form-control" step="2" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
                                                 <input type="hidden" id="signout_date" name="signout_date" class="form-control" value="{{ $missingMarkOut->signin_date }}"  placeholder="Time" />
                                             </div>
                                 

@@ -27,4 +27,11 @@ class HomeController extends Controller
     {
         return view('dashboard');
     }
+
+    public function getNotifications(Request $request)
+    {
+        $notification =  auth()->user()->notifications;
+        dd($notification);
+
+    }
 }

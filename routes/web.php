@@ -12,6 +12,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\WorkReportController;
+use App\Http\Controllers\WorksController;
+use App\Http\Controllers\HomeController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -43,7 +45,10 @@ Route::middleware(['web'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
 
+
 Route::middleware(['auth.session','web', 'auth'])->group(function () {
+
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
     Route::post('/attendance/mark-in',[AttendanceController::class, 'markIn'])->name('attendance.mark-in');
@@ -125,6 +130,15 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
 
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
+    Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
+    Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
+    Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
+
+    /* Works Module */
+    Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
+    Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
+    Route::get('works/temporary-status',[WorksController::class, 'temporaryStatus'])->name('works.temporary-status');
+    Route::get('works/entry-open',[WorksController::class, 'entryOpen'])->name('works.entry-open');
 
     /* Holiday */
     Route::resource('holidays',HolidayController::class);

@@ -159,6 +159,9 @@
                   </li>
                   <li class="dropdown-notifications-list scrollable-container">
                     <ul class="list-group list-group-flush">
+
+
+
                       <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
@@ -181,7 +184,9 @@
                           </div>
                         </div>
                       </li>
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item">
+
+
+                      {{-- <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar">
@@ -203,6 +208,7 @@
                           </div>
                         </div>
                       </li>
+
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
@@ -362,7 +368,7 @@
                             ></a>
                           </div>
                         </div>
-                      </li>
+                      </li> --}}
                     </ul>
                   </li>
                   <li class="dropdown-menu-footer border-top">
@@ -380,7 +386,7 @@
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                   <div class="avatar avatar-online">
-                    <img src="{{ asset('storage/' . Auth::user()->employee->profile_image ?? '' ) }}" alt class="h-auto rounded-circle" />
+                    <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle" />
                   </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -389,12 +395,12 @@
                       <div class="d-flex">
                         <div class="flex-shrink-0 me-3">
                           <div class="avatar avatar-online">
-                            <img src="{{ asset('storage/' . Auth::user()->employee->profile_image ?? '' ) }}" alt class="h-auto rounded-circle" />
+                            <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle" />
                           </div>
                         </div>
                         <div class="flex-grow-1">
-                          <span class="fw-semibold d-block">{{ Auth::user()->employee->full_name ?? 'No Name' }}</span>
-                          <small class="text-muted">{{ Auth::user()->role ?? 'N/A'  }}</small>
+                          <span class="fw-semibold d-block">John Doe</span>
+                          <small class="text-muted">Admin</small>
                         </div>
                       </div>
                     </a>

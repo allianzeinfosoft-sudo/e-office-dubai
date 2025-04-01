@@ -20,6 +20,11 @@
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"> Project /</span> {{ $meta_title }}</h4>
 
                 </div>
+
+                <!-- Footer -->
+                <x-footer /> 
+                <!-- / Footer -->
+                <div class="content-backdrop fade"></div>
             </div>
         </div>
     </div>

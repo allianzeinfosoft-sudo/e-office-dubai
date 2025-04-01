@@ -1,7 +1,22 @@
 @extends('layouts.app')
 
 @section('css')
-
+<style>
+  .w-35 {
+    width: 35% !important;
+  }
+  .w-45 {
+    width: 45% !important;
+  }
+  .offcanvas-close{
+    position: absolute;
+    top: 0px;
+    left: -32px;  /* Moves the button outside the offcanvas */
+    z-index: 1055; /* Ensures it stays on top */
+    padding: 28px 10px;
+    border-radius: 0px;
+  }
+</style>
 @stop
 
 @section('content')
@@ -158,7 +173,6 @@
 
               </div>
               <!--/ Attendance Options -->
-
             </div>
           </div>
           <!-- / Content -->
@@ -182,17 +196,18 @@
   </div>
   <!-- / Layout wrapper -->
 
-  <!-- Custom Marking Model -->
-<div class="modal fade" id="modelCustom" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-top" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modelCustomTitle">Custom Marking</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      
-      <div class="modal-body">
-        <div class="row">
+
+
+
+
+<!-- Offcanvas for Custom Marking  -->
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="customMarkingOffcanvas" aria-labelledby="staticBackdropLabel">
+  <div class="offcanvas-header bg-primary">
+      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  Custom Marking </h5>
+      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
           <form id="customMarkingForm" action="{{ route('attendance.custom-mark-in') }}" method="post">
             @csrf
             <div class="col-12 mb-3">
@@ -211,32 +226,25 @@
               <textarea id="signin_late_note" name="signin_late_note" class="form-control"  placeholder="Reason" rows="5"></textarea>
             </div>
           </form>
-
-        </div>
-        
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal"> Close </button>
-        <button type="submit" onclick="customMarking()"  class="btn btn-primary"> Submit </button>
-      </div>
+          <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close"> Close </button>
+            <button type="submit" onclick="customMarking()"class="btn btn-primary"> Submit </button>
+          </div>
     </div>
   </div>
+  <div class="offcanvas-footer"></div>
 </div>
 
-<!-- Emergency Marking Model -->
-<div class="modal fade" id="emergencyMarking" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-top" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="emergencyTitle">Emergency Marking</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      
-      <div class="modal-body">
-        <div class="row">
-          <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
-            @csrf
+<!-- Offcanvas for Emergency Marking  -->
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="emergencyMarkingOffcanvas" aria-labelledby="staticBackdropLabel">
+  <div class="offcanvas-header bg-primary">
+    <h5 class="offcanvas-title text-white" id="staticBackdropLabel">  <i class="ti ti-device-watch float-start fs-3"></i> Emergency Marking</h5>
+    <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
+      <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
+        @csrf
             <div class="col-12 mb-3">
               <label for="signin_date" class="form-label">Date</label>
               <input type="date" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
@@ -253,16 +261,15 @@
             </div>
           </form>
         </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" onclick="emergencyMarkIn()" class="btn btn-success">Mark In</button>
-        <button type="button" onclick="emergencyMarkOut()" class="btn btn-danger">Mark Out</button>
-      </div>
-    </div>
+        <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
+          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
+          <button type="button" onclick="emergencyMarkIn()" class="btn btn-success">Mark In</button>
+          <button type="button" onclick="emergencyMarkOut()" class="btn btn-danger">Mark Out</button>
+        </div>
   </div>
+  <div class="offcanvas-footer"></div>
 </div>
+
 
 @endsection
 
@@ -571,11 +578,17 @@
   });
 
   function customModal(){
-    $('#modelCustom').modal('show');
+    var offcanvasElement = $('#customMarkingOffcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+    //$('#modelCustom').modal('show');
   }
 
   function emergencyModal(){
-    $('#emergencyMarking').modal('show');
+    var offcanvasElement = $('#emergencyMarkingOffcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+    //$('#emergencyMarking').modal('show');
   }
 
   function customMarking() {
