@@ -40,9 +40,9 @@
         </div>
 
         <div class="col-sm-6 mb-3">
-            <div class="form-group">
+            <div class="form-group" id="membersContainer">
                 <label for="members">Members</label>
-                <select class="form-control select2" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
+                <select class="form-control" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
                     <option value=""></option>
                  </select>
             </div>

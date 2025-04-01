@@ -124,7 +124,9 @@
 <script>
     $(function() {
         var projectTable = $('.datatables-project-tasks'),
-            select2 = $('.select2');
+             select2 = $('.select2');
+
+             select2.select2();
 
         if (projectTable.length) {            
             projectTable.DataTable({
@@ -206,32 +208,44 @@
         var offcanvasElement = $('#add_project_tasks_offcanvas');
         var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
         offcanvas.show();
+
+        $('#add_project_tasks_offcanvas #membersContainer').empty();
+        $('#add_project_tasks_offcanvas #membersContainer').html(`<label for="members">Members</label>
+        <select class="form-control" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
+        <option value=""></option>
+        </select>`);
     }
 
     function getMembers(value) {
-    var url = '/tasks-project/' + value + '/get-members';
+    const url = `/tasks-project/${value}/get-members`;
     $.ajax({
         type: "GET",
         url: url,
         dataType: "json",
         success: function(response) {
+            const $membersSelect = $('#members');
+
             // Clear existing options
-            $('#members').empty();
+            $membersSelect.empty();
 
             if (response.success && Array.isArray(response.data)) {
                 // Add a default empty option
-                var html = "<option value=''></option>";
+                let options = "<option value=''></option>";
 
                 // Iterate over each member and create an option
-                $.each(response.data, function(index, member) {
-                    html += "<option value='" + member.id + "'>" + member.full_name	 + " (" + member.employeeID + ")</option>";
+                response.data.forEach(member => {
+                    options += `<option value="${member.id}">${member.full_name} (${member.employeeID})</option>`;
                 });
 
                 // Append the options to the select element
-                $('#members').html(html);
+                $membersSelect.html(options);
 
                 // Reinitialize Select2 if it's being used
-                //$('#members').select2();
+                /* $membersSelect.select2({
+                    placeholder: "Select an option",
+                    allowClear: true
+                }); */
+
             } else {
                 console.error('Invalid response data:', response.data);
             }
@@ -247,6 +261,14 @@ function editProjectTask(projectTaskId) {
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
 
+    $('#add_project_tasks_offcanvas #membersContainer').empty();
+        $('#edit_project_tasks_offcanvas #membersContainer').html(`<label for="members">Members</label>
+        <select class="form-control" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
+        <option value=""></option>
+        </select>`);
+
+    
+
     const editUrl = "{{ route('tasks-project.edit', ':id') }}".replace(':id', projectTaskId);
     $.ajax({
         type: "get",
@@ -258,40 +280,8 @@ function editProjectTask(projectTaskId) {
             offcanvasElement.find('select[name="project_id"]').val(response.projectTask.project_id).trigger('change');
             offcanvasElement.find('select[name="reporting_to"]').val(response.projectTask.reporting_to).trigger('change');
             setTimeout(() => {
-                var url = '/tasks-project/' + response.projectTask.reporting_to + '/get-members';
-                $.ajax({
-                    type: "GET",
-                    url: url,
-                    dataType: "json",
-                    success: function(response) {
-                        // Clear existing options
-                        offcanvasElement.find('#members').empty();
-
-                        if (response.success && Array.isArray(response.data)) {
-                            // Add a default empty option
-                            var html = "<option value=''></option>";
-
-                            // Iterate over each member and create an option
-                            $.each(response.data, function(index, member) {
-                                html += "<option value='" + member.id + "'>" + member.full_name	 + " (" + member.employeeID + ")</option>";
-                            });
-
-                            // Append the options to the select element
-                            offcanvasElement.find('#members').html(html);
-
-                            // Reinitialize Select2 if it's being used
-                            //$('#members').select2();
-                        } else {
-                            console.error('Invalid response data:', response.data);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', status, error);
-                    }
-                });
                 offcanvasElement.find('select[name="members"]').val(response.projectTask.members).trigger('change');
             }, 500);
-
             offcanvasElement.find('#project-task-form').attr('action', updateUrl);
         }
     });
