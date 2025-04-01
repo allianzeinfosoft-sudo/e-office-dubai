@@ -3,7 +3,7 @@
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
       <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)"> <i class="ti ti-menu-2 ti-sm"></i> </a>
     </div>
-  
+
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <!-- Search -->
         <div class="navbar-nav align-items-center">
@@ -12,15 +12,15 @@
           </div>
         </div>
         <!-- /Search -->
-     
+
     <ul class="navbar-nav flex-row align-items-center ms-auto">
-      
+
         <!-- Digital Clock -->
         <li class="nav-item me-1 me-xl-0">
           <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px"> <span id="clock" class="text-primary"><i class="fa fa-clock fis rounded-circle me-1"></i> 00:00:00 </span> </a>
         </li>
         <!-- / Digital Clock -->
-         
+
         <!-- Language -->
         <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
           <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown"><i class="fi fi-us fis rounded-circle me-1 fs-3"></i></a>
@@ -159,6 +159,9 @@
                   </li>
                   <li class="dropdown-notifications-list scrollable-container">
                     <ul class="list-group list-group-flush">
+
+
+
                       <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
@@ -181,7 +184,9 @@
                           </div>
                         </div>
                       </li>
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item">
+
+
+                      {{-- <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar">
@@ -203,6 +208,7 @@
                           </div>
                         </div>
                       </li>
+
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
@@ -362,7 +368,7 @@
                             ></a>
                           </div>
                         </div>
-                      </li>
+                      </li> --}}
                     </ul>
                   </li>
                   <li class="dropdown-menu-footer border-top">

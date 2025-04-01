@@ -60,12 +60,12 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     Route::get('/user/roles',[RoleController::class, 'getroles']);
     Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
     Route::get('/roles/{role}/permissions', [RoleController::class, 'getRolePermissions']);
-    
+
     /* Permissions */
     Route::resource('permissions', PermissionController::class);
     Route::delete('/permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
     Route::get('/permissions-list', [PermissionController::class, 'getPermissions']);
-    
+
     /* users */
     Route::resource('users', UserController::class);
     Route::get('/user-list',[UserController::class, 'getUsers']);
@@ -78,7 +78,7 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
-    
+
     /* Branches */
     Route::resource('branchs',BranchController::class);
     Route::get('/branch-list',[BranchController::class, 'getBranches']);
@@ -87,7 +87,7 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     /* designiations */
     Route::get('/departments/{department}/designations', [BranchController::class, 'getDesignations'])->name('department.designations');
     Route::post('/designation/save',[BranchController::class, 'designation_store'])->name('designation.store');
-    
+
     /* shifts */
     Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
@@ -127,12 +127,13 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     Route::get('/tasks-project/{project_id}/get-tasks-by-project', [ProjectTaskController::class, 'getTasksByProject'])->name('tasks-project.get-tasks-by-project');
     Route::get('/tasks-project/{employee_id}/get-members', [ProjectTaskController::class, 'getMembers'])->name('tasks-project.get-members');
     
+
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
     Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
-    
+
     /* Works Module */
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
     Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');

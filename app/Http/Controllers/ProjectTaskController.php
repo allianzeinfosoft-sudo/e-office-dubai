@@ -87,7 +87,8 @@ class ProjectTaskController extends Controller
         $data['projectTask'] = $projectTask;
         $data['meta_title'] = 'Edit Task';
         $data['projects'] = Project::all();
-        return view('project-tasks.edit', $data);
+        //return view('project-tasks.edit', $data);
+        return response()->json($data);
     }
 
     /**

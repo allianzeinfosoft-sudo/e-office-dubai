@@ -8,12 +8,14 @@ use App\Models\Employee;
 use App\Models\Leave;
 use App\Models\LeaveAllocation;
 use App\Models\User;
+use App\Notifications\LeaveNotification;
 use App\Traits\DateFormatter;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 
 class LeaveController extends Controller
 {
@@ -72,15 +74,14 @@ class LeaveController extends Controller
      */
     public function store(LeaveRequest $request)
     {
-
         $user_id = Auth::user()->id;
         $leaveData = [
             'user_id'     => $user_id,
-            'leave_from'  => $request->leave_from,
-            'leave_to'    => $request->leave_to,
-            'reason'      => $request->reason,
-            'leave_type'  => $request->leave_type,
-            'leave_category' => $request->leave_category,
+            'leave_from'  => $request['leave_from'],
+            'leave_to'    => $request['leave_to'],
+            'reason'      => $request['reason'],
+            'leave_type'  => $request['leave_type'],
+            'leave_category' => $request['leave_category'],
         ];
 
         $leave = Leave::create($leaveData);
@@ -100,15 +101,17 @@ class LeaveController extends Controller
             'manager_name' => 'John Doe',
             'employee_name' => $user_details->full_name,
             'employee_id' => $user_details->employeeID,
-            'leave_type' => $request->leave_type,
-            'start_date' => $request->leave_from,
-            'end_date' => $request->leave_to,
+            'leave_type' => $request['leave_type'],
+            'start_date' => $request['leave_from'],
+            'end_date' => $request['leave_to'],
             'days_count' => $totalLeaveDays,
-            'leave_reason' => $request->reason,
+            'leave_reason' => $request['reason'],
             'employee_email' => Auth::user()->email,
         ];
 
-        Mail::to('allianzeinfosoftsdu@gmail.com')->send(new LeaveApplication($leaveDetails));
+        // Mail::to('allianzeinfosoftsdu@gmail.com')->send(new LeaveApplication($leaveDetails));
+        $admin = User::where('role', 'Admin')->get();
+        Notification::send($admin, new LeaveNotification($leave, $user_details));
         return redirect()->back()->with('success', 'Leave created successfully!');
        }
        else
