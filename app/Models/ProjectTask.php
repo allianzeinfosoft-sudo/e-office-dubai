@@ -15,6 +15,11 @@ class ProjectTask extends Model{
     ];
 
     public function project(){
-        return $this->belongsTo(Project::class, 'project_id'); // Ensure 'project_id' exists in 'project_tasks' table
+        return $this->belongsTo(Project::class, 'project_id'); 
+    }
+
+
+    public function employee(){
+        return $this->belongsTo(Employee::class, 'reporting_to', 'id'); 
     }
 }

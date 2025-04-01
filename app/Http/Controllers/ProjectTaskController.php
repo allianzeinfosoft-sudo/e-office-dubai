@@ -17,18 +17,28 @@ class ProjectTaskController extends Controller
         /* ajax request */
         if ($request->ajax()) {
             // Handle the AJAX request here
-            $projectTasks = ProjectTask::with('project')->get();
+            $projectTasks = ProjectTask::with('project', 'employee')->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Attendance marked successfully',
                 'data' => $projectTasks->map(function ($task) {
+                    $memberIds = explode(',', $task->members);
+
+                    $members = Employee::whereIn('id', $memberIds)->get()->map(function ($member) {
+                        return [
+                            'id' => $member->id,
+                            'full_name' => $member->full_name,
+                            'profile_image' => $member->profile_image  ? $member->profile_image  : 'default.png',
+                        ];
+                    });
+
                     return [
                         'id' => $task->id,
                         'task_name' => $task->task_name, 
                         'project_name' => optional($task->project)->project_name,
                         'created_at' => date('d-m-Y', strtotime($task->created_at)),
-                        'reporting_to' => $task->reporting_to,
-                        'members' => $task->members,
+                        'reporting_to' => $task->employee ?? '',
+                        'members' => $members,
                     ];
                 }),
             ]);

@@ -145,7 +145,9 @@
                             return `<div class="d-flex align-items-center">
                           <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
                             <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-sm pull-up" aria-label="Kaith D'souza" data-bs-original-title="Kaith D'souza">
-                              <img class="rounded-circle" src="../../assets/img/avatars/5.png" alt="Avatar" title="username">
+                              <img class="rounded-circle" src="${row.reporting_to && row.reporting_to.profile_image 
+                            ? '/storage/profile_pics/' + row.reporting_to.profile_image.replace(/^profile_pics\//, '') 
+                            : '../../assets/img/avatars/5.png'}" alt="`+ row.reporting_to.full_name +`" title="`+ row.reporting_to.full_name +`">
                             </li>
                           </ul>
                         </div>`;
@@ -153,19 +155,22 @@
                     },
                     { data: 'members', title: 'Members',
                         render: function (data, type, row) {
-                            return `<div class="d-flex align-items-center">
-                          <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
-                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-sm pull-up" aria-label="Kaith D'souza" data-bs-original-title="Kaith D'souza">
-                              <img class="rounded-circle" src="../../assets/img/avatars/5.png" alt="Avatar">
-                            </li>
-                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-sm pull-up" aria-label="John Doe" data-bs-original-title="John Doe">
-                              <img class="rounded-circle" src="../../assets/img/avatars/1.png" alt="Avatar">
-                            </li>
-                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-sm pull-up" aria-label="Alan Walker" data-bs-original-title="Alan Walker">
-                              <img class="rounded-circle" src="../../assets/img/avatars/6.png" alt="Avatar">
-                            </li>
-                          </ul>
-                        </div>`;
+                            if (!Array.isArray(data) || data.length === 0) {
+                                return `<span>No Members</span>`;
+                            }
+
+                            let membersHtml = `<div class="d-flex align-items-center">
+                            <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">`;
+
+                            data.forEach(member => {
+                                membersHtml += `<li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top"  class="avatar avatar-sm pull-up" aria-label="${member.full_name}"  data-bs-original-title="${member.full_name}">
+                                                    <img class="rounded-circle" src="${member.profile_image ? '/storage/profile_pics/' + member.profile_image.replace(/^profile_pics\//, '') : '../../assets/img/avatars/5.png' }" alt="Avatar" title="${member.full_name}">
+                                                </li>`;
+                                });
+
+                            membersHtml += `</ul></div>`;
+
+                            return membersHtml;
                         }
                      },
                     { 
