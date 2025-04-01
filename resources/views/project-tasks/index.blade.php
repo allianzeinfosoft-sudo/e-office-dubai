@@ -1,7 +1,22 @@
 @extends('layouts.app')
 
 @section('css')
-
+<style>
+.w-35 {
+    width: 35% !important;
+}
+.w-45 {
+    width: 45% !important;
+}
+.offcanvas-close{
+    position: absolute;
+    top: 0px;
+    left: -32px;  /* Moves the button outside the offcanvas */
+    z-index: 1055; /* Ensures it stays on top */
+    padding: 28px 10px;
+    border-radius: 0px;
+}
+</style>
 @stop
 
 
@@ -19,27 +34,29 @@
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-3"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
 
+                    <div class="row">
+                        <div class="col-sm-12 d-flex justify-content-end mb-3">
+                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="addProjectTask()">
+                                <!-- {{ route('project.create') }} -->
+                                <span>
+                                    <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
+                                    <span class="d-none d-sm-inline-block"> New</span>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+
+
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <div class=" float-end mt-15 mr-20">
-                                <a href="{{ route('tasks-project.create') }}">
-                                    <button class="btn btn-secondary add-new btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button">
-                                        <span>
-                                            <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                            <span class="d-none d-sm-inline-block">Add New</span>
-                                        </span>
-                                    </button>
-                                </a>
-                            </div>
-    
                             <table class="datatables-basic datatables-project-tasks table border-top table-stripedc">
                                 <thead>
                                     <tr>
                                         <th>Task</th>
                                         <th>Project</th>
                                         <th>Date</th>
-                                        <th>Pr Task</th>
-                                        <th>Pr. Sub. Task</th>
+                                        <th>Reporting To</th>
+                                        <th>Members</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -57,6 +74,28 @@
         </div>
     </div>
 </div>
+
+<!-- Add Project Task -->
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="add_project_tasks_offcanvas" aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas-header bg-primary p-3">
+        <span class="d-flex justify-content-between align-items-center gap-2">
+            <i class="ti ti-file-plus fs-2 text-white"></i> 
+            <span class="">
+                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Project Task</h5>
+                <span class="text-white slogan">Create New Project Tasks</span>
+            </span>
+        </span>
+        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <x-project-task-form action="{{ route('tasks-project.store') }}" />
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
 
 
@@ -78,16 +117,16 @@
                     { data: 'task_name', title: 'Task' },
                     { data: 'project_name', title: 'Project' },
                     { data: 'created_at', title: 'Date' },
-                    { data: 'pr_task_id', title: 'Pr Task' },
-                    { data: 'pr_sub_task_id', title: 'Pr. Sub. Task' },
+                    { data: 'reporting_to', title: 'Reporting To' },
+                    { data: 'members', title: 'Members' },
                     { 
                         data: null, 
                         title: 'Actions',
                         render: function (data, type, row) {
                             const editUrl = "{{ route('tasks-project.edit', ':id') }}".replace(':id', row.id);
                             return `
-                                <a href="${editUrl}" class="btn btn-sm btn-primary edit-project">Edit</a>
-                                <button type="button" class="btn btn-sm btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}">Delete</button>
+                                <a href="${editUrl}" class="btn btn-sm btn-icon btn-primary edit-project"><i class="ti ti-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
                             `;
                         }
                     }
@@ -114,6 +153,46 @@
             });
         }
     }
+
+    function addProjectTask() {
+        var offcanvasElement = $('#add_project_tasks_offcanvas');
+        var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+        offcanvas.show();
+    }
+
+    function getMembers(value) {
+    var url = '/tasks-project/' + value + '/get-members';
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "json",
+        success: function(response) {
+            // Clear existing options
+            $('#members').empty();
+
+            if (response.success && Array.isArray(response.data)) {
+                // Add a default empty option
+                var html = "<option value=''></option>";
+
+                // Iterate over each member and create an option
+                $.each(response.data, function(index, member) {
+                    html += "<option value='" + member.id + "'>" + member.full_name	 + " (" + member.employeeID + ")</option>";
+                });
+
+                // Append the options to the select element
+                $('#members').html(html);
+
+                // Reinitialize Select2 if it's being used
+                //$('#members').select2();
+            } else {
+                console.error('Invalid response data:', response.data);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+        }
+    });
+}
     
 </script>
 @stop

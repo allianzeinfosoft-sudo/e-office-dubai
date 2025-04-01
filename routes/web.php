@@ -32,23 +32,21 @@ Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
         return view('auth/login');
     });
+
     Auth::routes();
 
     Route::post('/logout', function () {
-
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
         return redirect('/');
-         })->name('logout');
+    })->name('logout');
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
-
 Route::middleware(['auth.session','web', 'auth'])->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
     Route::post('/attendance/mark-in',[AttendanceController::class, 'markIn'])->name('attendance.mark-in');
@@ -127,6 +125,7 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     Route::post('/tasks-project/{projectTask}/update', [ProjectTaskController::class, 'update'])->name('tasks-project.update');
     Route::delete('/tasks-project/{projectTask}/destroy', [ProjectTaskController::class, 'destroy'])->name('tasks-project.destroy');
     Route::get('/tasks-project/{project_id}/get-tasks-by-project', [ProjectTaskController::class, 'getTasksByProject'])->name('tasks-project.get-tasks-by-project');
+    Route::get('/tasks-project/{employee_id}/get-members', [ProjectTaskController::class, 'getMembers'])->name('tasks-project.get-members');
     
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProjectTask;
 use App\Models\Project;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 
 class ProjectTaskController extends Controller
@@ -26,8 +27,8 @@ class ProjectTaskController extends Controller
                         'task_name' => $task->task_name, 
                         'project_name' => optional($task->project)->project_name,
                         'created_at' => date('d-m-Y', strtotime($task->created_at)),
-                        'pr_task_id' => $task->pr_task_id,
-                        'pr_sub_task_id' => $task->pr_sub_task_id,
+                        'reporting_to' => $task->reporting_to,
+                        'members' => $task->members,
                     ];
                 }),
             ]);
@@ -55,16 +56,16 @@ class ProjectTaskController extends Controller
         $request->validate([
             'task_name'     => 'required|string|max:255',
             'project_id'    => 'required',
-            'pr_task_id'     => 'nullable',
-            'pr_sub_task_id' => 'nullable',
+            'reporting_to'  => 'nullable',
+            'members' => 'nullable',
         ]);
 
         // Create project Task
         ProjectTask::create([
             'project_id'     => $request->project_id,
             'task_name'      => $request->task_name,
-            'pr_task_id'     => $request->pr_task_id ?? null,
-            'pr_sub_task_id' => $request->pr_sub_task_id ?? null,
+            'reporting_to'     => $request->reporting_to ?? null,
+            'members' => isset($request->members) ? implode(',', $request->members) : null,
         ]);
 
         return redirect()->route('tasks-project.index')->with('success', 'Project created successfully');
@@ -126,6 +127,14 @@ class ProjectTaskController extends Controller
         return response()->json([
             'success' => true,
             'data' => $projectTasks,
+        ]);
+    }
+
+    public function getMembers($employee_id){
+        $members = Employee::where('reporting_to', $employee_id)->get();
+        return response()->json([
+            'success' => true,
+            'data' => $members,
         ]);
     }
 }

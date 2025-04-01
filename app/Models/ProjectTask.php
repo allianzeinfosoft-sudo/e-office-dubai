@@ -10,8 +10,8 @@ class ProjectTask extends Model{
     protected $fillable = [
         'project_id',
         'task_name',
-        'pr_task_id',
-        'pr_sub_task_id'
+        'reporting_to',
+        'members'
     ];
 
     public function project(){

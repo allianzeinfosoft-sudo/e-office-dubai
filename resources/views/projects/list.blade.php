@@ -2,7 +2,6 @@
 
 @section('css')
 <style>
-
   .w-35 {
     width: 35% !important;
   }
@@ -17,7 +16,6 @@
     padding: 28px 10px;
     border-radius: 0px;
   }
-
 </style>
 @stop
 
