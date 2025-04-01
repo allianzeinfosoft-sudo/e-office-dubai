@@ -76,7 +76,7 @@
       </div>
     </div>
 </div>
-
+<!-- Add Project From -->
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="add_projects_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
@@ -89,7 +89,32 @@
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
     </div>
     <div class="offcanvas-body">
-        <div>I will not close if you click outside of me.</div>
+        <div class="row">
+            <div class="col-sm-12">
+                <x-project-form action="{{ route('project.store') }}" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Project From -->
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="edit_projects_offcanvas" aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas-header bg-primary p-3">
+        <span class="d-flex justify-content-between align-items-center gap-2">
+            <i class="ti ti-file-plus fs-2 text-white"></i> 
+            <span class="">
+                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Project</h5>
+                <span class="text-white slogan">Edit New Project</span>
+            </span>
+        </span>
+        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <x-project-form id="edit-project-form" action="" method="POST" />
+            </div>
+        </div>
     </div>
 </div>
 
@@ -123,7 +148,7 @@
                         render: function (data, type, row) {
                             const editUrl = "{{ route('project.edit', ':id') }}".replace(':id', row.id);
                             return `
-                                <a href="${editUrl}" class="btn btn-sm btn-icon btn-primary edit-project"><i class="ti ti-edit"></i></a>
+                                <a href="javascript:void(0)" onclick="editProject(${row.id})" class="btn btn-sm btn-icon btn-primary edit-project"><i class="ti ti-edit"></i></a>
                                 <button type="button" class="btn btn-sm  btn-icon btn-danger delete-project" onclick="deleteProject(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
                             `;
                         }
@@ -131,6 +156,14 @@
                 ]
             });
         }
+       
+        $('#start_date,  #end_date').flatpickr({
+            monthSelectorType: 'static',
+            altInput: true,
+            altFormat: 'd-m-Y',
+            dateFormat: 'd-m-Y'
+        });
+
     });
 
     function deleteProject(projectId) {
@@ -156,6 +189,44 @@
         var offcanvasElement = $('#add_projects_offcanvas');
         var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
         offcanvas.show();
+    }
+
+    function editProject(projectId) {
+        var offcanvasElement = $('#edit_projects_offcanvas');
+        var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+        offcanvas.show();
+
+        var editUrl = "{{ route('project.edit', ':id') }}".replace(':id', projectId);
+        $.ajax({
+            type: "get",
+            url: editUrl,
+            dataType: "json",
+            success: function (response) {
+                let updateUrl = "{{ route('project.update', ':project') }}".replace(':project', response.project.id);
+                offcanvasElement.find('input[name="project_name"]').val(response.project.project_name);
+                offcanvasElement.find('select[name="project_add_person"]').val(response.project.project_add_person).trigger('change');
+                offcanvasElement.find('select[name="department_id"]').val(response.project.department_id).trigger('change');
+                offcanvasElement.find('input[name="start_date"]').val(response.project.start_date);
+                offcanvasElement.find('#start_date').flatpickr({ 
+                    monthSelectorType: 'static',
+                    altInput: true,
+                    altFormat: 'd-m-Y',
+                    dateFormat: 'd-m-Y',
+                    defaultDate : response.project.start_date
+                });
+
+                offcanvasElement.find('#end_date').flatpickr({ 
+                    monthSelectorType: 'static',
+                    altInput: true,
+                    altFormat: 'd-m-Y',
+                    dateFormat: 'd-m-Y',
+                    defaultDate : response.project.start_date
+                });
+                offcanvasElement.find('input[name="total_hours"]').val(response.project.total_hours);
+                offcanvasElement.find('input[name="total_day"]').val(response.project.total_day);
+                offcanvasElement.find('#project-form').attr('action', updateUrl);
+            }
+        });
     }
     
 </script>

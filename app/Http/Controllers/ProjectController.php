@@ -93,7 +93,8 @@ class ProjectController extends Controller
         $data['meta_title'] = 'Edit Project';
         $data['users'] = User::all();
         $data['departments'] = Department::all();
-        return view('projects.edit', $data);
+        return response()->json($data);
+        //return view('projects.edit', $data);
     }
 
     /**
