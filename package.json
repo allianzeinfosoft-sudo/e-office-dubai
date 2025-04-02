@@ -16,6 +16,8 @@
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^44.3.0",
         "@ckeditor/ckeditor5-vue": "^7.3.0",
+        "laravel-echo": "^2.0.2",
+        "pusher-js": "^8.4.0",
         "quill": "^2.0.3",
         "summernote": "^0.9.1",
         "tinymce": "^7.7.1",

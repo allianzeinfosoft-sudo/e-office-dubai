@@ -40,6 +40,21 @@ return [
         'isActive' => ['attendance*'],
     ],
     [
+        'title' => 'Users',
+        'icon' => 'ti ti-users',
+        'route' => 'javascript:void(0);',
+        'submenu' => [
+            [
+                'title' => 'Users',
+                'route' =>  'users',
+            ],
+            [
+                'title' => 'Add Users',
+                'route' =>  '/users/create',
+            ],
+        ]
+    ],
+    [
         'title' => 'Works',
         'icon' => 'ti ti-building-bank',
         'route' => 'javascript:void(0);',
@@ -52,11 +67,11 @@ return [
             [
                 'title' => 'SDU Project Status',
                 'route' => 'works/sud-project-status'
-            ],   
+            ],
             [
                 'title' => 'Temporary Status',
                 'route' => 'works/temporary-status'
-            ],   
+            ],
             [
                 'title' => 'Entry Open Markin',
                 'route' => 'works/entry-open'
@@ -158,6 +173,21 @@ return [
             [
                 'title' => 'Leave Allocation',
                 'route' =>  '/leave-allocation',
+            ],
+        ]
+    ],
+    [
+        'title' => 'Salary Slip',
+        'icon' => 'ti ti-cash',
+        'route' => 'javascript:void(0);',
+        'submenu' => [
+            [
+                'title' => 'View Salary Slip',
+                'route' =>  '/salarySlip/view',
+            ],
+            [
+                'title' => 'Uploload Salary Slip',
+                'route' =>  '/salarySlip/upload',
             ],
         ]
     ],
@@ -363,21 +393,6 @@ return [
             [
                 'title' => 'Permission',
                 'route' =>  'permissions',
-            ],
-        ]
-    ],
-    [
-        'title' => 'Users',
-        'icon' => 'ti ti-users',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
-            [
-                'title' => 'Users',
-                'route' =>  'users',
-            ],
-            [
-                'title' => 'Add Users',
-                'route' =>  '/users/create',
             ],
         ]
     ],

@@ -58,7 +58,7 @@
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
-    
+
     <!-- Scripts -->
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
 
@@ -76,7 +76,7 @@
     <!-- build:js assets/vendor/js/core.js -->
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js') }}"></script> --}}
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
     <!-- <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script> -->
@@ -87,7 +87,7 @@
     <script src="{{ asset('assets/vendor/libs/i18n/i18n.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/typeahead-js/typeahead.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
-    
+
     <!-- Main JS -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
@@ -123,7 +123,7 @@
    <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
    <script src="{{ asset('assets/vendor/libs/bloodhound/bloodhound.js') }}"></script>
 
-   
+
     <!-- Page JS -->
     <script src="{{ asset('assets/js/pages-auth.js') }}"></script>
 
@@ -168,13 +168,9 @@
     @if(Route::is('leaves.*'))
         <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script>
     @endif
-    
+
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>
-
      <!-- Vendors JS -->
-
-
-
      @yield('js')
 
 </body>
