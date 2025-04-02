@@ -14,6 +14,7 @@ use App\Http\Controllers\ProjectTaskController;
 use App\Http\Controllers\WorkReportController;
 use App\Http\Controllers\WorksController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -144,5 +145,8 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     Route::resource('holidays',HolidayController::class);
     Route::get('/holiday/list', [HolidayController::class, 'getHolidayList'])->name('holiday.list');
     Route::delete('/holiday-delete/{holidayId}', [HolidayController::class, 'destroy'])->name('holiday.destroy');
+
+    /* Notification */
+    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
 });
 

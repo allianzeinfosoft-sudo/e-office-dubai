@@ -141,7 +141,11 @@
                   data-bs-auto-close="outside"
                   aria-expanded="false">
                   <i class="ti ti-bell ti-md"></i>
-                  <span class="badge bg-danger rounded-pill badge-notifications">5</span>
+                  @if(auth()->user()->unreadNotifications->count())
+                  <span class="badge bg-danger rounded-pill badge-notifications">
+                         {{ auth()->user()->unreadNotifications->count() }}
+                  </span>
+                  @endif
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0">
                   <li class="dropdown-menu-header border-bottom">
@@ -161,30 +165,32 @@
                     <ul class="list-group list-group-flush">
 
 
-
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                        <div class="d-flex">
-                          <div class="flex-shrink-0 me-3">
-                            <div class="avatar">
-                              <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle" />
-                            </div>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="mb-1">Congratulation Lettie 🎉</h6>
-                            <p class="mb-0">Won the monthly best seller gold badge</p>
-                            <small class="text-muted">1h ago</small>
-                          </div>
-                          <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read"
-                              ><span class="badge badge-dot"></span
-                            ></a>
-                            <a href="javascript:void(0)" class="dropdown-notifications-archive"
-                              ><span class="ti ti-x"></span
-                            ></a>
-                          </div>
-                        </div>
-                      </li>
-
+                        @foreach(auth()->user()->unreadNotifications->take(5) as $notification)
+                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                                <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar">
+                                    <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle" />
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Congratulation Lettie 🎉</h6>
+                                        <a href="#" class="dropdown-item mark-as-read" data-id="{{ $notification->id }}">
+                                            {{ $notification->data['message'] }}
+                                        </a>
+                                    <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                                </div>
+                                <div class="flex-shrink-0 dropdown-notifications-actions">
+                                    <a href="javascript:void(0)" class="dropdown-notifications-read"
+                                    ><span class="badge badge-dot"></span
+                                    ></a>
+                                    <a href="javascript:void(0)" class="dropdown-notifications-archive"
+                                    ><span class="ti ti-x"></span
+                                    ></a>
+                                </div>
+                                </div>
+                            </li>
+                      @endforeach
 
                       {{-- <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
@@ -481,3 +487,40 @@
             <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
           </div>
         </nav>
+
+        @section('js')
+        <script>
+
+
+         $(function () {
+
+            // Using jQuery example
+            $(document).ready(function() {
+                $('.mark-as-read').click(function(e) {
+                    e.preventDefault();
+                    var notificationId = $(this).data('id');
+
+                    $.ajax({
+                        url: '/notifications/mark-as-read',
+                        type: 'POST',
+                        data: {
+                            id: notificationId,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function() {
+                            // Update UI
+                            $(this).removeClass('unread');
+                            // Update badge count
+                            var count = parseInt($('.badge').text());
+                            $('.badge').text(count - 1);
+                            if (count - 1 === 0) {
+                                $('.badge').hide();
+                            }
+                        }
+                    });
+                });
+            });
+
+         });
+    </script>
+@stop

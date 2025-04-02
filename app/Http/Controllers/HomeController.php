@@ -30,8 +30,8 @@ class HomeController extends Controller
 
     public function getNotifications(Request $request)
     {
-        $notification =  auth()->user()->notifications;
-        dd($notification);
+        return auth()->user()->notifications;
+
 
     }
 }
