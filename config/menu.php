@@ -40,21 +40,6 @@ return [
         'isActive' => ['attendance*'],
     ],
     [
-        'title' => 'Users',
-        'icon' => 'ti ti-users',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
-            [
-                'title' => 'Users',
-                'route' =>  'users',
-            ],
-            [
-                'title' => 'Add Users',
-                'route' =>  '/users/create',
-            ],
-        ]
-    ],
-    [
         'title' => 'Works',
         'icon' => 'ti ti-building-bank',
         'route' => 'javascript:void(0);',
@@ -95,6 +80,21 @@ return [
                 'isActive' => ['tasks-project*'],
             ],
 
+        ]
+    ],
+    [
+        'title' => 'Users',
+        'icon' => 'ti ti-users',
+        'route' => 'javascript:void(0);',
+        'submenu' => [
+            [
+                'title' => 'Users',
+                'route' =>  'users',
+            ],
+            [
+                'title' => 'Add Users',
+                'route' =>  '/users/create',
+            ],
         ]
     ],
     [
