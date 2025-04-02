@@ -73,11 +73,13 @@
         {{-- </main> --}}
     </div>
     <!-- Core JS -->
+     
     <!-- build:js assets/vendor/js/core.js -->
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js') }}"></script> --}}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
     <!-- <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script> -->
 
@@ -87,9 +89,6 @@
     <script src="{{ asset('assets/vendor/libs/i18n/i18n.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/typeahead-js/typeahead.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
-
-    <!-- Main JS -->
-    <script src="{{ asset('assets/js/main.js') }}"></script>
 
     <!-- endbuild -->
 
@@ -123,6 +122,9 @@
    <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
    <script src="{{ asset('assets/vendor/libs/bloodhound/bloodhound.js') }}"></script>
 
+
+    <!-- Main JS -->
+    <script src="{{ asset('assets/js/main.js') }}"></script>
 
     <!-- Page JS -->
     <script src="{{ asset('assets/js/pages-auth.js') }}"></script>
@@ -171,7 +173,9 @@
 
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>
      <!-- Vendors JS -->
-     @yield('js')
+    
+    @yield('js')
+    @yield('headerjs')
 
 </body>
 </html>

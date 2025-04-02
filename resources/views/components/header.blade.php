@@ -488,7 +488,7 @@
           </div>
         </nav>
 
-        @section('js')
+        @section('headerjs')
         <script>
 
 
