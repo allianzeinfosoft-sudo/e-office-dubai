@@ -494,7 +494,7 @@
 
          $(function () {
 
-            // Using jQuery example
+
             $(document).ready(function() {
                 $('.mark-as-read').click(function(e) {
                     e.preventDefault();

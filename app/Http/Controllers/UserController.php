@@ -13,6 +13,7 @@ use App\Models\Workshift;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -179,12 +180,35 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-
+        $employee = $user->employee;
         $request->validate([
-            'username'  => 'required|string|max:255',
-            'email'     => 'required|email|unique:users,email,' . $user->id,
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+            'username'  => ['required','string','max:255',
+                                Rule::unique('users','username')->ignore($user->id),
+                           ],
+            'email'     => ['required','email',
+                                Rule::unique('users','email')->ignore($user->id),
+                           ],
+            'profile_image' => 'nullable','image','mimes:jpeg,png,jpg,gif,svg','max:2048',
+            'full_name' => 'required',
+            'phonenumber' => ['required',
+                                Rule::unique('employees','phonenumber')->ignore(optional($employee)->id),
+                             ],
+            'landline' => 'nullable',
+            'personal_email' => ['nullable',
+                                    Rule::unique('employees','personal_email')->ignore(optional($employee)->id),
+                                ],
+            'mobile_number' => ['nullable',
+                                   Rule::unique('employees','mobile_number')->ignore(optional($employee)->id),
+                                ],
+
+            'aadhaar' => ['nullable',
+                            Rule::unique('employees','aadhaar')->ignore(optional($employee)->id),
+                            ],
+            'join_date' => 'required|date',
+            ]);
+
+
+
 
         // Update user details
         $user->update([
