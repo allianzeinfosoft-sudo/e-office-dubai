@@ -11,23 +11,26 @@
     flatpickrTime = document.querySelector('#flatpickr-time'),
     flatpickrDateTime = document.querySelector('#flatpickr-datetime'),
     flatpickrMulti = document.querySelector('#flatpickr-multi'),
-    flatpickrRange = document.querySelector('#flatpickr-range'),
+    /* flatpickrRange = document.querySelector('#flatpickr-range'), */
     flatpickrInline = document.querySelector('#flatpickr-inline'),
     flatpickrFriendly = document.querySelector('#flatpickr-human-friendly'),
-    flatpickrDisabledRange = document.querySelector('#flatpickr-disabled-range'),
-    leave_from = document.querySelector('#leave-from'),
-    leave_to = document.querySelector('#leave-to');
+    flatpickrDisabledRange = document.querySelector('#flatpickr-disabled-range')
 
-    // Date
-    if (leave_from) {
-        leave_from.flatpickr({
+
+    if (document.querySelector("#leave-from")) {
+        flatpickr("#leave-from", {
             monthSelectorType: 'static'
         });
     }
 
-    // Date
-    if (leave_to) {
-        leave_to.flatpickr({
+    if (document.querySelector("#leave-to")) {
+        flatpickr("#leave-to", {
+            monthSelectorType: 'static'
+        });
+    }
+
+    if(document.querySelector("#holiday-date")){
+        flatpickr("#holiday-date", {
             monthSelectorType: 'static'
         });
     }
@@ -66,11 +69,11 @@
   }
 
   // Range
-  if (typeof flatpickrRange != undefined) {
-    flatpickrRange.flatpickr({
-      mode: 'range'
-    });
-  }
+//   if (typeof flatpickrRange != undefined) {
+//     flatpickrRange.flatpickr({
+//       mode: 'range'
+//     });
+//   }
 
   // Inline
   if (flatpickrInline) {

@@ -7,13 +7,13 @@
 $(function () {
   var dataTablePermissions = $('.datatables-permissions'),
     dt_permission,
-    userList = 'app-user-list.html';
+    userList = "{{ route('roles.index') }}";
 
   // Users List datatable
   if (dataTablePermissions.length) {
     dt_permission = dataTablePermissions.DataTable({
     // ajax: assetsPath + 'json/permissions-list.json', // JSON file to add data
-      
+
     ajax: {
           url: "/permissions-list",  // Fetch from Laravel API
           type: "GET",
@@ -25,8 +25,8 @@ $(function () {
         { data: '' },
         { data: 'id' },
         { data: 'name' },
+        { data: 'category_name'},
         { data: 'assigned_to' },
-        { data: 'created_date' },
         { data: '' }
       ],
       columnDefs: [
@@ -43,8 +43,9 @@ $(function () {
         },
         {
           targets: 1,
-          searchable: false,
-          visible: false
+            render: function (data, type, full, meta) {
+                return meta.row + 1;  // Add Serial Number (1-based index)
+            }
         },
         {
           // Name
@@ -55,30 +56,29 @@ $(function () {
           }
         },
         {
-          // User Role
-          targets: 3,
-          orderable: false,
-          render: function (data, type, full, meta) {
-              var $assignedTo = full['assigned_to'],  
-                  $output = '';
-          
-              for (var i = 0; i < $assignedTo.length; i++) {  
-                  var val = $assignedTo[i],  
-                      roleClass = 'bg-label-primary'; // Default color if not found  
-          
-                  $output += '<a href="' + userList + '"><span class="badge ' + roleClass + ' m-1">' + val + '</span></a>';  
-              }
-          
-              return '<span class="text-nowrap">' + $output + '</span>';  
-          }
-        },
+            // Name
+            targets: 3,
+            render: function (data, type, full, meta) {
+              var $category = full['category_name'];
+              return '<span class="text-nowrap">' + $category + '</span>';
+            }
+          },
         {
-          // remove ordering from Name
+          // User Role
           targets: 4,
           orderable: false,
           render: function (data, type, full, meta) {
-            var $date = full['created_date'];
-            return '<span class="text-nowrap">' + $date + '</span>';
+              var $assignedTo = full['assigned_to'],
+                  $output = '';
+
+              for (var i = 0; i < $assignedTo.length; i++) {
+                  var val = $assignedTo[i],
+                      roleClass = 'bg-label-primary'; // Default color if not found
+
+                  $output += '<span class="badge ' + roleClass + ' m-1">' + val + '</span>';
+              }
+
+              return '<span class="text-nowrap">' + $output + '</span>';
           }
         },
         {
@@ -89,8 +89,8 @@ $(function () {
           orderable: false,
           render: function (data, type, full, meta) {
             return (
-              '<span class="text-nowrap"><button class="btn btn-sm btn-icon me-2" data-bs-target="#editPermissionModal" data-bs-toggle="modal" data-bs-dismiss="modal"><i class="ti ti-edit"></i></button>' +
-              '<button class="btn btn-sm btn-icon delete-record"><i class="ti ti-trash"></i></button></span>'
+               '<button class="btn btn-sm btn-icon delete-record" data-id="' + full.id + '">' +
+                 '<i class="ti ti-trash"></i></button>'
             );
           }
         }
@@ -186,7 +186,44 @@ $(function () {
 
   // Delete Record
   $('.datatables-permissions tbody').on('click', '.delete-record', function () {
-    dt_permission.row($(this).parents('tr')).remove().draw();
+
+    let id = $(this).data('id'); // Get the record ID
+    let row = $(this).closest('tr'); // Get the row element
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+
+        $.ajax({
+            url: '/permissions/' + id,
+            type: 'DELETE',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content') // CSRF token
+            },
+            success: function (response) {
+                dt_permission.row(row).remove().draw();
+                Swal.fire("Deleted!", "Permission has been deleted.", "success").then(() => {
+                    location.reload(); // Reload page after deletion
+                });
+            },
+            error: function (xhr) {
+                Swal.fire("Error!", "Something went wrong.", "error");
+            }
+        });
+
+            }
+        });
+
+
+
   });
 
   // Filter form control to default size

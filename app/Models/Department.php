@@ -13,13 +13,15 @@ class Department extends Model
         'department'  
     ];
 
-    public function branch()
-    {
+    public function branch(){
         return $this->belongsTo(Branch::class);
     }
 
-    public function designations()
-    {
+    public function designations(){
         return $this->hasMany(Designation::class);
+    }
+
+    public function projects(){
+        return $this->hasMany(Project::class);
     }
 }

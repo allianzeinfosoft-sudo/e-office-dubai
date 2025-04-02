@@ -19,7 +19,15 @@
         <div class="content-wrapper">
           <!-- Content -->
 
-
+          @if ($errors->any())
+          <div class="alert alert-danger">
+              <ul>
+                  @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
+          </div>
+      @endif
 
           <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4">New User</h4>
@@ -38,27 +46,27 @@
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="username" class="form-label">Username:</label>
+                      <label for="username" class="form-label">Username:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" />
+                        <input type="text" class="form-control" id="username" name="username" value="{{ old('username')}}" placeholder="Enter username" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="email_id" class="form-label">Email ID:</label>
+                      <label for="email_id" class="form-label">Email ID:<span class="mandatory">*</span></label>
                         <div class="input-group input-group-merge">
-                        <input class="form-control" type="email" id="email_id" name="email" placeholder="Enter email" />
+                        <input class="form-control" type="email" id="email_id" value="{{ old('email') }}" name="email" placeholder="Enter email" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="fullname" class="form-label">Full Name:</label>
+                      <label for="fullname" class="form-label">Full Name:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Enter fullname"/>
+                      <input type="text" class="form-control" id="full_name" name="full_name" value="{{ old('full_name') }}" placeholder="Enter fullname"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="phonenumber" class="form-label">Phone Number:</label>
+                      <label for="phonenumber" class="form-label">Phone Number:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" id="phonenumber" name="phonenumber" placeholder="Enter phone number"/>
+                      <input type="text" class="form-control" id="phonenumber" value="{{ old('phonenumber') }}" name="phonenumber" placeholder="Enter phone number"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -67,7 +75,7 @@
                        <select class="form-select" id="reporting_to" name="reporting_to">
                         <option value="">Select reporting person</option>
                         @foreach ($employees as $employee)
-                          <option value="{{ $employee->user_id ?? '' }}">{{ $employee->full_name ?? '' }}</option>
+                          <option value="{{ $employee->user_id ?? '' }}" {{ (old('reporting_to') == $employee->user_id ) ? 'selected' : '' }}>{{ $employee->full_name ?? '' }}</option>
                         @endforeach
                       </select>
                       </div>
@@ -75,18 +83,18 @@
                     <div class="col-md-4 mb-3">
                       <label for="personal_email" class="form-label">Personal Email:</label>
                       <div class="input-group input-group-merge">
-                      <input type="email" class="form-control" id="personal_email" name="personal_email" placeholder="Enter personal email"/>
+                      <input type="email" class="form-control" id="personal_email" value="{{ old('personal_email') }}" name="personal_email" placeholder="Enter personal email"/>
                       </div>
                     </div>
 
                     <div class="col-md-4 mb-3">
                       <label for="gender" class="form-label">Gender:</label>
                       <div class="form-check form-check-inline mt-3">
-                        <input class="form-check-input" type="radio"   id="inlineRadio1" name="gender" value="male" />
+                        <input class="form-check-input" type="radio"   id="inlineRadio1" {{ (old('gender') == 'male') ? 'checked' : '' }} name="gender" value="male" />
                         <label class="form-check-label" for="inlineRadio1">Male</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio"  id="inlineRadio2" name="gender" value="female" />
+                        <input class="form-check-input" type="radio"  id="inlineRadio2" name="gender" {{ (old('gender') == 'female') ? 'checked' : '' }} value="female" />
                         <label class="form-check-label" for="inlineRadio2">Female</label>
                       </div>
                     </div>
@@ -94,59 +102,55 @@
                     <div class="col-md-4 mb-3">
                       <label for="blood_group" class="form-label">Blood Group:</label>
                       <div class="input-group input-group-merge">
-                      <select class="form-select" id="blood_group" name="blood_group" aria-label="Default select example">
-                        <option selected>Please select</option>
-                        <option value="O-ve">O-ve</option>
-                        <option value="O+ve">O+ve</option>
-                        <option value="A-ve">A-ve</option>
-                        <option value="A+ve">A+ve</option>
-                        <option value="B-ve">B-ve</option>
-                        <option value="B+ve">B+ve</option>
-                        <option value="AB-ve">AB-ve</option>
-                        <option value="AB-ve">AB-ve</option>
-                      </select>
+                        <select class="form-select" id="blood_group" name="blood_group" aria-label="Default select example">
+                            <option selected>Please select</option>
+
+                            @foreach (["O-ve", "O+ve", "A-ve", "A+ve", "B-ve", "B+ve", "AB-ve"] as $group)
+                                <option value="{{ $group }}" {{ (old('blood_group') == $group) ? 'selected' : '' }} >{{ $group }}</option>";
+                            @endforeach
+                          </select>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="qualification" class="form-label">Qualification:</label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" id="qualification" name="qualification" placeholder="Enter qualification" />
+                      <input type="text" class="form-control" id="qualification" name="qualification" value="{{ old('qualification') }}" placeholder="Enter qualification" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="esi_no" class="form-label">ESI No:</label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" id="esi_no" name="esi_no" placeholder="Enter ESI No" />
+                      <input type="text" class="form-control" id="esi_no" name="esi_no" value="{{ old('esi_no') }}" placeholder="Enter ESI No" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="aadhaar" class="form-label">Aadhaar:</label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" id="aadhaar" name="aadhaar" placeholder="Enter Aadhaar No"/>
+                      <input type="text" class="form-control" id="aadhaar" name="aadhaar" value="{{ old('aadhaar') }}" placeholder="Enter Aadhaar No"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="pf_no" class="form-label">PF No:</label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" id="pf_no" name="pf_no" placeholder="Enter PF No"/>
+                      <input type="text" class="form-control" id="pf_no" name="pf_no" value="{{ old('pf_no') }}" placeholder="Enter PF No"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="electoral_id" class="form-label">Electoral ID:</label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" id="electoral_id" name="electoral_id" placeholder="Enter Electoral ID"/>
+                      <input type="text" class="form-control" id="electoral_id" name="electoral_id" value="{{ old('electoral_id') }}" placeholder="Enter Electoral ID"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="pan" class="form-label">PAN:</label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" id="pan" name="pan" placeholder="Enter PAN"/>
+                      <input type="text" class="form-control" id="pan" name="pan" value="{{ old('pan') }}" placeholder="Enter PAN"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="date_of_birth" class="form-label">Date of Birth:</label>
+                      <label for="date_of_birth" class="form-label">Date of Birth:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
-                      <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter Date of Birth"/>
+                      <input type="date" class="form-control" id="dob" name="dob" value="{{ old('dob') }}" placeholder="Enter Date of Birth"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -154,11 +158,9 @@
                       <div class="input-group input-group-merge">
                       <select class="form-select" id="group" name="group">
                         <option value="">Select Group</option>
-                        <option value="G1">G1</option>
-                        <option value="G2">G2</option>
-                        <option value="G3">G3</option>
-                        <option value="G4">G4</option>
-                        <option value="G5">G5</option>
+                        @foreach (['G1','G2','G3','G4','G5'] as $group)
+                                <option value="{{ $group }}" {{ (old('group') == $group) ? 'selected' : '' }}>{{ $group }}</option>
+                        @endforeach
                       </select>
                       </div>
                     </div>
@@ -166,6 +168,7 @@
                       <label for="group" class="form-label">Address:</label>
                       <div class="input-group input-group-merge">
                       <textarea type="text" class="form-control" id="address" name="address" placeholder="Select Address" rows="3">
+                        {{ old('address') }}
                       </textarea>
                       </div>
                     </div>
@@ -180,7 +183,7 @@
                   <div class="card-body">
 
                     <div class="mt-3 d-flex justify-content-center align-items-center" style="background-color: #625acc; height: 200px;">
-                      <img id="imagePreview" src="" alt="" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover; display: none; border: 2px solid #ddd;"/>
+                      <img id="imagePreview" src="" alt="" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;  border: 2px solid #ddd;"/>
                     </div>
                     <div class="mb-3 mt-15">
                       <div class="input-group input-group-merge">
@@ -199,25 +202,25 @@
                     <div class="mb-3">
                       <label for="mobile_number" class="form-label">Mobile No:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="Enter mobile number"/>
+                        <input type="text" class="form-control" id="mobile_number" name="mobile_number" value="{{ old('mobile_number') }}" placeholder="Enter mobile number"/>
                       </div>
                     </div>
                     <div class="mb-3">
                       <label for="mobile_relationship" class="form-label">Relationship:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" name="mobile_relationship" id="mobile_relationship" placeholder="Enter relationship" />
+                        <input type="text" class="form-control" name="mobile_relationship" value="{{ old('mobile_relationship') }}" id="mobile_relationship" placeholder="Enter relationship" />
                       </div>
                     </div>
                     <div class="mb-3">
                       <label for="landline" class="form-label">Landline:</label>
                       <div class="input-group input-group-merge">
-                      <input type="text" class="form-control" name="landline" id="landline" placeholder="Enter landline"/>
+                      <input type="text" class="form-control" name="landline" value="{{ old('landline') }}" id="landline" placeholder="Enter landline"/>
                       </div>
                     </div>
                     <div class="mb-3">
                       <label for="landline_relationship" class="form-label">Relationship:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" name="landline_relationship" id="landline_relationship" placeholder="Enter relationship"/>
+                        <input type="text" class="form-control" name="landline_relationship" value="{{ old('landline_relationship') }}" id="landline_relationship" placeholder="Enter relationship"/>
                       </div>
                     </div>
                   </div>
@@ -231,19 +234,18 @@
                   <h5 class="card-header">Office Information</h5>
                   <div class="row card-body">
                     <div class="col-md-4 mb-3">
-                      <label for="department" class="form-label">Department:</label>
+                      <label for="department" class="form-label">Department:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                       <select id="department_id" name="department_id" class="form-select">
                         <option value="">Select Department</option>
                         @foreach ($departments as $department)
-                        <option value="{{ $department->id }}">{{ $department->department ?? '' }}</option>
-
+                            <option value="{{ $department->id }}" {{ (old('department_id') == $department->id) ? 'selected' : '' }}>{{ $department->department ?? '' }}</option>
                         @endforeach
                       </select>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="designation" class="form-label">Designation:</label>
+                      <label for="designation" class="form-label">Designation:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                         <select id="designation_id" name="designation_id" class="form-select">
                           <option value="">Select Designation</option>
@@ -251,9 +253,9 @@
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="smallInput" class="form-label">Join Date:</label>
+                      <label for="smallInput" class="form-label">Join Date:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
-                        <input class="form-control" type="date" id="join_date" name="join_date"/>
+                        <input class="form-control" type="date" id="join_date" name="join_date" value="{{ old('join_date') }}"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -261,7 +263,7 @@
                       <div class="input-group input-group-merge">
                         <select class="form-select" id="shift_id" name="shift_id" aria-label="Default select">
                          @foreach ($work_shifts as $work_shift)
-                            <option selected value="{{  $work_shift->id ?? '' }}">{{  $work_shift->shift_id ?? '' }}</option>
+                            <option selected value="{{  $work_shift->id ?? '' }}" {{ (old('shift_id' == $work_shift->id ) ? 'selected' : '' ) }}>{{  $work_shift->shift_id ?? '' }}</option>
                          @endforeach
                         </select>
                       </div>
@@ -270,7 +272,7 @@
                     <div class="col-md-4 mb-3">
                         <label for="login_limited_time" class="form-label">Login Limited Time:</label>
                         <div class="input-group input-group-merge">
-                          <input type="time" class="form-control" id="login_limited_time" name="login_limited_time" placeholder="Enter login limited time">
+                          <input type="time" class="form-control" id="login_limited_time" name="login_limited_time" value="{{ old('login_limited_time') }}" placeholder="Enter login limited time">
                         </div>
                       </div>
 
@@ -280,18 +282,18 @@
                         <select class="form-select" id="role" name="role" aria-label="Default select">
                             <option selected value="">Please select</option>
                             @foreach ($roles as $role)
-                                <option selected value="{{ $role->id }}">{{ $role->name ?? '' }}</option>
+                                <option selected value="{{ $role->name }}" {{ (old('role') == $role->name) ? 'selected' : '' }}>{{ $role->name ?? '' }}</option>
                             @endforeach
                         </select>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="status" class="form-label">Status:</label>
+                      <label for="status" class="form-label">Status:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                         <select class="form-select" id="status" name="status" aria-label="Default select">
                           <option selected value="">Please select</option>
                            @foreach ($user_statuses as $user_status)
-                                <option value="{{ $user_status->id }}">{{ $user_status->status_name ?? '' }}</option>
+                                <option value="{{ $user_status->id }}" {{ (old('status') == $user_status->id)? 'selected' : '' }}>{{ $user_status->status_name ?? '' }}</option>
                            @endforeach
                         </select>
                       </div>
@@ -300,16 +302,17 @@
                     <div class="col-md-4 mb-3">
                       <label for="leave_carry_info" class="form-label">Leave Carry Info:</label>
                       <div class="input-group input-group-merge">
-                        <input id="leave_carry_info" name="leave_carry_info" class="form-control" type="text" placeholder="Enter leave carry info" />
+                        <input id="leave_carry_info" name="leave_carry_info" class="form-control" type="text" value="{{ old('leave_carry_info') }}" placeholder="Enter leave carry info" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="appointment_status" class="form-label">Appointment Status:</label>
+                      <label for="appointment_status" class="form-label">Appointment Status:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                         <select class="form-select" id="appointment_status" name="appointment_status" aria-label="Default select">
                           <option selected value="">Please select</option>
-                          <option value="probation">Probation</option>
-                          <option value="confirmed">Confirmed</option>
+                          @foreach (['probation', 'confirmed'] as $app_status)
+                               <option value="{{ $app_status }}" {{ (old('appointment_status') == $app_status) ? 'selected' : '' }}> {{ $app_status }}</option>
+                          @endforeach
                         </select>
                     </div>
                     </div>
@@ -319,7 +322,7 @@
                         <select class="form-select" id="team_lead" name="team_lead" aria-label="Default select">
                           <option selected value="">Please select</option>
                             @foreach ($employees as $employee)
-                                <option value="{{ $employee->user_id ?? '' }}">{{ $employee->full_name ?? '' }}</option>
+                                <option value="{{ $employee->user_id ?? '' }}" {{ (old('team_lead') == $employee->user_id) ? 'selected' : ''  }}>{{ $employee->full_name ?? '' }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -337,25 +340,25 @@
                     <div class="col-md-4 mb-3">
                       <label for="bank_name" class="form-label">Bank Name:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" name="bank_name" id="bank_name" placeholder="Enter bank name"/>
+                        <input type="text" class="form-control" name="bank_name" id="bank_name" value="{{ old('bank_name') }}" placeholder="Enter bank name"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="branch" class="form-label">Branch:</label>
                       <div class="input-group input-group-merge">
-                          <input type="text" class="form-control" name="bank_branch" id="bank_branch" placeholder="Enter bank_branch" />
+                          <input type="text" class="form-control" name="bank_branch" id="bank_branch" value="{{ old('bank_branch') }}" placeholder="Enter bank_branch" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="beneficiary_name" class="form-label">Beneficiary Name:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" name="beneficiary_name" id="beneficiary_name" placeholder="Enter beneficiary"/>
+                        <input type="text" class="form-control" name="beneficiary_name" id="beneficiary_name" value="{{ old('beneficiary_name') }}" placeholder="Enter beneficiary"/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="account_number" class="form-label">Account Number:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" name="account_number" id="account_number" placeholder="Enter account number"/>
+                        <input type="text" class="form-control" name="account_number" id="account_number" value="{{ old('account_number') }}" placeholder="Enter account number"/>
                       </div>
                     </div>
                   </div>

@@ -11,10 +11,9 @@
             </li>
           </ul>
         </div>
-
         <div class="d-flex justify-content-between align-items-end mt-1">
           <div class="role-heading">
-            <h4 class="mb-1">12</h4>
+            <h4 class="mb-1">{{ $leave_account_details['total_leaves'] ?? 0 }}</h4>
           </div>
         </div>
 
@@ -24,7 +23,7 @@
 
   {{-- card 2 --}}
   <div class="col-xl-3 col-lg-4 col-md-6">
-      <div class="card">
+      <div class="card bg-blanchedalmond">
         <div class="card-body">
 
           <div class="d-flex justify-content-between">
@@ -38,7 +37,7 @@
 
           <div class="d-flex justify-content-between align-items-end mt-1">
             <div class="role-heading">
-              <h4 class="mb-1">4.5</h4>
+              <h4 class="mb-1">{{ $leave_account_details['used_leaves'] ?? 0 }}</h4>
             </div>
           </div>
 
@@ -49,7 +48,7 @@
     {{-- card 3 --}}
 
     <div class="col-xl-3 col-lg-4 col-md-6">
-      <div class="card">
+      <div class="card bg-deepskyblue">
         <div class="card-body">
 
           <div class="d-flex justify-content-between">
@@ -63,7 +62,7 @@
 
           <div class="d-flex justify-content-between align-items-end mt-1">
             <div class="role-heading">
-              <h4 class="mb-1">7.5</h4>
+              <h4 class="mb-1">{{ $leave_account_details['remaining_leaves'] ?? 0 }} </h4>
             </div>
           </div>
 
@@ -73,7 +72,7 @@
 
      {{-- card 4 --}}
 
-     <div class="col-xl-3 col-lg-4 col-md-6">
+     {{-- <div class="col-xl-3 col-lg-4 col-md-6">
       <div class="card">
         <div class="card-body">
 
@@ -94,12 +93,12 @@
 
         </div>
       </div>
-    </div>
+    </div> --}}
 
 
     {{-- card 4 --}}
 
-    <div class="col-xl-3 col-lg-4 col-md-6">
+    {{-- <div class="col-xl-3 col-lg-4 col-md-6">
         <div class="card">
           <div class="card-body">
 
@@ -120,12 +119,12 @@
 
           </div>
         </div>
-      </div>
+      </div> --}}
 
 
       {{-- card 4 --}}
 
-     <div class="col-xl-3 col-lg-4 col-md-6">
+     {{-- <div class="col-xl-3 col-lg-4 col-md-6">
         <div class="card">
           <div class="card-body">
 
@@ -146,12 +145,12 @@
 
           </div>
         </div>
-      </div>
+      </div> --}}
 
 
       {{-- card 4 --}}
 
-     <div class="col-xl-3 col-lg-4 col-md-6">
+     {{-- <div class="col-xl-3 col-lg-4 col-md-6">
         <div class="card">
           <div class="card-body">
 
@@ -172,7 +171,7 @@
 
           </div>
         </div>
-      </div>
+      </div> --}}
 
       {{-- card 4 --}}
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\Department;
+use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\LeaveAllocation;
 use App\Models\User;
@@ -50,17 +51,35 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
+
+        $validatedData = $request->validate([
+
+            'employeeID' => 'required|unique:employees,employeeID',
+            'username' => 'required|unique:users,username',
+            'email' => 'required|unique:users,email|email',
+            'full_name' => 'required',
+            'phonenumber' => 'required|unique:employees',
+            'mobile_number' => 'nullable|unique:employees',
+            'landline' => 'nullable',
+            'personal_email' => 'nullable|unique:employees|email',
+            'aadhaar' => 'nullable|unique:employees',
+            'date_of_birth' => 'date',
+            'join_date' => 'date',
+            'profile_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+
+
+        ]);
 
         $user = User::create([
             'username'  => $request->username,
             'email'     => $request->email,
-            'role'      => 'user',
-            'password'  => Hash::make($request->username),
+            'role'      => 'Employee',
+            'password'  => Hash::make($request->email),
         ]);
 
-        $user->assignRole('user');
+        $user->assignRole('Employee');
         if($user)
         {
             $profileImagePath = null;
@@ -75,37 +94,37 @@ class UserController extends Controller
                 'employeeID' => $request->employeeID,
                 'full_name' => $request->full_name,
                 'phonenumber' => $request->phonenumber,
-                'reporting_to' => $request->reporting_to,
-                'personal_email' => $request->personal_email,
-                'gender'    => $request->gender,
-                'blood_group' => $request->blood_group,
-                'qualification' => $request->qualification,
-                'esi_no' => $request->esi_no,
-                'aadhaar' => $request->aadhaar,
-                'pf_no' => $request->pf_no,
-                'electoral_id' => $request->electoral_id,
-                'pan' => $request->pan,
-                'dob' => $request->dob,
-                'group' => $request->group,
-                'address' => $request->address,
-                'profile_image' => $profileImagePath,
-                'mobile_number' => $request->mobile_number,
-                'mobile_relationship' => $request->mobile_relationship,
-                'landline' => $request->landline,
-                'landline_relationship' => $request->landline_relationship,
-                'department_id' => $request->department_id,
-                'designation_id' => $request->designation_id,
-                'join_date' => $request->join_date,
-                'shift_id' => $request->shift_id,
-                'role' => $request->role,
-                'status' => $request->status,
-                'login_limited_time' => $request->login_limited_time,
-                'appointment_status' => $request->appointment_status,
-                'team_lead' => $request->team_lead,
-                'bank_name' => $request->bank_name,
-                'bank_branch' => $request->bank_branch,
-                'beneficiary_name' => $request->beneficiary_name,
-                'account_number' => $request->account_number,
+                'reporting_to' => !empty($request->reporting_to) ? $request->reporting_to : null,
+                'personal_email' => !empty($request->personal_email) ? $request->personal_email : null,
+                'gender'    => !empty($request->gender) ? $request->gender : null,
+                'blood_group' => !empty($request->blood_group) ? $request->blood_group : null,
+                'qualification' => !empty($request->qualification) ? $request->qualification : null,
+                'esi_no' => !empty($request->esi_no) ? $request->esi_no : null,
+                'aadhaar' => !empty($request->aadhaar) ? $request->aadhaar : null,
+                'pf_no' => !empty($request->pf_no) ? $request->pf_no : null,
+                'electoral_id' => !empty($request->electoral_id) ? $request->electoral_id : null,
+                'pan' => !empty($request->pan) ? $request->pan : null,
+                'dob' => !empty($request->dob) ? $request->dob : null,
+                'group' => !empty($request->group) ? $request->group : null,
+                'address' => !empty($request->address) ? $request->address : null,
+                'profile_image' => !empty($profileImagePath) ? $profileImagePath : null,
+                'mobile_number' => !empty($request->mobile_number) ? $request->mobile_number : null,
+                'mobile_relationship' => !empty($request->mobile_relationship) ? $request->mobile_relationship : null ,
+                'landline' => !empty($request->landline) ? $request->landline : null,
+                'landline_relationship' => !empty($request->landline_relationship) ? $request->landline_relationship : null,
+                'department_id' => !empty($request->department_id) ? $request->department_id : null,
+                'designation_id' => !empty($request->designation_id) ? $request->designation_id : null,
+                'join_date' => !empty($request->join_date) ? $request->join_date : null,
+                'shift_id' => !empty($request->shift_id) ? $request->shift_id : null,
+                'role' => !empty($request->role) ? $request->role : null,
+                'status' => !empty($request->status) ? $request->status : null,
+                'login_limited_time' => !empty($request->login_limited_time) ? $request->login_limited_time : null,
+                'appointment_status' => !empty($request->appointment_status) ? $request->appointment_status : null,
+                'team_lead' => !empty($request->team_lead) ? $request->reporting_to : null,
+                'bank_name' => !empty($request->bank_name) ? $request->bank_name : null,
+                'bank_branch' => !empty($request->bank_branch) ? $request->bank_branch : null,
+                'beneficiary_name' => !empty($request->beneficiary_name) ? $request->beneficiary_name : null,
+                'account_number' => !empty($request->account_number) ? $request->account_number : null,
             ]);
 
 
@@ -143,19 +162,107 @@ class UserController extends Controller
 
     public function edit(string $id)
     {
-        //
+        $user = User::with('employee')->findOrFail($id);
+        if($user->employee->department_id != null)
+        {
+            $departmentId = $user->employee->department_id;
+            $designations = Designation::where('department_id',$departmentId)->get();
+        } else { $designations = []; }
+        $employees = Employee::all();
+        $departments = Department::all();
+        $work_shifts = Workshift::all();
+        $roles = Role::all();
+        $user_statuses = UserStatus::all();
+        return view('users.edit', compact('user','employees','departments','work_shifts','roles','user_statuses','designations'));
     }
 
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user)
     {
-        //
+
+        $request->validate([
+            'username'  => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email,' . $user->id,
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Update user details
+        $user->update([
+            'username'  => $request->username,
+            'email'     => $request->email,
+        ]);
+
+        // Update the user's role if needed
+        $user->syncRoles([$request->role ?? 'user']);
+
+        // Handle profile image update
+        if ($request->hasFile('profile_image')) {
+            $file = $request->file('profile_image');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $profileImagePath = $file->storeAs('profile_pics', $filename, 'public');
+
+            // Update profile_image in the Employee record
+            $user->employee->update(['profile_image' => $profileImagePath]);
+        }
+
+        // Update Employee details
+        $user->employee->update([
+            'employeeID' => $request->employeeID,
+            'full_name' => $request->full_name,
+            'phonenumber' => $request->phonenumber,
+            'reporting_to' => !empty($request->reporting_to) ? $request->reporting_to : null,
+            'personal_email' => $request->personal_email,
+            'gender' => $request->gender,
+            'blood_group' => $request->blood_group,
+            'qualification' => $request->qualification,
+            'esi_no' => $request->esi_no,
+            'aadhaar' => $request->aadhaar,
+            'pf_no' => $request->pf_no,
+            'electoral_id' => $request->electoral_id,
+            'pan' => $request->pan,
+            'dob' => $request->dob,
+            'group' => $request->group,
+            'address' => $request->address,
+            'mobile_number' => $request->mobile_number,
+            'mobile_relationship' => $request->mobile_relationship,
+            'landline' => $request->landline,
+            'landline_relationship' => $request->landline_relationship,
+            'department_id' => $request->department_id,
+            'designation_id' => $request->designation_id,
+            'join_date' => $request->join_date,
+            'shift_id' => $request->shift_id,
+            'role' => $request->role,
+            'status' => $request->status,
+            'login_limited_time' => $request->login_limited_time,
+            'appointment_status' => $request->appointment_status,
+            'team_lead' => !empty($request->team_lead) ? $request->reporting_to : null,
+            'bank_name' => $request->bank_name,
+            'bank_branch' => $request->bank_branch,
+            'beneficiary_name' => $request->beneficiary_name,
+            'account_number' => $request->account_number,
+        ]);
+
+        return redirect()->route('users.edit', $user->id)->with('success', 'User details updated successfully!');
+
+
+
     }
 
 
     public function destroy(string $id)
     {
-        //
+        $user = User::find($id);
+        $employee = Employee::where('user_id',$id)->fist();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found'], 404);
+        }
+        if (!$employee) {
+            return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
+        }
+        $employee->delete();
+        $user->delete();
+        Cache::forget('users');
+        return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
     }
 
 
@@ -185,7 +292,7 @@ class UserController extends Controller
                         'phonenumber' => $users->phonenumber,
                         'email' => $users->email,
                         'current_plan' => 'Enterprise',
-                        'avatar' => $users->profile_image,
+                        'profile_image' => $users->profile_image,
                         'status' => $users->status,
                          "avatar" => "",
                     ];
@@ -194,6 +301,7 @@ class UserController extends Controller
 
 
         $response = response()->json(['data' => $users]);
+
         $json_data = json_decode($response->getContent(), true)['data'];
         return json_encode(['data' => $json_data]);
     }
@@ -201,13 +309,12 @@ class UserController extends Controller
     public function userProfile($userid)
     {
         $user = User::with('employee')->find($userid);
-        // dd($user);
         return view('users.profile', compact('user'));
     }
 
     public function checkEmail(Request $request)
     {
-        dd($request->email);
+
         $exists = User::where('email', $request->email)->exists();
         return response()->json($exists ? false : true);
     }

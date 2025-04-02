@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    
+
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin'); // Restrict access to admin role
+
     }
 
     public function index()
@@ -25,7 +26,7 @@ class RoleController extends Controller
     }
 
     public function create()
-    { 
+    {
         $permissions = Cache::remember('permissions', now()->addMinutes(60), function () {
             return Permission::all();
         });
@@ -33,25 +34,25 @@ class RoleController extends Controller
     }
 
     public function store(Request $request)
-    {  
+    {
+
         $request->validate([
-            'name' => 'required|unique:roles,name',
-            'permissions' => 'array'
-            // 'permissions.*' => 'exists:permissions,id'
+
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,name'
         ]);
-        
+
         // Create or update the role
         $user_role = Role::updateOrCreate(
-            ['name' => $request->name],
+            ['name' => $request->name], // If ID exists, update; otherwise, create
             ['guard_name' => $request->guard_name]
         );
-        
-    
+
         // Assign permissions
-        // if ($request->has('permissions')) { 
-            $user_role->syncPermissions($request->permissions);
+        // if ($request->has('permissions')) {
+            $user_role->syncPermissions($request->permissions ?? []);
         // }
-    
+
         // Clear role cache
         Cache::forget('roles');
         return redirect()->route('roles.index')->with('success', 'Role saved successfully.');
@@ -77,30 +78,43 @@ class RoleController extends Controller
         $request->validate([
             'name' => 'required|unique:roles,name,' . $role->id,
             'permissions' => 'array|required',
-        ]); 
+        ]);
         $role->update(['name' => $request->name]);
-        $role->syncPermissions($request->permissions); 
+        $role->syncPermissions($request->permissions);
         return redirect()->route('roles.index')->with('success', 'Role updated successfully.');
 
-       
+
 
 
     }
 
-    public function destroy(Role $role)
+    public function destroy($id)
     {
-        $role->delete();
-        return redirect()->route('roles.index')->with('success', 'Role deleted successfully.');
+
+        $role = Role::find($id);
+
+        if (!$role) {
+            return response()->json(['success' => false, 'message' => 'Role not found'], 404);
+        }
+
+        $role->permissions()->detach(); // Remove associated permissions
+        $role->delete(); // Delete role
+        Cache::forget('roles');
+        return response()->json(['success' => true, 'message' => 'Role deleted successfully.']);
+
     }
 
     public function getRolePermissions($id)
     {
         $role = Role::findOrFail($id);
-        $permissions = Permission::all()->map(function ($permission) use ($role) {
+        $permissions = Permission::with('category','roles')->get()->map(function ($permission) use ($role) {
             return [
                 'id' => $permission->id,
                 'name' => $permission->name,
-                'assigned' => $role->hasPermissionTo($permission->name)
+                'category_id' => optional($permission->category)->id,
+                'category_name' => optional($permission->category)->name,
+                'assigned' => $role->hasPermissionTo($permission->name),
+                'created_date' => $permission->created_at->format("d M Y, g:i A"),
             ];
         });
 

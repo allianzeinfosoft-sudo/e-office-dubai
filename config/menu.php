@@ -37,6 +37,22 @@ return [
         'title' => 'Attendance',
         'icon' => 'ti ti-alarm',
         'route' => 'attendance',
+        'isActive' => ['attendance*'],
+    ],
+    [
+        'title' => 'Users',
+        'icon' => 'ti ti-users',
+        'route' => 'javascript:void(0);',
+        'submenu' => [
+            [
+                'title' => 'Users',
+                'route' =>  'users',
+            ],
+            [
+                'title' => 'Add Users',
+                'route' =>  '/users/create',
+            ],
+        ]
     ],
     [
         'title' => 'Works',
@@ -46,20 +62,39 @@ return [
         'submenu' => [
             [
                 'title' => 'Work Status',
-                'route' => '#',
+                'route' => 'works/status',
             ],
             [
-                'title' => 'SDU Project Statu',
-                'route' => '#'
-            ],   
+                'title' => 'SDU Project Status',
+                'route' => 'works/sud-project-status'
+            ],
             [
                 'title' => 'Temporary Status',
-                'route' => '#'
-            ],   
+                'route' => 'works/temporary-status'
+            ],
             [
                 'title' => 'Entry Open Markin',
-                'route' => '#'
-            ],   
+                'route' => 'works/entry-open'
+            ],
+        ]
+    ],
+    [
+        'title' => 'Projects',
+        'icon' => 'ti ti-briefcase',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['projects*', 'project*', 'tasks-project*'],
+        'submenu' => [
+            [
+                'title' => 'Projects',
+                'route' =>  'projects',
+                'isActive' => ['projects', 'project*'],
+            ],
+            [
+                'title' => 'Project Tasks',
+                'route' =>  'tasks-project',
+                'isActive' => ['tasks-project*'],
+            ],
+
         ]
     ],
     [
@@ -74,20 +109,20 @@ return [
             [
                 'title' => 'My Attendance',
                 'route' => '#'
-            ],   
+            ],
             [
                 'title' => 'My Work Report',
                 'route' => '#'
-            ],   
+            ],
             [
                 'title' => 'My Emergency Report',
                 'route' => '#'
-            ],   
+            ],
             [
                 'title' => 'Salary Slip',
                 'route' => '#',
                 'badge' => 'new',
-            ],   
+            ],
         ]
     ],
     [
@@ -99,7 +134,7 @@ return [
             [
                 'title' => 'View Survey',
                 'route' => '#',
-            ],  
+            ],
         ]
     ],
     [
@@ -111,7 +146,7 @@ return [
             [
                 'title' => 'View PAR',
                 'route' => '#',
-            ],  
+            ],
         ]
     ],
     [
@@ -121,16 +156,39 @@ return [
         'submenu' => [
             [
                 'title' => 'Apply Leave',
-                'route' =>  '#',
-            ],  
+                'route' =>  '/leaves/create',
+            ],
+            [
+                'title' => 'Pending Request',
+                'route' =>  'pending-leaves',
+            ],
             [
                 'title' => 'Leave Status',
-                'route' =>  '#',
-            ],  
+                'route' =>  'leave-status',
+            ],
             [
                 'title' => 'Leave Summary',
-                'route' =>  '#',
-            ],  
+                'route' =>  'leaves',
+            ],
+            [
+                'title' => 'Leave Allocation',
+                'route' =>  '/leave-allocation',
+            ],
+        ]
+    ],
+    [
+        'title' => 'Salary Slip',
+        'icon' => 'ti ti-cash',
+        'route' => 'javascript:void(0);',
+        'submenu' => [
+            [
+                'title' => 'View Salary Slip',
+                'route' =>  '/salarySlip/view',
+            ],
+            [
+                'title' => 'Uploload Salary Slip',
+                'route' =>  '/salarySlip/upload',
+            ],
         ]
     ],
     [
@@ -146,19 +204,19 @@ return [
             [
                 'title' => 'Thought Of The Day',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => ' Appreciation',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Birthdays',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'Announcement',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'Company Policies ',
                 'route' =>  '#',
@@ -167,15 +225,15 @@ return [
             [
                 'title' => 'Events',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'Holidays',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'User Reminder List',
                 'route' =>  '#',
-            ],   
+            ],
         ]
     ],
     [
@@ -186,19 +244,19 @@ return [
             [
                 'title' => 'Booking',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'View Bookings',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'My Bookings',
                 'route' =>  '#',
-            ],   
+            ],
             [
                 'title' => 'Assigned Bookings',
                 'route' =>  '#',
-            ],   
+            ],
         ]
     ],
     [
@@ -209,11 +267,11 @@ return [
             [
                 'title' => 'Feedback Form',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Feedback Reviews',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -229,15 +287,15 @@ return [
             [
                 'title' => 'My Profile',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Change Password',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'Edit Profile',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -248,15 +306,15 @@ return [
             [
                 'title' => 'Quick Notes',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Event Calendar',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'KSP',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -267,15 +325,15 @@ return [
             [
                 'title' => 'My Jobs',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Assign A job',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'Jobs Assigned by You',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
@@ -286,33 +344,41 @@ return [
             [
                 'title' => 'Inbox',
                 'route' =>  '#',
-            ],  
+            ],
             [
                 'title' => 'Starred',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'Sent Email',
                 'route' =>  '#',
-            ],    
+            ],
             [
                 'title' => 'Trash',
                 'route' =>  '#',
-            ],    
+            ],
         ]
     ],
     [
         'header' => 'Settings',
     ],
     [
-        'title' => 'Shifts',
+        'title' => 'Settings',
         'icon' => 'ti ti-switch-3',
         'route' => 'javascript:void(0);',
         'submenu' => [
             [
-                'title' => 'Shift List ',
-                'route' =>  'workshift',
-            ],  
+                'title' => 'Work Shift',
+                'route' =>  'settings/workshift',
+            ],
+            [
+                'title' => 'Branches',
+                'route' =>  'branchs',
+            ],
+            [
+                'title' => 'Holidays',
+                'route' =>  'holidays',
+            ],
         ]
     ],
     [
@@ -323,22 +389,11 @@ return [
             [
                 'title' => 'Roles',
                 'route' =>  'roles',
-            ],  
+            ],
             [
                 'title' => 'Permission',
                 'route' =>  'permissions',
-            ],   
-        ]
-    ],
-    [
-        'title' => 'Users',
-        'icon' => 'ti ti-users',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
-            [
-                'title' => 'List',
-                'route' =>  'users',
-            ], 
+            ],
         ]
     ],
     [

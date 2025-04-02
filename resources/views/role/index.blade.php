@@ -6,47 +6,55 @@
     <div class="layout-container">
       <!-- Menu -->
       <x-menu /> <!-- Load the menu component here -->
-      
+
       <!-- / Menu -->
 
       <!-- Layout container -->
       <div class="layout-page">
         <!-- Navbar -->
-        <x-header /> 
+        <x-header />
         <!-- / Navbar -->
 
         <!-- Content wrapper -->
         <div class="content-wrapper">
           <!-- Content -->
 
+
+          @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
           <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-semibold mb-4">Roles List</h4>
 
-            <p class="mb-4">
-              A role provided access to predefined menus and features so that depending on <br />
-              assigned role an administrator can have access to what user needs.
-            </p>
             <!-- Role cards -->
-            <div class="row g-4"> 
+            <div class="row g-4">
 
 
                 @foreach ($roles as $role )
-                  <div class="col-xl-4 col-lg-6 col-md-6">
+                  <div class="col-xl-3 col-lg-4 col-md-4">
                     <div class="card">
                       <div class="card-body">
                         <div class="d-flex justify-content-between">
                           <h6 class="fw-normal mb-2">Total 2 users</h6>
                           <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
-    
+
                             <li
                               data-bs-toggle="tooltip"
                               data-popup="tooltip-custom"
                               data-bs-placement="top"
                               title="Kim Merchent"
                               class="avatar avatar-sm pull-up">
-                              <img class="rounded-circle" src="../../assets/img/avatars/10.png" alt="Avatar" />
+                              {{-- <img class="rounded-circle" src="../../assets/img/avatars/10.png" alt="Avatar" /> --}}
                             </li>
-                            
+
                           </ul>
                         </div>
                         <div class="d-flex justify-content-between align-items-end mt-1">
@@ -60,7 +68,9 @@
                               data-role-id={{ $role->id }}
                               ><span>Edit/View Role</span></a>
                           </div>
-                          <a href="javascript:void(0);" class="text-muted"><i class="ti ti-copy ti-md"></i></a>
+                          <a href="javascript:void(0);" class="text-muted delete-role" data-role-id="{{ $role->id }}">
+                            <i class="ti ti-trash ti-md"></i>
+                        </a>
                         </div>
                       </div>
                     </div>
@@ -71,7 +81,7 @@
 
 
 
-              <div class="col-xl-4 col-lg-6 col-md-6">
+              <div class="col-xl-3 col-lg-4 col-md-4">
                 <div class="card h-100">
                   <div class="row h-100">
                     <div class="col-sm-5">
@@ -172,7 +182,7 @@
           <!-- / Content -->
 
           <!-- Footer -->
-          <x-footer /> 
+          <x-footer />
           <!-- / Footer -->
 
           <div class="content-backdrop fade"></div>

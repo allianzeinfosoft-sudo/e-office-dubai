@@ -3,7 +3,7 @@
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
       <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)"> <i class="ti ti-menu-2 ti-sm"></i> </a>
     </div>
-  
+
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <!-- Search -->
         <div class="navbar-nav align-items-center">
@@ -12,15 +12,15 @@
           </div>
         </div>
         <!-- /Search -->
-     
+
     <ul class="navbar-nav flex-row align-items-center ms-auto">
-      
+
         <!-- Digital Clock -->
         <li class="nav-item me-1 me-xl-0">
           <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px"> <span id="clock" class="text-primary"><i class="fa fa-clock fis rounded-circle me-1"></i> 00:00:00 </span> </a>
         </li>
         <!-- / Digital Clock -->
-         
+
         <!-- Language -->
         <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
           <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown"><i class="fi fi-us fis rounded-circle me-1 fs-3"></i></a>
@@ -141,7 +141,11 @@
                   data-bs-auto-close="outside"
                   aria-expanded="false">
                   <i class="ti ti-bell ti-md"></i>
-                  <span class="badge bg-danger rounded-pill badge-notifications">5</span>
+                  @if(auth()->user()->unreadNotifications->count())
+                  <span class="badge bg-danger rounded-pill badge-notifications">
+                         {{ auth()->user()->unreadNotifications->count() }}
+                  </span>
+                  @endif
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0">
                   <li class="dropdown-menu-header border-bottom">
@@ -159,29 +163,36 @@
                   </li>
                   <li class="dropdown-notifications-list scrollable-container">
                     <ul class="list-group list-group-flush">
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                        <div class="d-flex">
-                          <div class="flex-shrink-0 me-3">
-                            <div class="avatar">
-                              <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle" />
-                            </div>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="mb-1">Congratulation Lettie 🎉</h6>
-                            <p class="mb-0">Won the monthly best seller gold badge</p>
-                            <small class="text-muted">1h ago</small>
-                          </div>
-                          <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read"
-                              ><span class="badge badge-dot"></span
-                            ></a>
-                            <a href="javascript:void(0)" class="dropdown-notifications-archive"
-                              ><span class="ti ti-x"></span
-                            ></a>
-                          </div>
-                        </div>
-                      </li>
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item">
+
+
+                        @foreach(auth()->user()->unreadNotifications->take(5) as $notification)
+                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                                <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar">
+                                    <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle" />
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Congratulation Lettie 🎉</h6>
+                                        <a href="#" class="dropdown-item mark-as-read" data-id="{{ $notification->id }}">
+                                            {{ $notification->data['message'] }}
+                                        </a>
+                                    <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                                </div>
+                                <div class="flex-shrink-0 dropdown-notifications-actions">
+                                    <a href="javascript:void(0)" class="dropdown-notifications-read"
+                                    ><span class="badge badge-dot"></span
+                                    ></a>
+                                    <a href="javascript:void(0)" class="dropdown-notifications-archive"
+                                    ><span class="ti ti-x"></span
+                                    ></a>
+                                </div>
+                                </div>
+                            </li>
+                      @endforeach
+
+                      {{-- <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar">
@@ -203,6 +214,7 @@
                           </div>
                         </div>
                       </li>
+
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
@@ -362,7 +374,7 @@
                             ></a>
                           </div>
                         </div>
-                      </li>
+                      </li> --}}
                     </ul>
                   </li>
                   <li class="dropdown-menu-footer border-top">
@@ -475,3 +487,40 @@
             <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
           </div>
         </nav>
+
+        @section('js')
+        <script>
+
+
+         $(function () {
+
+            // Using jQuery example
+            $(document).ready(function() {
+                $('.mark-as-read').click(function(e) {
+                    e.preventDefault();
+                    var notificationId = $(this).data('id');
+
+                    $.ajax({
+                        url: '/notifications/mark-as-read',
+                        type: 'POST',
+                        data: {
+                            id: notificationId,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function() {
+                            // Update UI
+                            $(this).removeClass('unread');
+                            // Update badge count
+                            var count = parseInt($('.badge').text());
+                            $('.badge').text(count - 1);
+                            if (count - 1 === 0) {
+                                $('.badge').hide();
+                            }
+                        }
+                    });
+                });
+            });
+
+         });
+    </script>
+@stop

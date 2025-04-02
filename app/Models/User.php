@@ -44,9 +44,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function employee()
-    {
+    public function employee(){
         return $this->hasOne(Employee::class, 'user_id', 'id');
+    }
+
+    public function projects(){
+        return $this->hasMany(Project::class, 'project_add_person'); // Adjust if 'project_add_person' is the foreign key
     }
 
 

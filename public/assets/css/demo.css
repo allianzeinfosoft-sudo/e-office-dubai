@@ -157,5 +157,21 @@
     border-radius: 12px;
 }
 
+.permission-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Space between items */
+  }
+
+  .permission-item {
+    flex: 1 1 calc(20% - 10px); /* Three items per row */
+    min-width: 200px; /* Minimum width */
+  }
+
+  .mandatory{
+    color: red;
+  }
+
+
 
 

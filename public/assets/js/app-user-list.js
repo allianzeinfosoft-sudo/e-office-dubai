@@ -21,7 +21,7 @@ $(function () {
   // Variable declaration for table
   var dt_user_table = $('.datatables-users'),
     select2 = $('.select2'),
-   
+
     statusObj = {
       1: { title: 'New User', class: 'bg-label-warning' },
       2: { title: 'Active', class: 'bg-label-success' },
@@ -42,7 +42,7 @@ $(function () {
   if (dt_user_table.length) {
     var dt_user = dt_user_table.DataTable({
       // ajax: assetsPath + 'json/user-list.json', // JSON file to add data
-     
+
       ajax: {
         url: "/user-list",  // Fetch from Laravel API
         type: "GET",
@@ -55,22 +55,19 @@ $(function () {
         { data: '' },
         { data: 'full_name' },
         { data: 'employeeID' },
-        { data: 'username' },
+        { data: 'email' },
         { data: 'phonenumber' },
         { data: 'status' },
         { data: 'role' }
       ],
       columnDefs: [
         {
-          // For Responsive
-          className: 'control',
-          searchable: false,
-          orderable: false,
-          responsivePriority: 2,
-          targets: 0,
-          render: function (data, type, full, meta) {
-            return '';
-          }
+            targets: 0,
+            orderable: false, // Prevent sorting on Sl No column
+            searchable: false,
+            render: function (data, type, row, meta){
+                return meta.row+1;
+            }
         },
         {
           // User full name and email
@@ -80,11 +77,12 @@ $(function () {
             let userView = "/user/profile/"+full['id'];
             var $name = full['full_name'],
               $email = full['email'],
-              $image = full['avatar'];
+              $image = full['profile_image'];
+
             if ($image) {
+
               // For Avatar image
-              var $output =
-                '<img src="img/avatars/' + $image + '" alt="Avatar" class="rounded-circle">';
+              var $output = '<img src="/storage/' + $image + '" alt="Avatar" class="rounded-circle">';
             } else {
               // For Avatar badge
               var stateNum = Math.floor(Math.random() * 6);
@@ -119,16 +117,16 @@ $(function () {
         },
         {
           // User Role
-          targets: 2,
+          targets: 5,
           render: function (data, type, full, meta) {
-            let $role = full['role']; 
+            let $role = full['role'];
             return "<span class='text-truncate d-flex align-items-center'>" + $role + '</span>';
           }
         },
-        
+
         {
           // User Status
-          targets: 5,
+          targets: 6,
           render: function (data, type, full, meta) {
             var $status = full['status'];
 
@@ -143,16 +141,16 @@ $(function () {
         },
         {
           // Actions
-          targets: -1,
+          targets: 7,
           title: 'Actions',
           searchable: false,
           orderable: false,
           render: function (data, type, full, meta) {
+            const user_id =  full['id'];
             return (
               '<div class="d-flex align-items-center">' +
-              '<a href="javascript:;" class="text-body"><i class="ti ti-edit ti-sm me-2"></i></a>' +
-              '<a href="javascript:;" class="text-body delete-record"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
-              '<a href="javascript:;" class="text-body dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical ti-sm mx-1"></i></a>' +
+              '<a href="javascript:;" class="text-body edit-user" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
+              '<a href="javascript:;" class="text-body delete-user" data-user-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
               '<div class="dropdown-menu dropdown-menu-end m-0">' +
               '<a href="' +
               userView +
@@ -165,286 +163,75 @@ $(function () {
         }
       ],
       order: [[1, 'desc']],
-      dom:
-        '<"row me-2"' +
-        '<"col-md-2"<"me-3"l>>' +
-        '<"col-md-10"<"dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0"fB>>' +
-        '>t' +
-        '<"row mx-2"' +
-        '<"col-sm-12 col-md-6"i>' +
-        '<"col-sm-12 col-md-6"p>' +
-        '>',
-      language: {
-        sLengthMenu: '_MENU_',
-        search: '',
-        searchPlaceholder: 'Search..'
-      },
-      // Buttons with Dropdown
-      buttons: [
-        {
-          extend: 'collection',
-          className: 'btn btn-label-secondary dropdown-toggle mx-3',
-          text: '<i class="ti ti-screen-share me-1 ti-xs"></i>Export',
-          buttons: [
-            {
-              extend: 'print',
-              text: '<i class="ti ti-printer me-2" ></i>Print',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [1, 2, 3, 4, 5],
-                // prevent avatar to be print
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              },
-              customize: function (win) {
-                //customize print view for dark
-                $(win.document.body)
-                  .css('color', headingColor)
-                  .css('border-color', borderColor)
-                  .css('background-color', bodyBg);
-                $(win.document.body)
-                  .find('table')
-                  .addClass('compact')
-                  .css('color', 'inherit')
-                  .css('border-color', 'inherit')
-                  .css('background-color', 'inherit');
-              }
-            },
-            {
-              extend: 'csv',
-              text: '<i class="ti ti-file-text me-2" ></i>Csv',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [1, 2, 3, 4, 5],
-                // prevent avatar to be display
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              }
-            },
-            {
-              extend: 'excel',
-              text: '<i class="ti ti-file-spreadsheet me-2"></i>Excel',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [1, 2, 3, 4, 5],
-                // prevent avatar to be display
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              }
-            },
-            {
-              extend: 'pdf',
-              text: '<i class="ti ti-file-code-2 me-2"></i>Pdf',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [1, 2, 3, 4, 5],
-                // prevent avatar to be display
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              }
-            },
-            {
-              extend: 'copy',
-              text: '<i class="ti ti-copy me-2" ></i>Copy',
-              className: 'dropdown-item',
-              exportOptions: {
-                columns: [1, 2, 3, 4, 5],
-                // prevent avatar to be display
-                format: {
-                  body: function (inner, coldex, rowdex) {
-                    if (inner.length <= 0) return inner;
-                    var el = $.parseHTML(inner);
-                    var result = '';
-                    $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
-                        result = result + item.lastChild.firstChild.textContent;
-                      } else if (item.innerText === undefined) {
-                        result = result + item.textContent;
-                      } else result = result + item.innerText;
-                    });
-                    return result;
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          // text: '<i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New User</span>',
-          // className: 'add-new btn btn-primary',
-          // attr: {
-          //   'data-bs-toggle': 'offcanvas',
-          //   'data-bs-target': '#offcanvasAddUser'
-          // }
 
-        }
-      ],
-      // For responsive popup
-      responsive: {
-        details: {
-          display: $.fn.dataTable.Responsive.display.modal({
-            header: function (row) {
-              var data = row.data();
-              return 'Details of ' + data['full_name'];
-            }
-          }),
-          type: 'column',
-          renderer: function (api, rowIdx, columns) {
-            var data = $.map(columns, function (col, i) {
-              return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
-                ? '<tr data-dt-row="' +
-                    col.rowIndex +
-                    '" data-dt-column="' +
-                    col.columnIndex +
-                    '">' +
-                    '<td>' +
-                    col.title +
-                    ':' +
-                    '</td> ' +
-                    '<td>' +
-                    col.data +
-                    '</td>' +
-                    '</tr>'
-                : '';
-            }).join('');
 
-            return data ? $('<table class="table"/><tbody />').append(data) : false;
-          }
-        }
-      },
-      initComplete: function () {
-        // Adding role filter once table initialized
-        this.api()
-          .columns(3)
-          .every(function () {
-            var column = this;
-            var select = $(
-              '<select id="UserRole" class="form-select text-capitalize"><option value=""> Select Role </option></select>'
-            )
-              .appendTo('.user_role')
-              .on('change', function () {
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                column.search(val ? '^' + val + '$' : '', true, false).draw();
-              });
-
-            column
-              .data()
-              .unique()
-              .sort()
-              .each(function (d, j) {
-                select.append('<option value="' + d + '">' + d + '</option>');
-              });
-          });
-        // Adding plan filter once table initialized
-        // this.api()
-        //   .columns(3)
-        //   .every(function () {
-        //     var column = this;
-        //     var select = $(
-        //       '<select id="UserPlan" class="form-select text-capitalize"><option value=""> Select Plan </option></select>'
-        //     )
-        //       .appendTo('.user_plan')
-        //       .on('change', function () {
-        //         var val = $.fn.dataTable.util.escapeRegex($(this).val());
-        //         column.search(val ? '^' + val + '$' : '', true, false).draw();
-        //       });
-
-        //     column
-        //       .data()
-        //       .unique()
-        //       .sort()
-        //       .each(function (d, j) {
-        //         select.append('<option value="' + d + '">' + d + '</option>');
-        //       });
-        //   });
-        // Adding status filter once table initialized
-        this.api()
-          .columns(5)
-          .every(function () {
-            var column = this;
-            var select = $(
-              '<select id="FilterTransaction" class="form-select text-capitalize"><option value=""> Select Status </option></select>'
-            )
-              .appendTo('.user_status')
-              .on('change', function () {
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                column.search(val ? '^' + val + '$' : '', true, false).draw();
-              });
-
-            column
-              .data()
-              .unique()
-              .sort()
-              .each(function (d, j) {
-                select.append(
-                  '<option value="' +
-                    statusObj[d].title +
-                    '" class="text-capitalize">' +
-                    statusObj[d].title +
-                    '</option>'
-                );
-              });
-          });
-      }
     });
   }
 
   // Delete Record
   $('.datatables-users tbody').on('click', '.delete-record', function () {
-    dt_user.row($(this).parents('tr')).remove().draw();
+        dt_user.row($(this).parents('tr')).remove().draw();
   });
+
+  window.onload = function () {
+    console.log("Window is fully loaded!");
+};
+
+
+   // destroy user
+   window.onload = function () {
+
+    document.querySelectorAll(".delete-user").forEach((element) => {
+        element.addEventListener("click", function () {
+            let userId = this.getAttribute("data-user-id"); // Corrected
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/user-delete/${userId}`, {
+                        method: "DELETE",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                            "Content-Type": "application/json"
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire("Deleted!", "User has been deleted.", "success").then(() => {
+                                location.reload(); // Reload page after deletion
+                            });
+                        } else {
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        Swal.fire("Error!", "Could not delete user.", "error");
+                    });
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll(".edit-user").forEach((element) => {
+        element.addEventListener("click", function () {
+            let userId = this.getAttribute("data-edit-user-id"); // Corrected
+            // Redirect to the edit page
+            window.location.href = `/user-edit/${userId}`;
+        });
+    });
+}
+
+
+
 
   // Filter form control to default size
   // ? setTimeout used for multilingual table initialization

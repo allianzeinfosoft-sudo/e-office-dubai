@@ -1,7 +1,22 @@
 @extends('layouts.app')
 
 @section('css')
-
+<style>
+  .w-35 {
+    width: 35% !important;
+  }
+  .w-45 {
+    width: 45% !important;
+  }
+  .offcanvas-close{
+    position: absolute;
+    top: 0px;
+    left: -32px;  /* Moves the button outside the offcanvas */
+    z-index: 1055; /* Ensures it stays on top */
+    padding: 28px 10px;
+    border-radius: 0px;
+  }
+</style>
 @stop
 
 @section('content')
@@ -24,9 +39,11 @@
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
+            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
             <div class="row">
 
               <div class="col-lg-7 mb-4">
+
                 <!-- Attendance Marking Card -->
                 <div class="card bg-primary text-white mb-4">
                     <div class="card-header">
@@ -73,35 +90,22 @@
                       <h5 class="mb-0">No of Working Days</h5>
                       <small class="text-muted">Weekly Earnings Overview</small>
                     </div>
-                    <div class="dropdown">
-                      <button
-                        class="btn p-0"
-                        type="button"
-                        id="earningReportsId"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false">
-                        <i class="ti ti-dots-vertical ti-sm text-muted"></i>
-                      </button>
-                      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="earningReportsId">
-                        <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-                      </div>
-                    </div>
-                    <!-- </div> -->
                   </div>
+
                   <div class="card-body">
                     <div class="row">
-                      <div class="col-12 col-md-4 d-flex flex-column align-self-end">
+                      <div class="col-12 col-md-3 d-flex flex-column align-self-end">
                         <div class="d-flex gap-2 align-items-center mb-2 pb-1 flex-wrap">
                           <h1 class="mb-0">{{ $days_of_worked ?? '0' }}</h1>
                           <div class="badge rounded bg-label-success">Days</div>
                         </div>
-                        <small class="text-muted">You informed of this week compared to last week</small>
+                        <small class="text-muted">Completed</small>
                       </div>
-                      <div class="col-12 col-md-8">
+                      <div class="col-12 col-md-9">
                         <div id="weeklyEarningReports"></div>
                       </div>
                     </div>
+
                     <div class="border rounded p-3 mt-2">
                       <div class="row gap-4 gap-sm-0">
                         <div class="col-12 col-sm-4">
@@ -169,7 +173,6 @@
 
               </div>
               <!--/ Attendance Options -->
-
             </div>
           </div>
           <!-- / Content -->
@@ -193,17 +196,18 @@
   </div>
   <!-- / Layout wrapper -->
 
-  <!-- Custom Marking Model -->
-<div class="modal fade" id="modelCustom" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-top" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modelCustomTitle">Custom Marking</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      
-      <div class="modal-body">
-        <div class="row">
+
+
+
+
+<!-- Offcanvas for Custom Marking  -->
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="customMarkingOffcanvas" aria-labelledby="staticBackdropLabel">
+  <div class="offcanvas-header bg-primary">
+      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  Custom Marking </h5>
+      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
           <form id="customMarkingForm" action="{{ route('attendance.custom-mark-in') }}" method="post">
             @csrf
             <div class="col-12 mb-3">
@@ -222,32 +226,25 @@
               <textarea id="signin_late_note" name="signin_late_note" class="form-control"  placeholder="Reason" rows="5"></textarea>
             </div>
           </form>
-
-        </div>
-        
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal"> Close </button>
-        <button type="submit" onclick="customMarking()"  class="btn btn-primary"> Submit </button>
-      </div>
+          <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close"> Close </button>
+            <button type="submit" onclick="customMarking()"class="btn btn-primary"> Submit </button>
+          </div>
     </div>
   </div>
+  <div class="offcanvas-footer"></div>
 </div>
 
-<!-- Emergency Marking Model -->
-<div class="modal fade" id="emergencyMarking" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-top" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="emergencyTitle">Emergency Marking</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      
-      <div class="modal-body">
-        <div class="row">
-          <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
-            @csrf
+<!-- Offcanvas for Emergency Marking  -->
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="emergencyMarkingOffcanvas" aria-labelledby="staticBackdropLabel">
+  <div class="offcanvas-header bg-primary">
+    <h5 class="offcanvas-title text-white" id="staticBackdropLabel">  <i class="ti ti-device-watch float-start fs-3"></i> Emergency Marking</h5>
+    <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
+      <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
+        @csrf
             <div class="col-12 mb-3">
               <label for="signin_date" class="form-label">Date</label>
               <input type="date" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
@@ -264,15 +261,13 @@
             </div>
           </form>
         </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" onclick="emergencyMarkIn()" class="btn btn-success">Mark In</button>
-        <button type="button" onclick="emergencyMarkOut()" class="btn btn-danger">Mark Out</button>
-      </div>
-    </div>
+        <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
+          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
+          <button type="button" onclick="emergencyMarkIn()" class="btn btn-success">Mark In</button>
+          <button type="button" onclick="emergencyMarkOut()" class="btn btn-danger">Mark Out</button>
+        </div>
   </div>
+  <div class="offcanvas-footer"></div>
 </div>
 
 
@@ -295,11 +290,48 @@
           contentType: 'application/json',
           data: JSON.stringify({}),
           success: function(data) {
-              if (data.success) {
-                  alert(data.message);
-                  $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+            if (data.success) {
+                
+                toastr["success"](data.message);
+                toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": false,
+                  "positionClass": "toast-top-right",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
+                //  alert(data.message);
+                $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+                window.location.reload();
               } else {
-                  alert(data.message);
+                toastr["success"](data.message);
+                toastr.options = {
+                  "closeButton": false,
+                  "debug": false,
+                  "newestOnTop": false,
+                  "progressBar": false,
+                  "positionClass": "toast-top-right",
+                  "preventDuplicates": false,
+                  "onclick": null,
+                  "showDuration": "300",
+                  "hideDuration": "1000",
+                  "timeOut": "5000",
+                  "extendedTimeOut": "1000",
+                  "showEasing": "swing",
+                  "hideEasing": "linear",
+                  "showMethod": "fadeIn",
+                  "hideMethod": "fadeOut"
+                }
                   if (data.data.signin_time) {
                       $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
                   }
@@ -359,14 +391,14 @@
     const weeklyEarningReportsEl = document.querySelector('#weeklyEarningReports');
     
     const weeklyEarningReportsConfig = {
-      chart: {
-        height: 202,
+      chart: { 
+        height: 202, 
         parentHeightOffset: 0,
         type: 'bar',
         toolbar: { show: false }
       },
-      plotOptions: {
-        bar: {
+      plotOptions: { 
+        bar: { 
           barHeight: '60%',
           columnWidth: '38%',
           startingShape: 'rounded',
@@ -376,12 +408,12 @@
         }
       },
       grid: {
-        show: false,
+        show: true,
         padding: {
-          top: -30,
+          top: 10,
           bottom: 0,
-          left: -10,
-          right: -10
+          left: 10,
+          right: 10
         }
       },
       colors: ['#28a745'], // Green for working days
@@ -546,11 +578,17 @@
   });
 
   function customModal(){
-    $('#modelCustom').modal('show');
+    var offcanvasElement = $('#customMarkingOffcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+    //$('#modelCustom').modal('show');
   }
 
   function emergencyModal(){
-    $('#emergencyMarking').modal('show');
+    var offcanvasElement = $('#emergencyMarkingOffcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+    //$('#emergencyMarking').modal('show');
   }
 
   function customMarking() {
@@ -581,6 +619,7 @@
                 toastr.success(response.message);
                 $('#customMarkingForm')[0].reset(); // Clear form after success
                 $('#modelCustom').modal('hide'); // Close modal after success
+                window.location.reload();
             } else {
                 toastr.error(response.message);
             }
@@ -636,6 +675,7 @@ function emergencyMark(type) {
                 toastr.success(response.message);
                 $('#emergencyMarkingForm')[0].reset(); // Clear form after success
                 $('#emergencyMarking').modal('hide'); // Close modal after success
+                window.location.reload();
             } else {
                 toastr.error(response.message);
             }
