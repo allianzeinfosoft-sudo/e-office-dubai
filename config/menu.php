@@ -67,7 +67,7 @@ return [
         'title' => 'Projects',
         'icon' => 'ti ti-briefcase',
         'route' => 'javascript:void(0);',
-        'isActive' => ['projects*', 'project*', 'tasks-project*'],
+        'isActive' => ['projects*', 'project*', 'tasks-project*', 'productivity-target*'],
         'submenu' => [
             [
                 'title' => 'Projects',
@@ -78,6 +78,11 @@ return [
                 'title' => 'Project Tasks',
                 'route' =>  'tasks-project',
                 'isActive' => ['tasks-project*'],
+            ],
+            [
+                'title' => 'Productivity Targets',
+                'route' =>  'productivity-target',
+                'isActive' => ['productivity-target*'],
             ],
 
         ]

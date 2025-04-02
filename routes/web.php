@@ -15,6 +15,7 @@ use App\Http\Controllers\WorkReportController;
 use App\Http\Controllers\WorksController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProductivityTargetController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -127,6 +128,9 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     Route::delete('/tasks-project/{projectTask}/destroy', [ProjectTaskController::class, 'destroy'])->name('tasks-project.destroy');
     Route::get('/tasks-project/{project_id}/get-tasks-by-project', [ProjectTaskController::class, 'getTasksByProject'])->name('tasks-project.get-tasks-by-project');
     Route::get('/tasks-project/{employee_id}/get-members', [ProjectTaskController::class, 'getMembers'])->name('tasks-project.get-members');
+
+    /* productivity Target */
+    Route::get('/productivity-target', [ProductivityTargetController::class, 'index'])->name('productivity-target.index');
     
 
     /* Work Report */

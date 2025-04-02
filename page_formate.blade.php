@@ -32,10 +32,10 @@
 @stop
 
 
-@section('js')
+@push('js')
 <script>
     $(function(){
         
     });
 </script>
-@stop
+@endpush
