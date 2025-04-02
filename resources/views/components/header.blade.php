@@ -488,12 +488,10 @@
           </div>
         </nav>
 
-        @section('headerjs')
+        @push('js')
         <script>
 
-
          $(function () {
-
             // Using jQuery example
             $(document).ready(function() {
                 $('.mark-as-read').click(function(e) {
@@ -523,4 +521,4 @@
 
          });
     </script>
-@stop
+@endpush

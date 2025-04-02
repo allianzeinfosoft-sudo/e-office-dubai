@@ -173,9 +173,8 @@
 
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>
      <!-- Vendors JS -->
-    
+    @stack('js')
     @yield('js')
-    @yield('headerjs')
 
 </body>
 </html>
