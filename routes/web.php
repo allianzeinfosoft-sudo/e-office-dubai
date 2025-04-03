@@ -131,6 +131,8 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
 
     /* productivity Target */
     Route::get('/productivity-target', [ProductivityTargetController::class, 'index'])->name('productivity-target.index');
+    Route::post('/productivity-target/store', [ProductivityTargetController::class, 'store'])->name('productivity-target.store');
+    Route::get('/productivity-target/{ProductivityTarget}/edit', [ProductivityTargetController::class, 'edit'])->name('productivity-target.edit');
     
 
     /* Work Report */

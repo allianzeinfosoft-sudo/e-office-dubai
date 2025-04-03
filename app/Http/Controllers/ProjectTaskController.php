@@ -71,14 +71,15 @@ class ProjectTaskController extends Controller
         ]);
 
         // Create project Task
-        ProjectTask::create([
+        $task = ProjectTask::updateOrCreate(['id' => $request->id],[
             'project_id'     => $request->project_id,
             'task_name'      => $request->task_name,
             'reporting_to'     => $request->reporting_to ?? null,
             'members' => isset($request->members) ? implode(',', $request->members) : null,
         ]);
+        $message = $task->wasRecentlyCreated ? 'Project created successfully' : 'Project updated successfully';
 
-        return redirect()->route('tasks-project.index')->with('success', 'Project created successfully');
+        return redirect()->route('tasks-project.index')->with('success', $message);
     }
 
     /**
@@ -92,8 +93,7 @@ class ProjectTaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(projectTask $projectTask)
-    {
+    public function edit(projectTask $projectTask){
         $data['projectTask'] = $projectTask;
         $data['meta_title'] = 'Edit Task';
         $data['projects'] = Project::all();
@@ -112,13 +112,10 @@ class ProjectTaskController extends Controller
             'pr_task_id'     => 'nullable',
             'pr_sub_task_id' => 'nullable',
         ]);
-
         // Find the project task
         $projectTask = ProjectTask::findOrFail($id);
-
         // Update the task details
         $projectTask->update($validatedData);
-
         return redirect()->route('tasks-project.index')->with('success', 'Project Task updated successfully.');
     }
 
@@ -132,9 +129,7 @@ class ProjectTaskController extends Controller
     }
 
     public function getTasksByProject($project_id){
-
         $projectTasks = ProjectTask::where('project_id', $project_id)->get();
-
         return response()->json([
             'success' => true,
             'data' => $projectTasks,

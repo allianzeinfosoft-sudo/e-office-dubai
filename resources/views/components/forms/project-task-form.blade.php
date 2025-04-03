@@ -1,8 +1,11 @@
-<form action="{{ $action }}" method="{{ strtolower($method) === 'get' ? 'get' : 'post' }}" id="{{ $form_id ?? 'project-task-form' }}" >
+<form action="{{ $action }}" method="{{ strtolower($method) === 'get' ? 'get' : 'post' }}" id="project-task-form" >
     @csrf
     @if(strtolower($method) !== 'post')
         @method($method)
     @endif
+
+    <input type="hidden" name="id" id="target_id">
+
     <div class="row">
         <div class="col-sm-12 mb-3">
             <div class="form-group">
@@ -42,7 +45,7 @@
         <div class="col-sm-6 mb-3">
             <div class="form-group" id="membersContainer">
                 <label for="members">Members</label>
-                <select class="form-control" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
+                <select class="form-control select2" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
                     <option value=""></option>
                  </select>
             </div>

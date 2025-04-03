@@ -36,7 +36,7 @@
 
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
-                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="addProductivityTragets()">
+                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <!-- {{ route('project.create') }} -->
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
@@ -49,11 +49,12 @@
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <table class="datatables-basic datatables-project-tasks table border-top table-stripedc">
+                            <table class="datatables-basic datatables-productivity-targets table border-top table-stripedc">
                                 <thead>
                                     <tr>
                                         <th>Project</th>
                                         <th>Task</th>
+                                        <th>Assigned By</th>
                                         <th>Target Date</th>
                                         <th>Rec/hr</th>
                                         <th>Actions</th>
@@ -75,13 +76,13 @@
 </div>
 
 <!-- Add Project Task -->
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="add_project_tasks_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="productivity_target_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-plus fs-2 text-white"></i> 
-            <span class="">
-                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Project Task</h5>
-                <span class="text-white slogan">Create New Project Tasks</span>
+            <span id="offcanvas-title-container">
+                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Productivity Target</h5>
+                <span class="text-white slogan">Create New Productivity Target</span>
             </span>
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
@@ -89,30 +90,79 @@
     <div class="offcanvas-body">
         <div class="row">
             <div class="col-sm-12">
-                <x-project-task-form action="{{ route('tasks-project.store') }}" />
+                <x-productivity-target-form  action="{{ route('productivity-target.store') }}" method='post' />
             </div>
         </div>
     </div>
 </div>
+
 @stop
 
 
 @push('js')
 <script>
     $(function(){
-        
+        var productivityTagetTable = $('.datatables-productivity-targets');
+
+        if(productivityTagetTable.length){
+            productivityTagetTable.DataTable({
+                ajax: {
+                    type: "GET",
+                    url: "{{ route('productivity-target.index') }}", // Fixed syntax
+                    dataType: "json", 
+                    dataSrc: "data"  
+                },
+                columns: [
+                    { data: 'projectName', title: 'Project' },
+                    { data: 'projectTask', title: 'Task' },
+                    { data: 'employee', title: 'Assigned By' },
+                    { data: 'target_year', title: 'Target Date',
+                        render: function (data, type, row) {
+                            return `<span>${row.target_month}/ ${row.target_year}</span>`;
+                        }
+                     },
+                    { data: 'rph', title: 'Rec/hr' },
+                    { 
+                        data: null, 
+                        title: 'Actions',
+                        render: function (data, type, row) {
+                            return `
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-project" onclick="openOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
+                                <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
+                            `;
+                        }
+                    }
+                ]
+            });
+        }
+
     });
 
-    function addProductivityTragets() {
-        var offcanvasElement = $('#add_project_tasks_offcanvas');
-        var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
-        offcanvas.show();
-
-        $('#add_project_tasks_offcanvas #membersContainer').empty();
-        $('#add_project_tasks_offcanvas #membersContainer').html(`<label for="members">Members</label>
-        <select class="form-control" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
-        <option value=""></option>
-        </select>`);
+    function openOffcanvas(targetId = null) {
+    $('#productivityTargetForm')[0].reset(); // Reset form
+    $('#target_id').val(''); // Clear ID
+    if (targetId) {
+        $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Productivity Target</h5><span class="text-white slogan">Edit Productivity Target</span>`);
+        $.ajax({
+            url: `/productivity-target/${targetId}/edit`,
+            type: 'GET',
+            success: function (data) {
+                $('#target_id').val(data.id);
+                $('#project_id').val(data.project_id).trigger('change');
+                setTimeout(() => {
+                    $('#project_task_id').val(data.project_task_id).trigger('change');
+                }, 500);
+                $('#assignedBy').val(data.assignedBy).trigger('change');
+                $('#rph').val(data.rph);
+                $('#target_year').val(data.target_year);
+            }
+        });
     }
+
+    var offcanvasElement = $('#productivity_target_offcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+}
+
 </script>
 @endpush

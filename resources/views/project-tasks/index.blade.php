@@ -36,7 +36,7 @@
 
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
-                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="addProjectTask()">
+                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <!-- {{ route('project.create') }} -->
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
@@ -76,11 +76,11 @@
 </div>
 
 <!-- Add Project Task -->
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="add_project_tasks_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="project_tasks_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-plus fs-2 text-white"></i> 
-            <span class="">
+            <span id="offcanvas-title-container">
                 <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Project Task</h5>
                 <span class="text-white slogan">Create New Project Tasks</span>
             </span>
@@ -96,27 +96,6 @@
     </div>
 </div>
 
-<!-- Edit Project Task -->
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="edit_project_tasks_offcanvas" aria-labelledby="staticBackdropLabel">
-    <div class="offcanvas-header bg-primary p-3">
-        <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-plus fs-2 text-white"></i> 
-            <span class="">
-                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Project Task</h5>
-                <span class="text-white slogan">Edit New Project Tasks</span>
-            </span>
-        </span>
-        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
-    </div>
-    <div class="offcanvas-body">
-        <div class="row">
-            <div class="col-sm-12">
-                <x-project-task-form action="" method="POST" />
-            </div>
-        </div>
-    </div>
-</div>
-
 @stop
 
 
@@ -124,9 +103,7 @@
 <script>
     $(function() {
         var projectTable = $('.datatables-project-tasks'),
-             select2 = $('.select2');
-
-             select2.select2();
+        select2 = $('.select2');
 
         if (projectTable.length) {            
             projectTable.DataTable({
@@ -145,9 +122,7 @@
                             return `<div class="d-flex align-items-center">
                           <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
                             <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-sm pull-up" aria-label="Kaith D'souza" data-bs-original-title="Kaith D'souza">
-                              <img class="rounded-circle" src="${row.reporting_to && row.reporting_to.profile_image 
-                            ? '/storage/profile_pics/' + row.reporting_to.profile_image.replace(/^profile_pics\//, '') 
-                            : '../../assets/img/avatars/5.png'}" alt="`+ row.reporting_to.full_name +`" title="`+ row.reporting_to.full_name +`">
+                                <img class="rounded-circle" src="${row.reporting_to && row.reporting_to.profile_image  ? '/storage/profile_pics/' + row.reporting_to.profile_image.replace(/^profile_pics\//, '')  : '../../assets/img/avatars/5.png'}" alt="`+ row.reporting_to.full_name +`" title="`+ row.reporting_to.full_name +`">
                             </li>
                           </ul>
                         </div>`;
@@ -179,7 +154,7 @@
                         render: function (data, type, row) {
                             const editUrl = "{{ route('tasks-project.edit', ':id') }}".replace(':id', row.id);
                             return `
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-project" onclick="editProjectTask(${row.id})"><i class="ti ti-edit"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-project" onclick="openOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
                                 <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
                             `;
                         }
@@ -209,87 +184,58 @@
         }
     }
 
-    function addProjectTask() {
-        var offcanvasElement = $('#add_project_tasks_offcanvas');
-        var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
-        offcanvas.show();
-
-        $('#add_project_tasks_offcanvas #membersContainer').empty();
-        $('#add_project_tasks_offcanvas #membersContainer').html(`<label for="members">Members</label>
-        <select class="form-control" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
-        <option value=""></option>
-        </select>`);
+    function getMembers(value) {
+        const url = `/tasks-project/${value}/get-members`;
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function(response) {
+                const $membersSelect = $('#members');
+                $membersSelect.empty();
+                if (response.success && Array.isArray(response.data)) {
+                    let options = "<option value=''></option>";
+                    response.data.forEach(member => {
+                        options += `<option value="${member.id}">${member.full_name} (${member.employeeID})</option>`;
+                    });
+                    $membersSelect.html(options);
+                    $membersSelect.select2({
+                        dropdownParent: $('#project-task-form'),
+                        placeholder: "Select an option",
+                        allowClear: true
+                    }); 
+                } else {
+                    console.error('Invalid response data:', response.data);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+            }
+        });
     }
 
-    function getMembers(value) {
-    const url = `/tasks-project/${value}/get-members`;
-    $.ajax({
-        type: "GET",
-        url: url,
-        dataType: "json",
-        success: function(response) {
-            const $membersSelect = $('#members');
-
-            // Clear existing options
-            $membersSelect.empty();
-
-            if (response.success && Array.isArray(response.data)) {
-                // Add a default empty option
-                let options = "<option value=''></option>";
-
-                // Iterate over each member and create an option
-                response.data.forEach(member => {
-                    options += `<option value="${member.id}">${member.full_name} (${member.employeeID})</option>`;
-                });
-
-                // Append the options to the select element
-                $membersSelect.html(options);
-
-                // Reinitialize Select2 if it's being used
-                /* $membersSelect.select2({
-                    placeholder: "Select an option",
-                    allowClear: true
-                }); */
-
-            } else {
-                console.error('Invalid response data:', response.data);
+function openOffcanvas(targetId = null) {
+    $('#project-task-form')[0].reset(); // Reset form
+    $('#target_id').val(''); // Clear ID
+    if (targetId) {
+        $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Project Task</h5><span class="text-white slogan">Edit New Project Tasks</span>`);
+        $.ajax({
+            url: `/tasks-project/${targetId}/edit`,
+            type: 'GET',
+            success: function (data) {
+                $('#target_id').val(data.projectTask.id);
+                $('#task_name').val(data.projectTask.task_name);
+                $('#project_id').val(data.projectTask.project_id).trigger('change');
+                $('#reporting_to').val(data.projectTask.reporting_to).trigger('change');
+                setTimeout(() => {
+                    $('#members').val(data.projectTask.members).trigger('change');
+                }, 500);
             }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-        }
-    });
-}
-
-function editProjectTask(projectTaskId) {
-    var offcanvasElement = $('#edit_project_tasks_offcanvas');
+        });
+    }
+    var offcanvasElement = $('#project_tasks_offcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
-
-    $('#add_project_tasks_offcanvas #membersContainer').empty();
-        $('#edit_project_tasks_offcanvas #membersContainer').html(`<label for="members">Members</label>
-        <select class="form-control" name="members[]" id="members" data-placeholder="Select Members" multiple="multiple">
-        <option value=""></option>
-        </select>`);
-
-    
-
-    const editUrl = "{{ route('tasks-project.edit', ':id') }}".replace(':id', projectTaskId);
-    $.ajax({
-        type: "get",
-        url: editUrl,
-        dataType: "json",
-        success: function (response) {
-            let updateUrl = "{{ route('tasks-project.update', ':projectTask') }}".replace(':projectTask', response.projectTask.id);
-            offcanvasElement.find('input[name="task_name"]').val(response.projectTask.task_name);
-            offcanvasElement.find('select[name="project_id"]').val(response.projectTask.project_id).trigger('change');
-            offcanvasElement.find('select[name="reporting_to"]').val(response.projectTask.reporting_to).trigger('change');
-            setTimeout(() => {
-                offcanvasElement.find('select[name="members"]').val(response.projectTask.members).trigger('change');
-            }, 500);
-            offcanvasElement.find('#project-task-form').attr('action', updateUrl);
-        }
-    });
 }
     
 </script>
