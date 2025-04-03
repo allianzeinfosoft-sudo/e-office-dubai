@@ -3,6 +3,7 @@
 $(function () {
   $('.ql-toolbar').remove();
   // Full Toolbar Configuration
+  $('.ql-toolbar').remove();
   const fullToolbar = [
     [{ header: [1, 2, false] }],  // Corrected header format
     [{ font: [] }, { size: [] }],  // Font & size dropdowns
@@ -26,5 +27,16 @@ $(function () {
     },
     theme: 'snow'
   });
+
+  $('#leaveForm').on('submit', function() {
+
+    var quillContent = quill.root.innerHTML; // Get HTML content
+    var quillPlainText = quill.getText().trim(); // Get plain text content (without HTML)
+
+    console.log("Quill HTML:", quillContent); // Debugging output
+    console.log("Quill Text:", quillPlainText); // Debugging output
+
+    $('#reason').val(quillContent); // Store HTML content in hidden input
+});
 
 });

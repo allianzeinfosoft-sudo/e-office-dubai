@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 use Carbon\Carbon;
+use DateTime;
 
 trait DateFormatter
 {
@@ -31,6 +32,21 @@ trait DateFormatter
             return null; // Return null if parsing fails
         }
     }
+
+    // public function getMonthNames($month_id)
+    // {
+    //     try{
+
+    //         return DateTime::createFromFormat('!m', $month_id)->format('F');
+
+    //     }catch (\Exception $e)
+    //     {
+    //         return null;
+    //     }
+
+
+    // }
+
 }
 
 
