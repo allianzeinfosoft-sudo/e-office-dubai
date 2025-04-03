@@ -91,6 +91,7 @@ return [
         'title' => 'Users',
         'icon' => 'ti ti-users',
         'route' => 'javascript:void(0);',
+        'isActive' => ['users*'],
         'submenu' => [
             [
                 'title' => 'Users',

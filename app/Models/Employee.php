@@ -39,4 +39,8 @@ class Employee extends Model
         return $this->belongsTo(UserStatus::class, 'status','id');
     }
 
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
 }
