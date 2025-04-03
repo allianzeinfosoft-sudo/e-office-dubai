@@ -30,7 +30,7 @@
                     <div class="col-md-12">
                         <label class="form-label" for="multicol-username">Leave Reason</label>
                             <div id="leave-editor">{{ strip_tags(old('reason')) }}                            </div>
-                            <input type="text" name="reason" value="{{ strip_tags(old('reason')) }}" id="reason">
+                            <input type="hidden" name="reason" value="{{ strip_tags(old('reason')) }}" id="reason">
                     </div>
 
                     <div class="row mt-3">

@@ -166,11 +166,12 @@
     @endif
 
     @if(Route::is('leaves.*'))
-        <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script>
+        {{-- <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script> --}}
     @endif
 
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>
      <!-- Vendors JS -->
+     @stack('js')
      @yield('js')
 
 </body>

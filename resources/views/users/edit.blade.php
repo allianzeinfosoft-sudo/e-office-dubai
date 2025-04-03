@@ -64,16 +64,14 @@
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="reporting_to" class="form-label">Reporting To:</label>
-                      <div class="input-group input-group-merge">
-                       <select class="form-select" id="reporting_to" name="reporting_to">
-                        <option value="">Select reporting person</option>
-                        @foreach ($employees as $employee)
-                          <option value="{{ $employee->user_id ?? '' }}"  {{ old('reporting_to', $user->employee->reporting_to) == $employee->user_id ? 'selected' : '' }}>
-                            {{ $employee->full_name }}
-                        </option>
-                        @endforeach
-                      </select>
-                      </div>
+                        <select id="reporting_to" name="reporting_to" class="select2 form-select form-select-lg" data-allow-clear="true">
+                            <option value="">Select reporting person</option>
+                            @foreach ($employees as $employee)
+                            <option value="{{ $employee->user_id ?? '' }}"  {{ old('reporting_to', $user->employee->reporting_to) == $employee->user_id ? 'selected' : '' }}>
+                                {{ $employee->full_name }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="personal_email" class="form-label">Personal Email:</label>
@@ -96,8 +94,7 @@
 
                     <div class="col-md-4 mb-3">
                       <label for="blood_group" class="form-label">Blood Group:</label>
-                      <div class="input-group input-group-merge">
-                        <select class="form-select" id="blood_group" name="blood_group" aria-label="Default select example">
+                        <select id="blood_group" name="blood_group" class="select2 form-select form-select-lg" data-allow-clear="true">
                             <option value="" disabled {{ old('blood_group', $user->employee->blood_group) ? '' : 'selected' }}>Please select</option>
                             @foreach (['O-ve', 'O+ve', 'A-ve', 'A+ve', 'B-ve', 'B+ve', 'AB-ve', 'AB+ve'] as $bloodType)
                                 <option value="{{ $bloodType }}" {{ old('blood_group', $user->employee->blood_group) == $bloodType ? 'selected' : '' }}>
@@ -105,8 +102,6 @@
                                 </option>
                             @endforeach
                         </select>
-
-                      </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="qualification" class="form-label">Qualification:</label>
@@ -152,14 +147,12 @@
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="group" class="form-label">Group:</label>
-                      <div class="input-group input-group-merge">
-                      <select class="form-select" id="group" name="group">
+                      <select id="group" name="group" class="select2 form-select form-select-lg" data-allow-clear="true">
                         <option value="">Select Group</option>
                         @foreach (['G1','G2','G3','G4','G5'] as $group)
                             <option value="{{ $group }}" {{ old('group', $user->employee->group) == $group ? 'selected' : '' }}>{{ $group ?? ''}}</option>
                         @endforeach
                       </select>
-                      </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="group" class="form-label">Address:</label>
@@ -232,8 +225,7 @@
                   <div class="row card-body">
                     <div class="col-md-4 mb-3">
                       <label for="department" class="form-label">Department:</label>
-                      <div class="input-group input-group-merge">
-                        <select id="department_id" name="department_id" class="form-select">
+                        <select id="department_id" name="department_id" class="select2 form-select form-select-lg" data-allow-clear="true">
                             <option value="" disabled {{ old('department_id', $user->employee->department_id ?? '') ? '' : 'selected' }}>
                                 Select Department
                             </option>
@@ -244,17 +236,14 @@
                                 </option>
                             @endforeach
                         </select>
-                      </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="designation" class="form-label">Designation:</label>
-                      <div class="input-group input-group-merge">
-                        <select id="designation_id" name="designation_id" class="form-select">
+                        <select id="designation_id" name="designation_id" class="select2 form-select form-select-lg" data-allow-clear="true">
                             @foreach ($designations as $value)
                                 <option value="{{ $value->id }}" {{ old('designation_id', $user->employee->designation_id) == $value->id ? 'selected' : '' }}>{{ $value->designation ?? 'N/A' }}</option>
                             @endforeach
                         </select>
-                      </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="smallInput" class="form-label">Join Date:</label>
@@ -264,13 +253,11 @@
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="shift_id" class="form-label">Shift No:</label>
-                      <div class="input-group input-group-merge">
-                        <select class="form-select" id="shift_id" name="shift_id" aria-label="Default select">
+                        <select id="shift_id" name="shift_id" class="select2 form-select form-select-lg" data-allow-clear="true">
                          @foreach ($work_shifts as $work_shift)
                             <option selected value="{{  $work_shift->id ?? '' }}" {{ old('shift_id', $user->employee->shift_id) == $work_shift->id ? 'selected' : '' }}>{{  $work_shift->shift_id ?? '' }}</option>
                          @endforeach
                         </select>
-                      </div>
                     </div>
 
                     <div class="col-md-4 mb-3">
@@ -282,25 +269,21 @@
 
                     <div class="col-md-4 mb-3">
                       <label for="role" class="form-label">Role:</label>
-                      <div class="input-group input-group-merge">
-                        <select class="form-select" id="role" name="role" aria-label="Default select">
+                        <select id="role" name="role" class="select2 form-select form-select-lg" data-allow-clear="true">
                             <option selected value="">Please select</option>
                             @foreach ($roles as $role)
                                 <option selected value="{{ $role->name }}" {{ old('role', $user->employee->role) == $role->id ? 'selected' : '' }}>{{ $role->name ?? '' }}</option>
                             @endforeach
                         </select>
-                      </div>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="status" class="form-label">Status:</label>
-                      <div class="input-group input-group-merge">
-                        <select class="form-select" id="status" name="status" aria-label="Default select">
+                        <select id="status" name="status" class="select2 form-select form-select-lg" data-allow-clear="true">
                           <option selected value="">Please select</option>
                            @foreach ($user_statuses as $user_status)
                                 <option value="{{ $user_status->id }}" {{ old('status', $user->employee->status) == $user_status->id ? 'selected' : '' }}>{{ $user_status->status_name ?? '' }}</option>
                            @endforeach
                         </select>
-                      </div>
                     </div>
 
                     {{-- <div class="col-md-4 mb-3">
@@ -311,25 +294,21 @@
                     </div> --}}
                     <div class="col-md-4 mb-3">
                       <label for="appointment_status" class="form-label">Appointment Status:</label>
-                      <div class="input-group input-group-merge">
-                        <select class="form-select" id="appointment_status" name="appointment_status" aria-label="Default select">
+                        <select id="appointment_status" name="appointment_status" class="select2 form-select form-select-lg" data-allow-clear="true">
                           <option selected value="">Please select</option>
                           @foreach (['probation','confirmed'] as $appointment_status)
                               <option value="{{ $appointment_status }}" {{ old('appointment', $user->employee->appointment_status ) == $appointment_status ? 'selected' : '' }} > {{ $appointment_status }} </option>
                           @endforeach
                         </select>
                     </div>
-                    </div>
                     <div class="col-md-4 mb-3">
                       <label for="team_lead" class="form-label">Team Lead:</label>
-                      <div class="input-group input-group-merge">
-                        <select class="form-select" id="team_lead" name="team_lead" aria-label="Default select">
+                        <select id="team_lead" name="team_lead" class="select2 form-select form-select-lg" data-allow-clear="true">
                           <option selected value="">Please select</option>
                             @foreach ($employees as $employee)
                                 <option value="{{ $employee->user_id ?? '' }}" {{ old('team_lead', $user->employee->team_lead) == $employee->user_id ? 'selected' : '' }}>{{ $employee->full_name ?? '' }}</option>
                             @endforeach
                         </select>
-                    </div>
                     </div>
                   </div>
                 </div>

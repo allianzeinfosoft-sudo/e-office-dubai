@@ -488,7 +488,7 @@
           </div>
         </nav>
 
-        @section('js')
+        @push('js')
         <script>
 
 
@@ -523,4 +523,4 @@
 
          });
     </script>
-@stop
+@endpush

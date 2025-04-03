@@ -181,13 +181,14 @@ return [
         'icon' => 'ti ti-cash',
         'route' => 'javascript:void(0);',
         'submenu' => [
+
+            // [
+            //     'title' => 'Uploload Salary Slip',
+            //     'route' =>  '/salarySlip/upload',
+            // ],
             [
-                'title' => 'View Salary Slip',
+                'title' => 'Salary Slip',
                 'route' =>  '/salarySlip/view',
-            ],
-            [
-                'title' => 'Uploload Salary Slip',
-                'route' =>  '/salarySlip/upload',
             ],
         ]
     ],
@@ -399,7 +400,7 @@ return [
     [
         'title' => 'Departments',
         'icon' => 'ti ti-arrow-guide',
-        'route' => "#",
+        'route' => "/branchs",
     ],
 ];
 

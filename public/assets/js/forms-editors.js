@@ -2,6 +2,7 @@
 
 (function () {
   // Full Toolbar Configuration
+  $('.ql-toolbar').remove();
   const fullToolbar = [
     [{ font: [] }, { size: [] }],
     ['bold', 'italic', 'underline', 'strike'],
@@ -24,5 +25,21 @@
     },
     theme: 'snow'
   });
+
+
+  $(document).ready(function() {
+    $('#leaveForm').on('submit', function() {
+
+        var quillContent = quill.root.innerHTML; // Get HTML content
+        var quillPlainText = quill.getText().trim(); // Get plain text content (without HTML)
+
+        console.log("Quill HTML:", quillContent); // Debugging output
+        console.log("Quill Text:", quillPlainText); // Debugging output
+
+        $('#reason').val(quillContent); // Store HTML content in hidden input
+    });
+});
+
+
 
 })();

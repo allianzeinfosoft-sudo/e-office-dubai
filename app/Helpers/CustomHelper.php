@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Carbon\Carbon;
+use DateTime;
 
 class CustomHelper
 {
@@ -12,11 +13,11 @@ class CustomHelper
             if (empty($signin_date) || empty($signin_time) || empty($signout_date) || empty($signout_time)) {
                 throw new \Exception("Invalid date or time values provided.");
             }
-    
+
             // Convert to Carbon objects
             $signIn = Carbon::parse("$signin_date $signin_time");
             $signOut = Carbon::parse("$signout_date $signout_time");
-    
+
             // Ensure sign-out is after sign-in
             if ($signOut->lessThanOrEqualTo($signIn)) {
                 return [
@@ -25,20 +26,20 @@ class CustomHelper
                     'error' => 'Sign-out time must be after sign-in time',
                 ];
             }
-    
+
             // Calculate total work duration in seconds
             $totalSeconds = $signOut->diffInSeconds($signIn);
-    
+
             // Ensure break time is numeric and convert to seconds
             $breakSeconds = (is_numeric($break_time) && $break_time >= 0) ? ($break_time * 60) : 3600; // Default: 1 hour (3600 seconds)
-    
+
             // Calculate actual working seconds
             $actualWorkSeconds = max($totalSeconds - $breakSeconds, 0);
-    
+
             // Convert to HH:MM:SS format
             $formattedWorkTime  = gmdate("H:i:s", $actualWorkSeconds);
             $formattedBreakTime = gmdate("H:i:s", $breakSeconds);
-    
+
             return [
                 'total_working_time' => $formattedWorkTime,
                 'break_time' => $formattedBreakTime,
@@ -52,7 +53,7 @@ class CustomHelper
         }
     }
 
-        
+
     public static function calculateGrade($productivity_hour) {
         if ($productivity_hour >= 10) return 'A';
         if ($productivity_hour >= 7) return 'B';
@@ -66,5 +67,11 @@ class CustomHelper
         if ($productivity_hour >= 5) return 'Average';
         return 'Needs Improvement';
     }
-    
+
+    public function getMonthNames($month_id)
+    {
+        return DateTime::createFromFormat('!m', $month_id)->format('F');
+
+    }
+
 }

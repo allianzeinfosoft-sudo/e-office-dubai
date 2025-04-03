@@ -133,9 +133,7 @@ class UserController extends Controller
             if ($employee && $profileImagePath) {
                 $user->save();
             }
-
-            // update leave allocated for employee
-
+            Cache::forget('users');
            // Update leave allocation for the employee
             if (!empty($user) && !empty($request->leave_carry_info)) {
                 LeaveAllocation::updateOrCreate(
@@ -265,7 +263,7 @@ class UserController extends Controller
             'beneficiary_name' => !empty($request->beneficiary_name) ? $request->beneficiary_name : null,
             'account_number' => !empty($request->account_number) ? $request->account_number : null,
         ]);
-
+        Cache::forget('users');
         return redirect()->route('users.edit', $user->id)->with('success', 'User details updated successfully!');
 
 

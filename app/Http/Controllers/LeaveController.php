@@ -33,7 +33,6 @@ class LeaveController extends Controller
     }
     public function leave_list()
     {
-
         $leaves = Leave::with('employee','user')
                 ->get()
                 ->map(function ($leaves) {
@@ -74,6 +73,7 @@ class LeaveController extends Controller
      */
     public function store(LeaveRequest $request)
     {
+
         $user_id = Auth::user()->id;
         $leaveData = [
             'user_id'     => $user_id,

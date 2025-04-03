@@ -15,6 +15,7 @@ use App\Http\Controllers\WorkReportController;
 use App\Http\Controllers\WorksController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SalaryController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -148,5 +149,9 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
 
     /* Notification */
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+
+    /*salary*/
+    Route::get('/salarySlip/view',[SalaryController::class, 'view_salary_slip'])->name('view.salary.slip');
+    Route::get('/fetch/salarySlip',[SalaryController::class,'fetch_salary_slip'])->name('fetch.salarySlip');
 });
 
