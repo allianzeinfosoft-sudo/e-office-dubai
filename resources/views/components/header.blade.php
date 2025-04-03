@@ -424,7 +424,7 @@
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="pages-profile-user.html">
+                    <a class="dropdown-item" href="{{ route('users.profile-edit', Auth::user()->id); }}">
                       <i class="ti ti-edit me-2 ti-sm"></i>
                       <span class="align-middle">Edit Profile</span>
                     </a>

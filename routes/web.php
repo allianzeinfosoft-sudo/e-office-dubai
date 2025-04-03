@@ -72,11 +72,13 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     /* users */
     Route::resource('users', UserController::class);
     Route::get('/user-list',[UserController::class, 'getUsers']);
-    Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
-    Route::get('/user-edit/{id}', [UserController::class, 'edit'])->name('user.edit');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
     Route::get('/settings/userstastus',[SettingsController::class, 'list_user_status'])->name('userstatus');
     Route::post('/check-email', [UserController::class, 'checkEmail']);
+    Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::get('/users/{userId}/profile-edit', [UserController::class, 'profileEdit'])->name('users.profile-edit');
+    Route::post('/users/store-or-update/{id?}', [UserController::class, 'storeOrUpdate'])->name('users.storeOrUpdate');
 
     /* department */
     Route::resource('departments',DepartmentController::class);

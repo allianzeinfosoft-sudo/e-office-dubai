@@ -225,7 +225,7 @@ $(function () {
         element.addEventListener("click", function () {
             let userId = this.getAttribute("data-edit-user-id"); // Corrected
             // Redirect to the edit page
-            window.location.href = `/user-edit/${userId}`;
+            window.location.href = `/users/${userId}/edit`;
         });
     });
 }
