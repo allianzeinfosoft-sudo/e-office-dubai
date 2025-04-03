@@ -15,31 +15,23 @@
     ['clean']
   ];
 
-  // Initialize Quill Editor
-  new Quill('#leave-editor', {
-    bounds: '#leave-editor',
-    placeholder: 'Type reason...',
-    modules: {
-      formula: true,
-      toolbar: fullToolbar
-    },
-    theme: 'snow'
-  });
-
-
-  $(document).ready(function() {
-    $('#leaveForm').on('submit', function() {
-
-        var quillContent = quill.root.innerHTML; // Get HTML content
-        var quillPlainText = quill.getText().trim(); // Get plain text content (without HTML)
-
-        console.log("Quill HTML:", quillContent); // Debugging output
-        console.log("Quill Text:", quillPlainText); // Debugging output
-
-        $('#reason').val(quillContent); // Store HTML content in hidden input
+    var quill = new Quill('#leave-editor', {
+        theme: 'snow',
+        placeholder: 'Type your reason here...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link'],
+                ['clean']
+            ]
+        }
     });
-});
 
-
+        // Capture Quill Content before Form Submission
+        document.getElementById('leaveForm').addEventListener('submit', function () {
+        document.getElementById('reason').value = quill.root.innerHTML;
+    });
 
 })();

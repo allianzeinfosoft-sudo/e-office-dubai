@@ -73,7 +73,6 @@ class LeaveController extends Controller
      */
     public function store(LeaveRequest $request)
     {
-
         $user_id = Auth::user()->id;
         $leaveData = [
             'user_id'     => $user_id,
