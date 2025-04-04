@@ -251,7 +251,7 @@
                                         <select id="department_id" name="department_id" class="select2 form-select form-select-lg" data-allow-clear="true">
                                             <option value="">Select Department</option>
                                             @foreach ($departments as $department)
-                                                <option value="{{ $department->id }}" {{ old('department_id', $user->department_id ?? '') == $department->id ? 'selected' : '' }}> {{ $department->department ?? '' }} </option>
+                                                <option value="{{ $department->id }}" {{ old('department_id', $user->department_id ?? '' == $department->id ? 'selected' : '') }}> {{ $department->department ?? '' }} </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -260,7 +260,7 @@
                                         <label for="designation" class="form-label">Designation:</label>
                                         <select id="designation_id" name="designation_id" class="select2 form-select form-select-lg" data-allow-clear="true">
                                             @foreach ($designations as $value)
-                                            <option value="{{ $value->id }}" {{ old('designation_id', $user->designation_id ?? '') == $value->id ? 'selected' : '' }}> {{ $value }} </option>
+                                            <option value="{{ $value->id }}" {{ old('designation_id', $user->designation_id ?? '' == $value->id ? 'selected' : '') }}> {{ $value }} </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -276,7 +276,7 @@
                                         <label for="shift_id" class="form-label">Shift No:</label>
                                         <select id="shift_id" name="shift_id" class="select2 form-select form-select-lg" data-allow-clear="true">
                                             @foreach ($work_shifts as $work_shift)
-                                            <option selected value="{{  $work_shift->id ?? '' }}" {{ old('shift_id', $user->shift_id ?? '') == $work_shift->id ? 'selected' : '' }} >{{  $work_shift->shift_id ?? '' }}</option>
+                                            <option selected value="{{  $work_shift->id ?? '' }}" {{ old('shift_id', $user->shift_id ?? ''== $work_shift->id ? 'selected' : '') }} >{{  $work_shift->shift_id ?? '' }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -293,7 +293,7 @@
                                         <select id="role" name="role" class="select2 form-select form-select-lg" data-allow-clear="true">
                                             <option selected value="">Please select</option>
                                             @foreach ($roles as $role)
-                                            <option selected value="{{ $role->name }}" {{ old('role', $user->role ?? '') == $role->name ? 'selected' : '' }} >{{ $role->name ?? '' }}</option>
+                                            <option selected value="{{ $role->name }}" {{ old('role', $user->role ?? '' == $role->name ? 'selected' : '') }} >{{ $role->name ?? '' }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -303,7 +303,7 @@
                                         <select id="status" name="status" class="select2 form-select form-select-lg" data-allow-clear="true">
                                             <option selected value="">Please select</option>
                                             @foreach ($user_statuses as $user_status)
-                                            <option value="{{ $user_status->id }}" {{ old('status', $user->status ?? '') == $user_status->id ? 'selected' : '' }}>{{ $user_status->status_name ?? '' }}</option>
+                                            <option value="{{ $user_status->id }}" {{ old('status', $user->status ?? '' == $user_status->id ? 'selected' : '') }}>{{ $user_status->status_name ?? '' }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -313,7 +313,7 @@
                                         <select id="appointment_status" name="appointment_status" class="select2 form-select form-select-lg" data-allow-clear="true">
                                             <option selected value="">Please select</option>
                                             @foreach (['probation','confirmed'] as $appointment_status)
-                                            <option value="{{ $appointment_status }}" {{ old('appointment_status', $user->appointment_status ?? '') == $appointment_status ? 'selected' : '' }}> {{ $appointment_status }} </option>
+                                            <option value="{{ $appointment_status }}" {{ old('appointment_status', $user->appointment_status ?? '' == $appointment_status ? 'selected' : '') }}> {{ $appointment_status }} </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -323,7 +323,7 @@
                                         <select id="team_lead" name="team_lead" class="select2 form-select form-select-lg" data-allow-clear="true">
                                             <option selected value="">Please select</option>
                                             @foreach ($employees as $employee)
-                                            <option value="{{ $employee->user_id ?? '' }}" {{ old('team_lead', $user->team_lead ?? '') == $employee->user_id ? 'selected' : '' }}>{{ $employee->full_name ?? '' }}</option>
+                                            <option value="{{ $employee->user_id ?? '' }}" {{ old('team_lead', $user->team_lead ?? '' == $employee->user_id ? 'selected' : '') }}>{{ $employee->full_name ?? '' }}</option>
                                             @endforeach
                                         </select>
                                     </div>
