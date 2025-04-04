@@ -2,8 +2,6 @@
 
 $(function () {
   $('.ql-toolbar').remove();
-  // Full Toolbar Configuration
-  $('.ql-toolbar').remove();
   const fullToolbar = [
     [{ header: [1, 2, false] }],  // Corrected header format
     [{ font: [] }, { size: [] }],  // Font & size dropdowns
@@ -17,26 +15,23 @@ $(function () {
     ['clean']  // Remove formatting button
   ];
 
-  // Initialize Quill Editor
-  new Quill('#leave-editor', {
-    bounds: '#leave-editor',
-    placeholder: 'Type reason...',
-    modules: {
-      formula: true,
-      toolbar: fullToolbar
-    },
-    theme: 'snow'
-  });
+    var quill = new Quill('#leave-editor', {
+        theme: 'snow',
+        placeholder: 'Type your reason here...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link'],
+                ['clean']
+            ]
+        }
+    });
 
-  $('#leaveForm').on('submit', function() {
+        // Capture Quill Content before Form Submission
+        document.getElementById('leaveForm').addEventListener('submit', function () {
+        document.getElementById('reason').value = quill.root.innerHTML;
+    });
 
-    var quillContent = quill.root.innerHTML; // Get HTML content
-    var quillPlainText = quill.getText().trim(); // Get plain text content (without HTML)
-
-    console.log("Quill HTML:", quillContent); // Debugging output
-    console.log("Quill Text:", quillPlainText); // Debugging output
-
-    $('#reason').val(quillContent); // Store HTML content in hidden input
-});
-
-});
+})();
