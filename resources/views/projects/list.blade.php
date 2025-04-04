@@ -74,6 +74,7 @@
       </div>
     </div>
 </div>
+
 <!-- Add Project From -->
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="add_projects_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
@@ -120,9 +121,10 @@
 @stop
 
 @section('js')
-
 <script>
+
     $(function() {
+        
         var projectTable = $('.datatables-projects'),
             select2 = $('.select2');
 

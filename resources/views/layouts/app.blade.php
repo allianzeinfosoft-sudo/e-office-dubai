@@ -54,7 +54,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
-
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/dropzone/dropzone.css') }}" />
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
@@ -73,11 +73,13 @@
         {{-- </main> --}}
     </div>
     <!-- Core JS -->
+     
     <!-- build:js assets/vendor/js/core.js -->
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js') }}"></script> --}}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
     <!-- <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script> -->
 
@@ -87,9 +89,6 @@
     <script src="{{ asset('assets/vendor/libs/i18n/i18n.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/typeahead-js/typeahead.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
-
-    <!-- Main JS -->
-    <script src="{{ asset('assets/js/main.js') }}"></script>
 
     <!-- endbuild -->
 
@@ -124,10 +123,11 @@
    <script src="{{ asset('assets/vendor/libs/bloodhound/bloodhound.js') }}"></script>
 
 
+    <!-- Main JS -->
+    <script src="{{ asset('assets/js/main.js') }}"></script>
+
     <!-- Page JS -->
     <script src="{{ asset('assets/js/pages-auth.js') }}"></script>
-
-
     @if(request()->is('home'))
         <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script>
     @endif
@@ -166,12 +166,16 @@
     @endif
 
     @if(Route::is('leaves.*'))
-        <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script>
+        {{-- <script src="{{ asset('assets/js/wizard-ex-property-listing.js') }}"></script> --}}
     @endif
 
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/dropzone/dropzone.js') }}"></script>
+    <script src="{{ asset('assets/js/forms-file-upload.js') }}"></script>
+
      <!-- Vendors JS -->
-     @yield('js')
+    @stack('js')
+    @yield('js')
 
 </body>
 </html>

@@ -40,21 +40,6 @@ return [
         'isActive' => ['attendance*'],
     ],
     [
-        'title' => 'Users',
-        'icon' => 'ti ti-users',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
-            [
-                'title' => 'Users',
-                'route' =>  'users',
-            ],
-            [
-                'title' => 'Add Users',
-                'route' =>  '/users/create',
-            ],
-        ]
-    ],
-    [
         'title' => 'Works',
         'icon' => 'ti ti-building-bank',
         'route' => 'javascript:void(0);',
@@ -82,7 +67,7 @@ return [
         'title' => 'Projects',
         'icon' => 'ti ti-briefcase',
         'route' => 'javascript:void(0);',
-        'isActive' => ['projects*', 'project*', 'tasks-project*'],
+        'isActive' => ['projects*', 'project*', 'tasks-project*', 'productivity-target*'],
         'submenu' => [
             [
                 'title' => 'Projects',
@@ -94,7 +79,28 @@ return [
                 'route' =>  'tasks-project',
                 'isActive' => ['tasks-project*'],
             ],
+            [
+                'title' => 'Productivity Targets',
+                'route' =>  'productivity-target',
+                'isActive' => ['productivity-target*'],
+            ],
 
+        ]
+    ],
+    [
+        'title' => 'Users',
+        'icon' => 'ti ti-users',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['users*'],
+        'submenu' => [
+            [
+                'title' => 'Users',
+                'route' =>  'users',
+            ],
+            [
+                'title' => 'Add Users',
+                'route' =>  '/users/create',
+            ],
         ]
     ],
     [
@@ -181,13 +187,14 @@ return [
         'icon' => 'ti ti-cash',
         'route' => 'javascript:void(0);',
         'submenu' => [
+
+            // [
+            //     'title' => 'Uploload Salary Slip',
+            //     'route' =>  '/salarySlip/upload',
+            // ],
             [
-                'title' => 'View Salary Slip',
+                'title' => 'Salary Slip',
                 'route' =>  '/salarySlip/view',
-            ],
-            [
-                'title' => 'Uploload Salary Slip',
-                'route' =>  '/salarySlip/upload',
             ],
         ]
     ],
@@ -399,7 +406,7 @@ return [
     [
         'title' => 'Departments',
         'icon' => 'ti ti-arrow-guide',
-        'route' => "#",
+        'route' => "/branchs",
     ],
 ];
 
