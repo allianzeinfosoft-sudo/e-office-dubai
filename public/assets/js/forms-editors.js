@@ -1,18 +1,18 @@
 'use strict';
 
-$(function () {
+(function () {
+  // Full Toolbar Configuration
   $('.ql-toolbar').remove();
   const fullToolbar = [
-    [{ header: [1, 2, false] }],  // Corrected header format
-    [{ font: [] }, { size: [] }],  // Font & size dropdowns
-    ['bold', 'italic', 'underline', 'strike'],  // Basic formatting
-    [{ color: [] }, { background: [] }],  // Text & background colors
-    [{ script: 'super' }, { script: 'sub' }],  // Superscript & subscript
-    [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],  // Lists & indents
-    [{ direction: 'rtl' }],  // Right-to-left text support
-    ['blockquote', 'code-block'],  // Block formatting
-    ['link', 'image', 'video', 'formula'],  // Media & formulas
-    ['clean']  // Remove formatting button
+    [{ font: [] }, { size: [] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
+    [{ script: 'super' }, { script: 'sub' }],
+    [{ header: '1' }, { header: '2' }, 'blockquote', 'code-block'],
+    [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+    [{ direction: 'rtl' }],
+    ['link', 'image', 'video', 'formula'],
+    ['clean']
   ];
 
     var quill = new Quill('#leave-editor', {
