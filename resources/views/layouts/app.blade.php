@@ -54,7 +54,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
-
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/dropzone/dropzone.css') }}" />
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
@@ -126,8 +126,6 @@
 
     <!-- Page JS -->
     <script src="{{ asset('assets/js/pages-auth.js') }}"></script>
-
-
     @if(request()->is('home'))
         <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script>
     @endif
@@ -170,6 +168,9 @@
     @endif
 
     <script src="{{ asset('assets/js/forms-typeahead.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/dropzone/dropzone.js') }}"></script>
+    <script src="{{ asset('assets/js/forms-file-upload.js') }}"></script>
+
      <!-- Vendors JS -->
      @stack('js')
      @yield('js')

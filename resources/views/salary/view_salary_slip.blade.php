@@ -1,5 +1,24 @@
 @extends('layouts.app')
+@section('css')
+<style>
 
+  .w-35 {
+    width: 35% !important;
+  }
+  .w-45 {
+    width: 45% !important;
+  }
+  .offcanvas-close{
+    position: absolute;
+    top: 0px;
+    left: -32px;  /* Moves the button outside the offcanvas */
+    z-index: 1055; /* Ensures it stays on top */
+    padding: 28px 10px;
+    border-radius: 0px;
+  }
+
+</style>
+@stop
 @section('content')
  <!-- Layout wrapper -->
  <div class="layout-wrapper layout-content-navbar">
@@ -103,12 +122,73 @@
 
 
 
+          <!-- Modal to add new record -->
+          <div class="offcanvas offcanvas-end  w-45" id="upload-salary">
+            <div class="offcanvas-header border-bottom">
+              <h5 class="offcanvas-title" id="exampleModalLabel">Upload Salary Slip</h5>
+                <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
+            </div>
+            <div class="offcanvas-body flex-grow-1">
+
+                <div class="col-sm-12">
+                  <div class="input-group input-group-merge">
+
+                    <div class="col-12">
+                        <div class="card mb-4">
+                          <div class="card-body">
+                            <form action=" " method="post" class="dropzone needsclick" id="dropzone-salary">
+                                @csrf
+                              <div class="dz-message needsclick">
+                                Drop salary slip here or click to upload
+                              </div>
+                              <div class="fallback">
+                                <input name="file" type="file" />
+                              </div>
+                              <div class="col-sm-12">
+                                <button type="button" class="btn btn-success data-start me-sm-3 me-1">Start</button>
+                                <button type="button" class="btn btn-danger data-stop me-sm-3 me-1">Stop</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                            <!-- Bordered Table -->
+                            <div class="card">
+                                <h5 class="card-header">Bordered Table</h5>
+                                <div class="card-body">
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Sl No</th>
+                                            <th>Employee ID</th>
+                                            <th>Upload Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <i class="ti ti-brand-angular ti-lg text-danger me-3"></i> <strong>Angular Project</strong>
+                                        </td>
+                                        <td><span class="badge bg-label-primary me-1">Active</span></td>
+                                        </tr>
 
 
+
+                                    </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                            <!--/ Bordered Table -->
+                      </div>
+                  </div>
+                </div>
+            </div>
           </div>
 
+          </div>
           <!-- / Content -->
-
           <!-- Footer -->
           <x-footer />
           <!-- / Footer -->
@@ -148,18 +228,156 @@ $(function () {
       },
       columns: [
         // columns according to JSON
-        { data: '' },
+        {
+             data: null, title: 'S.No',
+                render: function (data, type, row, meta){
+                    return meta.row+1;
+            }
+
+        },
         { data: 'full_name', title: 'EmployeeName' },
         { data: 'department', title: 'Department' },
         { data: 'pf_no', title: 'PF No'},
         { data: 'created_date', title: 'Created Date'},
         { data: 'salary_slip_month', title: 'Salary Month' },
-        { data: '' }
+        {
+
+            data: 'salary_slip',
+            title: 'Download Slip',
+            render: function (data, type, row) {
+                if (data) {
+                    return `<a href="/storage/salary_slips/${data}" target="_blank" class="btn btn-sm btn-primary">View</a>`;
+                }
+                return "N/A";
+            }
+
+        }
       ],
 
+      dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+      displayLength: 7,
+      lengthMenu: [7, 10, 25, 50, 75, 100],
+      buttons: [
+        {
+          text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add Salary Slip</span>',
+          className: 'create-new btn btn-primary',
+          attr: {
+            'data-bs-toggle': 'offcanvas',
+            'data-bs-target': '#upload-salary'
+          }
+        }
+      ]
+
     });
+
+    $('div.head-label').html('<h5 class="card-title mb-0">Salary Slip List</h5>');
   }
 
 });
+
+
+
+
+(function () {
+  // previewTemplate: Updated Dropzone default previewTemplate
+  // ! Don't change it unless you really know what you are doing
+  const previewTemplate = `<div class="dz-preview dz-file-preview">
+                            <div class="dz-details">
+                            <div class="dz-thumbnail">
+                                <img data-dz-thumbnail>
+                                <span class="dz-nopreview">No preview</span>
+                                <div class="dz-success-mark"></div>
+                                <div class="dz-error-mark"></div>
+                                <div class="dz-error-message"><span data-dz-errormessage></span></div>
+                                <div class="progress">
+                                <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-dz-uploadprogress></div>
+                                </div>
+                            </div>
+                            <div class="dz-filename" data-dz-name></div>
+                            <div class="dz-size" data-dz-size></div>
+                            </div>
+                            </div>`;
+
+
+                // --------------------------------------------------------------------
+                const dropzoneBasic = document.querySelector('#dropzone-basic');
+                if (dropzoneBasic) {
+                    const myDropzone = new Dropzone(dropzoneBasic, {
+                    previewTemplate: previewTemplate,
+                    parallelUploads: 1,
+                    maxFilesize: 5,
+                    addRemoveLinks: true,
+                    maxFiles: 1
+                    });
+                }
+
+
+})();
+
+// upload zip file
+const previewTemplate = `<div class="dz-preview dz-file-preview">
+<div class="dz-details">
+  <div class="dz-thumbnail">
+    <img data-dz-thumbnail>
+    <span class="dz-nopreview">No preview</span>
+    <div class="dz-success-mark"></div>
+    <div class="dz-error-mark"></div>
+    <div class="dz-error-message"><span data-dz-errormessage></span></div>
+    <div class="progress">
+      <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-dz-uploadprogress></div>
+    </div>
+  </div>
+  <div class="dz-filename" data-dz-name></div>
+  <div class="dz-size" data-dz-size></div>
+</div>
+</div>`;
+
+
+Dropzone.autoDiscover = false;
+
+const dropzoneBasic = document.querySelector('#dropzone-salary');
+if (dropzoneBasic) {
+let myDropzone = new Dropzone(dropzoneBasic, {
+        previewTemplate: previewTemplate,
+        parallelUploads: 1,
+        url: "/upload-salary-slip",  // Laravel route
+        paramName: "file",
+        maxFiles: 1, // Allow only one file
+        maxFilesize: 50, // Max file size in MB
+        acceptedFiles: ".zip",
+        addRemoveLinks: true,
+        autoProcessQueue: false, // Prevent auto-upload
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+        }
+    });
+
+
+
+    // Start Upload on Button Click
+    document.querySelector(".data-start").addEventListener("click", function () {
+
+    if (myDropzone.getQueuedFiles().length > 0) {
+
+        myDropzone.processQueue();
+    } else {
+        alert("Please select a ZIP file to upload.");
+    }
+    });
+
+
+    // Stop Upload
+    document.querySelector(".data-stop").addEventListener("click", function () {
+        myDropzone.removeAllFiles(true);
+    });
+
+}
+
+
+
+
+
+
+
 </script>
 @stop

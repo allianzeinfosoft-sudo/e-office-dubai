@@ -7,9 +7,9 @@ use DateTime;
 
 trait EmployeeTrait
 {
-    public function employeeBranch($branch_id)
+    public function employeeDepartment($department_id)
     {
-        return $employee_branch = Department::where('id',$branch_id)->pluck('department');
+        return Department::where('id',$department_id)->pluck('department');
 
     }
 }

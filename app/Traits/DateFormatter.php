@@ -33,19 +33,19 @@ trait DateFormatter
         }
     }
 
-    // public function getMonthNames($month_id)
-    // {
-    //     try{
+    public function getMonthNames($month_id)
+    {
+        try{
 
-    //         return DateTime::createFromFormat('!m', $month_id)->format('F');
+            return DateTime::createFromFormat('!m', $month_id)->format('F');
 
-    //     }catch (\Exception $e)
-    //     {
-    //         return null;
-    //     }
+        }catch (\Exception $e)
+        {
+            return null;
+        }
 
 
-    // }
+    }
 
 }
 
