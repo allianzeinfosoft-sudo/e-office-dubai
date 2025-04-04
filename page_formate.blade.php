@@ -24,6 +24,7 @@
                 <!-- Footer -->
                 <x-footer /> 
                 <!-- / Footer -->
+                 
                 <div class="content-backdrop fade"></div>
 
                 <!-- Overlay -->

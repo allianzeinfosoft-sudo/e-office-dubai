@@ -32,9 +32,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::middleware(['web'])->group(function () {
-    Route::get('/', function () {
-        return view('auth/login');
-    });
+    Route::get('/', function () { return view('auth/login');});
 
     Auth::routes();
 
@@ -48,7 +46,7 @@ Route::middleware(['web'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
 
-Route::middleware(['auth.session','web', 'auth'])->group(function () {
+Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');

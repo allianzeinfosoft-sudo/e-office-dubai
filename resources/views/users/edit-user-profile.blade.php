@@ -101,12 +101,12 @@
                                     <div class="col-md-4 mb-3">
                                         <label for="gender" class="form-label">Gender:</label>
                                         <div class="form-check form-check-inline mt-3">
-                                            <input class="form-check-input" type="radio" id="inlineRadio1" name="gender" value="male" {{ old('gender', isset($user) && $user->gender) == 'male' ? 'checked' : '' }} />
+                                            <input class="form-check-input" type="radio" id="inlineRadio1" name="gender" value="male" {{ old('gender', isset($user) && $user->gender == 'male' ? 'checked' : '') }} />
                                             <label class="form-check-label" for="inlineRadio1">Male</label>
                                         </div>
                       
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio"  id="inlineRadio2" name="gender" value="female" {{ old('gender', isset($user) &&  $user->gender) == 'female' ? 'checked' : '' }} />
+                                            <input class="form-check-input" type="radio"  id="inlineRadio2" name="gender" value="female" {{ old('gender', isset($user) &&  $user->gender == 'female' ? 'checked' : '') }} />
                                             <label class="form-check-label" for="inlineRadio2">Female</label>
                                         </div>
                                     </div>

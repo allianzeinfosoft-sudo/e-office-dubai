@@ -16,7 +16,6 @@ class Kernel extends HttpKernel
     protected $middlewareDisabled = false;
 
     protected $middleware = [
-        // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
@@ -24,7 +23,6 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \Illuminate\Session\Middleware\StartSession::class,
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
     ];
 
     /**
@@ -40,7 +38,6 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            //\App\Http\Middleware\RedirectIfAuthenticated::class,
         ],
 
         'api' => [
@@ -73,7 +70,6 @@ class Kernel extends HttpKernel
 
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.session' => \Illuminate\Session\Middleware\StartSession::class,
         'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
 

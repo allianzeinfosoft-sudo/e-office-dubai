@@ -417,18 +417,8 @@
                   <li>
                     <div class="dropdown-divider"></div>
                   </li>
-                  <li>
-                    <a class="dropdown-item" href="pages-profile-user.html">
-                      <i class="ti ti-user-check me-2 ti-sm"></i>
-                      <span class="align-middle">My Profile </span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="{{ route('users.profile-edit', Auth::user()->id); }}">
-                      <i class="ti ti-edit me-2 ti-sm"></i>
-                      <span class="align-middle">Edit Profile</span>
-                    </a>
-                  </li>
+                  <li><a class="dropdown-item" href="{{ route('user.profile', Auth::user()->id); }}"><i class="ti ti-user-check me-2 ti-sm"></i><span class="align-middle">My Profile </span></a></li>
+                  <li><a class="dropdown-item" href="{{ route('users.profile-edit', Auth::user()->id); }}"> <i class="ti ti-edit me-2 ti-sm"></i> <span class="align-middle">Edit Profile</span></a></li>
                   <li>
                     <a class="dropdown-item" href="pages-account-settings-account.html">
                       <i class="ti ti-settings me-2 ti-sm"></i>
