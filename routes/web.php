@@ -153,7 +153,6 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     /*salary*/
     Route::get('/salarySlip/view',[SalaryController::class, 'view_salary_slip'])->name('view.salary.slip');
     Route::get('/fetch/salarySlip',[SalaryController::class,'fetch_salary_slip'])->name('fetch.salarySlip');
-    Route::post('/salary-slip/upload',[SalaryController::class, 'salary_slip_upload'])->name('salary_slip.upload');
-    Route::post('/upload-salary-slip', [SalaryController::class, 'upload']);
+    Route::post('/salary/upload', [SalaryController::class, 'upload'])->name('upload.salary.file');
 });
 

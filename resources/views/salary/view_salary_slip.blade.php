@@ -136,48 +136,38 @@
                     <div class="col-12">
                         <div class="card mb-4">
                           <div class="card-body">
-                            <form action=" " method="post" class="dropzone needsclick" id="dropzone-salary">
+                            <form id="uploadForm" method="POST" class="form-control" enctype="multipart/form-data">
                                 @csrf
-                              <div class="dz-message needsclick">
-                                Drop salary slip here or click to upload
-                              </div>
-                              <div class="fallback">
-                                <input name="file" type="file" />
-                              </div>
+                                <div class="mb-3">
+                                    <label for="formFile" class="form-label">Upload Salary File</label>
+                                    <input class="form-control" type="file" id="formFile" name="file[]" webkitdirectory directory multiple required/>
+                                  </div>
+
                               <div class="col-sm-12">
-                                <button type="button" class="btn btn-success data-start me-sm-3 me-1">Start</button>
-                                <button type="button" class="btn btn-danger data-stop me-sm-3 me-1">Stop</button>
+                                <button type="button" id="startUpload" class="btn btn-success">Start</button>
+                                <button type="button" id="stopUpload" class="btn btn-danger">Stop</button>
                               </div>
                             </form>
                           </div>
                         </div>
                             <!-- Bordered Table -->
-                            <div class="card">
-                                <h5 class="card-header">Bordered Table</h5>
+                            <div class="card mt-4">
+                                <h5 class="card-header">Upload Status</h5>
                                 <div class="card-body">
-                                <div class="table-responsive text-nowrap">
-                                    <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Sl No</th>
-                                            <th>Employee ID</th>
-                                            <th>Upload Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                        <td>1</td>
-                                        <td>
-                                            <i class="ti ti-brand-angular ti-lg text-danger me-3"></i> <strong>Angular Project</strong>
-                                        </td>
-                                        <td><span class="badge bg-label-primary me-1">Active</span></td>
-                                        </tr>
-
-
-
-                                    </tbody>
-                                    </table>
-                                </div>
+                                    <div class="table-responsive text-nowrap">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sl No</th>
+                                                    <th>Employee ID</th>
+                                                    <th>Upload Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="statusTable">
+                                                <!-- Status updates will be inserted here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                             <!--/ Bordered Table -->
@@ -314,70 +304,54 @@ $(function () {
 
 })();
 
-// upload zip file
-const previewTemplate = `<div class="dz-preview dz-file-preview">
-<div class="dz-details">
-  <div class="dz-thumbnail">
-    <img data-dz-thumbnail>
-    <span class="dz-nopreview">No preview</span>
-    <div class="dz-success-mark"></div>
-    <div class="dz-error-mark"></div>
-    <div class="dz-error-message"><span data-dz-errormessage></span></div>
-    <div class="progress">
-      <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-dz-uploadprogress></div>
-    </div>
-  </div>
-  <div class="dz-filename" data-dz-name></div>
-  <div class="dz-size" data-dz-size></div>
-</div>
-</div>`;
+/* upload zip file */
 
+$(document).ready(function () {
+    $("#startUpload").click(function (e) {
+        e.preventDefault();
 
-Dropzone.autoDiscover = false;
+        let files = $("#formFile")[0].files;
 
-const dropzoneBasic = document.querySelector('#dropzone-salary');
-if (dropzoneBasic) {
-let myDropzone = new Dropzone(dropzoneBasic, {
-        previewTemplate: previewTemplate,
-        parallelUploads: 1,
-        url: "/upload-salary-slip",  // Laravel route
-        paramName: "file",
-        maxFiles: 1, // Allow only one file
-        maxFilesize: 50, // Max file size in MB
-        acceptedFiles: ".zip",
-        addRemoveLinks: true,
-        autoProcessQueue: false, // Prevent auto-upload
-        headers: {
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+        if (!files.length) {
+            alert("Please select a folder with files.");
+            return;
         }
+
+        $("#statusTable").html(""); // Clear previous status
+
+        Array.from(files).forEach((file, index) => {
+            let formData = new FormData();
+            formData.append("file", file);
+            formData.append("_token", "{{ csrf_token() }}");
+
+            let newRow = `<tr id="row-${index}">
+                <td>${index + 1}</td>
+                <td>${file.name}</td>
+                <td class="status">Uploading...</td>
+            </tr>`;
+            $("#statusTable").append(newRow);
+
+            $.ajax({
+                url: "{{ route('upload.salary.file') }}",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    let statusCell = $(`#row-${index} .status`);
+                    if (response.status === "success") {
+                        statusCell.html(`<span class="text-success">${response.message}</span>`);
+                    } else {
+                        statusCell.html(`<span class="text-danger">${response.message}</span>`);
+                    }
+                },
+                error: function () {
+                    $(`#row-${index} .status`).html(`<span class="text-danger">Upload error</span>`);
+                }
+            });
+        });
     });
-
-
-
-    // Start Upload on Button Click
-    document.querySelector(".data-start").addEventListener("click", function () {
-
-    if (myDropzone.getQueuedFiles().length > 0) {
-
-        myDropzone.processQueue();
-    } else {
-        alert("Please select a ZIP file to upload.");
-    }
-    });
-
-
-    // Stop Upload
-    document.querySelector(".data-stop").addEventListener("click", function () {
-        myDropzone.removeAllFiles(true);
-    });
-
-}
-
-
-
-
-
-
+});
 
 </script>
 @stop

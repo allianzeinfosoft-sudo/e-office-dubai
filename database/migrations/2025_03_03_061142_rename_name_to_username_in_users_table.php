@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //$table->renameColumn('name', 'username');
-            $table->string('username')->after('name');
+            $table->string('username');
         });
     }
 
