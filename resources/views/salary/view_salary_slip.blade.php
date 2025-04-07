@@ -236,7 +236,7 @@ $(function () {
             title: 'Download Slip',
             render: function (data, type, row) {
                 if (data) {
-                    return `<a href="/storage/salary_slips/${data}" target="_blank" class="btn btn-sm btn-primary">View</a>`;
+                    return `<a href="/storage/uploads/${data}" target="_blank" class="btn btn-sm btn-primary">View</a>`;
                 }
                 return "N/A";
             }
