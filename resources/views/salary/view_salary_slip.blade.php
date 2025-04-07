@@ -145,7 +145,7 @@
 
                               <div class="col-sm-12">
                                 <button type="button" id="startUpload" class="btn btn-success">Start</button>
-                                <button type="button" id="stopUpload" class="btn btn-danger">Stop</button>
+                                <button type="button" id="CloseUpload" class="btn btn-danger">Close</button>
                               </div>
                             </form>
                           </div>
@@ -351,6 +351,11 @@ $(document).ready(function () {
             });
         });
     });
+
+    $("#CloseUpload").click(function () {
+        location.reload();
+    });
+
 });
 
 </script>
