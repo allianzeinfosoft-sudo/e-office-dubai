@@ -8,6 +8,8 @@ use App\Traits\DateFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Traits\EmployeeTrait;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use ZipArchive;
 
 class SalaryController extends Controller
@@ -42,26 +44,96 @@ class SalaryController extends Controller
 
         $response = response()->json(['data' => $salary_slip]);
         $json_data = json_decode($response->getContent(), true)['data'];
+
         return json_encode(['data' => $json_data]);
     }
 
 
     public function upload(Request $request)
     {
-        $request->validate([
-            'file' => 'required|mimes:zip|max:51200', // 50MB limit
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:pdf|max:10240', // Allow PDF up to 10MB
         ]);
 
-        if ($request->hasFile('file')) {
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()->first()]);
+        }
+        else
+        {
 
-            $file = $request->file('file');
-            $fileName = time() . '-' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('uploads', $fileName, 'public');
 
-            return response()->json(['message' => 'File uploaded successfully', 'path' => $filePath]);
+            if ($request->hasFile('file'))
+                {
+                    $file = $request->file('file');
+                    $userId = $file->getClientOriginalName();
+                    $userId = explode('.', $userId);
+                    $userId = $userId[0] ?? null;
+
+                    if (!is_numeric($userId)) {
+                        return response()->json(['status' => 'error', 'message' => 'No user exist belongs to this file']);
+                    }
+                    else
+                    {
+                        $userCheck = User::find($userId);
+                        if($userCheck)
+                        {
+                            $fileName = time() . '_' . $file->getClientOriginalName();
+                            $file->storeAs('uploads', $fileName, 'public'); // Save in storage/app/public/uploads
+
+                            // Set current year and month
+                            $year = date('Y');
+                            $month = date('n');
+
+                            $existing = Salary::where('user_id', $userId)
+                                        ->where('salary_slip_year', $year)
+                                        ->where('salary_slip_month', $month)
+                                        ->first();
+
+                            if ($existing) {
+                                // Delete the old file
+                                if (Storage::disk('public')->exists('uploads/' . $existing->salary_slip)) {
+                                    Storage::disk('public')->delete('uploads/' . $existing->salary_slip);
+                                }
+
+                                // Update the record
+                                $existing->update([
+                                    'salary_slip' => $fileName,
+                                ]);
+                            } else {
+                                // Create a new record
+                                Salary::create([
+                                    'user_id' => $userId,
+                                    'salary_slip' => $fileName,
+                                    'salary_slip_year' => $year,
+                                    'salary_slip_month' => $month,
+                                ]);
+
+                                $file->storeAs('uploads', $fileName, 'public');
+                            }
+
+                            return response()->json([
+                                'status' => 'success',
+                                'message' => $existing ? 'File updated successfully!' : 'File uploaded successfully!',
+                                'filename' => $fileName
+                            ]);
+                        }else{
+                            return response()->json(['
+                            status' => 'error',
+                            'message' => 'User does not exist belongs to this file']);
+                        }
+
+
+                    }
+
+                }else{
+                    return response()->json(['
+                            status' => 'error',
+                            'message' => 'No file uploaded']);
+                }
+
         }
 
-        return response()->json(['error' => 'File upload failed'], 400);
+
     }
 
 }
