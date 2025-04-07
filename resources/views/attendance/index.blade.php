@@ -69,7 +69,37 @@
 
                         <div class="text-center d-grid gap-2 col-lg-12">
                             @if(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-                                <button type="button" id="mark-in-btn" class="btn rounded-pill btn-success waves-effect waves-light">
+
+                                @php
+                                  $loginLimitTime = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
+                                  $now = \Carbon\Carbon::now();
+                                  $isLate = $now->gt($loginLimitTime);
+
+                                  $todayName = $now->format('l'); // E.g., "Monday"
+
+                                  
+                                  $fixedWeekOffs = ['Saturday', 'Sunday'];
+
+                                  
+                                  $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
+                                  $customWeekOffs = array_map('trim', explode(',', $employeeWeekOffs));
+
+                                  $allWeekOffs = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
+                                  $isWeekOffToday = in_array($todayName, $allWeekOffs);
+                                @endphp
+
+                                @if ($isLate)
+                                  <div class="alert alert-warning" id="last-punch-time" role="alert">
+                                    <strong>Mark-in time expired for today.</strong>
+                                  </div>
+                                @elseif ($isWeekOffToday)
+                                    <div class="alert alert-warning" id="last-punch-time" role="alert">
+                                      <strong>Today ({{ $todayName }}) is your week off.</strong>
+                                    </div>
+                                @endif
+                                
+
+                                <button type="button" id="mark-in-btn" class="btn rounded-pill btn-success waves-effect waves-light {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}>
                                     <i class="ti ti-login ti-sm"></i> Mark-in
                                 </button>
                             @else
