@@ -25,6 +25,6 @@ class ProjectForm extends Component
 
     public function render()
     {
-        return view('components.project-form');
+        return view('components.forms.project-form');
     }
 }

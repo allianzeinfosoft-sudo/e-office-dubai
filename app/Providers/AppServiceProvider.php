@@ -2,22 +2,24 @@
 
 namespace App\Providers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
-    public function register(){
-        $this->app->bind('request', function ($app) {
-            return Request::capture();
-        });
+    public function register()
+    {
+        // DO NOT bind request manually!
     }
+
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void{
+    public function boot(): void
+    {
+        // Leave empty or load custom helpers if needed
         // require_once app_path('CustomHelper.php');
     }
 }

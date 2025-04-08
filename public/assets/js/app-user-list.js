@@ -129,15 +129,16 @@ $(function () {
           targets: 6,
           render: function (data, type, full, meta) {
             var $status = full['status'];
-
+            var status = statusObj[$status];
+        
+            if (!status) {
+                return '<span class="badge bg-secondary text-capitalized">Unknown</span>';
+            }
+        
             return (
-              '<span class="badge ' +
-              statusObj[$status].class +
-              '" text-capitalized>' +
-              statusObj[$status].title +
-              '</span>'
+                '<span class="badge ' + status.class + ' text-capitalized">' + status.title + '</span>'
             );
-          }
+        }
         },
         {
           // Actions
@@ -225,7 +226,7 @@ $(function () {
         element.addEventListener("click", function () {
             let userId = this.getAttribute("data-edit-user-id"); // Corrected
             // Redirect to the edit page
-            window.location.href = `/user-edit/${userId}`;
+            window.location.href = `/users/${userId}/edit`;
         });
     });
 }

@@ -71,7 +71,7 @@ class LeaveController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(LeaveRequest $request)
+    public function store(Request $request)
     {
         $user_id = Auth::user()->id;
         $leaveData = [

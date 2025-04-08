@@ -24,6 +24,49 @@ class AttendanceController extends Controller{
      */
     public function index() {
         $data['meta_title']     = 'Attendance';
+
+        $user = Auth::user();
+        $today = now()->format('Y-m-d');
+        $currentMonth = now()->format('Y-m');
+        $daysInMonth = now()->daysInMonth;
+        $weekOffDays = [0, 6]; // Sunday = 0, Saturday = 6
+
+        // Fetch all holidays in the current month
+        $holidays = DB::table('holidays')
+        ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])
+        ->pluck('date')
+        ->toArray();
+
+        // Fetch all attendance records for the user in this month
+        $attendanceDays = Attendance::where('username', $user->username)
+        ->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])
+        ->pluck('signin_date')
+        ->toArray();
+
+        for ($day = 1; $day < now()->day; $day++) {
+            $date = "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
+            $dayOfWeek = date('w', strtotime($date));
+    
+            $isWeekOff = in_array($dayOfWeek, $weekOffDays);
+            $isHoliday = in_array($date, $holidays);
+            $hasAttendance = in_array($date, $attendanceDays);
+    
+            if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
+                // Check if leave exists that covers this date
+                $leaveExists = DB::table('leaves')
+                    ->where('user_id', $user->id)
+                    ->whereDate('leave_from', '<=', $date)
+                    ->whereDate('leave_to', '>=', $date)
+                    ->exists();
+    
+                if (!$leaveExists) {
+                    // User missed work on a working day without leave
+                    return redirect()->route('leave.apply', ['date' => $date])
+                        ->with('error', "You missed work on $date without leave. Please apply for leave.");
+                }
+            }
+        }
+        
         $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
@@ -169,6 +212,7 @@ class AttendanceController extends Controller{
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
                  ->on('work_reports.username', '=', 'attendances.username');
         })
+
         ->select(
             'attendances.id',
             'attendances.emp_id',

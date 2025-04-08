@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -328,16 +330,134 @@ class UserController extends Controller
         return json_encode(['data' => $json_data]);
     }
 
-    public function userProfile($userid)
-    {
+    public function userProfile($userid){
         $user = User::with('employee')->find($userid);
         return view('users.profile', compact('user'));
     }
 
-    public function checkEmail(Request $request)
-    {
-
+    public function checkEmail(Request $request){
         $exists = User::where('email', $request->email)->exists();
         return response()->json($exists ? false : true);
     }
+
+    public function profileEdit($userId){
+        $lastEmployee = User::latest('id')->first();
+        $nextId = $lastEmployee ? ((int) filter_var($lastEmployee->id, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
+        $data['nextEmployeeId'] = 'AIS' . $nextId;
+
+        $data['meta_title'] = 'Edit Update Profile';
+        $data['loginUser'] = User::where('id', $userId)->get()->first();
+        $data['user'] = Employee::where('user_id', $userId)->get()->first();
+        $data['employees'] = Employee::all();
+        $data['departments'] = Department::all();
+        $data['work_shifts'] = Workshift::all();
+        $data['roles'] = Role::all();
+        $data['user_statuses'] = UserStatus::all();
+        $data['designations'] = [];
+
+        return view('users.edit-user-profile', $data);
+
+    }
+
+
+public function storeOrUpdate(Request $request, $id = null)
+{
+    try {
+
+        $request->merge(array_map(function ($value) {
+            return $value === '' ? null : $value;
+        }, $request->all()));
+
+        
+        $validatedData = $request->validate([
+            'employeeID' => [
+                'required',
+                Rule::unique('employees', 'employeeID')->ignore($id)
+            ],
+            'full_name' => 'required',
+            'phonenumber' => [
+                'required',
+                Rule::unique('employees', 'phonenumber')->ignore($id)
+            ],
+            'mobile_number' => [
+                'nullable',
+                Rule::unique('employees', 'mobile_number')->ignore($id)
+            ],
+            'landline' => 'nullable',
+            'personal_email' => [
+                'nullable',
+                Rule::unique('employees', 'personal_email')->ignore($id)
+            ],
+            'aadhaar' => [
+                'nullable',
+                Rule::unique('employees', 'aadhaar')->ignore($id)
+            ],
+            'esi_no' => [
+                'nullable',
+                Rule::unique('employees', 'esi_no')->ignore($id),
+            ],
+            'date_of_birth' => 'nullable|date',
+            'join_date' => 'nullable|date',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        
+
+        $profileImagePath = null;
+
+        if ($request->hasFile('profile_image')) {
+            $file = $request->file('profile_image');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $profileImagePath = $file->storeAs('profile_pics', $filename, 'public');
+        }
+
+        $employee = Employee::updateOrCreate(
+            ['id' => $id],
+            [
+                'user_id' => Auth::user()->id,
+                'employeeID' => $request->employeeID,
+                'full_name' => $request->full_name,
+                'phonenumber' => $request->phonenumber,
+                'reporting_to' => $request->reporting_to,
+                'personal_email' => $request->personal_email,
+                'gender' => $request->gender,
+                'blood_group' => $request->blood_group,
+                'qualification' => $request->qualification,
+                'esi_no' => !empty($request->esi_no) ? $request->esi_no : null,
+                'aadhaar' => $request->aadhaar,
+                'pf_no' => $request->pf_no,
+                'electoral_id' => $request->electoral_id,
+                'pan' => $request->pan,
+                'date_of_birth' => $request->date_of_birth,
+                'group' => $request->group,
+                'address' => $request->address,
+                'mobile_number' => $request->mobile_number,
+                'mobile_relationship' => $request->mobile_relationship,
+                'landline' => $request->landline,
+                'landline_relationship' => $request->landline_relationship,
+                'department_id' => $request->department_id,
+                'designation_id' => $request->designation_id,
+                'join_date' => $request->join_date,
+                'shift_id' => $request->shift_id,
+                'role' => $request->role,
+                'status' => $request->status,
+                'login_limited_time' => $request->login_limited_time,
+                'appointment_status' => $request->appointment_status,
+                'team_lead' => $request->team_lead,
+                'bank_name' => $request->bank_name,
+                'bank_branch' => $request->bank_branch,
+                'beneficiary_name' => $request->beneficiary_name,
+                'account_number' => $request->account_number,
+                'profile_image' => $profileImagePath,
+            ]
+        );
+
+        $message = $employee->wasRecentlyCreated ? 'Employee created successfully!' : 'Employee updated successfully!';
+        return redirect()->back()->with('success', $message);
+
+    } catch (ValidationException $e) {
+        return redirect()->back()->withErrors($e->errors())->withInput();
+    }
+}
+
 }

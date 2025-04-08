@@ -87,6 +87,15 @@ class WorksController extends Controller
 
     public function temporaryStatus(){
         $data['meta_title'] = 'Temporary Status';
+
+        $attendance = Attendance::where('emp_id', Auth::user()->id)
+        ->where('signin_date', now()->format('Y-m-d'))
+        ->first();
+
+        if (!$attendance) {
+            return redirect()->back()->with('error', 'You did not mark attendance today.');
+        }
+        
         $missingReport = Attendance::leftJoin('work_reports', function ($join) {
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
                  ->on('work_reports.username', '=', 'attendances.username');

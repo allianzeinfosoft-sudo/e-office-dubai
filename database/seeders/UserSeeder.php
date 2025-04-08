@@ -15,14 +15,19 @@ class UserSeeder extends Seeder
     {
          // create users status
          $statuses = [
-            ['status_name' => 'New User', 'created_at' => now(), 'updated_at' => now()],
-            ['status_name' => 'Active', 'created_at' => now(), 'updated_at' => now()],
-            ['status_name' => 'Inactive', 'created_at' => now(), 'updated_at' => now()],
-            ['status_name' => 'Resigned', 'created_at' => now(), 'updated_at' => now()],
-            ['status_name' => 'Admin', 'created_at' => now(), 'updated_at' => now()],
+            ['status_name' => 'New User'],
+            ['status_name' => 'Active'],
+            ['status_name' => 'Inactive'],
+            ['status_name' => 'Resigned'],
+            ['status_name' => 'Admin'],
         ];
-        UserStatus::insert($statuses);
-
+        
+        foreach ($statuses as $status) {
+            UserStatus::firstOrCreate(
+                ['status_name' => $status['status_name']],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+        }
 
     }
 }

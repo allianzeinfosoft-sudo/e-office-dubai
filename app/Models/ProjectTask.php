@@ -10,11 +10,16 @@ class ProjectTask extends Model{
     protected $fillable = [
         'project_id',
         'task_name',
-        'pr_task_id',
-        'pr_sub_task_id'
+        'reporting_to',
+        'members'
     ];
 
     public function project(){
-        return $this->belongsTo(Project::class, 'project_id'); // Ensure 'project_id' exists in 'project_tasks' table
+        return $this->belongsTo(Project::class, 'project_id'); 
+    }
+
+
+    public function employee(){
+        return $this->belongsTo(Employee::class, 'reporting_to', 'id'); 
     }
 }

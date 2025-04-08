@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@mail.com'], // Search criteria
             [
                 'username' => 'administrator',
-                'role' => 'admin',
+                'role' => 'Developer',
                 'password' => Hash::make('password') // Ensures password is always hashed
             ]
         );
@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
         // Assign role to a user
         $admin = User::where('email', 'admin@mail.com')->first();
         if ($admin) {
-            $admin->assignRole('admin');
+            $admin->assignRole('Developer');
         }
     }
 }

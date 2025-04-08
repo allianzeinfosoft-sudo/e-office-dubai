@@ -15,6 +15,7 @@ use App\Http\Controllers\WorkReportController;
 use App\Http\Controllers\WorksController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProductivityTargetController;
 use App\Http\Controllers\SalaryController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
@@ -31,25 +32,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::middleware(['web'])->group(function () {
-    Route::get('/', function () {
-        return view('auth/login');
-    });
+    Route::get('/', function () { return view('auth/login');});
+
     Auth::routes();
 
     Route::post('/logout', function () {
-
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
         return redirect('/');
-         })->name('logout');
+    })->name('logout');
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 });
 
-
-Route::middleware(['auth.session','web', 'auth'])->group(function () {
-
+Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
@@ -73,11 +70,13 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     /* users */
     Route::resource('users', UserController::class);
     Route::get('/user-list',[UserController::class, 'getUsers']);
-    Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
-    Route::get('/user-edit/{id}', [UserController::class, 'edit'])->name('user.edit');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
     Route::get('/settings/userstastus',[SettingsController::class, 'list_user_status'])->name('userstatus');
     Route::post('/check-email', [UserController::class, 'checkEmail']);
+    Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::get('/users/{userId}/profile-edit', [UserController::class, 'profileEdit'])->name('users.profile-edit');
+    Route::post('/users/store-or-update/{id?}', [UserController::class, 'storeOrUpdate'])->name('users.storeOrUpdate');
 
     /* department */
     Route::resource('departments',DepartmentController::class);
@@ -129,6 +128,13 @@ Route::middleware(['auth.session','web', 'auth'])->group(function () {
     Route::post('/tasks-project/{projectTask}/update', [ProjectTaskController::class, 'update'])->name('tasks-project.update');
     Route::delete('/tasks-project/{projectTask}/destroy', [ProjectTaskController::class, 'destroy'])->name('tasks-project.destroy');
     Route::get('/tasks-project/{project_id}/get-tasks-by-project', [ProjectTaskController::class, 'getTasksByProject'])->name('tasks-project.get-tasks-by-project');
+    Route::get('/tasks-project/{employee_id}/get-members', [ProjectTaskController::class, 'getMembers'])->name('tasks-project.get-members');
+
+    /* productivity Target */
+    Route::get('/productivity-target', [ProductivityTargetController::class, 'index'])->name('productivity-target.index');
+    Route::post('/productivity-target/store', [ProductivityTargetController::class, 'store'])->name('productivity-target.store');
+    Route::get('/productivity-target/{ProductivityTarget}/edit', [ProductivityTargetController::class, 'edit'])->name('productivity-target.edit');
+    
 
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');

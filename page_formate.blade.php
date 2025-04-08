@@ -24,7 +24,14 @@
                 <!-- Footer -->
                 <x-footer /> 
                 <!-- / Footer -->
+                 
                 <div class="content-backdrop fade"></div>
+
+                <!-- Overlay -->
+                <div class="layout-overlay layout-menu-toggle"></div>
+
+                <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+                <div class="drag-target"></div>
             </div>
         </div>
     </div>
@@ -32,10 +39,10 @@
 @stop
 
 
-@section('js')
+@push('js')
 <script>
     $(function(){
         
     });
 </script>
-@stop
+@endpush

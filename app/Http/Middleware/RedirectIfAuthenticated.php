@@ -17,10 +17,12 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        if (!session()->isStarted()) {
-            session()->start();
-        }
+        logger('Middleware: session started = ' . (session()->isStarted() ? 'yes' : 'no'));
 
+        if (!session()->has('_token')) {
+            logger('Session token not present');
+        }
+        
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
