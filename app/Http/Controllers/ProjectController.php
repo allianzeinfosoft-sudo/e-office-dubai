@@ -27,7 +27,7 @@ class ProjectController extends Controller
                         'id' => $project->id,
                         'project_name' => $project->project_name,
                         'department_name' => $project->department->department, 
-                        'user_name' => $project->user->username,
+                        'user_name' => $project->user->username ?? '',
                         'start_date' => $project->start_date,
                         'end_date' => $project->end_date,
                     ];

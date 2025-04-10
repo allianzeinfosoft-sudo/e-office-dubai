@@ -61,7 +61,7 @@ class AttendanceController extends Controller{
     
                 if (!$leaveExists) {
                     // User missed work on a working day without leave
-                    return redirect()->route('leave.apply', ['date' => $date])
+                    return redirect()->route('leaves.create', ['date' => $date])
                         ->with('error', "You missed work on $date without leave. Please apply for leave.");
                 }
             }

@@ -302,6 +302,30 @@ return [
         ]
     ],
     [
+        'title' => 'Recruitments',
+        'icon' => 'ti ti-target',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['recruitments*'],
+        'submenu' => [
+            [
+                'title' => 'RRF',
+                'route' =>  '/recruitments',
+            ],
+            [
+                'title' => 'Appove RRF',
+                'route' =>  '#',
+            ],
+            [
+                'title' => 'Applications',
+                'route' =>  '#',
+            ],
+            [
+                'title' => 'Draff',
+                'route' =>  '#',
+            ],
+        ]
+    ],
+    [
         'title' => 'Jobs',
         'icon' => 'ti ti-briefcase',
         'route' => 'javascript:void(0);',

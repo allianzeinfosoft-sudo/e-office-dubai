@@ -1,4 +1,4 @@
-<form action="{{ route('recruitments.store-project') }}" method="post" id="formData">
+<form action="{{ route('recruitments.store-position') }}" method="post" id="formData">
     @csrf
     <div class="row">
         <div class="col mb-3">
@@ -14,8 +14,8 @@
         </div>
         <div class="clearfix"></div>
         <div class="col mb-3">
-            <label for="project_name" class="form-label">Project</label>
-            <input type="text" id="project_name" name="project_name" class="form-control" placeholder="Name">
+            <label for="designation" class="form-label">Position</label>
+            <input type="text" id="designation" name="designation" class="form-control" placeholder="Name">
         </div>
     </div>
 </form>
