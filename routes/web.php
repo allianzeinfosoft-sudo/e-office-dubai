@@ -130,38 +130,38 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/tasks-project/{projectTask}/destroy', [ProjectTaskController::class, 'destroy'])->name('tasks-project.destroy');
     Route::get('/tasks-project/{project_id}/get-tasks-by-project', [ProjectTaskController::class, 'getTasksByProject'])->name('tasks-project.get-tasks-by-project');
     Route::get('/tasks-project/{employee_id}/get-members', [ProjectTaskController::class, 'getMembers'])->name('tasks-project.get-members');
-
+    
     /* productivity Target */
     Route::get('/productivity-target', [ProductivityTargetController::class, 'index'])->name('productivity-target.index');
     Route::post('/productivity-target/store', [ProductivityTargetController::class, 'store'])->name('productivity-target.store');
     Route::get('/productivity-target/{ProductivityTarget}/edit', [ProductivityTargetController::class, 'edit'])->name('productivity-target.edit');
     
-
+    
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
     Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
-
+    
     /* Works Module */
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
     Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
     Route::get('works/temporary-status',[WorksController::class, 'temporaryStatus'])->name('works.temporary-status');
     Route::get('works/entry-open',[WorksController::class, 'entryOpen'])->name('works.entry-open');
-
+    
     /* Holiday */
     Route::resource('holidays',HolidayController::class);
     Route::get('/holiday/list', [HolidayController::class, 'getHolidayList'])->name('holiday.list');
     Route::delete('/holiday-delete/{holidayId}', [HolidayController::class, 'destroy'])->name('holiday.destroy');
-
+    
     /* Notification */
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
-
+    
     /*salary*/
     Route::get('/salarySlip/view',[SalaryController::class, 'view_salary_slip'])->name('view.salary.slip');
     Route::get('/fetch/salarySlip',[SalaryController::class,'fetch_salary_slip'])->name('fetch.salarySlip');
     Route::post('/salary/upload', [SalaryController::class, 'upload'])->name('upload.salary.file');
-
+    
     /* Recruitments */
     Route::get('/recruitments', [RecruitmentController::class, 'index'])->name('recruitments.index');
     Route::post('/recruitments/load-modal-form', [RecruitmentController::class, 'loadModalFrom'])->name('recruitments.load-modal-form');
@@ -172,6 +172,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/recruitments/store-project', [RecruitmentController::class, 'storeProject'])->name('recruitments.store-project');
     Route::post('/recruitments/store-skills', [RecruitmentController::class, 'storeSkills'])->name('recruitments.store-skills');
     Route::post('/recruitments/store-keywords', [RecruitmentController::class, 'storeKeywords'])->name('recruitments.store-keywords');
-
+    Route::post('/recruitments/store', [RecruitmentController::class, 'store'])->name('recruitments.store');
+    Route::get('/recruitments/{recruitment}/edit', [RecruitmentController::class, 'edit'])->name('recruitments.edit');
+    Route::delete('/recruitments/{recruitment}/destroy', [RecruitmentController::class, 'destroy'])->name('recruitments.destroy');
+    
 });
 

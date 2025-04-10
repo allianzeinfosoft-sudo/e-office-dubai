@@ -51,7 +51,7 @@
                         <div class=" float-end mt-15 mr-20">
                         </div>
 
-                        <table class="datatables-basic datatables-projects table border-top table-stripedc table-hover table-striped">
+                        <table class="datatables-basic datatables-recruitments table border-top table-stripedc table-hover table-striped">
                             <thead>
                                 <tr>
                                     <th>No.</th>
@@ -106,34 +106,33 @@
 
     $(function() {
         
-        var projectTable = $('.datatables-projects'),
+        var recruitmentTable = $('.datatables-recruitments'),
             select2 = $('.select2');
 
-        if (projectTable.length) {            
-            projectTable.DataTable({
+        if (recruitmentTable.length) {            
+            recruitmentTable.DataTable({
                 ajax: {
                     type: "GET",
-                    url: "{{ route('projects.index') }}", // Fixed syntax
+                    url: "{{ route('recruitments.index') }}", // Fixed syntax
                     dataType: "json", 
                     dataSrc: "data"  
                 },
                 columns: [
-                    { data: 'project_name', title: 'No.' },
-                    { data: 'department_name', title: 'Date' },
-                    { data: 'user_name', title: 'Job Title' },
-                    { data: 'user_name', title: 'Designation' },
-                    { data: 'start_date', title: 'Project Name' },
-                    { data: 'end_date', title: 'Priority' },
-                    { data: 'end_date', title: 'Interviewer' },
-                    { data: 'end_date', title: 'Status' },
+                    { data: 'row', title: 'No.' },
+                    { data: 'rrfDate', title: 'Date' },
+                    { data: 'jobTitle', title: 'Job Title' },
+                    { data: 'designation', title: 'Designation' },
+                    { data: 'projectName', title: 'Project Name' },
+                    { data: 'priority', title: 'Priority' },
+                    { data: 'interviewer', title: 'Interviewer' },
+                    { data: 'status', title: 'Status' },
                     { 
                         data: null, 
                         title: 'Actions',
                         render: function (data, type, row) {
-                            const editUrl = "{{ route('project.edit', ':id') }}".replace(':id', row.id);
                             return `
-                                <a href="javascript:void(0)" onclick="editProject(${row.id})" class="btn btn-sm btn-icon btn-primary edit-project"><i class="ti ti-edit"></i></a>
-                                <button type="button" class="btn btn-sm  btn-icon btn-danger delete-project" onclick="deleteProject(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
+                                <a href="javascript:void(0)" onclick="openOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary edit-project"><i class="ti ti-edit"></i></a>
+                                <button type="button" class="btn btn-sm  btn-icon btn-danger delete-project" onclick="deleteRecruitment(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
                             `;
                         }
                     }
@@ -148,19 +147,22 @@
             dateFormat: 'd-m-Y'
         });
 
+      
     });
 
-    function deleteProject(projectId) {
-        if (confirm('Are you sure you want to delete this project?')) {
+    
+
+    function deleteRecruitment(recruitmentId) {
+        if (confirm('Are you sure you want to delete this recruitment?')) {
             $.ajax({
-                url: "{{ route('projects.destroy', ':id') }}".replace(':id', projectId), // ✅ Correct route name
+                url: "{{ route('recruitments.destroy', ':recruitment') }}".replace(':recruitment', recruitmentId), // ✅ Correct route name
                 type: "DELETE",
                 data: {
                     _token: "{{ csrf_token() }}"
                 },
                 success: function(response) {
-                    alert(response.message);
-                    $('.datatables-projects').DataTable().ajax.reload(); // ✅ Ensure correct table ID
+                    toastr["error"](response.message);
+                    $('.datatables-recruitments').DataTable().ajax.reload(); // ✅ Ensure correct table ID
                 },
                 error: function(xhr) {
                     alert("Error deleting project. Please try again.");
@@ -170,9 +172,76 @@
     }
 
     function openOffcanvas(targetId = null) {
-        var offcanvasElement = $('#rrf_offcanvas');
-        var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
-        offcanvas.show();
+        const $form = $('#recuritment-form');
+
+        if ($form.length) {
+            $form[0].reset(); // Reset the form
+            $('#target_id').val(''); // Clear the hidden ID field
+        }
+
+        if (targetId) {
+            const url = "{{ route('recruitments.edit', ':recruitment') }}".replace(':recruitment', targetId);
+            $('#target_id').val(targetId);
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (data) {
+                    const fields = [
+                        'rrfDate', 'jobTitle', 'designation', 'projectId', 'priority',
+                        'interviewer', 'status', 'experience', 'skillRequired', 'remarks',
+                        'branchId', 'positionId', 'empId', 'departmentId', 'shiftId',
+                        'salaryRange', 'jobType', 'sittingArragement', 'minimumQualification',
+                        'schoolingMedium', 'graduation', 'ageGroup', 'location',
+                        'interviewPlace', 'referralIncentive', 'requireToAndFroCharge',
+                        'seekApproval', 'noOfPersons'
+                    ];
+
+                    fields.forEach(field => {
+                        const $el = $('#' + field);
+                        if ($el.length) {
+                            const value = data.recruitment?.[field] ?? null;
+                            $el.val(value);
+                            if ($el.is('select')) {
+                                $el.trigger('change');
+                            }
+                        }
+                    });
+
+                    // Handle job description (rich text editor)
+                    if ('jobDescription' in data.recruitment) {
+                        const jobDesc = data.recruitment.jobDescription || '';
+                        if (!quill) {
+                            quill = new Quill('#job-description', {
+                                theme: 'snow',
+                                placeholder: 'Type your reason here...',
+                                modules: {
+                                    toolbar: [
+                                        [{ 'header': [1, 2, false] }],
+                                        ['bold', 'italic', 'underline'],
+                                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                        ['link'],
+                                        ['clean']
+                                    ]
+                                }
+                            });
+                        }
+                        quill.root.innerHTML = jobDesc;
+                        $('#jobDescription').val(jobDesc); // sync hidden input
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to fetch recruitment data:', error);
+                    // Optional: show a user-friendly message
+                    alert('Failed to load recruitment data.');
+                }
+            });
+        }
+        const offcanvasElement = $('#rrf_offcanvas');
+        if (offcanvasElement.length) {
+            const offcanvas = new bootstrap.Offcanvas(offcanvasElement[0]);
+            offcanvas.show();
+        }
     }
 
     

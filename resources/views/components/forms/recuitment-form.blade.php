@@ -1,9 +1,5 @@
-<form action="{{ $action }}" method="{{ strtolower($method) === 'get' ? 'get' : 'post' }}" id="project-task-form" >
-    @csrf
-    @if(strtolower($method) !== 'post')
-        @method($method)
-    @endif
-
+<form action="{{ route('recruitments.store') }} " method="post" id="recuritment-form" >
+    @csrf 
     <input type="hidden" name="id" id="target_id">
 
     <div class="row">
@@ -52,6 +48,7 @@
                     <div class="form-group">
                         <label for="project_id">Job Description</label>
                         <div id="job-description"></div>
+                        <input type="hidden" name="jobDescription" id="jobDescription">
                     </div>
                 </div>
 
@@ -155,10 +152,10 @@
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
                         <div class="d-flex justify-content-between">
-                            <label for="porjectId">Project Name</label>
-                            <a class="text-danger" href="javascript:void(0);" onclick="openPopupModal('project-form', 'porjectId', 'Add Projects')"><i class="ti ti-plus"></i>New</a>
+                            <label for="projectId">Project Name</label>
+                            <a class="text-danger" href="javascript:void(0);" onclick="openPopupModal('project-form', 'projectId', 'Add Projects')"><i class="ti ti-plus"></i>New</a>
                         </div>
-                        <select class="form-control select2" name="porjectId" id="porjectId" data-placeholder="Select Project">
+                        <select class="form-control select2" name="projectId" id="projectId" data-placeholder="Select Project">
                             <option value=""></option>
                             @if($projects->isNotEmpty())
                                 @foreach($projects as $result)
@@ -171,8 +168,8 @@
 
                 <div class="col-sm-4 mb-3">
                     <div class="form-group">
-                        <label for="noOfPerson">No of Person </label>
-                        <select class="form-control select2" name="noOfPerson" id="noOfPerson" data-placeholder="Select No of Persons">
+                        <label for="noOfPersons">No of Person </label>
+                        <select class="form-control select2" name="noOfPersons" id="noOfPersons" data-placeholder="Select No of Persons">
                             <option value=""></option>
                             @foreach(config('optionsData.noOfPersons') as $key => $label)
                                 <option value="{{ $key }}"> {{ $label }} </option>
@@ -197,8 +194,8 @@
 
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
-                        <label for="salartyRage">Salary Range </label>
-                        <select class="form-control select2" name="salartyRage" id="salartyRage" data-placeholder="Select Salary Range">
+                        <label for="salaryRange">Salary Range </label>
+                        <select class="form-control select2" name="salaryRange" id="salaryRange" data-placeholder="Select Salary Range">
                             <option value=""></option>
                             @foreach(config('optionsData.salaryRange') as $key => $label)
                                 <option value="{{ $key }}"> {{ $label }} </option>
@@ -264,8 +261,8 @@
                 
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
-                        <label for="schoolinMedium">Schooling </label>
-                        <select class="form-control select2" name="schoolinMedium" id="schoolinMedium" data-placeholder="Select Schooling">
+                        <label for="schoolingMedium">Schooling </label>
+                        <select class="form-control select2" name="schoolingMedium" id="schoolingMedium" data-placeholder="Select Schooling">
                         <option value=""></option>
                             @foreach(config('optionsData.schoolingMedium') as $key => $label)
                                 <option value="{{ $key }}"> {{ $label }} </option>
@@ -341,8 +338,8 @@
 
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
-                        <label for="ReferralIncentive">Referral Incentive </label>
-                        <select class="form-control select2" name="ReferralIncentive" id="ReferralIncentive" data-placeholder="Select Referral Incentive">
+                        <label for="referralIncentive">Referral Incentive </label>
+                        <select class="form-control select2" name="referralIncentive" id="referralIncentive" data-placeholder="Select Referral Incentive">
                             <option value=""></option>
                             @foreach(config('optionsData.referralIncentive') as $key => $label)
                                 <option value="{{ $key }}"> {{ $label }} </option>
@@ -353,8 +350,8 @@
 
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
-                        <label for="requierToAndFroCharge">Require To & Fro Charge? </label>
-                        <select class="form-control select2" name="requierToAndFroCharge" id="requierToAndFroCharge" data-placeholder="Select Require To & Fro Charge">
+                        <label for="requireToAndFroCharge">Require To & Fro Charge? </label>
+                        <select class="form-control select2" name="requireToAndFroCharge" id="requireToAndFroCharge" data-placeholder="Select Require To & Fro Charge">
                         <option value=""></option>
                             @foreach(config('optionsData.requierToFroCharge') as $key => $label)
                                 <option value="{{ $key }}"> {{ $label }} </option>
@@ -443,11 +440,62 @@
                     ]
             }
         });
-        
-        // Capture Quill Content before Form Submission
-        document.getElementById('leaveForm').addEventListener('submit', function () {
-            document.getElementById('reason').value = quill.root.innerHTML;
+
+
+        $('#recuritment-form').on('submit', function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Capture Quill Content into hidden input before serializing
+            $('#jobDescription').val(quill.root.innerHTML);
+
+            const form = $(this);
+            const formData = new FormData(this);
+            const url = form.attr('action');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                beforeSend: function () {
+                    form.find('button[type="submit"]').prop('disabled', true).text('Saving...');
+                },
+                success: function (response) {
+                  //  alert('Saved successfully!');
+                    toastr["success"](response.message);
+                    form.trigger('reset');
+                    form.find('.select2').val(null).trigger('change'); // Reset select2
+                    quill.root.innerHTML = ''; // Clear Quill editor
+
+                    let offcanvasElement = document.getElementById('rrf_offcanvas'); // Replace with actual ID
+                    let offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+
+                    // Hide it
+                    if (offcanvas) {
+                        offcanvas.hide();
+                        $('.datatables-recruitments').DataTable().ajax.reload(null, false);
+                    }
+                },
+                error: function (xhr) {
+                    let message = 'Something went wrong.';
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        message = '';
+                        $.each(xhr.responseJSON.errors, function (key, val) {
+                            message += `${val}\n`;
+                        });
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    alert(message);
+                },
+                complete: function () {
+                    form.find('button[type="submit"]').prop('disabled', false).text('Save');
+                }
+            });
         });
+        
+
     });
 
     function openPopupModal(formUrl, elementId = 'popupModalBody', modalTitle = 'Modal') {
@@ -496,7 +544,9 @@
                     const modalEl = document.getElementById('popUpModel');
                     const modalInstance = bootstrap.Modal.getInstance(modalEl);
                     if (modalInstance) modalInstance.hide();
-                    window.location.reload();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
                 }
             },
             error: function (xhr) {

@@ -20,7 +20,6 @@ use App\Models\Workshift;
 class RecuitmentForm extends Component
 {
     public $action;
-    public $method;
     public $graduations;
     public $minimumQualifications;
     public $positions;
@@ -39,10 +38,9 @@ class RecuitmentForm extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct($action, $method = 'post'){
+    public function __construct($action){
         //
         $this->action           = $action;
-        $this->method           = $method;
         $this->graduations      = Graduation::all();
         $this->minimumQualifications  = MinimumQualification::all();
         $this->positions        = Designation::all();
