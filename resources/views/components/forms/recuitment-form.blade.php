@@ -427,27 +427,28 @@
             ['clean']
         ];
         
-        var quill = new Quill('#job-description', {
-            theme: 'snow',
-            placeholder: 'Type your reason here...',
-            modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, false] }],
-                        ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['link'],
-                        ['clean']
-                    ]
-            }
-        });
+        
 
 
         $('#recuritment-form').on('submit', function (e) {
             e.preventDefault(); // Prevent default form submission
 
+            var quill = new Quill('#job-description', {
+                theme: 'snow',
+                placeholder: 'Type your reason here...',
+                modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, false] }],
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link'],
+                            ['clean']
+                        ]
+                }
+            });
+
             // Capture Quill Content into hidden input before serializing
             $('#jobDescription').val(quill.root.innerHTML);
-
             const form = $(this);
             const formData = new FormData(this);
             const url = form.attr('action');

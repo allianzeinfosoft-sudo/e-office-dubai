@@ -58,10 +58,10 @@
                                     <th>Date</th>
                                     <th>Job Title</th>
                                     <th>Designation</th>
-                                    <th>Project Name</th>
-                                    <th>Priority</th>
-                                    <th>Interviewer</th>
                                     <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Project Name</th>
+                                    <th>Interviewer</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -83,7 +83,7 @@
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-plus fs-2 text-white"></i> 
-            <span class="">
+            <span id="offcanvas-title-container">
                 <h5 class="offcanvas-title text-white" id="staticBackdropLabel">Create Recruitment </h5>
                 <span class="text-white slogan">Create New Recruiments</span>
             </span>
@@ -122,10 +122,10 @@
                     { data: 'rrfDate', title: 'Date' },
                     { data: 'jobTitle', title: 'Job Title' },
                     { data: 'designation', title: 'Designation' },
-                    { data: 'projectName', title: 'Project Name' },
-                    { data: 'priority', title: 'Priority' },
-                    { data: 'interviewer', title: 'Interviewer' },
                     { data: 'status', title: 'Status' },
+                    { data: 'priority', title: 'Priority' },
+                    { data: 'projectName', title: 'Project Name' },
+                    { data: 'interviewer', title: 'Interviewer' },
                     { 
                         data: null, 
                         title: 'Actions',
@@ -147,7 +147,6 @@
             dateFormat: 'd-m-Y'
         });
 
-      
     });
 
     
@@ -173,15 +172,55 @@
 
     function openOffcanvas(targetId = null) {
         const $form = $('#recuritment-form');
+        $form[0].reset(); // Reset the form
+        $form.find('select').each(function () {
+            $(this).val('').trigger('change'); // Reset value and update select2
+        });
 
-        if ($form.length) {
-            $form[0].reset(); // Reset the form
-            $('#target_id').val(''); // Clear the hidden ID field
+        $('.ql-toolbar').remove();
+        const fullToolbar = [
+                [{ font: [] }, { size: [] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ color: [] }, { background: [] }],
+                [{ script: 'super' }, { script: 'sub' }],
+                [{ header: '1' }, { header: '2' }, 'blockquote', 'code-block'],
+                [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+                [{ direction: 'rtl' }],
+                ['link', 'image', 'video', 'formula'],
+                ['clean']
+        ];
+
+        var quillLoad = new Quill('#job-description', {
+                theme: 'snow',
+                placeholder: 'Type your reason here...',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, false] }],
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            ['link'],
+                            ['clean']
+                        ]
+                    }
+            });
+        
+        $('#target_id').val(''); // Clear the hidden ID field
+        $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Recruitment </h5><span class="text-white slogan">Create New Recruitment</span>`);
+        
+        const offcanvasElement = $('#rrf_offcanvas');
+        if (offcanvasElement.length) {
+            const offcanvas = new bootstrap.Offcanvas(offcanvasElement[0]);
+            offcanvas.show();
         }
 
+        
+        
+        
         if (targetId) {
             const url = "{{ route('recruitments.edit', ':recruitment') }}".replace(':recruitment', targetId);
             $('#target_id').val(targetId);
+
+            $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Recruitment </h5><span class="text-white slogan">Edit New Recruitment</span>`);
 
             $.ajax({
                 url: url,
@@ -194,54 +233,46 @@
                         'salaryRange', 'jobType', 'sittingArragement', 'minimumQualification',
                         'schoolingMedium', 'graduation', 'ageGroup', 'location',
                         'interviewPlace', 'referralIncentive', 'requireToAndFroCharge',
-                        'seekApproval', 'noOfPersons'
+                        'seekApproval', 'noOfPersons', 'keyword' // added 'keyword' in case it's also multiple
                     ];
 
                     fields.forEach(field => {
                         const $el = $('#' + field);
                         if ($el.length) {
-                            const value = data.recruitment?.[field] ?? null;
-                            $el.val(value);
-                            if ($el.is('select')) {
-                                $el.trigger('change');
+                            let value = data.recruitment?.[field] ?? null;
+
+                            if ($el.prop('multiple')) {
+                                // Handle comma-separated string or array
+                                if (typeof value === 'string') {
+                                    value = value.split(',');
+                                } else if (!Array.isArray(value)) {
+                                    value = [];
+                                }
                             }
+
+                            $el.val(value).trigger('change');
                         }
                     });
 
                     // Handle job description (rich text editor)
                     if ('jobDescription' in data.recruitment) {
                         const jobDesc = data.recruitment.jobDescription || '';
-                        if (!quill) {
-                            quill = new Quill('#job-description', {
-                                theme: 'snow',
-                                placeholder: 'Type your reason here...',
-                                modules: {
-                                    toolbar: [
-                                        [{ 'header': [1, 2, false] }],
-                                        ['bold', 'italic', 'underline'],
-                                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                                        ['link'],
-                                        ['clean']
-                                    ]
-                                }
-                            });
-                        }
-                        quill.root.innerHTML = jobDesc;
+
+                        
+                        
+                        quillLoad.root.innerHTML =  jobDesc;
+                        //quillLoad.clipboard.dangerouslyPasteHTML(jobDesc);
                         $('#jobDescription').val(jobDesc); // sync hidden input
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error('Failed to fetch recruitment data:', error);
-                    // Optional: show a user-friendly message
                     alert('Failed to load recruitment data.');
                 }
             });
         }
-        const offcanvasElement = $('#rrf_offcanvas');
-        if (offcanvasElement.length) {
-            const offcanvas = new bootstrap.Offcanvas(offcanvasElement[0]);
-            offcanvas.show();
-        }
+
+        
     }
 
     

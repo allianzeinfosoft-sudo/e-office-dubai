@@ -51,7 +51,13 @@ class RecruitmentController extends Controller
                             ];
                         });
                     }
-    
+                    $priority_colors = [
+                        '0' => 'dark',
+                        '1' => 'danger', 
+                        '2' => 'info', 
+                        '3' => 'primary', 
+                    ];
+
                     return [
                         'row' => $index + 1, 
                         'id' => $result->id,
@@ -60,7 +66,7 @@ class RecruitmentController extends Controller
                         'projectName' => optional($result->project)->project_name ?? '',
                         'designation' => $result->designation->designation ?? '',
                         'createdAt' => $result->created_at->format('d-m-Y'),
-                        'priority' => $result->priority ?? '',
+                        'priority' => $result->priority ? '<span class="badge bg-'.$priority_colors[$result->priority].'">' . config('optionsData.priority')[$result->priority] . '</span>' : '',
                         'interviewer' => $result->interViewer->full_name ?? '',
                         'skills' => $skills,
                         'keywords' => $keywordsRrf,
