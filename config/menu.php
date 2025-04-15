@@ -246,8 +246,7 @@ return [
         'title' => 'View',
         'icon' => 'ti ti-eye',
         'route' => 'javascript:void(0);',
-        'permission' => ['view though','view appreciation','view birthday', 'view announcement',
-                         'view event', 'view policy', 'view holiday', 'view reminder'],
+        'permission' => ['view though','view appreciation','view birthday', 'view announcement', 'view event', 'view policy', 'view holiday', 'view reminder'],
         'submenu' => [
             [
                 'title' => 'Thought Of The Day',
@@ -293,11 +292,10 @@ return [
     ],
     [
         'title' => 'Others',
-        'icon' => 'ti ti-rss-alt',
+        'icon' => 'ti ti-rss',
         'route' => 'javascript:void(0);',
         'isActive' => [],
-        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy',
-                         'view announcement','view banner','view event'],
+        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banner','view event'],
         'submenu' => [
             [
                 'title' => 'Seen status report',
