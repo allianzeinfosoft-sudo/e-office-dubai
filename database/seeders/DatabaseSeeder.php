@@ -17,26 +17,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(PermissionCategorySeeder::class);
         $this->call(UserSeeder::class);
-         // Create roles
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $userRole = Role::firstOrCreate(['name' => 'user']);
-
-        // Create permissions
-        $manageRoles = Permission::firstOrCreate(['name' => 'manage roles']);
-        $managePermissions = Permission::firstOrCreate(['name' => 'manage permissions']);
-
-        // Assign permissions to roles
-        $adminRole->givePermissionTo([$manageRoles, $managePermissions]);
+        $this->call(PermissionSeeder::class);
+        $this->call(RolePermissionSeeder::class);
 
         // Create admin user
         User::updateOrCreate(
-            ['email' => 'admin@mail.com'], // Search criteria
+            ['email' => 'admin@mail.com'],
             [
                 'username' => 'administrator',
                 'role' => 'Developer',
-                'password' => Hash::make('password') // Ensures password is always hashed
+                'password' => Hash::make('password')
             ]
         );
 

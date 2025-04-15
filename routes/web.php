@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\FeedsController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PermissionController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProductivityTargetController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\RecruitmentController;
+use App\Http\Controllers\ThoughtsController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -111,6 +113,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/check-leave' ,[LeaveController::class, 'checkLeave'])->name('check.leave');
     Route::post('/get-leave-details',[LeaveController::class, 'getLeaveDetails'])->name('leave.leave.details');
     Route::post('/update-leave-allocation',[LeaveController::class, 'updateLeaveAllocation'])->name('leave.update_leave_allocation');
+    Route::delete('/leaves/{id}', [LeaveController::class, 'destroy'])->name('leaves.destroy');
+    Route::get('/custom_leave',[LeaveController::class,'custom_leave'])->name('custom.leave');
 
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
@@ -138,6 +142,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/productivity-target/{ProductivityTarget}/edit', [ProductivityTargetController::class, 'edit'])->name('productivity-target.edit');
     
     
+
+
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
     Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
@@ -181,3 +187,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status'); 
 });
 
+    /*feeds*/
+    Route::get('/feeds',[FeedsController::class, 'show_feeds'])->name('show.feeds');
+
+    /*Thoughts*/
+    Route::resource('thoughts',ThoughtsController::class);
+
+});
