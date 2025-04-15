@@ -25,10 +25,10 @@ return [
                 'title' => 'Work Status',
                 'route' => 'works/status',
             ],
-            [
+           /*  [
                 'title' => 'SDU Project Status',
                 'route' => 'works/sud-project-status',
-            ],
+            ], */
             [
                 'title' => 'Temporary Status',
                 'route' => 'works/temporary-status',
