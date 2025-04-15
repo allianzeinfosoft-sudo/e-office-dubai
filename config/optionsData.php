@@ -95,5 +95,12 @@ return [
         '1' => 'Yes',
         '2' => 'No',
     ],
+    'applicationStatus' => [
+        '0' => 'Pending',
+        '1' => 'On Hold',
+        '2' => 'Processing',
+        '3' => 'Interview Ready',
+        '4' => 'Recuited',
+    ],
 
 ];

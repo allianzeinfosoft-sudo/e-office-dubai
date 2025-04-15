@@ -175,6 +175,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/recruitments/store', [RecruitmentController::class, 'store'])->name('recruitments.store');
     Route::get('/recruitments/{recruitment}/edit', [RecruitmentController::class, 'edit'])->name('recruitments.edit');
     Route::delete('/recruitments/{recruitment}/destroy', [RecruitmentController::class, 'destroy'])->name('recruitments.destroy');
+    Route::get('/recruitments/draft-list', [RecruitmentController::class, 'draftList'])->name('recruitments.draft-list');
+    Route::get('/recruitments/{recruitment}/show', [RecruitmentController::class, 'show'])->name('recruitments.show');
+    Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
     
 });
 

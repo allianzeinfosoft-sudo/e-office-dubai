@@ -312,16 +312,8 @@ return [
                 'route' =>  '/recruitments',
             ],
             [
-                'title' => 'Appove RRF',
-                'route' =>  '#',
-            ],
-            [
-                'title' => 'Applications',
-                'route' =>  '#',
-            ],
-            [
                 'title' => 'Draff',
-                'route' =>  '#',
+                'route' =>  '/recruitments/draft-list',
             ],
         ]
     ],

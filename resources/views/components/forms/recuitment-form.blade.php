@@ -352,7 +352,7 @@
                     <div class="form-group">
                         <label for="requireToAndFroCharge">Require To & Fro Charge? </label>
                         <select class="form-control select2" name="requireToAndFroCharge" id="requireToAndFroCharge" data-placeholder="Select Require To & Fro Charge">
-                        <option value=""></option>
+                            <option value=""></option>
                             @foreach(config('optionsData.requierToFroCharge') as $key => $label)
                                 <option value="{{ $key }}"> {{ $label }} </option>
                             @endforeach
@@ -379,6 +379,7 @@
         
         <div class="col-sm-12 mb-3">
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;  Save</button>
+            <button type="button" class="btn btn-primary" onclick="saveAsDraft()"><i class="fa fa-save"></i>&nbsp;&nbsp;  Save as Draft</button>
         </div>   
     </div>
 </form>
@@ -405,6 +406,8 @@
 
 @push('js')
 <script>
+    
+
     $(function(){
         $('#rrfDate').flatpickr({
             monthSelectorType: 'static',
@@ -414,87 +417,7 @@
         });
 
 
-       $('.ql-toolbar').remove();
-       const fullToolbar = [
-            [{ font: [] }, { size: [] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ color: [] }, { background: [] }],
-            [{ script: 'super' }, { script: 'sub' }],
-            [{ header: '1' }, { header: '2' }, 'blockquote', 'code-block'],
-            [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-            [{ direction: 'rtl' }],
-            ['link', 'image', 'video', 'formula'],
-            ['clean']
-        ];
         
-        
-
-
-        $('#recuritment-form').on('submit', function (e) {
-            e.preventDefault(); // Prevent default form submission
-
-            var quill = new Quill('#job-description', {
-                theme: 'snow',
-                placeholder: 'Type your reason here...',
-                modules: {
-                        toolbar: [
-                            [{ 'header': [1, 2, false] }],
-                            ['bold', 'italic', 'underline'],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            ['link'],
-                            ['clean']
-                        ]
-                }
-            });
-
-            // Capture Quill Content into hidden input before serializing
-            $('#jobDescription').val(quill.root.innerHTML);
-            const form = $(this);
-            const formData = new FormData(this);
-            const url = form.attr('action');
-
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                beforeSend: function () {
-                    form.find('button[type="submit"]').prop('disabled', true).text('Saving...');
-                },
-                success: function (response) {
-                  //  alert('Saved successfully!');
-                    toastr["success"](response.message);
-                    form.trigger('reset');
-                    form.find('.select2').val(null).trigger('change'); // Reset select2
-                    quill.root.innerHTML = ''; // Clear Quill editor
-
-                    let offcanvasElement = document.getElementById('rrf_offcanvas'); // Replace with actual ID
-                    let offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-
-                    // Hide it
-                    if (offcanvas) {
-                        offcanvas.hide();
-                        $('.datatables-recruitments').DataTable().ajax.reload(null, false);
-                    }
-                },
-                error: function (xhr) {
-                    let message = 'Something went wrong.';
-                    if (xhr.responseJSON && xhr.responseJSON.errors) {
-                        message = '';
-                        $.each(xhr.responseJSON.errors, function (key, val) {
-                            message += `${val}\n`;
-                        });
-                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                        message = xhr.responseJSON.message;
-                    }
-                    alert(message);
-                },
-                complete: function () {
-                    form.find('button[type="submit"]').prop('disabled', false).text('Save');
-                }
-            });
-        });
         
 
     });
@@ -558,6 +481,8 @@
             }
         });
     }
+
+    
 
 </script>
 @endpush

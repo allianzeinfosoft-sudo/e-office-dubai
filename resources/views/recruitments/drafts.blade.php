@@ -99,14 +99,10 @@
     </div>
 </div>
 
-
 @stop
 
 @section('js')
 <script>
-
-    var recruitmentTable = $('.datatables-recruitments'),
-    select2 = $('.select2');
 
     $('.ql-toolbar').remove();
     const fullToolbar = [
@@ -136,14 +132,15 @@
         });
 
     $(function() {
-
-        const applicationStatus = @json(config('optionsData.applicationStatus'));
         
+        var recruitmentTable = $('.datatables-recruitments'),
+            select2 = $('.select2');
+
         if (recruitmentTable.length) {            
             recruitmentTable.DataTable({
                 ajax: {
                     type: "GET",
-                    url: "{{ route('recruitments.index') }}", // Fixed syntax
+                    url: "{{ route('recruitments.draft-list') }}", // Fixed syntax
                     dataType: "json", 
                     dataSrc: "data"  
                 },
@@ -152,21 +149,7 @@
                     { data: 'rrfDate', title: 'Date' },
                     { data: 'jobTitle', title: 'Job Title' },
                     { data: 'designation', title: 'Designation' },
-                    { data: 'status', title: 'Status', 
-                        render: function (data, type, row) {
-                            const colors = {
-                                0: 'warning',
-                                1: 'danger',
-                                2: 'primary',
-                                3: 'info',
-                                4: 'success'
-                            };
-                                        
-                            return `
-                                <span class="badge bg-${colors[row.status] ?? 'warning'} bg-glow"> ${applicationStatus[row.status] ?? 'Pending'} </span>
-                            `;
-                        }
-                    },
+                    { data: 'status', title: 'Status' },
                     { data: 'priority', title: 'Priority' },
                     { data: 'projectName', title: 'Project Name' },
                     { data: 'interviewer', title: 'Interviewer' },
@@ -175,7 +158,6 @@
                         title: 'Actions',
                         render: function (data, type, row) {
                             return `
-                                <a href="/recruitments/${row.id}/show" class="btn btn-sm btn-icon btn-info"><i class="ti ti-eye"></i></a>
                                 <a href="javascript:void(0)" onclick="openOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary edit-project"><i class="ti ti-edit"></i></a>
                                 <button type="button" class="btn btn-sm  btn-icon btn-danger delete-project" onclick="deleteRecruitment(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
                             `;
@@ -226,6 +208,7 @@
                         offcanvas.hide();
                     }
                     recruitmentTable.DataTable().ajax.reload(null, false);
+
                 },
                 error: function (xhr) {
                     let message = 'Something went wrong.';
@@ -374,8 +357,8 @@
                 const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                 if (offcanvas) {
                     offcanvas.hide();
+                    $('.datatables-recruitments').DataTable().ajax.reload(null, false);
                 }
-                recruitmentTable.DataTable().ajax.reload(null, false);
             },
             error: function (xhr) {
                 let message = 'Something went wrong.';
@@ -390,12 +373,13 @@
                 alert(message);
             },
             complete: function () {
-                $(form).find('button[type="submit"]').prop('disabled', false).text('Save');
-                $(form).find('button[onclick="saveAsDraft()"]').prop('disabled', false).text('Save as Draft');
+                $(form).find('button[type="submit"], button[onclick="saveAsDraft()"]').prop('disabled', false).text('Save');
             }
         });
     }
 
+
+    
     
 </script>
 

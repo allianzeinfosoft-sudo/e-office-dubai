@@ -22,7 +22,7 @@ class RecruitmentController extends Controller
     public function index(Request $request){
         /* ajax request */
         if ($request->ajax()) {
-            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->get(); // eager load if necessary
+            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where(['draft_status' => 0])->orderBy('id', 'desc')->get();
     
             return response()->json([
                 'success' => true,
@@ -170,6 +170,7 @@ class RecruitmentController extends Controller
                 'jobDescription' => $validatedData['jobDescription']?? '',
                 'remarks' => $validatedData['remarks']?? '',
                 'noOfPersons' => $validatedData['noOfPersons']?? '',
+                'draft_status' => $request->draft_status ?? 0,
             ]
         );
 
@@ -185,6 +186,9 @@ class RecruitmentController extends Controller
     public function show(Recruitment $recruitment)
     {
         //
+        $data['meta_title'] = 'Show Recuitment';
+        $data['recruitment'] = $recruitment;
+        return view('recruitments.show', $data);
     }
 
     /**
@@ -346,6 +350,87 @@ class RecruitmentController extends Controller
             'success' => true,
             'data' => $data,
             'message' => 'Minimum Qualification saved successfully!',
+        ]);
+    }
+
+    public function draftList(Request $request){
+
+        if ($request->ajax()) {
+            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where(['draft_status' => 1])->orderBy('id', 'desc')->get();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Recruitments fetched successfully',
+                'data' => $recruitments->map(function ($result, $index) {
+                    // Parse skillRequired
+                    $skills = [];
+                    if (!empty($result->skillRequired)) {
+                        $skillIds = explode(',', $result->skillRequired);
+                        $skills = Skills::whereIn('id', $skillIds)->get()->map(function ($skill) {
+                            return [
+                                'id' => $skill->id,
+                                'skill_name' => $skill->name,
+                            ];
+                        });
+                    }
+    
+                    // Parse keyword
+                    $keywordsRrf = [];
+                    if (!empty($result->keyword)) {
+                        $keywordIds = explode(',', $result->keyword);
+                        $keywordsRrf = KeyworsRrf::whereIn('id', $keywordIds)->get()->map(function ($keyword) {
+                            return [
+                                'id' => $keyword->id,
+                                'keyword_name' => $keyword->name,
+                            ];
+                        });
+                    }
+                    $priority_colors = [
+                        '0' => 'dark',
+                        '1' => 'danger', 
+                        '2' => 'info', 
+                        '3' => 'primary', 
+                    ];
+
+                    return [
+                        'row' => $index + 1, 
+                        'id' => $result->id,
+                        'rrfDate' => date('d-m-Y', strtotime($result->rrfDate)),
+                        'jobTitle' => $result->jobTitle ?? '',
+                        'projectName' => optional($result->project)->project_name ?? '',
+                        'designation' => $result->designation->designation ?? '',
+                        'createdAt' => $result->created_at->format('d-m-Y'),
+                        'priority' => $result->priority ? '<span class="badge bg-'.$priority_colors[$result->priority].'">' . config('optionsData.priority')[$result->priority] . '</span>' : '',
+                        'interviewer' => $result->interViewer->full_name ?? '',
+                        'skills' => $skills,
+                        'keywords' => $keywordsRrf,
+                        'status' => $result->status ?? '',
+                    ];
+                }),
+            ]);
+        }
+
+        $data['meta_title'] = 'Draft Recruitments';
+        return view('recruitments.drafts', $data);
+
+    }
+
+    public function updateStatus(Request $request){
+        $request->validate([
+            'id' => 'required|exists:recruitments,id',
+            'status' => 'required|integer',
+            'status_reason' => 'nullable|string'
+        ]);
+    
+        $recruitment = Recruitment::find($request->id);
+        $recruitment->status = $request->status;
+        $recruitment->status_reason = $request->status_reason;
+        $recruitment->save();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated successfully!',
+            'status' => $recruitment->status
         ]);
     }
 }
