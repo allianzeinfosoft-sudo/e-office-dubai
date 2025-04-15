@@ -9,6 +9,7 @@ use Illuminate\View\Component;
 use App\Models\Department;
 use App\Models\Project;
 use App\Models\Employee;
+use App\Models\Tasks;
 
 class ProjectTaskForm extends Component{
 
@@ -19,6 +20,7 @@ class ProjectTaskForm extends Component{
     public $departments;
     public $projects;
     public $form_id;
+    public $tasks;
 
     /**
      * Create a new component instance.
@@ -33,6 +35,7 @@ class ProjectTaskForm extends Component{
         $this->reportingTo  = Employee::whereIn('id', $reportingToIds)->get();
         $this->departments  = Department::all();
         $this->projects     = Project::all();
+        $this->tasks        = Tasks::all();
     }
 
     /**
