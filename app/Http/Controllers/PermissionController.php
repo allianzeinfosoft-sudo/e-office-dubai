@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Permission_category;
+use App\Models\PermissionCategory;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 
@@ -16,7 +15,7 @@ class PermissionController extends Controller
 
     public function index()
     {
-        $permission_categories = Permission_category::all();
+        $permission_categories = PermissionCategory::all();
         return view('permissions.index',compact('permission_categories'));
     }
 

@@ -130,11 +130,11 @@ $(function () {
           render: function (data, type, full, meta) {
             var $status = full['status'];
             var status = statusObj[$status];
-        
+
             if (!status) {
                 return '<span class="badge bg-secondary text-capitalized">Unknown</span>';
             }
-        
+
             return (
                 '<span class="badge ' + status.class + ' text-capitalized">' + status.title + '</span>'
             );
@@ -163,7 +163,7 @@ $(function () {
           }
         }
       ],
-      order: [[1, 'desc']],
+      order: [[0, 'asc']],
 
 
     });

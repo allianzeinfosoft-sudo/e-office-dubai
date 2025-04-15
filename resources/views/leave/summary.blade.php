@@ -143,25 +143,25 @@ if (dtLeaveTable.length) {
 
             if(status == 1)
             {
-                $status_show = `<button type="button" class="btn btn-label-linkedin waves-effect">
+                $status_show = `<button type="button" class="btn btn-sm btn-label-linkedin waves-effect">
                             Pending
                           </button>`;
             }
             else if(status == 2)
             {
-                $status_show = `<button type="button" class="btn btn-label-linkedin waves-effect">
-                              Permission Granted
+                $status_show = `<button type="button" class="btn btn-sm btn-success waves-effect">
+                              Approved
                           </button>`;
             }
             else if(status == 3)
             {
-                $status_show = `<button type="button" class="btn btn-label-linkedin waves-effect">
-                              Reject
+                $status_show = `<button type="button" class="btn btn-sm btn-danger waves-effect">
+                              Rejected
                           </button>`;
             }
             else if(status == 4)
             {
-                $status_show = `<button type="button" class="btn btn-label-linkedin waves-effect">
+                $status_show = `<button type="button" class="btn btn-sm btn-label-linkedin waves-effect">
                              Cancelled by user
                           </button>`;
             }

@@ -246,7 +246,7 @@
                 let userName = full['full_name'];
                 let leaveFrom = full['leave_from'];
                 let leaveTo = full['leave_to'];
-                let leaveReason = full['reason'];
+                let leaveReason = full['leave_reason'];
 
                 $buttons = `<button class="btn btn-sm btn-success me-2 open-modal" data-function="1"  data-id="${leave_id}" data-name="${userName}" data-leave-from="${leaveFrom}" data-leave-to="${leaveTo}" data-reason="${leaveReason}" data-bs-toggle="modal" data-bs-target="#addNewCCModal"><i class="fa fa-check-circle"></i></button>`+
                            `<button class="btn btn-sm btn-danger open-modal" data-function="2" data-id="${leave_id}" data-name="${userName}" data-leave-from="${leaveFrom}" data-leave-to="${leaveTo}" data-reason="${leaveReason}" data-bs-toggle="modal" data-bs-target="#addNewCCModal"><i class="fa fa-times-circle"></i></button>`;

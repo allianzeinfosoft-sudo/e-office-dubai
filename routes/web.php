@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\FeedsController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PermissionController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProductivityTargetController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\ThoughtsController;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -110,6 +112,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/check-leave' ,[LeaveController::class, 'checkLeave'])->name('check.leave');
     Route::post('/get-leave-details',[LeaveController::class, 'getLeaveDetails'])->name('leave.leave.details');
     Route::post('/update-leave-allocation',[LeaveController::class, 'updateLeaveAllocation'])->name('leave.update_leave_allocation');
+    Route::delete('/leaves/{id}', [LeaveController::class, 'destroy'])->name('leaves.destroy');
+    Route::get('/custom_leave',[LeaveController::class,'custom_leave'])->name('custom.leave');
 
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
@@ -134,7 +138,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/productivity-target', [ProductivityTargetController::class, 'index'])->name('productivity-target.index');
     Route::post('/productivity-target/store', [ProductivityTargetController::class, 'store'])->name('productivity-target.store');
     Route::get('/productivity-target/{ProductivityTarget}/edit', [ProductivityTargetController::class, 'edit'])->name('productivity-target.edit');
-    
+
 
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
@@ -160,5 +164,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/salarySlip/view',[SalaryController::class, 'view_salary_slip'])->name('view.salary.slip');
     Route::get('/fetch/salarySlip',[SalaryController::class,'fetch_salary_slip'])->name('fetch.salarySlip');
     Route::post('/salary/upload', [SalaryController::class, 'upload'])->name('upload.salary.file');
-});
 
+    /*feeds*/
+    Route::get('/feeds',[FeedsController::class, 'show_feeds'])->name('show.feeds');
+
+    /*Thoughts*/
+    Route::resource('thoughts',ThoughtsController::class);
+
+});

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Validator;
 
 class LeaveController extends Controller
 {
@@ -64,6 +65,13 @@ class LeaveController extends Controller
        return view('leave.apply');
     }
 
+    public function custom_leave()
+    {
+        $users = User::with('employee')->get();
+        return view('leave.custom_leave_apply',compact('users'));
+    }
+
+
     public function show($id)
     {
 
@@ -73,50 +81,67 @@ class LeaveController extends Controller
      */
     public function store(Request $request)
     {
-        $user_id = Auth::user()->id;
+
+        $validator = Validator::make($request->all(), [
+            'user_id'       => 'required|exists:users,id',
+            'leave_from'    => 'required|date|before_or_equal:leave_to',
+            'leave_to'      => 'required|date|after_or_equal:leave_from',
+            'reason'        => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+
+
+        $user_id = $request['user_id'];
         $leaveData = [
-            'user_id'     => $user_id,
-            'leave_from'  => $request['leave_from'],
-            'leave_to'    => $request['leave_to'],
-            'reason'      => $request['reason'],
-            'leave_type'  => $request['leave_type'],
-            'leave_category' => $request['leave_category'],
+            'user_id'        => $request->user_id,
+            'leave_from'     => $request->leave_from,
+            'leave_to'       => $request->leave_to,
+            'reason'         => $request->reason,
+            'leave_type'     => $request->leave_type,
+            'leave_category' => $request->leave_category,
         ];
 
         $leave = Leave::create($leaveData);
-        $user_details = Employee::select('full_name','employeeID')->where('user_id',$user_id)->first();
-       if($user_details)
-       {
-        $startDate = \Carbon\Carbon::parse($leave->start_date);
-        $endDate = \Carbon\Carbon::parse($leave->end_date);
+        $user_details = Employee::select('full_name', 'employeeID')
+                            ->where('user_id', $request->user_id)
+                            ->first();
 
-        $totalLeaveDays = $endDate->diffInDays($startDate) + 1;
+        if (!$user_details) {
+            return redirect()->back()->with('error', 'Invalid user!');
+        }
 
-        if ($leave->leave_type == 'half_day')
-        { $totalLeaveDays = 0.5; }
+        $startDate = Carbon::parse($leave->leave_from);
+        $endDate   = Carbon::parse($leave->leave_to);
+
+        $totalLeaveDays = $leave->leave_type === 'half_day'
+        ? 0.5
+        : $endDate->diffInDays($startDate) + 1;
 
 
         $leaveDetails = [
-            'manager_name' => 'John Doe',
-            'employee_name' => $user_details->full_name,
-            'employee_id' => $user_details->employeeID,
-            'leave_type' => $request['leave_type'],
-            'start_date' => $request['leave_from'],
-            'end_date' => $request['leave_to'],
-            'days_count' => $totalLeaveDays,
-            'leave_reason' => $request['reason'],
-            'employee_email' => Auth::user()->email,
+            'manager_name'    => 'John Doe', // Optional: Get dynamically
+            'employee_name'   => $user_details->full_name,
+            'employee_id'     => $user_details->employeeID,
+            'leave_type'      => $leave->leave_type,
+            'start_date'      => $leave->leave_from,
+            'end_date'        => $leave->leave_to,
+            'days_count'      => $totalLeaveDays,
+            'leave_reason'    => $leave->reason,
+            'employee_email'  => Auth::user()->email ?? 'no-email@example.com',
         ];
 
         // Mail::to('allianzeinfosoftsdu@gmail.com')->send(new LeaveApplication($leaveDetails));
         $admin = User::where('role', 'Admin')->get();
         Notification::send($admin, new LeaveNotification($leave, $user_details));
         return redirect()->back()->with('success', 'Leave created successfully!');
-       }
-       else
-       {
-        return redirect()->back()->with('error', 'Invalid user!');
-       }
+
     }
 
     public function show_leave_status()
@@ -196,7 +221,7 @@ class LeaveController extends Controller
                     'leave_from' => $this->formatDateDayMonthYear($leaves->leave_from) ?? '',
                     'leave_to' => $this->formatDateDayMonthYear($leaves->leave_to) ?? '',
                     'leave_type' => $leaves->leave_type ?? '',
-                    'leave_reason' => $leaves->reason ?? '',
+                    'leave_reason' => strip_tags($leaves->reason ?? ''),
                     'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
                     'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
                     'leave_count' => $this->getDaysBetween($leaves->leave_from, $leaves->leave_to) ?? '',
@@ -230,6 +255,7 @@ class LeaveController extends Controller
             $leave = Leave::find($id);
             if ($leave) {
                 $leave->status = 2;
+                $leave->approved_cancel_date = date('Y-m-d H:i:s');
                 if($leave->save())
                 {
                     $startDate = Carbon::parse($leave->leave_from);
@@ -254,6 +280,7 @@ class LeaveController extends Controller
             $leave = Leave::find($id);
             if ($leave) {
                 $leave->status = 3;
+                $leave->approved_cancel_date = date('Y-m-d H:i:s');
                 $leave->save();
                 return redirect()->back()->with('success', 'Leave Rejected successfully!');
             } else {
@@ -395,6 +422,14 @@ class LeaveController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function destroy($id)
+    {
+        $leave = Leave::findOrFail($id);
+        $leave->delete();
+        return response()->json(['success' => true, 'message' => 'Leave deleted successfully']);
+    }
+
 
 
 

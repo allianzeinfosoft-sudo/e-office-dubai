@@ -135,7 +135,7 @@
             <!-- Add Role Modal -->
             <!-- Add Role Modal -->
             <div class="modal fade" id="addRoleModal" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog modal-lg modal-dialog-centered modal-add-new-role">
+              <div class="modal-dialog modal-xl modal-dialog-centered modal-add-new-role">
                 <div class="modal-content p-3 p-md-5">
                   <button
                     type="button"

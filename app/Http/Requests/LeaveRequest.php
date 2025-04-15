@@ -23,6 +23,7 @@ class LeaveRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
 
             'user_id' => [
@@ -31,7 +32,10 @@ class LeaveRequest extends FormRequest
                             function ($attribute, $value, $fail) {
 
                                 $startYear = request()->input('leave_from') ? date('Y', strtotime(request()->input('leave_from'))) : null;
-
+                                if (!$startYear) {
+                                    $fail('Start date is required to check leave allocation.');
+                                    return;
+                                }
                                 $hasMatchingLeave = DB::table('leave_allocations')
                                     ->where('user_id', $value)
                                     ->where('year', $startYear)
@@ -57,14 +61,8 @@ class LeaveRequest extends FormRequest
             'leave_from' => 'required|date|before_or_equal:leave_to',
             'leave_to' => 'required|date|after_or_equal:leave_from',
             'reason' => 'nullable|string|max:255',
-            // 'am_pm' => [
-            //     function ($attribute, $value, $fail) {
-            //         if (request()->input('leave_type') === 'half_day' && empty($value)) {
-            //             $fail('Please select AM or PM for half-day leave.');
-            //         }
-            //     }
-            // ],
+
 
         ];
-    }
+     }
 }
