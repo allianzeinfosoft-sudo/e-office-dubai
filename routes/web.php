@@ -185,12 +185,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/recruitments/draft-list', [RecruitmentController::class, 'draftList'])->name('recruitments.draft-list');
     Route::get('/recruitments/{recruitment}/show', [RecruitmentController::class, 'show'])->name('recruitments.show');
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status'); 
-});
 
     /*feeds*/
     Route::get('/feeds',[FeedsController::class, 'show_feeds'])->name('show.feeds');
-
+    
     /*Thoughts*/
     Route::resource('thoughts',ThoughtsController::class);
-
 });
+
