@@ -1,0 +1,49 @@
+<form action="{{ route('others.policies.store') }}" method="post" id="policy-form" enctype="multipart/form-data">
+    @csrf 
+    <input type="hidden" name="id" id="target_id">
+
+    <div class="row">
+
+        <div class="col-sm-12 mb-3">
+            <div class="form-group">
+                <label for="policyTitle">Policy Title</label>
+                <input type="text" name="policyTitle" id="policyTitle" class="form-control" placeholder="Policy Title" />
+            </div>
+        </div>
+
+        <div class="col-sm-6 mb-3">
+            <div class="form-group">
+                <label for="policyStartDate">Policy Start Date</label>
+                <input type="text" name="policyStartDate" id="policyStartDate" class="form-control flatpickr-input" placeholder="Policy Start Date" />
+            </div>
+        </div>
+
+        <div class="col-sm-6 mb-3">
+            <div class="form-group">
+                <label for="pollicyEndDate">Policy End Date</label>
+                <input type="text" name="pollicyEndDate" id="pollicyEndDate" class="form-control flatpickr-input" placeholder="Policy End Date" />
+            </div>
+        </div>
+
+        <div class="col-sm-12 mb-3">
+            <div class="form-group">
+                <label for="description-editor">Policy Description</label>
+                <div id="policy-description-editor"></div>
+                <input type="hidden" name="descriptions" id="description">
+            </div>
+        </div>
+
+        <div class="col-sm-12 mb-3">
+            <div class="form-group">
+                <label for="attachments">Attachments</label>
+                <input type="file" name="attachments" id="attachments" class="form-control" />
+            </div>
+        </div>
+
+        <div class="col-sm-12 mb-3">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save"></i>&nbsp;&nbsp; Save
+            </button>
+        </div>   
+    </div>
+</form>

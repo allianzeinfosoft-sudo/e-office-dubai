@@ -338,18 +338,9 @@ return [
             ],
             [
                 'title' => 'Policies',
-                'route' =>  '#',
-                'isActive' => [],
+                'route' =>  'others/policies',
+                'isActive' => ['policy*'],
                 'permission' => ['view policy'],
-                'submenu' => [
-                    [
-                        'title' => 'View Policy',
-                        'route' => "#",
-                        'isActive' => [],
-                        'permission' => ['view policy'],
-                        ''
-                    ]
-                ]
             ],
             [
                 'title' => 'Announcement',

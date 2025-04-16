@@ -22,6 +22,7 @@ use App\Http\Controllers\RecruitmentController;
 use App\Http\Controllers\ThoughtsController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\PolicyController;
 
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
@@ -210,6 +211,12 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/others/events/store', [EventController::class, 'store'])->name('others.events.store');
     Route::get('/others/events/{event}/edit', [EventController::class, 'edit'])->name('others.events.edit');
     Route::delete('/others/events/{event}/destroy', [EventController::class, 'destroy'])->name('others.events.destroy');
+    
+    /* Others/Policies */
+    Route::get('/others/policies', [PolicyController::class, 'index'])->name('others.policies.index');
+    Route::post('/others/policies/store', [PolicyController::class, 'store'])->name('others.policies.store');
+    Route::get('/others/policies/{policy}/edit', [PolicyController::class, 'edit'])->name('others.policies.edit');
+    Route::delete('/others/policies/{policy}/destroy', [PolicyController::class, 'destroy'])->name('others.policies.destroy');
 
 });
 
