@@ -1,0 +1,121 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Carbon\Carbon;
+use App\Models\Announcement;
+use Illuminate\Http\Request;
+
+class AnnouncementController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        if ($request->ajax()) {
+            $annoncement = Announcement::orderBy('id', 'desc')->get();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Recruitments fetched successfully',
+                'data' => $annoncement->map(function ($result, $index) {
+                    return [
+                        'row' => $index + 1, 
+                        'id' => $result->id,
+                        'name_announcement' => $result->name_announcement ?? '',
+                        'description' => $result->description ?? '',
+                        'display_start_date' => date('d-m-Y', strtotime($result->display_start_date)),
+                        'display_end_date' => date('d-m-Y', strtotime($result->display_end_date)),
+                        'createdAt' => $result->created_at->format('d-m-Y')
+                    ];
+                }),
+            ]);
+        }
+        //
+        $data['meta_title'] = 'Announcement';
+        return view('others.announcements.index', $data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+        $validated = $request->validate([
+            'id' => 'nullable|integer', // Optional ID for updateOrCreate
+            'name_announcement' => 'required|string|max:255',
+            'display_start_date' => 'required|date',
+            'display_end_date' => 'required|date',
+            'description' => 'nullable|string',
+        ]);
+
+        // Clone validated data for modification
+        $validatedData = $validated;
+
+        // Format the rrfDate
+        $validatedData['display_start_date'] = Carbon::parse($validated['display_start_date'])->format('Y-m-d');
+        $validatedData['display_end_date'] = Carbon::parse($validated['display_end_date'])->format('Y-m-d');
+
+        $announcement = Announcement::updateOrCreate(
+            ['id' => $validatedData['id'] ?? null],
+            [
+                'name_announcement' => $validatedData['name_announcement'] ?? '',
+                'display_start_date' => $validatedData['display_start_date']?? '',
+                'display_end_date' => $validatedData['display_end_date']?? '',
+                'description' => $validatedData['description']?? '',            ]
+        );
+
+        return response()->json([
+            'message' => 'Announcement saved successfully!',
+            'data' => $announcement
+        ]);
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Announcement $announcement)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Announcement $announcement)
+    {
+        //
+        $data['announcement'] = $announcement;
+        $data['meta_title'] = 'Edit Announcement';
+        return response()->json($data);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Announcement $announcement)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Announcement $announcement)
+    {
+        //
+        $announcement->delete();
+        return response()->json(['message' => 'Announcement deleted successfully']);
+    }
+}

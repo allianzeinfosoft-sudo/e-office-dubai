@@ -246,7 +246,7 @@ return [
         'title' => 'View',
         'icon' => 'ti ti-eye',
         'route' => 'javascript:void(0);',
-        'permission' => ['view though','view appreciation','view birthday', 'view announcement', 'view event', 'view policy', 'view holiday', 'view reminder'],
+        'permission' => ['view though','view appreciation','view birthday', 'view event', 'view policy', 'view holiday', 'view reminder'],
         'submenu' => [
             [
                 'title' => 'Thought Of The Day',
@@ -294,7 +294,7 @@ return [
         'title' => 'Others',
         'icon' => 'ti ti-rss',
         'route' => 'javascript:void(0);',
-        'isActive' => [],
+        'isActive' => ['others*'],
         'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banner','view event'],
         'submenu' => [
             [
@@ -353,26 +353,24 @@ return [
             ],
             [
                 'title' => 'Announcement',
-                'route' =>  '#',
-                'isActive' => [],
-                'permission' => ['view announcement', 'view banner'],
+                'route' =>  'javascript:void(0);',
+                'isActive' => ['announcements*'],
+                'permission' => [],
                 'submenu' => [
-
                     [
-                        'title' => 'View Announcement',
-                        'route' => "#",
+                        'title' => 'Announcements',
+                        'route' => "/others/announcements",
                         'isActive' => [],
-                        'permission' => ['view announcement'],
+                        'permission' => [],
                         ''
                     ],
-
                     [
-                        'title' => 'View Banner',
+                        'title' => 'Banners',
                         'route' => "#",
                         'isActive' => [],
-                        'permission' => ['view banner'],
+                        'permission' => [],
                         ''
-                    ]
+                    ],
                 ]
             ],
             [
@@ -546,10 +544,7 @@ return [
         'title' => 'Settings',
         'icon' => 'ti ti-switch-3',
         'route' => 'javascript:void(0);',
-        'permission' => ['change appearence','view department','assign open work' ,'manage roles', 'view holiday',
-                          'view shift time', 'change shift time', 'custom markout', 'custom attendance', 'full day entry', 'custom work report entry',
-                          'edit attendance'
-                        ],
+        'permission' => ['change appearence','view department','assign open work' ,'manage roles', 'view holiday', 'view shift time', 'change shift time', 'custom markout', 'custom attendance', 'full day entry', 'custom work report entry', 'edit attendance'],
         'submenu' => [
             [
                 'title' => 'Change appearence',

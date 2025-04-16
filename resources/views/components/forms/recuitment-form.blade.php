@@ -415,11 +415,6 @@
             altFormat: 'd-m-Y',
             dateFormat: 'd-m-Y'
         });
-
-
-        
-        
-
     });
 
     function openPopupModal(formUrl, elementId = 'popupModalBody', modalTitle = 'Modal') {
@@ -481,8 +476,6 @@
             }
         });
     }
-
-    
 
 </script>
 @endpush
