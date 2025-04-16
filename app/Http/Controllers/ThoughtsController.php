@@ -59,7 +59,7 @@ class ThoughtsController extends Controller
                 'thoughts_title'   => $request->thoughts_title,
                 'display_date'    => $request->display_date,
                 'thoughts_details'  => $request->thoughts_details,
-                'picture' => $profileImagePath,
+                'picture'           => $profileImagePath ?? ($request->id ? Thoughts::find($request->id)->picture : 'thoughts_pictures/no-images.jpeg'),
             ]
         );
 
@@ -77,9 +77,11 @@ class ThoughtsController extends Controller
     }
 
 
-    public function edit(string $id)
-    {
-        //
+
+    public function edit($id){
+        $thoughts = Thoughts::find($id);
+        $data['thoughts'] = $thoughts;
+        return response()->json($data);
     }
 
 
@@ -89,8 +91,18 @@ class ThoughtsController extends Controller
     }
 
 
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $thoughts = Thoughts::find($id);
+        // Only delete image if it's not the default one
+        if ($thoughts->picture && $thoughts->picture !== 'thoughts_pictures/no-images.jpeg') {
+            // Check if file exists in storage
+            $imagePath = storage_path('app/public/' . $thoughts->picture);
+            if (file_exists($imagePath)) {
+                unlink($imagePath); // Delete the file
+            }
+        }
+        $thoughts->delete();
+        return response()->json(['message' => 'Thoughts deleted successfully']);
     }
 }

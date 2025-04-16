@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('thoughts_title');
             $table->date('display_date');
             $table->string('thoughts_details');
-            $table->string('picture');
+            $table->string('picture')->nullable();
             $table->timestamps();
         });
     }

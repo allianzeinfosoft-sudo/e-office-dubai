@@ -170,5 +170,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /*Thoughts*/
     Route::resource('thoughts',ThoughtsController::class);
+    Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
+    Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
 
 });
