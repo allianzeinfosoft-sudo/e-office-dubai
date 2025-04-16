@@ -137,13 +137,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/tasks-project/{project_id}/get-tasks-by-project', [ProjectTaskController::class, 'getTasksByProject'])->name('tasks-project.get-tasks-by-project');
     Route::get('/tasks-project/{employee_id}/get-members', [ProjectTaskController::class, 'getMembers'])->name('tasks-project.get-members');
     Route::post('/tasks-project/store-task-name', [ProjectTaskController::class, 'storeTaskName'])->name('tasks-project.store-task-name');
-    
+
     /* productivity Target */
     Route::get('/productivity-target', [ProductivityTargetController::class, 'index'])->name('productivity-target.index');
     Route::post('/productivity-target/store', [ProductivityTargetController::class, 'store'])->name('productivity-target.store');
     Route::get('/productivity-target/{ProductivityTarget}/edit', [ProductivityTargetController::class, 'edit'])->name('productivity-target.edit');
-    
-    
+
+
 
 
     /* Work Report */
@@ -151,26 +151,26 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
-    
+
     /* Works Module */
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
     Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
     Route::get('works/temporary-status',[WorksController::class, 'temporaryStatus'])->name('works.temporary-status');
     Route::get('works/entry-open',[WorksController::class, 'entryOpen'])->name('works.entry-open');
-    
+
     /* Holiday */
     Route::resource('holidays',HolidayController::class);
     Route::get('/holiday/list', [HolidayController::class, 'getHolidayList'])->name('holiday.list');
     Route::delete('/holiday-delete/{holidayId}', [HolidayController::class, 'destroy'])->name('holiday.destroy');
-    
+
     /* Notification */
     Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
-    
+
     /*salary*/
     Route::get('/salarySlip/view',[SalaryController::class, 'view_salary_slip'])->name('view.salary.slip');
     Route::get('/fetch/salarySlip',[SalaryController::class,'fetch_salary_slip'])->name('fetch.salarySlip');
     Route::post('/salary/upload', [SalaryController::class, 'upload'])->name('upload.salary.file');
-    
+
     /* Recruitments */
     Route::get('/recruitments', [RecruitmentController::class, 'index'])->name('recruitments.index');
     Route::post('/recruitments/load-modal-form', [RecruitmentController::class, 'loadModalFrom'])->name('recruitments.load-modal-form');
@@ -188,9 +188,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/recruitments/{recruitment}/show', [RecruitmentController::class, 'show'])->name('recruitments.show');
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status'); 
     
+    Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
+
     /*feeds*/
     Route::get('/feeds',[FeedsController::class, 'show_feeds'])->name('show.feeds');
-    
+
     /*Thoughts*/
     Route::resource('thoughts',ThoughtsController::class);
     
@@ -199,5 +201,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/others/announcements/store', [AnnouncementController::class, 'store'])->name('others.announcements.store');
     Route::get('/others/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('others.announcements.edit');
     Route::delete('/others/announcements/{announcement}/destroy', [AnnouncementController::class, 'destroy'])->name('others.announcements.destroy');
+    Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
+    Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
+
 });
 

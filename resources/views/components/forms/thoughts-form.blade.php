@@ -28,7 +28,7 @@
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="thoughts_details">Thoughts_details</label>
+                <label for="thoughts_details">Thoughts Details</label>
                 <div id="thoughts-editor"></div>
                 <input type="hidden" name="thoughts_details" value="{{ strip_tags(old('thoughts_details')) }}" id="thoughts_details">
             </div>
@@ -39,7 +39,7 @@
                 <label for="thoughts_details">Picture</label>
                     <div class="card-body">
                         <div class="mt-3 d-flex justify-content-center align-items-center" style="background-color: #625acc; height: 200px;">
-                             <img id="PicturePreview" src="" alt="" class="" style="width: 150px; height: 150px; object-fit: cover;  border: 2px solid #ddd;"/>
+                             <img id="PicturePreview" src="" accept="image/*" alt="" class="" style="width: 150px; height: 150px; object-fit: cover;  border: 2px solid #ddd;"/>
                         </div>
                         <div class="mb-3 mt-15">
                             <div class="input-group input-group-merge">
@@ -79,61 +79,7 @@
 
 // form validation
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById('thoughts-form');
-        const quillEditor = new Quill('#thoughts-editor', { theme: 'snow' });
 
-        form.addEventListener('submit', function (e) {
-            e.preventDefault(); // Always prevent default first
-
-            // Get values
-
-            const thoughts_title = document.getElementById('thoughts_title').value.trim();
-            const display_date = document.getElementById('display_date').value.trim();
-            const picture = document.getElementById('picture').value.trim();
-            const thoughts_details = quillEditor.root.innerText.trim();
-            const hiddenThoughts_details = document.getElementById('thoughts_details');
-
-            hiddenThoughts_details.value = quillEditor.root.innerHTML;
-
-            let errors = [];
-
-            // === Validation ===
-            if (!thoughts_title) {
-                errors.push("Thoughts Title is required.");
-            }
-
-            if (!display_date) {
-                errors.push("Display date is required.");
-            } else if (isNaN(Date.parse(display_date))) {
-                errors.push("Display date must be a valid date.");
-            }
-
-            if (!picture) {
-                errors.push("Picture is required.");
-            }
-
-            if (!hiddenThoughts_details) {
-                errors.push("Thoughts details reason is required");
-            }
-
-            // === Show errors or submit ===
-            let errorBox = document.getElementById('formErrors');
-            if (!errorBox) {
-                errorBox = document.createElement('div');
-                errorBox.id = 'formErrors';
-                errorBox.className = 'alert alert-danger mt-3';
-                form.prepend(errorBox);
-            }
-
-            if (errors.length > 0) {
-                errorBox.innerHTML = '<ul class="mb-0">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
-            } else {
-                errorBox.innerHTML = ''; // Clear old errors
-                form.submit(); // Submit manually only if no errors
-            }
-        });
-    });
 
 
 
