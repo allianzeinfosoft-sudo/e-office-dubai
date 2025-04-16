@@ -375,19 +375,9 @@ return [
             ],
             [
                 'title' => 'Events',
-                'route' =>  '#',
-                'isActive' => [],
-                'permission' => ['view event'],
-                'submenu' => [
-
-                    [
-                        'title' => 'View Events',
-                        'route' => "#",
-                        'isActive' => [],
-                        'permission' => ['view event'],
-                        ''
-                    ]
-                ]
+                'route' =>  '/others/events',
+                'isActive' => ['events*'],
+                'permission' => ['view events'],
             ],
         ]
     ],

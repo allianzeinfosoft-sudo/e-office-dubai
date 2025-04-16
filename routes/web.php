@@ -21,6 +21,7 @@ use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\RecruitmentController;
 use App\Http\Controllers\ThoughtsController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\EventController;
 
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
@@ -195,14 +196,20 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /*Thoughts*/
     Route::resource('thoughts',ThoughtsController::class);
+    Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
+    Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
     
     /* Others/Announcements */
     Route::get('/others/announcements', [AnnouncementController::class, 'index'])->name('others.announcements.index');
     Route::post('/others/announcements/store', [AnnouncementController::class, 'store'])->name('others.announcements.store');
     Route::get('/others/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('others.announcements.edit');
     Route::delete('/others/announcements/{announcement}/destroy', [AnnouncementController::class, 'destroy'])->name('others.announcements.destroy');
-    Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
-    Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
+
+    /* Others/Events */
+    Route::get('/others/events', [EventController::class, 'index'])->name('others.events.index');
+    Route::post('/others/events/store', [EventController::class, 'store'])->name('others.events.store');
+    Route::get('/others/events/{event}/edit', [EventController::class, 'edit'])->name('others.events.edit');
+    Route::delete('/others/events/{event}/destroy', [EventController::class, 'destroy'])->name('others.events.destroy');
 
 });
 
