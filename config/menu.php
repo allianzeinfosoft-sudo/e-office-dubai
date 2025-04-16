@@ -6,7 +6,6 @@ return [
         'icon' => 'ti ti-building-store',
         'route' => 'home',
         'isActive' => ['home'],
-        'permission' => ['view dashboard'],
     ],
     [
         'title' => 'EOffice Feeds',
@@ -105,7 +104,6 @@ return [
         'title' => 'Reports',
         'icon' => 'ti ti-printer',
         'route' => 'javascript:void(0);',
-        'permission' => ['view reports'],
         'submenu' => [
             [
                 'title' => 'My Overview',
@@ -155,7 +153,6 @@ return [
             [
                 'title' => 'View Survey',
                 'route' => '#',
-                'permission' => ['view survey'],
             ],
         ]
     ],
@@ -197,7 +194,6 @@ return [
             [
                 'title' => 'View PAR',
                 'route' => '#',
-                'permission' => ['view PAR'],
             ],
 
         ]
@@ -245,14 +241,12 @@ return [
         'title' => 'Gallery',
         'icon' => 'ti ti-icons',
         'route' => '#',
-        'permission' => ['view gallery'],
     ],
     [
         'title' => 'View',
         'icon' => 'ti ti-eye',
         'route' => 'javascript:void(0);',
-        'permission' => ['view though','view appreciation','view birthday', 'view announcement',
-                         'view event', 'view policy', 'view holiday', 'view reminder'],
+        'permission' => ['view though','view appreciation','view birthday', 'view announcement', 'view event', 'view policy', 'view holiday', 'view reminder'],
         'submenu' => [
             [
                 'title' => 'Thought Of The Day',
@@ -263,7 +257,6 @@ return [
             [
                 'title' => ' Appreciation',
                 'route' =>  '#',
-                'permission' => ['view appreciation'],
             ],
             [
                 'title' => 'Birthdays',
@@ -273,7 +266,6 @@ return [
             [
                 'title' => 'Announcement',
                 'route' =>  '#',
-                'permission' => ['view announcement'],
             ],
             [
                 'title' => 'Company Policies ',
@@ -300,11 +292,10 @@ return [
     ],
     [
         'title' => 'Others',
-        'icon' => 'ti ti-rss-alt',
+        'icon' => 'ti ti-rss',
         'route' => 'javascript:void(0);',
         'isActive' => [],
-        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy',
-                         'view announcement','view banner','view event'],
+        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banner','view event'],
         'submenu' => [
             [
                 'title' => 'Seen status report',
@@ -478,7 +469,22 @@ return [
             [
                 'title' => 'KSP',
                 'route' =>  '#',
-                'permission' => ['view KSP'],
+            ],
+        ]
+    ],
+    [
+        'title' => 'Recruitments',
+        'icon' => 'ti ti-target',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['recruitments*'],
+        'submenu' => [
+            [
+                'title' => 'RRF',
+                'route' =>  '/recruitments',
+            ],
+            [
+                'title' => 'Draff',
+                'route' =>  '/recruitments/draft-list',
             ],
         ]
     ],
@@ -496,20 +502,10 @@ return [
             [
                 'title' => 'Assign A job',
                 'route' =>  '#',
-                'permission' => ['assign job'],
-            ]
-        ]
-    ],
-    [
-        'title' => 'Recruitments',
-        'icon' => 'ti ti-target',
-        'route' => 'javascript:void(0);',
-        'isActive' => ['recruitments*'],
-        'submenu' => [
+            ],
             [
-                'title' => 'RRF',
-                'route' =>  '/recruitments',
-                'permission' => ['view job applications'],
+                'title' => 'Jobs Assigned by You',
+                'route' =>  '#',
             ],
 
         ]
@@ -528,7 +524,6 @@ return [
             [
                 'title' => 'Starred',
                 'route' =>  '#',
-                'permission' => ['view starred'],
             ],
             [
                 'title' => 'Sent Email',
