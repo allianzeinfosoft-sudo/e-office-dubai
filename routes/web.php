@@ -24,6 +24,7 @@ use App\Http\Controllers\ThoughtsController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\MomController;
 
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -221,6 +222,12 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/others/policies/store', [PolicyController::class, 'store'])->name('others.policies.store');
     Route::get('/others/policies/{policy}/edit', [PolicyController::class, 'edit'])->name('others.policies.edit');
     Route::delete('/others/policies/{policy}/destroy', [PolicyController::class, 'destroy'])->name('others.policies.destroy');
+
+    /* Others/MOMs */
+    Route::get('/others/moms', [MomController::class, 'index'])->name('others.moms.index');
+    Route::post('/others/moms/store', [MomController::class, 'store'])->name('others.moms.store');
+    Route::get('/others/moms/{mom}/edit', [MomController::class, 'edit'])->name('others.moms.edit');
+    Route::delete('/others/moms/{mom}/destroy', [MomController::class, 'destroy'])->name('others.moms.destroy');
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);

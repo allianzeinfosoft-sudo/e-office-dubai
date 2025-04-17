@@ -295,7 +295,7 @@ return [
         'icon' => 'ti ti-rss',
         'route' => 'javascript:void(0);',
         'isActive' => ['others*'],
-        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banner','view event'],
+        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banners','view event', 'view MOM'],
         'submenu' => [
             [
                 'title' => 'Seen status report',
@@ -359,6 +359,12 @@ return [
                 'route' =>  '/others/events',
                 'isActive' => ['events*'],
                 'permission' => ['view events'],
+            ],
+            [
+                'title' => 'MOM',
+                'route' =>  '/others/moms',
+                'isActive' => ['mom*'],
+                'permission' => [],
             ],
         ]
     ],
@@ -536,6 +542,11 @@ return [
                 'title' => 'Role Management',
                 'route' =>  'roles',
                 'permission' => ['manage roles'],
+            ],
+            [
+                'title' => 'Permission Management',
+                'route' =>  'permissions',
+                'permission' => ['manage permissions'],
             ],
             [
                 'title' => 'Holiday',
