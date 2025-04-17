@@ -135,7 +135,7 @@
                     { data: 'attachments', name: 'Attachments',
                         render: function (data, type, row) {
                             if (row.attachments) {
-                                return `<a href="${assetBaseUrl}/${row.attachments}" target="_blank" class="st"><i class="ti ti-pin"></i></a>`;
+                                return `<a href="${assetBaseUrl}/policies/${row.attachments}" target="_blank" class="st"><i class="ti ti-pin"></i></a>`;
                             } else {
                                 return '';
                             }
@@ -205,6 +205,7 @@
         $('#policy-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Create Policy</h5><span class="text-white slogan">Create New Policy</span>`);
 
         const offcanvasElement = $('#policy_offcanvas');
+
         if (offcanvasElement.length) {
             const offcanvas = new bootstrap.Offcanvas(offcanvasElement[0]);
             offcanvas.show();
@@ -214,7 +215,7 @@
             const url = "{{ route('others.policies.edit', ':policy') }}".replace(':policy', id);
             $('#target_id').val(id);
             $('#policy-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Edit Policy</h5><span class="text-white slogan">Edit Policy</span>`);
-
+            $('#current-attachment').remove();
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -222,9 +223,19 @@
                     $('#policyTitle').val(data.policy.policyTitle);
                     $('#policyStartDate').flatpickr().setDate(data.policy.policyStartDate, true);
                     $('#pollicyEndDate').flatpickr().setDate(data.policy.pollicyEndDate, true);
-                    const desc = data.policy.description || '';
+                    const desc = data.policy.descriptions || '';
                     quillPolicy.root.innerHTML = desc;
                     $('#description').val(desc);
+                    if (data.policy.attachments) {
+                        const fileUrl = `/storage/policies/${data.policy.attachments}`;
+                        $('#attachments').after(`
+                            <div id="current-attachment" class="mt-2">
+                                <a href="${fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary"> <i class="ti ti-pin me-1"></i> ${data.policy.attachments} </a>
+                            </div>
+                        `);
+                    } else {
+                        $('#current-attachment').remove();
+                    }
                 },
                 error: function () {
                     alert('Failed to load policy data.');
