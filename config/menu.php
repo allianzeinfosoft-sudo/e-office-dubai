@@ -295,7 +295,7 @@ return [
         'icon' => 'ti ti-rss',
         'route' => 'javascript:void(0);',
         'isActive' => [],
-        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banner','view event'],
+        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banners','view event'],
         'submenu' => [
             [
                 'title' => 'Seen status report',
@@ -305,19 +305,10 @@ return [
             ],
             [
                 'title' => 'Thoughts',
-                'route' =>  '#',
+                'route' =>  'thoughts',
                 'isActive' => [],
-                'permission' => ['view thoughts'],
-                'submenu' => [
+                'permission' => ['view thought'],
 
-                    [
-                        'title' => 'view thoughts',
-                        'route' => "#",
-                        'isActive' => [],
-                        'permission' => ['view thoughts'],
-                        ''
-                    ]
-                ]
             ],
             [
                 'title' => 'Appreciation',
@@ -330,16 +321,7 @@ return [
                 'title' => 'Policies',
                 'route' =>  '#',
                 'isActive' => [],
-                'permission' => ['view policy'],
-                'submenu' => [
-                    [
-                        'title' => 'View Policy',
-                        'route' => "#",
-                        'isActive' => [],
-                        'permission' => ['view policy'],
-                        ''
-                    ]
-                ]
+                'permission' => ['view policy']
             ],
             [
                 'title' => 'Announcement',
@@ -358,9 +340,9 @@ return [
 
                     [
                         'title' => 'View Banner',
-                        'route' => "#",
+                        'route' => "banner",
                         'isActive' => [],
-                        'permission' => ['view banner'],
+                        'permission' => ['view banners'],
                         ''
                     ]
                 ]

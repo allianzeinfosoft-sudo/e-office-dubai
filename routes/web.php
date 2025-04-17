@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppreciationController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\FeedsController;
@@ -198,6 +199,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);
+
+    /* Banner */
+    Route::resource('banner', BannerController::class);
 
 });
 
