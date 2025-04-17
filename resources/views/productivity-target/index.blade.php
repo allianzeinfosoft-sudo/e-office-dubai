@@ -128,7 +128,7 @@
                         render: function (data, type, row) {
                             return `
                                 <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-project" onclick="openOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
+                                <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProductivityTarget(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
                             `;
                         }
                     }
@@ -162,6 +162,34 @@
     var offcanvasElement = $('#productivity_target_offcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
+}
+
+function deleteProductivityTarget(id) {
+    if (!confirm("Are you sure you want to delete this productivity target?")) {
+        return;
+    }
+
+    $.ajax({
+        url: "{{ url('productivity-target') }}/" + id,
+        type: "DELETE",
+        data: {
+            _token: "{{ csrf_token() }}"
+        },
+        success: function(response) {
+            if (response.success) {
+                //alert(response.message || "Deleted successfully!");
+                toastr["error"](response.message);
+                // Refresh the DataTable
+                $('.datatables-productivity-targets').DataTable().ajax.reload(null, false);
+            } else {
+               // alert(response.message || "Something went wrong!");
+                toastr["error"](response.message);
+            }
+        },
+        error: function(xhr) {
+            alert("Error: " + xhr.responseText);
+        }
+    });
 }
 
 </script>

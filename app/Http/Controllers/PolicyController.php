@@ -27,6 +27,8 @@ class PolicyController extends Controller
                         'descriptions'      => $policy->descriptions ?? '',
                         'policyStartDate'   => date('d-m-Y', strtotime($policy->policyStartDate)),
                         'pollicyEndDate'    => date('d-m-Y', strtotime($policy->pollicyEndDate)),
+                        'department'         => $policy->department->department ?? '',
+                        'role'              => $policy->role->name ?? '',
                         'attachments'       => $policy->attachments ?? '',
                         'createdAt'         => $policy->created_at->format('d-m-Y'),
                     ];
@@ -56,6 +58,8 @@ class PolicyController extends Controller
             'policyTitle'       => 'required|string|max:255',
             'policyStartDate'   => 'required|date',
             'pollicyEndDate'    => 'required|date',
+            'department_id'      => 'nullable|integer',
+            'role_id'           => 'nullable|integer',
             'descriptions'      => 'nullable|string',
             'attachments'       => 'nullable|file|mimes:pdf,docx,jpg,jpeg,png|max:10240', // Assuming max 10MB files
         ]);
@@ -96,6 +100,8 @@ class PolicyController extends Controller
                 'policyStartDate'   => $validatedData['policyStartDate'] ?? '',
                 'pollicyEndDate'    => $validatedData['pollicyEndDate'] ?? '',
                 'descriptions'      => $validatedData['descriptions'] ?? '',
+                'department_id'      => $validatedData['department_id'] ?? '',
+                'role_id'           => $validatedData['role_id'] ?? '',
                 'attachments'       => $validatedData['attachments'] ?? '',
             ]
         );

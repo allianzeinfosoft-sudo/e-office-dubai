@@ -412,13 +412,13 @@ return [
                 'title' => 'Project Tasks',
                 'route' =>  'tasks-project',
                 'isActive' => ['tasks-project*'],
-                'permission' => ['view project task'],
+                'permission' => [],
             ],
             [
                 'title' => 'Productivity Targets',
                 'route' =>  'productivity-target',
                 'isActive' => ['productivity-target*'],
-                'permission' => ['view productivity target'],
+                'permission' => [],
             ]
         ]
     ],

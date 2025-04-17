@@ -46,7 +46,8 @@
                                             <th>Policy Title</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
-                                            <th>Attachment</th>
+                                            <th>Department</th>
+                                            <th>Group</th>
                                             <th>Description</th>
                                             <th>Created</th>
                                             <th>Actions</th>
@@ -132,25 +133,17 @@
                     { data: 'policyTitle', name: 'Policy Title' },
                     { data: 'policyStartDate', name: 'Start Date' },
                     { data: 'pollicyEndDate', name: 'End Date' },
-                    { data: 'attachments', name: 'Attachments',
-                        render: function (data, type, row) {
-                            if (row.attachments) {
-                                return `<a href="${assetBaseUrl}/policies/${row.attachments}" target="_blank" class="st"><i class="ti ti-pin"></i></a>`;
-                            } else {
-                                return '';
-                            }
-                        }
-                     },
+                    { data: 'department', name: 'Department',},
+                    { data: 'role', name: 'Group',},
                     { data: 'descriptions', name: 'Description' },
                     { data: 'createdAt', name: 'Created' },
                     { 
                         data: null,
                         title: 'Actions',
                         render: function (data, type, row) {
-                            return `
+                            return ` <a href="${assetBaseUrl}/policies/${row.attachments}" target="_blank" class="btn btn-sm btn-icon btn-outline-success"><i class="ti ti-download"></i></a>
                                 <a href="javascript:void(0)" onclick="openPolicyOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary"><i class="ti ti-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-icon btn-danger" onclick="deletePolicy(${row.id})"><i class="ti ti-trash"></i></button>
-                            `;
+                                <button type="button" class="btn btn-sm btn-icon btn-danger" onclick="deletePolicy(${row.id})"><i class="ti ti-trash"></i></button>`;
                         }
                     }
                 ]
@@ -223,6 +216,8 @@
                     $('#policyTitle').val(data.policy.policyTitle);
                     $('#policyStartDate').flatpickr().setDate(data.policy.policyStartDate, true);
                     $('#pollicyEndDate').flatpickr().setDate(data.policy.pollicyEndDate, true);
+                    $('#department_id').val(data.policy.department_id).trigger('change');
+                    $('#role_id').val(data.policy.role_id).trigger('change');
                     const desc = data.policy.descriptions || '';
                     quillPolicy.root.innerHTML = desc;
                     $('#description').val(desc);

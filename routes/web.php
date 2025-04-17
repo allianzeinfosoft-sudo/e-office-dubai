@@ -144,6 +144,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/productivity-target', [ProductivityTargetController::class, 'index'])->name('productivity-target.index');
     Route::post('/productivity-target/store', [ProductivityTargetController::class, 'store'])->name('productivity-target.store');
     Route::get('/productivity-target/{ProductivityTarget}/edit', [ProductivityTargetController::class, 'edit'])->name('productivity-target.edit');
+    Route::delete('/productivity-target/{id}', [ProductivityTargetController::class, 'destroy'])->name('productivity-target.destroy');
+
 
 
 

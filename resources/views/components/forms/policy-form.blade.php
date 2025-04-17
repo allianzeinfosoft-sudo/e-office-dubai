@@ -25,6 +25,30 @@
             </div>
         </div>
 
+        <div class="col-sm-6 mb-3">
+            <div class="form-group">
+                <label for="department_id">Department</label>
+                <select name="department_id" id="department_id" class="form-control select2">
+                    <option value="">Select Department</option>
+                    @foreach($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->department }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-6 mb-3">
+            <div class="form-group">
+                <label for="role_id">Group</label>
+                <select name="role_id" id="role_id" class="form-control select2">
+                    <option value="">Select Group</option>
+                    @foreach($roles as $role)
+                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        
         <div class="col-sm-12 mb-3">
             <div class="form-group">
                 <label for="description-editor">Policy Description</label>

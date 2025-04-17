@@ -15,19 +15,19 @@ class ProductivityTargetController extends Controller
         /* ajax request */
         if ($request->ajax()) {
             // Handle the AJAX request here
-            $productivityTargets = ProductivityTarget::with('project', 'projectTask', 'employee')->get();
+            $productivityTargets = ProductivityTarget::with('project', 'projectTask', 'employee',)->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Attendance marked successfully',
                 'data' => $productivityTargets->map(function ($productivityTarget) {
                     return [
                         'id'            => $productivityTarget->id,
-                        'projectName'   => $productivityTarget->project->project_name,
-                        'projectTask'   => $productivityTarget->projectTask->task_name ?? '', 
-                        'employee'      => $productivityTarget->employee->full_name,
-                        'target_month'  => $productivityTarget->target_month,
-                        'target_year'   => $productivityTarget->target_year,
-                        'rph'           => $productivityTarget->rph,
+                        'projectName'   => $productivityTarget->project->project_name ?? '',
+                        'projectTask'   => $productivityTarget->projectTask->tasks->name ?? '', 
+                        'employee'      => $productivityTarget->employee->full_name ?? '',
+                        'target_month'  => $productivityTarget->target_month ?? '',
+                        'target_year'   => $productivityTarget->target_year ?? '',
+                        'rph'           => $productivityTarget->rph ?? '',
                     ];
                 }),
             ]);
@@ -102,8 +102,13 @@ class ProductivityTargetController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ProductivityTarget $productivityTarget)
-    {
+    public function destroy($id){
         //
+        $target = ProductivityTarget::find($id);
+        if ($target) {
+            $target->delete();
+            return response()->json(['success' => true, 'message' => 'Productivity target deleted successfully.']);
+        }
+        return response()->json(['success' => false, 'message' => 'Target not found.']);
     }
 }
