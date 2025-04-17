@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppreciationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PolicyController;
 
+use App\Models\Appreciation;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -219,6 +221,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/others/policies/store', [PolicyController::class, 'store'])->name('others.policies.store');
     Route::get('/others/policies/{policy}/edit', [PolicyController::class, 'edit'])->name('others.policies.edit');
     Route::delete('/others/policies/{policy}/destroy', [PolicyController::class, 'destroy'])->name('others.policies.destroy');
+
+    /*Appreciation*/
+    Route::resource('appreciation', AppreciationController::class);
 
 });
 
