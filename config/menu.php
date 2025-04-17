@@ -321,19 +321,9 @@ return [
             ],
             [
                 'title' => 'Appreciation',
-                'route' =>  '#',
+                'route' =>  'appreciation',
                 'isActive' => [],
-                'permission' => ['view appreciation'],
-                'submenu' => [
-
-                    [
-                        'title' => 'view Appreciation',
-                        'route' => "#",
-                        'isActive' => [],
-                        'permission' => ['view appreciation'],
-                        ''
-                    ]
-                ]
+                'permission' => ['view appreciation']
 
             ],
             [

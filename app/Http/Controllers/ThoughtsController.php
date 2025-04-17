@@ -59,7 +59,7 @@ class ThoughtsController extends Controller
                 'thoughts_title'   => $request->thoughts_title,
                 'display_date'    => $request->display_date,
                 'thoughts_details'  => $request->thoughts_details,
-                'picture'           => $profileImagePath ?? ($request->id ? Thoughts::find($request->id)->picture : 'thoughts_pictures/no-images.jpeg'),
+                'picture'           => $profileImagePath ?? ($request->id ? Thoughts::find($request->id)->picture : 'thoughts_pictures/no-images.jpg'),
             ]
         );
 

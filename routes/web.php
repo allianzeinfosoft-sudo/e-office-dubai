@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppreciationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\ProductivityTargetController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\RecruitmentController;
 use App\Http\Controllers\ThoughtsController;
+use App\Models\Appreciation;
 use App\Models\Designation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -193,6 +195,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('thoughts',ThoughtsController::class);
     Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
     Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
+
+    /*Appreciation*/
+    Route::resource('appreciation', AppreciationController::class);
 
 });
 

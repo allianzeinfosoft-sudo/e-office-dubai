@@ -18,11 +18,14 @@
 
 
     document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById('leaveForm');
-        const quillEditor = new Quill('#leave-editor', { theme: 'snow' });
 
+        const form = document.getElementById('leaveForm');
         form.addEventListener('submit', function (e) {
             e.preventDefault(); // Always prevent default first
+
+
+            const quillEditor = new Quill('#leave-editor', { theme: 'snow' });
+
 
             // Get values
             const userId = document.getElementById('user_id').value.trim();
