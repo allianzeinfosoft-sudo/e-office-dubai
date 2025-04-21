@@ -48,6 +48,7 @@
                                             <th>Created By</th>
                                             <th>Assigned To</th>
                                             <th>Attachment</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -82,6 +83,26 @@
         <div class="row">
             <div class="col-sm-12">
                 <x-mom-form />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="viewMOM" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel1">View MOM</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Close</button>
+                <input type="hidden" name="id" id="target_id">
+                <button type="button" onclick="markAsRead()" class="btn btn-primary waves-effect waves-light">Mark as Read</button>
             </div>
         </div>
     </div>
@@ -151,11 +172,15 @@
                         : '-';
                 }
             },
+            { data: 'status', name: 'Status' },
             { 
                 data: null,
                 title: 'Actions',
                 render: function (data, type, row) {
                     return `
+                        <a href="javascript:void(0)" onclick="viewMomModal('${row.id}')" class="btn btn-sm btn-icon btn-success">
+                            <i class="ti ti-eye"></i>
+                        </a>
                         <a href="javascript:void(0)" onclick="openMomOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary">
                             <i class="ti ti-edit"></i>
                         </a>
@@ -276,5 +301,39 @@
             });
         }
     }
+
+    function viewMomModal(id) {
+        const url = "{{ route('others.moms.show', ':mom') }}".replace(':mom', id);
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                $('#viewMOM .modal-body').html(data.html);
+                $('.modal-title').text(data.meta_title);
+                $('#viewMOM').modal('show');
+                $('#target_id').val(id);
+            },
+            error: function () {
+                alert('Failed to load MOM data.');
+            }
+        });
+    }
+
+    function markAsRead() {
+        const id = $('#target_id').val();
+        $.ajax({
+            url: "{{ route('others.moms.mark-as-read', ':mom') }}".replace(':mom', id),
+            type: "POST",
+            data: { _token: "{{ csrf_token() }}" },
+            success: function(response) {
+                $('#viewMOM').modal('hide');
+                $('.datatables-mom').DataTable().ajax.reload();
+            },
+            error: function() {
+                alert("Error marking as read. Please try again.");
+            }
+        });
+    }
+
 </script>
 @endpush

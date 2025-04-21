@@ -149,10 +149,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/productivity-target/{ProductivityTarget}/edit', [ProductivityTargetController::class, 'edit'])->name('productivity-target.edit');
     Route::delete('/productivity-target/{id}', [ProductivityTargetController::class, 'destroy'])->name('productivity-target.destroy');
 
-
-
-
-
     /* Work Report */
     Route::post('/work-report/store', [WorkReportController::class, 'store'])->name('work-report.store');
     Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
@@ -228,6 +224,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/others/moms/store', [MomController::class, 'store'])->name('others.moms.store');
     Route::get('/others/moms/{mom}/edit', [MomController::class, 'edit'])->name('others.moms.edit');
     Route::delete('/others/moms/{mom}/destroy', [MomController::class, 'destroy'])->name('others.moms.destroy');
+    Route::get('/others/moms/{mom}/show', [MomController::class, 'show'])->name('others.moms.show');
+    Route::post('/others/moms/{mom}/mark-as-read', [MomController::class, 'markAsRead'])->name('others.moms.mark-as-read');
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);

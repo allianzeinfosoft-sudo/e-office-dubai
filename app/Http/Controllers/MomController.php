@@ -43,7 +43,7 @@ class MomController extends Controller
                         'created_by' => $mom->employee->full_name ?? '',
                         'assigned_to' => $assignedTo ?? '',
                         'attachments' => $mom->attachments ?? '',
-                        'status' => $mom->status,
+                        'status' => ($mom->status == 1) ? '<span class="badge bg-success me-1">Read</span>' : '<span class="badge bg-warning me-1">Unread</span>', //$mom->status == 1 ? '  Read' : 'Unread',
                         'created_at' => date('d-m-Y', strtotime($mom->created_at)), //optional($mom->created_at)->format('d-m-Y'),
                     ];
                 }),
@@ -119,6 +119,23 @@ class MomController extends Controller
         $data['mom'] = $mom;
         $data['meta_title'] = 'Edit MOM';
         return response()->json($data);
+    }
+
+    public function show(Mom $mom){
+        $data['mom'] = $mom;
+        $data['meta_title'] = $mom->mom_title;
+        $html = view('others.moms.show', $data)->render();
+        //return view('others.moms.show', $data);
+        return response()->json([
+            'message' => 'MOM fetched successfully',
+            'html' => $html,
+            'meta_title' => $mom->mom_title
+        ]);
+    }
+
+    public function markAsRead(Mom $mom){
+        $mom->update(['status' => 1]);
+        return response()->json(['message' => 'MOM marked as read successfully']);
     }
 
     /**
