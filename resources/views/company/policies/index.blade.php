@@ -85,6 +85,26 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="viewCompanyPolicy" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel1">View MOM</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Close</button>
+                <input type="hidden" name="id" id="target_id">
+                <button type="button" onclick="markAsRead()" class="btn btn-primary waves-effect waves-light">Mark as Read</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
 
 @push('js')
@@ -143,6 +163,7 @@
                         data: null,
                         render: function (data, type, row) {
                             return `
+                                <a href="javascript:void(0)" onclick="viewCompanyPolicyModal('${row.id}')" class="btn btn-sm btn-icon btn-success"><i class="ti ti-eye"></i></a>
                                 <a href="javascript:void(0)" onclick="openCompanyPolicyOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary"><i class="ti ti-edit"></i></a>
                                 <button type="button" class="btn btn-sm btn-icon btn-danger" onclick="deletePolicy(${row.id})"><i class="ti ti-trash"></i></button>`;
                         }
@@ -221,7 +242,7 @@
                     $('#description').val(desc);
 
                     if (data.policy.attachments) {
-                        const fileUrl = `/storage/policies/${data.policy.attachments}`;
+                        const fileUrl = `/storage/company_policies/${data.policy.attachments}`;
                         $('#attachments').after(`
                             <div id="current-attachment" class="mt-2">
                                 <a href="${fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary"> <i class="ti ti-pin me-1"></i> ${data.policy.attachments} </a>
@@ -255,6 +276,39 @@
                 }
             });
         }
+    }
+
+    function viewCompanyPolicyModal(id) {
+        const url = "{{ route('view.company-policies.show', ':companyPolicy') }}".replace(':companyPolicy', id);
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                $('#viewCompanyPolicy .modal-body').html(data.html);
+                $('.modal-title').text(data.meta_title);
+                $('#viewCompanyPolicy').modal('show');
+                $('#target_id').val(id);
+            },
+            error: function () {
+                alert('Failed to load Company Policy data.');
+            }
+        });
+    }
+
+    function markAsRead() {
+        const id = $('#target_id').val();
+        $.ajax({
+            url: "{{ route('view.company-policies.mark-as-read', ':companyPolicy') }}".replace(':companyPolicy', id),
+            type: "POST",
+            data: { _token: "{{ csrf_token() }}" },
+            success: function(response) {
+                $('#viewCompanyPolicy').modal('hide');
+                $('.datatables-policy').DataTable().ajax.reload();
+            },
+            error: function() {
+                alert("Error marking as read. Please try again.");
+            }
+        });
     }
 </script>
 @endpush

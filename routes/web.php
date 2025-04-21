@@ -208,6 +208,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/view/company-policies/store', [CompanyPolicyController::class, 'store'])->name('view.company-policies.store');
     Route::get('/view/company-policies/edit/{companyPolicy}', [CompanyPolicyController::class, 'edit'])->name('view.company-policies.edit');
     Route::delete('/view/company-policies/delete/{companyPolicy}', [CompanyPolicyController::class, 'destroy'])->name('view.company-policies.destroy');
+    Route::get('/view/company-policies/show/{companyPolicy}', [CompanyPolicyController::class, 'show'])->name('view.company-policies.show');
+    Route::post('/view/company-policies/{companyPolicy}/mark-as-read', [CompanyPolicyController::class, 'markAsRead'])->name('view.company-policies.mark-as-read');
     
     /* Others/Announcements */
     Route::get('/others/announcements', [AnnouncementController::class, 'index'])->name('others.announcements.index');

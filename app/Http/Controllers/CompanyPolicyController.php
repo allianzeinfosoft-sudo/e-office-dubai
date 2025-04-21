@@ -83,6 +83,18 @@ class CompanyPolicyController extends Controller
         ]);
     }
 
+    public function show(CompanyPolicy $companyPolicy){
+        $data['companyPolicy'] = $companyPolicy;
+        $data['meta_title'] = $companyPolicy->policyTitle;
+        $html = view('company.policies.show', $data)->render();
+        //return view('others.moms.show', $data);
+        return response()->json([
+            'message' => 'MOM fetched successfully',
+            'html' => $html,
+            'meta_title' => $companyPolicy->policyTitle,
+        ]);
+    }
+
     public function edit(CompanyPolicy $companyPolicy){
         $data['policy'] = $companyPolicy;
         $data['meta_title'] = 'Edit Company Policy';
@@ -97,5 +109,10 @@ class CompanyPolicyController extends Controller
         $companyPolicy->delete();
 
         return response()->json(['message' => 'Company Policy deleted successfully']);
+    }
+
+    public function markAsRead(CompanyPolicy $companyPolicy){
+        $companyPolicy->update(['status' => 1]);
+        return response()->json(['message' => 'Company Policy marked as read successfully']);
     }
 }
