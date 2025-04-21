@@ -269,7 +269,7 @@ return [
             ],
             [
                 'title' => 'Company Policies ',
-                'route' =>  '#',
+                'route' =>  '/view/company-policies',
                 'permission' => ['view policy'],
                 'badge' => "New",
             ],

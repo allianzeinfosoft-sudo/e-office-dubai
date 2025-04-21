@@ -25,6 +25,7 @@ use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\MomController;
+use App\Http\Controllers\CompanyPolicyController;
 
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -200,6 +201,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('thoughts',ThoughtsController::class);
     Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
     Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
+
+    /* Views/Company policies */
+
+    Route::get('/view/company-policies', [CompanyPolicyController::class, 'index'])->name('view.company-policies');
+    Route::post('/view/company-policies/store', [CompanyPolicyController::class, 'store'])->name('view.company-policies.store');
+    Route::get('/view/company-policies/edit/{companyPolicy}', [CompanyPolicyController::class, 'edit'])->name('view.company-policies.edit');
+    Route::delete('/view/company-policies/delete/{companyPolicy}', [CompanyPolicyController::class, 'destroy'])->name('view.company-policies.destroy');
     
     /* Others/Announcements */
     Route::get('/others/announcements', [AnnouncementController::class, 'index'])->name('others.announcements.index');
