@@ -178,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Remove active class from each folder filters
         Helpers._removeClass('active', emailFilterByFolders);
+        
         // Add active class to selected folder filters
         currentTarget.classList.add('active');
         emailListItems.forEach(emailListItem => {

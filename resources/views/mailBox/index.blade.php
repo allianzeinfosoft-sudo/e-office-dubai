@@ -16,22 +16,24 @@
             <x-header />
 
             <div class="content-wrapper">
-                <div class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
+              <div class="container-xxl flex-grow-1 container-p-y">
+                <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
+                
+                <div class="app-email card">
+                  <div class="row g-0">
 
-                    <div class="app-email card">
-                <div class="row g-0">
                   <!-- Email Sidebar -->
                   <div class="col app-email-sidebar border-end flex-grow-0" id="app-email-sidebar">
+
+                    <!-- Compose Button -->
                     <div class="btn-compost-wrapper d-grid">
                       <button class="btn btn-primary btn-compose" data-bs-toggle="modal" data-bs-target="#emailComposeSidebar" id="emailComposeSidebarLabel"> Compose</button>
                     </div>
-
+                    
                     <!-- Email Filters -->
                     <div class="email-filters py-2">
-                    <!-- Email Filters: Folder -->
-                    <ul class="email-filter-folders list-unstyled mb-4">
-
+                      <!-- Email Filters: Folder -->
+                      <ul class="email-filter-folders list-unstyled mb-4">
                         <li class="active d-flex justify-content-between" data-target="inbox"> 
                           <a href="javascript:void(0);" onclick="getMails('inbox');" class="d-flex flex-wrap align-items-center">
                             <i class="ti ti-mail"></i>
@@ -60,7 +62,7 @@
                             </a>
                             <div class="badge bg-label-warning rounded-pill badge-center">10</div>
                         </li>
-                        
+                          
                         <li class="d-flex align-items-center" data-target="spam">
                           <a href="javascript:void(0);" onclick="getMails('spam');" class="d-flex flex-wrap align-items-center">
                             <i class="ti ti-info-circle"></i>
@@ -75,42 +77,9 @@
                           </a>
                         </li>
                       </ul>
-
-                      <!-- Email Filters: Labels -->
-                      <div class="email-filter-labels">
-                        <small class="fw-normal text-uppercase text-muted m-4">Labels</small>
-                        <ul class="list-unstyled mb-0 mt-2">
-                          <li data-target="work">
-                            <a href="javascript:void(0);">
-                              <span class="badge badge-dot bg-success"></span>
-                              <span class="align-middle ms-2">Work</span>
-                            </a>
-                          </li>
-
-                          <li data-target="company">
-                            <a href="javascript:void(0);">
-                              <span class="badge badge-dot bg-primary"></span>
-                              <span class="align-middle ms-2">Company</span>
-                            </a>
-                          </li>
-
-                          <li data-target="important">
-                            <a href="javascript:void(0);">
-                              <span class="badge badge-dot bg-info"></span>
-                              <span class="align-middle ms-2">Important</span>
-                            </a>
-                          </li>
-
-                          <li data-target="private">
-                            <a href="javascript:void(0);">
-                              <span class="badge badge-dot bg-danger"></span>
-                              <span class="align-middle ms-2">Private</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
                       <!--/ Email Filters -->
                     </div>
+
                   </div>
                   <!--/ Email Sidebar -->
 
@@ -121,6 +90,7 @@
 
                         <!-- Email List: Search -->
                         <div class="d-flex justify-content-between align-items-center">
+
                           <div class="d-flex align-items-center w-100">
                             <i class="ti ti-menu-2 ti-sm cursor-pointer d-block d-lg-none me-3" data-bs-toggle="sidebar" data-target="#app-email-sidebar" data-overlay></i>
                             <div class="mb-0 mb-lg-2 w-100">
@@ -201,6 +171,7 @@
                           </div>
                         </div>
                       </div>
+
                       <hr class="container-m-nx m-0" />
 
                       <!-- Email List: Items -->
@@ -317,6 +288,7 @@
                         </div>
                       </div>
                     </div>
+
                     <hr class="m-0" />
 
                     <!-- Email View : Content-->
@@ -584,7 +556,7 @@
 
 
 @push('js')
-<script src="{{ asset('assets/js/app-email.js') }}"></script>
+<!-- <script src="{{ asset('assets/js/app-email.js') }}"></script> -->
 <script>
 
   var massgeQuill = new Quill('.email-editor', {
@@ -595,28 +567,64 @@
     theme: 'snow'
   });
 
-  var replyQuill = new Quill('.email-reply-editor', {
+ /*  var replyQuill = new Quill('.email-reply-editor', {
     modules: {
       toolbar: '.email-reply-toolbar'
     },
     placeholder: 'Write your message... ',
     theme: 'snow'
-  });
+  }); */
   
   $(function(){
+
+    
     getMails('inbox');
 
-        /* store function */
-        $('.btn-send-mail').on('click', function() {
-            
-            submitMail(3);  // status = 1 for Sent
+    
+    /* store function */
+    $('.btn-send-mail').on('click', function() {
+      
+      submitMail(3);  // status = 1 for Sent
+    });
+    
+    $('.btn-save-draft').on('click', function() {
+      submitMail(1);  // status = 0 for Draft
+    });
+    
+    
+    // Filter based on folder type (Inbox, Sent, Draft etc...)
+    const emailFilterByFolders = Array.from(document.querySelectorAll('.email-filter-folders li'));
+
+      /* email filter */
+        emailFilterByFolders.forEach(folder => {
+          folder.addEventListener('click', e => {
+            const currentTarget = e.currentTarget;
+
+            // Remove 'active' class from all folders
+            emailFilterByFolders.forEach(f => f.classList.remove('active'));
+
+            // Add 'active' to the clicked folder
+            currentTarget.classList.add('active');
+
+            // Get the target data and call the appropriate function
+            const currentTargetData = currentTarget.getAttribute('data-target');
+            getMails(currentTargetData); // Assuming getMails handles the mail fetching based on folder
+          });
         });
 
-        $('.btn-save-draft').on('click', function() {
-            submitMail(1);  // status = 0 for Draft
+
+        const selectAllEmails = document.getElementById('email-select-all');
+        const emailListItemInputs = Array.from(document.querySelectorAll('.email-list-item-input'));
+
+        emailListItemInputs.forEach(input => {
+          input.addEventListener('change', () => {
+            selectAllEmails.checked = emailListItemInputs.every(input => input.checked);
+          });
         });
 
     });
+
+    
 
     function getMails(folder = 'inbox') {
       $.ajax({
@@ -697,10 +705,10 @@
         contentType: false,
         success: function(response) {
             if(response.status) {
-                alert(status === 3 ? 'Mail sent!' : 'Draft saved!');
-                $('.email-compose-form')[0].reset();
-                quill.root.innerHTML = '';
-                $('#emailComposeSidebar').modal('hide');
+              alert(status === 3 ? 'Mail sent!' : 'Draft saved!');
+              $('.email-compose-form')[0].reset();
+              quill.root.innerHTML = '';
+              $('#emailComposeSidebar').modal('hide');
 
             } else {
                 alert('Something went wrong!');

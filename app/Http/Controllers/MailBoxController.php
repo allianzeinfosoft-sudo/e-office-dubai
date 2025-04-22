@@ -160,7 +160,7 @@ class MailBoxController extends Controller
 
     public function folder($folder){
 
-        $allowedFolders = ['inbox', 'draft', 'sent', 'spam', 'trash'];
+        $allowedFolders = ['inbox', 'draft', 'sent', 'starred',  'spam', 'trash'];
 
         if (!in_array($folder, $allowedFolders)) {
             return response()->json([
@@ -189,6 +189,10 @@ class MailBoxController extends Controller
                     ->where('folder', 'draft');
                 break;
 
+            case 'starred':
+                $query->where('is_starred', $userId)
+                    ->where('folder', 'sent');
+                break;
             case 'spam':
             case 'trash':
                 // assuming the folder field is set for these too
