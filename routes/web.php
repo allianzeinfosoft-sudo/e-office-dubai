@@ -26,6 +26,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\MomController;
 use App\Http\Controllers\CompanyPolicyController;
+use App\Http\Controllers\MailBoxController;
 
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -239,6 +240,15 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);
+
+    /* Email */
+    // Route::get('/mail-box', [MailBoxController::class, 'index'])->name('mailbox.index');
+    Route::resource('mail-boxes', MailBoxController::class);
+    Route::get('/mail-boxes/folder/{folder}', [MailBoxController::class, 'folder']);
+    Route::get('/mail-boxes/starred', [MailBoxController::class, 'starred']);
+
+
+
 
 });
 

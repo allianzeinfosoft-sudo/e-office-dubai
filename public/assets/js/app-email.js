@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize Quill Editor
     // ------------------------------
-    if (emailEditor) {
+   /*  if (emailEditor) {
       new Quill('.email-editor', {
         modules: {
           toolbar: '.email-editor-toolbar'
@@ -65,9 +65,9 @@ document.addEventListener('DOMContentLoaded', function () {
         placeholder: 'Write your message... ',
         theme: 'snow'
       });
-    }
+    } */
 
-    if (emailReplyEditor) {
+    /* if (emailReplyEditor) {
       new Quill('.email-reply-editor', {
         modules: {
           toolbar: '.email-reply-toolbar'
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         placeholder: 'Write your message... ',
         theme: 'snow'
       });
-    }
+    } */
 
     // Bookmark email
     if (bookmarkEmail) {

@@ -488,32 +488,9 @@ return [
     [
         'title' => 'Email',
         'icon' => 'ti ti-mail-forward',
-        'route' => 'javascript:void(0);',
-        'permission' => ['view emails','view starred','send mail','trashed mail'],
-        'submenu' => [
-            [
-                'title' => 'Inbox',
-                'route' =>  '#',
-                'permission' => ['view emails'],
-            ],
-            [
-                'title' => 'Starred',
-                'route' =>  '#',
-            ],
-            [
-                'title' => 'Sent Email',
-                'route' =>  '#',
-                'permission' => ['send email'],
-            ],
-            [
-                'title' => 'Trash',
-                'route' =>  '#',
-                'permission' => ['trashed mail'],
-            ],
-        ]
+        'route' => '/mail-boxes',
+        'permission' => ['view emails','view starred','send mail','trashed mail']
     ],
-
-
     [
         'header' => 'Settings',
     ],
