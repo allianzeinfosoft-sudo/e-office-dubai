@@ -285,7 +285,7 @@ return [
             ],
             [
                 'title' => 'User Reminder List',
-                'route' =>  '#',
+                'route' =>  'reminder',
                 'permission' => ['view reminder'],
             ],
         ]

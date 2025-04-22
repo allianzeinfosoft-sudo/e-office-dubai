@@ -21,9 +21,11 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProductivityTargetController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\RecruitmentController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ThoughtsController;
 use App\Models\Appreciation;
 use App\Models\Designation;
+use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -203,5 +205,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     /* Banner */
     Route::resource('banner', BannerController::class);
 
+    /* Reminder */
+    Route::resource('reminder',ReminderController::class);
 });
 
