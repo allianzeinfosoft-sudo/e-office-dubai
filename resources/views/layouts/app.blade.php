@@ -118,7 +118,7 @@
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
 
-   {{-- <script src="{{ asset('assets/js/forms-editors.js') }}"></script> --}}
+   <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
    <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
    <script src="{{ asset('assets/vendor/libs/bloodhound/bloodhound.js') }}"></script>
 

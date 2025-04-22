@@ -102,5 +102,40 @@ return [
         '3' => 'Interview Ready',
         '4' => 'Recuited',
     ],
+    'reminder_repeat_modes' => [
+        'daily' => 'Daily',
+        'weekly' => 'Weekly',
+        'monthly' => 'Monthly',
+        'yearly' => 'Yearly'
+    ],
+    'weekdays' => [
+        'sun' => 'Sun',
+        'mon' => 'Mon',
+        'tue' => "Tue",
+        'wed' => 'Wed',
+        'Thu' => 'Thu',
+        'fri'   => 'Fri'
+    ],
+    'months' => [
+        'jan' => 'Jan',
+        'feb' => 'Feb',
+        'mar' => 'Mar',
+        'apr' => 'Apr',
+        'may' => 'May',
+        'jun' => 'Jun',
+        'jul' => 'Jul',
+        'aug' => 'Aug',
+        'sep' => 'Sep',
+        'oct' => 'Oct',
+        'nov' => 'Nov',
+        'dec' => 'Dec',
+    ],
+    'weekpostions' => [
+        'first' => 'FIRST',
+        'second' => 'SECOND',
+        'third' => 'THIRD',
+        'fourth' => 'FOURTH',
+        'lat' => 'LAST'
+    ],
 
 ];

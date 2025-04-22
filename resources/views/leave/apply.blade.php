@@ -134,3 +134,95 @@
   <!-- / Layout wrapper -->
 @endsection
 
+@push('js')
+<script>
+    var quillLeaveEditor = new Quill('#leave-editor',
+    { theme: 'snow',
+        placeholder: 'Type your reason here...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['link'],
+                    ['clean']
+                ]
+            }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const Leaveform = document.getElementById('leaveForm');
+    Leaveform.addEventListener('submit', function (e) {
+            e.preventDefault();
+            // Get values
+            const userId = document.getElementById('user_id').value.trim();
+            const leaveFrom = document.getElementById('leave-from').value.trim();
+            const leaveTo = document.getElementById('leave-to').value.trim();
+            const reason = quillLeaveEditor.root.innerText.trim(); // Plain text
+            const hiddenReason = document.getElementById('reason');
+            hiddenReason.value = quillLeaveEditor.root.innerHTML.trim(); // Store HTML in hidden field
+
+            let errors = [];
+
+            // === Validation ===
+            if (!userId) {
+                errors.push("User is required.");
+            }
+
+            if (!leaveFrom) {
+                errors.push("Leave From date is required.");
+            } else if (isNaN(Date.parse(leaveFrom))) {
+                errors.push("Leave From must be a valid date.");
+            }
+
+            if (!leaveTo) {
+                errors.push("Leave To date is required.");
+            } else if (isNaN(Date.parse(leaveTo))) {
+                errors.push("Leave To must be a valid date.");
+            }
+
+            if (!isNaN(Date.parse(leaveFrom)) && !isNaN(Date.parse(leaveTo))) {
+                let fromDate = new Date(leaveFrom);
+                let toDate = new Date(leaveTo);
+                if (fromDate > toDate) {
+                    errors.push("Leave From must be before or equal to Leave To.");
+                }
+            }
+
+            if (reason.length > 255) {
+                errors.push("Leave reason must not exceed 255 characters.");
+            }
+
+            if (!reason) {
+                errors.push("Leave reason is required");
+            }
+
+            const leaveTypeSelected = document.querySelector('input[name="leave_type"]:checked');
+            if (!leaveTypeSelected) {
+                errors.push("Please select a leave type.");
+            }
+
+
+
+            // === Show errors or submit ===
+            let errorBox = document.getElementById('formErrors');
+            if (!errorBox) {
+                errorBox = document.createElement('div');
+                errorBox.id = 'formErrors';
+                errorBox.className = 'alert alert-danger mt-3';
+                Leaveform.prepend(errorBox);
+            }
+
+            if (errors.length > 0) {
+                errorBox.innerHTML = '<ul class="mb-0">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            } else {
+                errorBox.innerHTML = ''; // Clear old errors
+                Leaveform.submit(); // Submit manually only if no errors
+            }
+        });
+    });
+
+
+</script>
+@endpush
+

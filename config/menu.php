@@ -285,7 +285,7 @@ return [
             ],
             [
                 'title' => 'User Reminder List',
-                'route' =>  '#',
+                'route' =>  'reminder',
                 'permission' => ['view reminder'],
             ],
         ]
@@ -305,19 +305,10 @@ return [
             ],
             [
                 'title' => 'Thoughts',
-                'route' =>  '#',
+                'route' =>  'thoughts',
                 'isActive' => [],
-                'permission' => ['view thoughts'],
-                'submenu' => [
+                'permission' => ['view thought'],
 
-                    [
-                        'title' => 'view thoughts',
-                        'route' => "#",
-                        'isActive' => [],
-                        'permission' => ['view thoughts'],
-                        ''
-                    ]
-                ]
             ],
             [
                 'title' => 'Appreciation',
@@ -346,10 +337,10 @@ return [
                         ''
                     ],
                     [
-                        'title' => 'Banners',
-                        'route' => "#",
+                        'title' => 'View Banner',
+                        'route' => "banner",
                         'isActive' => [],
-                        'permission' => [],
+                        'permission' => ['view banners'],
                         ''
                     ],
                 ]
