@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('designations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('department_id')->constrained()->onDelete('cascade');
-            $table->string('designation')->unique();
-            $table->timestamps();
+        Schema::table('departments', function (Blueprint $table) {
+            $table->dropUnique(['department']);
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('designations');
+        Schema::table('departments', function (Blueprint $table) {
+            $table->unique('department');
+        });
     }
 };

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('policies', function (Blueprint $table) {
             //
             $table->integer('department_id')->nullable()->after('pollicyEndDate');
-            $table->integer('role_id')->nullable()->after('developer_id');
+            $table->integer('role_id')->nullable()->after('department_id');
         });
     }
 
