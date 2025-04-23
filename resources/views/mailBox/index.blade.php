@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-email.css') }}" />
 <style>
   .app-email .app-emails-list .email-list li .email-list-item-time {
-    width: 90px;
+    width: 100px;
   }
 </style>
 @stop
@@ -306,6 +306,13 @@
     theme: 'snow'
   });
 
+  var replyQuill = new Quill('.email-reply-editor', {
+          modules: {
+            toolbar: '.email-reply-toolbar'
+          },
+          placeholder: 'Write your message... ',
+          theme: 'snow'
+        });
    
   
   $(function(){
@@ -396,7 +403,6 @@
         });
       });
     }
-
 
     });
 

@@ -72,40 +72,16 @@
     <div class="card-body">
         {!! $mail->message !!}
         <hr />
-        <p class="email-attachment-title mb-2"> <i class="ti ti-paperclip cursor-pointer me-2"></i> Attachments </p>
-            <div class="cursor-pointer"> <i class="ti ti-file"></i> <a href="" target="_blank"><span class="align-middle ms-1">report.xlsx</span></a>
+        @php
+            $attachments = json_decode($mail->attachments, true);
+        @endphp
+        @if($attachments)
+            <p class="email-attachment-title mb-2"> <i class="ti ti-paperclip cursor-pointer me-2"></i> Attachments </p>
+            @foreach($attachments as $file)
+            <div class="cursor-pointer"> <i class="ti ti-file"></i> <a href="{{ asset('storage/mail_attachments/' . $file) }}" target="_blank"><span class="align-middle ms-1">{{ $file }}</span></a>
+            @endforeach
+        @endif
         </div>
     </div>
-    </div>
-
-    <!-- Email View : Reply mail-->
-    <div class="email-reply card mt-4 mx-sm-4 mx-3">
-        <h6 class="card-header border-0">Reply to Ross Geller</h6>
-        <div class="card-body pt-0 px-3">
-            <div class="d-flex justify-content-start">
-            <div class="email-reply-toolbar border-0 w-100 ps-0">
-                <span class="ql-formats me-0">
-                <button class="ql-bold"></button>
-                <button class="ql-italic"></button>
-                <button class="ql-underline"></button>
-                <button class="ql-list" value="ordered"></button>
-                <button class="ql-list" value="bullet"></button>
-                <button class="ql-link"></button>
-                <button class="ql-image"></button>
-                </span>
-            </div>
-            </div>
-            <div class="email-reply-editor"></div>
-            <div class="d-flex justify-content-end align-items-center">
-                <div class="me-3">
-                    <label class="cursor-pointer" for="attach-file-1"><i class="ti ti-paperclip me-2"></i><span class="align-middle">Attachments</span></label>
-                    <input type="file" name="file-input" class="d-none" id="attach-file-1" />
-                </div>
-                <button class="btn btn-primary">
-                    <i class="ti ti-send ti-xs me-1"></i>
-                    <span class="align-middle">Send</span>
-                </button>
-            </div>
-        </div>
     </div>
 </div>
