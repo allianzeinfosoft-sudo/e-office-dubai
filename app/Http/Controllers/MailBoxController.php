@@ -66,13 +66,15 @@ class MailBoxController extends Controller
         // Handling multiple attachments
         if ($request->hasFile('attachments')) {
             $files = [];
+            
             foreach ($request->file('attachments') as $file) {
-                $path = $file->store('mail_attachments', 'public');
-                $files[] = $path;
+                $fileName = $file->hashName(); // Get unique file name
+                $file->storeAs('mail_attachments', $fileName, 'public'); // Store using custom name
+                $files[] = $fileName;
             }
-            $mail->attachments = json_encode($files);
-        }
 
+            $mail->attachments = json_encode($files); // Save as JSON array
+        }
         $mail->save();
 
         return response()->json(['status' => true, 'message' => 'Mail saved successfully!']);
@@ -85,18 +87,20 @@ class MailBoxController extends Controller
     public function show(MailBox $mailBox)
     {
         //
-        $mail = MailBox::find($id);
+        $data['mail'] = $mailBox;
 
-        if (!$mail) {
+        if (!$data['mail']) {
             return response()->json([
                 'status' => false,
                 'message' => 'Mail not found.'
             ], 404);
         }
 
+        $html = view('mailBox.readEmail', $data)->render();
+
         return response()->json([
             'status' => true,
-            'data' => $mail
+            'html' => $html,
         ]);
     }
 
@@ -222,5 +226,36 @@ class MailBoxController extends Controller
             'folder' => 'starred',
             'data' => $mails
         ]);
+    }
+
+    public function markAsStarred(Request $request){
+        $request->validate([
+            'mailId' => 'required|integer|exists:mail_boxes,id',
+        ]);
+    
+        $mail = MailBox::find($request->mailId);
+    
+        // Toggle is_starred value
+        $mail->is_starred = $mail->is_starred ? 0 : 1;
+        $mail->save();
+    
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Mail star status updated.',
+            'is_starred' => $mail->is_starred ? 'text-warning': "",
+            'mailId' => $mail->id
+        ]);
+    }
+    public function moveToFolder(Request $request){
+        $validated = $request->validate([
+            'mailIds' => 'required|array',
+            'folder' => 'required|string'
+        ]);
+
+        MailBox::whereIn('id', $validated['mailIds'])->update([
+            'folder' => $validated['folder']
+        ]);
+
+        return response()->json(['status' => 'success']);
     }
 }
