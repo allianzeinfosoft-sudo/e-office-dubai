@@ -278,4 +278,32 @@ class MailBoxController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+
+    public function markAsRead(Request $request){
+        $validated = $request->validate([
+            'mailIds' => 'required|array'
+        ]);
+        MailBox::whereIn('id', $validated['mailIds'])->update([
+            'mark_as_read' => 1
+        ]);
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function markRead(Request $request){
+        $request->validate([
+            'mailId' => 'required|integer|exists:mail_boxes,id',
+        ]);
+    
+        $mail = MailBox::find($request->mailId);
+    
+        // Toggle is_starred value
+        $mail->mark_as_read = $mail->mark_as_read ? 0 : 1;
+        $mail->save();
+    
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Mail mark as read updated.',
+        ]);
+    }
 }

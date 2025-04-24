@@ -27,15 +27,15 @@
 
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <i class="ti ti-trash cursor-pointer me-3" data-bs-toggle="sidebar" data-target="#app-email-view"></i>
-            <i class="ti ti-mail-opened cursor-pointer me-3"></i>
+            <i class="ti ti-trash cursor-pointer me-3" data-bs-toggle="sidebar" data-target="#app-email-view" onclick="moveToFolder('trash', {{ $mail->id }})"></i>
+            <i class="ti ti-mail-opened cursor-pointer me-3" onclick="markAsRead({{ $mail->id }})"></i>
 
             <div class="dropdown me-3">
                 <button class="btn p-0" type="button" id="dropdownMenuFolderTwo" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ti ti-folder"></i></button>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuFolderTwo">
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="ti ti-info-circle ti-xs me-1"></i><span class="align-middle">Spam</span></a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="ti ti-pencil ti-xs me-1"></i><span class="align-middle">Draft</span></a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="ti ti-trash ti-xs me-1"></i><span class="align-middle">Trash</span></a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="moveToFolder('spam', {{ $mail->id }})"><i class="ti ti-info-circle ti-xs me-1"></i><span class="align-middle">Spam</span></a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="moveToFolder('draft', {{ $mail->id }})"><i class="ti ti-pencil ti-xs me-1"></i><span class="align-middle">Draft</span></a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="moveToFolder('trash', {{ $mail->id }})"><i class="ti ti-trash ti-xs me-1"></i><span class="align-middle">Trash</span></a>
                 </div>
             </div>
         </div>

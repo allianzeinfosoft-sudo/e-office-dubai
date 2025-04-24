@@ -253,10 +253,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/mail-boxes/{mailBox}/show', [MailBoxController::class, 'show'])->name('mail-boxes.show');
     Route::post('/mail-boxes/mark-as-starred', [MailBoxController::class, 'markAsStarred'])->name('mail-boxes.mark-as-starred');
     Route::post('/mail-boxes/move-to-folder', [MailBoxController::class, 'moveToFolder'])->name('mail-boxes.move-to-folder');
-    
-
-
-
+    Route::post('/mail-boxes/mark-as-read', [MailBoxController::class, 'markAsRead'])->name('mail-boxes.mark-as-read');
+    Route::post('/mail-boxes/mark-read', [MailBoxController::class, 'markRead'])->name('mail-boxes.mark-read');
 
     /* Banner */
     Route::resource('banner', BannerController::class);
