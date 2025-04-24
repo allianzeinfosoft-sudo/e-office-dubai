@@ -42,22 +42,25 @@
                             <li class="active d-flex justify-content-between" data-target="inbox"> 
                               <a href="javascript:void(0);" onclick="getMails('inbox');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-mail"></i>
-                                <span class="align-middle ms-2">Inbox</span></a>
-                                <div class="badge bg-label-primary rounded-pill badge-center">4</div>
+                                <span class="align-middle ms-2">Inbox</span>
+                              </a>
+                                <div class="badge bg-label-primary rounded-pill badge-center">{{ $counts['inbox'] }}</div>
                             </li>
 
-                            <li class="d-flex" data-target="sent">
+                            <li class="d-flex justify-content-between" data-target="sent">
                                 <a href="javascript:void(0);" onclick="getMails('sent');" class="d-flex flex-wrap align-items-center">
                                     <i class="ti ti-send ti-xs"></i>
                                     <span class="align-middle ms-2">Sent</span>
-                                </a>
+                                  </a>
+                                  <div class="badge bg-label-success rounded-pill badge-center">{{ $counts['sent'] }}</div>
                             </li>
 
-                            <li class="d-flex" data-target="draft">
+                            <li class="d-flex justify-content-between" data-target="draft">
                                 <a href="javascript:void(0);" onclick="getMails('draft');" class="d-flex flex-wrap align-items-center">
                                     <i class="ti ti-file"></i>
                                     <span class="align-middle ms-2">Draft</span>
-                                </a>
+                                  </a>
+                                  <div class="badge bg-label-info rounded-pill badge-center">{{ $counts['draft'] }}</div>
                             </li>
 
                             <li class="d-flex justify-content-between" data-target="starred">
@@ -65,21 +68,23 @@
                                     <i class="ti ti-star"></i>
                                     <span class="align-middle ms-2">Starred</span>
                                 </a>
-                                <div class="badge bg-label-warning rounded-pill badge-center">10</div>
+                                <div class="badge bg-label-warning rounded-pill badge-center">{{ $counts['starred'] }}</div>
                             </li>
                               
-                            <li class="d-flex align-items-center" data-target="spam">
+                            <li class="d-flex justify-content-between" data-target="spam">
                               <a href="javascript:void(0);" onclick="getMails('spam');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-info-circle"></i>
                                 <span class="align-middle ms-2">Spam</span>
                               </a>
+                              <div class="badge bg-label-dark rounded-pill badge-center">{{ $counts['spam'] }}</div>
                             </li>
 
-                            <li class="d-flex align-items-center" data-target="trash">
+                            <li class="d-flex justify-content-between" data-target="trash">
                               <a href="javascript:void(0);" onclick="getMails('trash');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-trash"></i>
                                 <span class="align-middle ms-2">Trash</span>
                               </a>
+                              <div class="badge bg-label-danger rounded-pill badge-center">{{ $counts['trash'] }}</div>
                             </li>
                           </ul>
                           <!--/ Email Filters -->

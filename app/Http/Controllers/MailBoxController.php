@@ -22,8 +22,28 @@ class MailBoxController extends Controller
             ]);
         }
         //
+        $userId = auth()->id();
+
+        $counts = [
+            'inbox' => MailBox::whereJsonContains('to_user_ids', (string) $userId)
+                            ->where('folder', 'sent')->count(),
+            'sent' => MailBox::where('from_user_id', $userId)
+                            ->where('folder', 'sent')->count(),
+            'draft' => MailBox::where('from_user_id', $userId)
+                            ->where('folder', 'draft')->count(),
+            'spam' => MailBox::where(function($q) use ($userId) {
+                            $q->where('from_user_id', $userId)
+                            ->orWhereJsonContains('to_user_ids', (string) $userId);
+                        })->where('folder', 'spam')->count(),
+            'trash' => MailBox::where(function($q) use ($userId) {
+                            $q->where('from_user_id', $userId)
+                            ->orWhereJsonContains('to_user_ids', (string) $userId);
+                        })->where('folder', 'trash')->count(),
+            'starred' => MailBox::where(['from_user_id'=> $userId, 'is_starred' => 1])->count(),
+        ];
         $data['meta_title'] = 'Email';
         $data['employees'] = Employee::all();
+        $data['counts'] = $counts;
         return view('mailBox.index', $data);
     }
 
