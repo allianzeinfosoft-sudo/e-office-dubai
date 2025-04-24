@@ -49,7 +49,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function () {
     Auth::routes();
-    Route::get('/', function () { 
+    Route::get('/', function () {
         return view('auth/login');
     });
 
@@ -96,7 +96,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
-
+    Route::post('/designation/create',[DepartmentController::class, 'designation_store'])->name('create.designation');
     /* Branches */
     Route::resource('branchs',BranchController::class);
     Route::get('/branch-list',[BranchController::class, 'getBranches']);
@@ -105,6 +105,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     /* designiations */
     Route::get('/departments/{department}/designations', [BranchController::class, 'getDesignations'])->name('department.designations');
     Route::post('/designation/save',[BranchController::class, 'designation_store'])->name('designation.store');
+
 
     /* shifts */
     Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
@@ -194,8 +195,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/recruitments/draft-list', [RecruitmentController::class, 'draftList'])->name('recruitments.draft-list');
     Route::delete('/recruitments/{recruitment}/destroy', [RecruitmentController::class, 'destroy'])->name('recruitments.destroy');
     Route::get('/recruitments/{recruitment}/show', [RecruitmentController::class, 'show'])->name('recruitments.show');
-    Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status'); 
-    
+    Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
+
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
 
     /*feeds*/
@@ -214,7 +215,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/view/company-policies/delete/{companyPolicy}', [CompanyPolicyController::class, 'destroy'])->name('view.company-policies.destroy');
     Route::get('/view/company-policies/show/{companyPolicy}', [CompanyPolicyController::class, 'show'])->name('view.company-policies.show');
     Route::post('/view/company-policies/{companyPolicy}/mark-as-read', [CompanyPolicyController::class, 'markAsRead'])->name('view.company-policies.mark-as-read');
-    
+
     /* Others/Announcements */
     Route::get('/others/announcements', [AnnouncementController::class, 'index'])->name('others.announcements.index');
     Route::post('/others/announcements/store', [AnnouncementController::class, 'store'])->name('others.announcements.store');
@@ -226,7 +227,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/others/events/store', [EventController::class, 'store'])->name('others.events.store');
     Route::get('/others/events/{event}/edit', [EventController::class, 'edit'])->name('others.events.edit');
     Route::delete('/others/events/{event}/destroy', [EventController::class, 'destroy'])->name('others.events.destroy');
-    
+
     /* Others/Policies */
     Route::get('/others/policies', [PolicyController::class, 'index'])->name('others.policies.index');
     Route::post('/others/policies/store', [PolicyController::class, 'store'])->name('others.policies.store');

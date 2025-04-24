@@ -498,7 +498,7 @@ return [
             ],
             [
                 'title' => 'Departments',
-                'route' =>  'branchs',
+                'route' =>  'departments',
                 'permission' => ['view department'],
             ],
             [

@@ -47,28 +47,21 @@ class BranchController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(BranchRequest $request)
+    public function store(Request $request)
     {
 
-        $validatedData = $request->validated();
-        Branch::create($validatedData);
+        $branch_name =  $request->branch_name;
+        $branch_location = $request->branch_location;
+        Branch::create([
+            'branch' => $branch_name,
+            'location' => $branch_location,
+        ]);
         return back()->with('success', 'Branch created successfully!');
     }
 
-    public function department_store(DepartmentRequest $request)
-    {
-        $validatedData = $request->validated();
-        Department::create($validatedData);
-        return back()->with('success', 'Department created successfully!');
-    }
 
-    public function designation_store(DesignationRequest $request)
-    {
 
-        $validatedData = $request->validated();
-        Designation::create($validatedData);
-        return back()->with('success', 'Designation created successfully!');
-    }
+
 
     /**
      * Display the specified resource.

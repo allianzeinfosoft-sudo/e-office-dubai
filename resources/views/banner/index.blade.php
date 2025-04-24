@@ -48,9 +48,10 @@
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <table class="datatables-basic datatables-banner table border-top table-stripedc" id="datatables-banner">
+                            <table class="hover_effect datatables-basic datatables-banner table border-top table-stripedc" id="datatables-banner">
                                 <thead>
                                     <tr>
+                                        <th>S.No</th>
                                         <th>Image</th>
                                         <th>Title</th>
                                         <th>Details</th>
@@ -173,10 +174,6 @@
     $(function() {
 
 
-
-
-
-
         var bannerTable = $('.datatables-banner'),
         select2 = $('.select2');
         if (bannerTable.length) {
@@ -189,6 +186,15 @@
                     dataSrc: "data"
                 },
                 columns: [
+                    {
+                        data: null,
+                        title: 'S.No',
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        },
+                        orderable: false, // Optional: prevent sorting on this column
+                        searchable: false // Optional: exclude from search
+                    },
 
                     {
                         data: 'picture',

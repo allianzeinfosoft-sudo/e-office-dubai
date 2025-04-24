@@ -6,13 +6,13 @@
     <div class="layout-container">
       <!-- Menu -->
       <x-menu /> <!-- Load the menu component here -->
-      
+
       <!-- / Menu -->
 
       <!-- Layout container -->
       <div class="layout-page">
         <!-- Navbar -->
-        <x-header /> 
+        <x-header />
         <!-- / Navbar -->
 
         <!-- Content wrapper -->
@@ -21,13 +21,13 @@
 
           <div class="container-xxl flex-grow-1 container-p-y">
             {{-- <h4 class="fw-semibold mb-4"></h4> --}}
- 
+
             <!-- Permission Table -->
             <div class="card">
               <div class="card-datatable table-responsive pt-0">
                 <table class="datatables-basic table">
                   <thead>
-                    <tr> 
+                    <tr>
                       <th>id</th>
                       <th>Branch</th>
                       <th>Department</th>
@@ -94,7 +94,7 @@
                       <span id="basicBranchname2" class="input-group-text"><i class="ti ti-user"></i></span>
                       <input type="text" id="basicBranchname" class="form-control dt-branch-name" name="branch" aria-describedby="basicBranchname" />
                     </div>
-                  </div> 
+                  </div>
                   <div class="col-sm-12">
                     <label class="form-label" for="location">Location</label>
                     <div class="input-group input-group-merge">
@@ -132,10 +132,10 @@
                         <option value="">Select</option>
                         @foreach ($branches as $branch)
                           <option value="{{ $branch->id }}">{{ $branch->branch ?? '-'}}</option>
-                        @endforeach 
+                        @endforeach
                       </select>
                     </div>
-                  </div> 
+                  </div>
                   <div class="col-sm-12">
                     <label class="form-label" for="department">Department</label>
                     <div class="input-group input-group-merge">
@@ -173,16 +173,16 @@
                         <option value="">Select</option>
                         @foreach ($branches as $branch)
                           <option value="{{ $branch->id }}">{{ $branch->branch ?? '-'}}</option>
-                        @endforeach 
+                        @endforeach
                       </select>
                     </div>
-                  </div> 
+                  </div>
                   <div class="col-sm-12">
                     <label class="form-label" for="department1">Department</label>
                     <div class="input-group input-group-merge">
-                      {{-- <span class="input-group-text"><i class="ti ti-department"></i></span> --}} 
+                      {{-- <span class="input-group-text"><i class="ti ti-department"></i></span> --}}
                       <select id="department1" class="select2 form-select  dt-department-name1" name="department_id">
-                        <option value="">Select</option> 
+                        <option value="">Select</option>
                       </select>
                     </div>
                   </div>
@@ -229,7 +229,7 @@
                       <div class="col-sm-3 mb-3">
                         <label class="form-label invisible d-none d-sm-inline-block">Button</label>
                         <button type="submit" class="btn btn-primary mt-1 mt-sm-0">Update</button>
-                      </div> 
+                      </div>
                     </form>
                   </div>
                 </div>
@@ -242,7 +242,7 @@
           <!-- / Content -->
 
           <!-- Footer -->
-          <x-footer /> 
+          <x-footer />
           <!-- / Footer -->
 
           <div class="content-backdrop fade"></div>
@@ -253,7 +253,7 @@
     </div>
 
     <!-- Overlay -->
-    <div class="layout-overlay layout-menu-toggle"></div> 
+    <div class="layout-overlay layout-menu-toggle"></div>
     <!-- Drag Target Area To SlideIn Menu On Small Screens -->
     <div class="drag-target"></div>
   </div>

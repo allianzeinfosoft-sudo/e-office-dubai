@@ -49,9 +49,10 @@
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <table class="datatables-basic datatables-thoughts table border-top table-stripedc" id="datatables-thoughts">
+                            <table class="hover_effect datatables-basic datatables-thoughts table border-top table-stripedc" id="datatables-thoughts">
                                 <thead>
                                     <tr>
+                                        <th>S.No</th>
                                         <th>Image</th>
                                         <th>Title</th>
                                         <th>Details</th>
@@ -191,7 +192,15 @@
                     dataSrc: "data"
                 },
                 columns: [
-
+                    {
+                        data: null,
+                        title: 'S.No',
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        },
+                        orderable: false, // Optional: prevent sorting on this column
+                        searchable: false // Optional: exclude from search
+                    },
                     {
                         data: 'picture',
                         title: 'Image',

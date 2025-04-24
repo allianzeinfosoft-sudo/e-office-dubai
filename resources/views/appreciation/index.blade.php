@@ -49,9 +49,10 @@
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <table class="datatables-basic datatables-appreciation table border-top table-stripedc" id="datatables-appreciation">
+                            <table class="datatables-basic datatables-appreciation table border-top table-stripedc hover_effect" id="datatables-appreciation">
                                 <thead>
                                     <tr>
+                                        <th>S.No</th>
                                         <th>Image</th>
                                         <th>Title</th>
                                         <th>Details</th>
@@ -181,8 +182,17 @@
                     dataType: "json",
                     dataSrc: "data"
                 },
-                columns: [
 
+                columns: [
+                    {
+                        data: null,
+                        title: 'S.No',
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
+                        },
+                        orderable: false, // Optional: prevent sorting on this column
+                        searchable: false // Optional: exclude from search
+                    },
                     {
                         data: 'picture',
                         title: 'Image',
@@ -204,8 +214,8 @@
                         render: function (data, type, row, full) {
                             const editUrl = "{{ route('appreciation.edit', ':id') }}".replace(':id', row.id);
                             return `
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-appreciation" onclick="openAppreciationOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-appreciation" data-id="${row.id}"><i class="ti ti-trash"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-appreciation datatable_btn" onclick="openAppreciationOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-appreciation datatable_btn" data-id="${row.id}"><i class="ti ti-trash"></i></a>
                             `;
                         }
                     }
