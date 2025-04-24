@@ -523,7 +523,7 @@ return [
             ],
             [
                 'title' => 'Shift Time',
-                'route' =>  '/workshift/list',
+                'route' =>  '/settings/workshift',
                 'permission' => ['view shift time'],
             ],
             [

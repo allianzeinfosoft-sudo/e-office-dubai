@@ -26,9 +26,7 @@
               <table class="datatables-basic table">
                 <thead>
                   <tr>
-
-                    <th></th>
-                    <th></th>
+                    <th>S.No</th>
                     <th>Shift ID</th>
                     <th>Shift Start Time</th>
                     <th>Shift End Time</th>
