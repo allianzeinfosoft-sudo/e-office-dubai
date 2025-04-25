@@ -72,4 +72,10 @@ class SettingsController extends Controller
      {
 
      }
+
+     /* Custom Mark Out */
+     public function customMakeOut(){
+        $data['meta_title'] = 'Custom Mark Out';
+        return view('settings.custom-mark-out', $data);
+     }
 }

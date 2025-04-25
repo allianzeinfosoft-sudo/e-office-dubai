@@ -533,7 +533,7 @@ return [
             ],
             [
                 'title' => 'Custom Markout',
-                'route' =>  '',
+                'route' =>  '/settings/custom-mark-out',
                 'permission' => ['custom markout'],
             ],
             [

@@ -418,18 +418,18 @@ class AttendanceController extends Controller{
 
     public function customMarkOut(Request $request, $id) {
         $request->validate([
-            'signout_time' => 'required',
+            'signout_time'      => 'required',
             'signout_late_note' => 'required',
         ]);
 
-        $markOut = Attendance::findOrFail($id);
-        $workingTime = CustomHelper::calculateTotalWorkingTime($markOut->signin_date, $markOut->signin_time, $request->signout_date, $request->signout_time, $markOut->break_time);
-        $markOut->signout_time = $request->signout_time;
-        $markOut->signout_date = $request->signout_date;
+        $markOut                    = Attendance::findOrFail($id);
+        $workingTime                = CustomHelper::calculateTotalWorkingTime($markOut->signin_date, $markOut->signin_time, $request->signout_date, $request->signout_time, $markOut->break_time);
+        $markOut->signout_time      = $request->signout_time;
+        $markOut->signout_date      = $request->signout_date;
         $markOut->signout_late_note = $request->signout_late_note;
-        $markOut->status = 'mark-out';
-        $markOut->punchout_type = 'custom';
-        $markOut->working_hours = $workingTime['total_working_time'] ?? 0;
+        $markOut->status            = 'mark-out';
+        $markOut->punchout_type     = 'custom';
+        $markOut->working_hours     = $workingTime['total_working_time'] ?? 0;
         $markOut->save();
 
         return response()->json(['success' => true, 'message' => 'Mark out updated successfully.']);
@@ -496,9 +496,38 @@ class AttendanceController extends Controller{
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Attendance $attendance)
+    public function destroy($id)
     {
         //
+        $item = Attendance::findOrFail($id);
+        $item->delete();
+
+        return response()->json(['success' => true]);
     }
+
+    public function markedInList(){
+        $markedInList = Attendance::with('employee')->where('signin_date', date('Y-m-d'))->orderBy('signin_time')->whereIn('status', ['mark-in', 'custom'])->get();
+        $data = $markedInList->map(function ($markInList) {
+            return [
+                'id' => $markInList->id,
+                'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. asset('storage/'. $markInList->employee->profile_image) . '" alt="Avatar" class="rounded-circle"></div></div>',
+                'name' => $markInList->employee->full_name,
+                'username' => $markInList->username,
+                'markin_date' => $markInList->signin_date,
+                'markin_time' => $markInList->signin_time,
+            ];
+        });
+
+        return response()->json(['success' => true, 'data' => $data]);
+    }
+
+    public function employeeMarkin($id){
+        $data = Attendance::with('employee')->find($id);
+        return response()->json([
+            'success' => true,
+            'data' =>$data
+        ]);
+    }
+
 
 }
