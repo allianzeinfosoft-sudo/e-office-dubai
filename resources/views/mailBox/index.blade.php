@@ -304,7 +304,7 @@
           placeholder: 'Write your message... ',
           theme: 'snow'
         });
-   
+        
   
   $(function(){
     getMails('inbox');
@@ -396,8 +396,6 @@
     }
 
     });
-
-    
 
     function getMails(folder = 'inbox') {
       $('#current_folder').val(folder);
@@ -492,8 +490,13 @@
             if(response.status) {
               alert(status === 3 ? 'Mail sent!' : 'Draft saved!');
               $('.email-compose-form')[0].reset();
-              quill.root.innerHTML = '';
-              $('#emailComposeSidebar').modal('hide');
+              $('#emailContacts').val(null).trigger('change');
+              massgeQuill.root.innerHTML = '';
+              const composeModalEl = document.getElementById('emailComposeSidebar');
+              const composeModal = bootstrap.Modal.getInstance(composeModalEl);
+              if (composeModal) {
+                composeModal.hide();  // ✅ Properly hides the modal
+              }
 
             } else {
                 alert('Something went wrong!');
@@ -556,37 +559,105 @@ function timeAgo(dateStr) {
 
 function moveToTrash(){
   var current_folder = $('#current_folder').val();
-  // Get all checked checkboxes
-  let selectedIds = $('.email-list-item-input:checked').map(function () {
-    return $(this).val();
-  }).get(); // Convert jQuery object to array
 
-  if (selectedIds.length === 0) {
-    alert('No emails selected.');
-    return;
-  }
+  if(current_folder == 'trash'){
+    if(confirm('Are you sure you want to permanently delete the selected email(s)?')){
 
-  let url = "{{ route('mail-boxes.move-to-folder') }}"; // You will define this route
+      let selectedIds = $('.email-list-item-input:checked').map(function () {
+        return $(this).val();
+      }).get(); // Convert jQuery object to array
+    
+      if (selectedIds.length === 0) {
+        alert('No emails selected.');
+        return;
+      }
+      const url = "{{ route('mail-boxes.destroy') }}"; // You will define this route
 
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: {
-      _token: '{{ csrf_token() }}',
-      mailIds: selectedIds,
-      folder: 'trash'
-    },
-    dataType: "json",
-    success: function (response) {
-      console.log('Moved to trash:', response);
-      getMails(current_folder);
-      // Optionally reload or refresh the UI here
-    },
-    error: function (xhr, status, error) {
-      console.error('Error moving emails:', error);
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+          _token: '{{ csrf_token() }}',
+          mailIds: selectedIds
+        },
+        dataType: "json",
+        success: function (response) {
+          alert('Email(s) permanently deleted.');
+          getMails(current_folder);
+        },
+        error: function (xhr, status, error) {
+          console.error('Error deleting emails:', error);
+          alert('Failed to delete email(s).');
+        }
+      });
     }
-  });
+
+  }else{
+    // Get all checked checkboxes
+    let selectedIds = $('.email-list-item-input:checked').map(function () {
+      return $(this).val();
+    }).get(); // Convert jQuery object to array
+  
+    if (selectedIds.length === 0) {
+      alert('No emails selected.');
+      return;
+    }
+  
+    let url = "{{ route('mail-boxes.move-to-folder') }}"; // You will define this route
+  
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: {
+        _token: '{{ csrf_token() }}',
+        mailIds: selectedIds,
+        folder: 'trash'
+      },
+      dataType: "json",
+      success: function (response) {
+        console.log('Moved to trash:', response);
+        getMails(current_folder);
+        // Optionally reload or refresh the UI here
+      },
+      error: function (xhr, status, error) {
+        console.error('Error moving emails:', error);
+      }
+    });
+  }
 }
+
+$(document).on('click', '.reply-button', function () {
+  const fromId = $(this).data('from-id');
+  const fromName = $(this).data('from-name');
+  const subject = $(this).data('subject');
+  const message = $(this).data('message');
+  const date = $(this).data('date');
+
+  replyToMail({
+    from_user_id: fromId,
+    from_name: fromName,
+    subject: subject,
+    message: message,
+    date: date
+  });
+});
+
+$(document).on('click', '.forward-button', function () {
+  const fromId = $(this).data('from-id');
+  const fromName = $(this).data('from-name');
+  const subject = $(this).data('subject');
+  const message = $(this).data('message');
+  const date = $(this).data('date');
+
+  forwardMail({
+    from_user_id: fromId,
+    from_name: fromName,
+    subject: subject,
+    message: message,
+    date: date
+  });
+});
+
 
 function moveToFolder(folder, id = null) {
   event.stopPropagation();
@@ -714,8 +785,66 @@ function markAsRead(mailId = null){
 
 }
 
+/* replay function */
+function replyToMail(mail) {
+  // Open modal
+  const composeModal = new bootstrap.Modal(document.getElementById('emailComposeSidebar'));
+  composeModal.show();
 
+  setTimeout(() => {
+    // Set recipient
+    $('#emailContacts').val(mail.from_user_id).trigger('change');
 
+    // Set subject
+    let subject = mail.subject || '';
+    if (!subject.toLowerCase().startsWith('re:')) {
+      subject = 'Re: ' + subject;
+    }
+    $('#email-subject').val(subject);
+
+    // Quill setup
+    let quill = Quill.find($('.email-editor')[0]) || new Quill('.email-editor', { theme: 'snow' });
+
+    // Clear and insert quoted message
+    quill.setContents([]);
+    const quotedMessage = `<p></p><p></p><p>________________________________________________________________________________________________________________</p>
+      <p><strong>On ${mail.date}, ${mail.from_name} wrote:</strong></p>
+      ${mail.message}
+      `;
+    quill.root.innerHTML = quotedMessage;
+
+  }, 300);
+}
+
+function forwardMail(mail) {
+  // Open modal
+  const composeModal = new bootstrap.Modal(document.getElementById('emailComposeSidebar'));
+  composeModal.show();
+
+  setTimeout(() => {
+    // Set recipient
+    $('#emailContacts').val(mail.from_user_id).trigger('change');
+
+    // Set subject
+    let subject = mail.subject || '';
+    if (!subject.toLowerCase().startsWith('fwd:')) {
+      subject = 'Fwd: ' + subject;
+    }
+    $('#email-subject').val(subject);
+
+    // Quill setup
+    let quill = Quill.find($('.email-editor')[0]) || new Quill('.email-editor', { theme: 'snow' });
+
+    // Clear and insert forwarded message
+    quill.setContents([]);
+    const forwardedMessage = `<p></p><p></p><p>________________________________________________________________________________________________________________</p>
+      <p><strong>On ${mail.date}, ${mail.from_name} wrote:</strong></p>
+      ${mail.message}
+      `;
+    quill.root.innerHTML = forwardedMessage;
+
+  }, 300);
+}
 
 </script>
 @endpush

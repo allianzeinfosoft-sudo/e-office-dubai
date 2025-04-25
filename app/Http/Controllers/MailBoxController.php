@@ -162,25 +162,18 @@ class MailBoxController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(MailBox $mailBox)
-    {
-        //
-        $mail = MailBox::find($id);
+    public function destroy(Request $request){
 
-        if (!$mail) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Mail not found.'
-            ], 404);
+            $mailIds = $request->input('mailIds');
+
+            if (!is_array($mailIds) || empty($mailIds)) {
+                return response()->json(['status' => false, 'message' => 'No emails selected.'], 400);
+            }
+
+            // Delete emails permanently
+            MailBox::whereIn('id', $mailIds)->delete();
+            return response()->json(['status' => true, 'message' => 'Emails deleted successfully.']);
         }
-
-        $mail->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Mail deleted successfully.'
-        ]);
-    }
 
     public function folder($folder){
 

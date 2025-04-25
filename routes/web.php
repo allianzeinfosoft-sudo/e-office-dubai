@@ -255,6 +255,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/mail-boxes/move-to-folder', [MailBoxController::class, 'moveToFolder'])->name('mail-boxes.move-to-folder');
     Route::post('/mail-boxes/mark-as-read', [MailBoxController::class, 'markAsRead'])->name('mail-boxes.mark-as-read');
     Route::post('/mail-boxes/mark-read', [MailBoxController::class, 'markRead'])->name('mail-boxes.mark-read');
+    Route::post('/mail-boxes/destroy', [MailBoxController::class, 'destroy'])->name('mail-boxes.destroy');
 
     /* Banner */
     Route::resource('banner', BannerController::class);
