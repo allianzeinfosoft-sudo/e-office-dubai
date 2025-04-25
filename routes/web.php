@@ -73,6 +73,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/attendance/marked-in-list',[AttendanceController::class, 'markedInList'])->name('attendance.marked-in-list');
     Route::get('/attendance/emplyee-markin/{id}',[AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin');
     Route::delete('/attendance/destroy/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+    Route::post('/attendance/custom-attendance-entry', [AttendanceController::class, 'customAttendanceEntry'])->name('attendance.custom-attendance-entry');
 
     /* roles */
     Route::resource('roles', RoleController::class);
@@ -269,6 +270,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/settings/workshift/save',[SettingsController::class, 'store_work_shift'])->name('store.workshift');
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
     Route::get('/settings/custom-mark-out', [SettingsController::class, 'customMakeOut'])->name('settings.custom-mark-out');
+    Route::get('/settings/custom-attendance-entry', [SettingsController::class, 'customAttendanceEntry'])->name('settings.custom-attendance-entry');
     
 });
 

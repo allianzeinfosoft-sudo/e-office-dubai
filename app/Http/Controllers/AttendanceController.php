@@ -6,6 +6,8 @@ use App\Models\Attendance;
 use App\Models\Project;
 use App\Models\workReport;
 use App\Models\CustomAttendance;
+use App\Models\Employee;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -506,8 +508,13 @@ class AttendanceController extends Controller{
     }
 
     public function markedInList(){
-        $markedInList = Attendance::with('employee')->where('signin_date', date('Y-m-d'))->orderBy('signin_time')->whereIn('status', ['mark-in', 'custom'])->get();
-        $data = $markedInList->map(function ($markInList) {
+        $markedInListData = Attendance::with('employee')
+            ->where('signin_date', date('Y-m-d'))
+            ->whereIn('status', ['mark-in', 'custom'])
+            ->orderBy('signin_time')
+            ->get();
+
+        $data = $markedInListData->map(function ($markInList) {
             return [
                 'id' => $markInList->id,
                 'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. asset('storage/'. $markInList->employee->profile_image) . '" alt="Avatar" class="rounded-circle"></div></div>',
@@ -528,6 +535,62 @@ class AttendanceController extends Controller{
             'data' =>$data
         ]);
     }
+
+
+    public function customAttendanceEntry(Request $request)
+{
+    $request->validate([
+        'employee' => 'required',
+        'signin_date' => 'required',
+        'signin_time' => 'required'
+    ]);
+
+    $employeeId = $request->employee;
+    $signinDate = date('Y-m-d', strtotime($request->signin_date));
+    $signinTime = $request->signin_time;
+
+    $user = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+
+    // Save or update Attendance
+    $attendance = Attendance::updateOrCreate(
+        [
+            'emp_id' => $employeeId,
+            'signin_date' => $signinDate,
+        ],
+        [
+            'username' => $user->user->username,
+            'signin_time' => $signinTime,
+            'signin_late_note' => $request->signin_late_note ?? null,
+            'punchin_type' => 'Custom',
+            'ipaddress' => $request->ip(),
+            'status' => 'custom',
+            'custom_status' => '1'
+        ]
+    );
+
+    // Save or update CustomAttendance
+    CustomAttendance::updateOrCreate(
+        [
+            'emp_id' => $employeeId,
+            'signin_date' => $signinDate,
+        ],
+        [
+            'username' => $user->username,
+            'picktime' => $signinTime,
+            'reason' => $request->signin_late_note ?? null,
+            'status' => 0,
+            'approved_by' => null
+        ]
+    );
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Attendance saved successfully.',
+        'data' => [
+            'signin_time' => date('h:i A', strtotime($attendance->signin_time))
+        ]
+    ]);
+}
 
 
 }

@@ -538,7 +538,7 @@ return [
             ],
             [
                 'title' => 'Custom Attendance Entry',
-                'route' =>  '',
+                'route' =>  '/settings/custom-attendance-entry',
                 'permission' => ['custom attendance'],
             ],
             [

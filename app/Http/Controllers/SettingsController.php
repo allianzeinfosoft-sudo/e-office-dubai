@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Workshift;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
@@ -77,5 +78,11 @@ class SettingsController extends Controller
      public function customMakeOut(){
         $data['meta_title'] = 'Custom Mark Out';
         return view('settings.custom-mark-out', $data);
+     }
+
+     public function customAttendanceEntry(){
+        $data['meta_title'] = 'Custom Attendance Entry';
+        $data['employees'] = Employee::get();
+        return view('settings.customAttendanceEntry', $data);
      }
 }
