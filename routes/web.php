@@ -24,12 +24,13 @@ use App\Http\Controllers\RecruitmentController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ThoughtsController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\AppearenceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\MomController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\MailBoxController;
-
+use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
 use App\Models\Reminder;
@@ -110,9 +111,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/departments/{department}/designations', [BranchController::class, 'getDesignations'])->name('department.designations');
     Route::post('/designation/save',[BranchController::class, 'designation_store'])->name('designation.store');
     
-    
-    /* shifts */
-    
+   
     // leave route
     Route::resource('leaves',LeaveController::class);
     Route::get('/leave-list',[LeaveController::class, 'leave_list']);
@@ -271,6 +270,21 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
     Route::get('/settings/custom-mark-out', [SettingsController::class, 'customMakeOut'])->name('settings.custom-mark-out');
     Route::get('/settings/custom-attendance-entry', [SettingsController::class, 'customAttendanceEntry'])->name('settings.custom-attendance-entry');
+    Route::delete('/workshift/delete/{workshiftId}', [SettingsController::class, 'delete_work_shift'])->name('workshift.destroy');
+    Route::get('/workshift/{targetId}/edit',[SettingsController::class, 'edit_work_shift'])->name('workshift.edit');
+    Route::post('/change-shift-time',[SettingsController::class, 'change_shift'])->name('change_shift');
+    Route::get('/shift-times',[SettingsController::class, 'userShifts'])->name('users.shifts');
+    Route::post('/update-user-shift', [SettingsController::class, 'update_user_shift'])->name('update.user.shift');
+    Route::post('/save-login-limited-time',[SettingsController::class,'store_login_limited_time'])->name('save.login_limited_time');
     
+     
+    /* shifts */
+    
+    
+    
+
+
+    /* Appearence */
+    Route::resource('appearences', AppearenceController::class);
 });
 

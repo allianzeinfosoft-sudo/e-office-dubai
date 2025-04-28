@@ -23,12 +23,10 @@
           <!-- DataTable with Buttons -->
           <div class="card">
             <div class="card-datatable table-responsive pt-0">
-              <table class="datatables-basic table">
+              <table class="datatables-basic table" id="datatables-workshift">
                 <thead>
                   <tr>
-
-                    <th></th>
-                    <th></th>
+                    <th>S.No</th>
                     <th>Shift ID</th>
                     <th>Shift Start Time</th>
                     <th>Shift End Time</th>
@@ -49,8 +47,8 @@
             </div>
             <div class="offcanvas-body flex-grow-1">
               <form class="add-new-record pt-0 row g-2" method="post" action="{{ route('store.workshift') }}" id="form-add-new-shift" onsubmit="return false">
-                @csrf
-
+                    @csrf
+                    <input type="hidden" name="id" id="target_id">
                 <div class="col-sm-12">
                     <label class="form-label" for="shift_id">Shitf ID</label>
                     <div class="input-group input-group-merge">
