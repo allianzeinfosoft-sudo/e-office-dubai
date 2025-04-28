@@ -162,6 +162,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
+    Route::post('/work-report/custom-workstore', [WorkReportController::class, 'customWorkstore'])->name('work-report.custom-workstore');
     
     /* Works Module */
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
@@ -278,6 +279,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/update-user-shift', [SettingsController::class, 'update_user_shift'])->name('update.user.shift');
     Route::post('/save-login-limited-time',[SettingsController::class,'store_login_limited_time'])->name('save.login_limited_time');
     Route::get('/settings/full-day-attendance-entry', [SettingsController::class, 'fullDayAttendanceEntry'])->name('settings.full-day-attendance-entry');
+    Route::get('/settings/custom-work-report-entry', [SettingsController::class, 'customWorkReportEntry'])->name('settings.custom-work-report-entry');
     
      
     /* shifts */

@@ -548,7 +548,7 @@ return [
             ],
             [
                 'title' => 'Custom Work Report Entry',
-                'route' =>  '',
+                'route' =>  '/settings/custom-work-report-entry',
                 'permission' => ['custom work report entry'],
             ],
             [

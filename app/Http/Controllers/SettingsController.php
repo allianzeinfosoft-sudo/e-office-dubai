@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\LoginLimitedTime;
 use App\Models\Workshift;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 class SettingsController extends Controller
@@ -153,5 +154,12 @@ class SettingsController extends Controller
         $data['meta_title'] = 'Full Day Attendance Entry';
         $data['employees'] = Employee::get();
         return view('settings.fullDayAttendanceEntry', $data);
+     }
+
+     public function customWorkReportEntry(){
+        $data['meta_title'] = 'Custom Work Report Entry';
+        $data['employees'] = Employee::get();
+        $data['projects'] = Project::all();
+        return view('settings.customWorkReportEntry', $data);
      }
 }
