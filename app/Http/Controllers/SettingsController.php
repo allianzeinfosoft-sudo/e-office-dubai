@@ -85,4 +85,10 @@ class SettingsController extends Controller
         $data['employees'] = Employee::get();
         return view('settings.customAttendanceEntry', $data);
      }
+
+     public function fullDayAttendanceEntry(){
+        $data['meta_title'] = 'Full Day Attendance Entry';
+        $data['employees'] = Employee::get();
+        return view('settings.fullDayAttendanceEntry', $data);
+     }
 }
