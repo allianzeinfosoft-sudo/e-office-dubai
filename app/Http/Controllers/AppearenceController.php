@@ -24,6 +24,7 @@ class AppearenceController extends Controller
             });
 
 
+
             return response()->json([
                 'data' => $background
             ]);

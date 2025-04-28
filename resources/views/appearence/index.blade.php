@@ -53,6 +53,7 @@
                                     <tr>
                                         <th>S.No</th>
                                         <th>Image</th>
+                                        <th>Delete</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -190,7 +191,7 @@
 
                     {
                         data: null,
-                        title: 'Actions',
+                        title: 'Delete',
                         render: function (data, type, row, full) {
 
                             return `
