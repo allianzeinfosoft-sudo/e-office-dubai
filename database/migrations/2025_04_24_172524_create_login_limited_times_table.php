@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('departments', function (Blueprint $table) {
-            $table->dropUnique(['department']);
+        Schema::create('login_limited_times', function (Blueprint $table) {
+            $table->id();
+            $table->time('limited_time');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('departments', function (Blueprint $table) {
-            $table->unique('department');
-        });
+        Schema::dropIfExists('login_limited_times');
     }
 };

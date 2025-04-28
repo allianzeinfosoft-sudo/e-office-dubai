@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('designations', function (Blueprint $table) {
-            $table->dropUnique(['designation']);
+        Schema::create('appearences', function (Blueprint $table) {
+            $table->id();
+            $table->string('background_type');
+            $table->string('image');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('designations', function (Blueprint $table) {
-            $table->unique('designation');
-        });
+        Schema::dropIfExists('appearences');
     }
 };

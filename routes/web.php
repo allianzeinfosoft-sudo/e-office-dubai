@@ -24,12 +24,13 @@ use App\Http\Controllers\RecruitmentController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ThoughtsController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\AppearenceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\MomController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\MailBoxController;
-
+use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
 use App\Models\Reminder;
@@ -111,6 +112,12 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
     Route::post('/settings/workshift/save',[SettingsController::class, 'store_work_shift'])->name('store.workshift');
+    Route::delete('/workshift/delete/{workshiftId}', [SettingsController::class, 'delete_work_shift'])->name('workshift.destroy');
+    Route::get('/workshift/{targetId}/edit',[SettingsController::class, 'edit_work_shift'])->name('workshift.edit');
+    Route::post('/change-shift-time',[SettingsController::class, 'change_shift'])->name('change_shift');
+    Route::get('/shift-times',[SettingsController::class, 'userShifts'])->name('users.shifts');
+    Route::post('/update-user-shift', [SettingsController::class, 'update_user_shift'])->name('update.user.shift');
+    Route::post('/save-login-limited-time',[SettingsController::class,'store_login_limited_time'])->name('save.login_limited_time');
 
     // leave route
     Route::resource('leaves',LeaveController::class);
@@ -253,15 +260,14 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/mail-boxes/{mailBox}/show', [MailBoxController::class, 'show'])->name('mail-boxes.show');
     Route::post('/mail-boxes/mark-as-starred', [MailBoxController::class, 'markAsStarred'])->name('mail-boxes.mark-as-starred');
     Route::post('/mail-boxes/move-to-folder', [MailBoxController::class, 'moveToFolder'])->name('mail-boxes.move-to-folder');
-    
-
-
-
 
     /* Banner */
     Route::resource('banner', BannerController::class);
 
     /* Reminder */
     Route::resource('reminder',ReminderController::class);
+
+    /* Appearence */
+    Route::resource('appearences', AppearenceController::class);
 });
 

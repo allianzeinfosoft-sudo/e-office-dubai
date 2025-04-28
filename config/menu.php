@@ -493,7 +493,7 @@ return [
         'submenu' => [
             [
                 'title' => 'Change appearence',
-                'route' =>  '',
+                'route' =>  'appearences',
                 'permission' => ['change appearence'],
             ],
             [
@@ -528,7 +528,7 @@ return [
             ],
             [
                 'title' => 'Change Shift Time',
-                'route' =>  '',
+                'route' =>  '/shift-times',
                 'permission' => ['change shift time'],
             ],
             [

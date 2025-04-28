@@ -34,6 +34,10 @@ class Employee extends Model
     {
         return $this->belongsTo(Workshift::class, 'shift_id','id');
     }
+    public function login_limited_time_info()
+    {
+        return $this->belongsTo(LoginLimitedTime::class,'login_limited_time','id');
+    }
     public function userStatus()
     {
         return $this->belongsTo(UserStatus::class, 'status','id');

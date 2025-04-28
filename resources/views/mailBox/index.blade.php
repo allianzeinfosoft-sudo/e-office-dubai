@@ -12,7 +12,7 @@
 
 @section('content')
   <div class="layout-wrapper layout-content-navbar">
-      <div class="layout-container">    
+      <div class="layout-container">
           <!-- Menu -->
           <x-menu />
 
@@ -23,7 +23,7 @@
               <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
-                  
+
                   <div class="app-email card">
                     <div class="row g-0">
 
@@ -34,12 +34,12 @@
                         <div class="btn-compost-wrapper d-grid">
                           <button class="btn btn-primary btn-compose" data-bs-toggle="modal" data-bs-target="#emailComposeSidebar" id="emailComposeSidebarLabel"> Compose</button>
                         </div>
-                        
+
                         <!-- Email Filters -->
                         <div class="email-filters py-2">
                           <!-- Email Filters: Folder -->
                           <ul class="email-filter-folders list-unstyled mb-4">
-                            <li class="active d-flex justify-content-between" data-target="inbox"> 
+                            <li class="active d-flex justify-content-between" data-target="inbox">
                               <a href="javascript:void(0);" onclick="getMails('inbox');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-mail"></i>
                                 <span class="align-middle ms-2">Inbox</span></a>
@@ -67,7 +67,7 @@
                                 </a>
                                 <div class="badge bg-label-warning rounded-pill badge-center">10</div>
                             </li>
-                              
+
                             <li class="d-flex align-items-center" data-target="spam">
                               <a href="javascript:void(0);" onclick="getMails('spam');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-info-circle"></i>
@@ -162,7 +162,7 @@
 
                       <!-- Email View -->
                       <div class="col  app-email-view flex-grow-0 bg-body" id="app-email-view">
-                        
+
                       </div>
                       <!-- Email View -->
 
@@ -273,12 +273,12 @@
                     <!-- /Compose Email -->
                   </div>
 
-                  
+
 
                   <!-- Footer -->
-                  <x-footer /> 
+                  <x-footer />
                   <!-- / Footer -->
-                  
+
                   <div class="content-backdrop fade"></div>
 
                   <!-- Overlay -->
@@ -313,8 +313,8 @@
           placeholder: 'Write your message... ',
           theme: 'snow'
         });
-   
-  
+
+
   $(function(){
     getMails('inbox');
 
@@ -322,15 +322,15 @@
     $('.btn-send-mail').on('click', function() {
       submitMail(3);  // status = 1 for Sent
     });
-    
+
     $('.btn-save-draft').on('click', function() {
       submitMail(1);  // status = 0 for Draft
     });
-    
-    
+
+
     // Filter based on folder type (Inbox, Sent, Draft etc...)
     const emailFilterByFolders = Array.from(document.querySelectorAll('.email-filter-folders li'));
-    
+
     /* email filter */
     emailFilterByFolders.forEach(folder => {
       folder.addEventListener('click', e => {
@@ -351,7 +351,7 @@
         $('.email-list-item-input').prop('checked', true);
       } else {
         $('.email-list-item-input').prop('checked', false);
-      } 
+      }
     });
 
     // Toggle CC/BCC input
@@ -406,7 +406,7 @@
 
     });
 
-    
+
 
     function getMails(folder = 'inbox') {
       $('#current_folder').val(folder);
@@ -420,7 +420,7 @@
               if (response.status && response.data.length > 0) {
                   response.data.forEach(function(mail) {
                     const profileImage = mail.from_user.profile_image
-                    ? `/storage/${mail.from_user.profile_image}` 
+                    ? `/storage/${mail.from_user.profile_image}`
                     : '../../assets/img/avatars/1.png';
                       emailList += `
                       <li class="email-list-item" data-starred="${mail.is_starred == 1 ? 'true' : 'false'}" onclick="openMail(${mail.id})">
@@ -525,7 +525,7 @@ function openMail(mailId = null){
           },
           placeholder: 'Write your message... ',
           theme: 'snow'
-        }); 
+        });
       }
     });
   }
