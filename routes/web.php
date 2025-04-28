@@ -280,6 +280,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/save-login-limited-time',[SettingsController::class,'store_login_limited_time'])->name('save.login_limited_time');
     Route::get('/settings/full-day-attendance-entry', [SettingsController::class, 'fullDayAttendanceEntry'])->name('settings.full-day-attendance-entry');
     Route::get('/settings/custom-work-report-entry', [SettingsController::class, 'customWorkReportEntry'])->name('settings.custom-work-report-entry');
+    Route::get('/settings/edit-daily-attendance', [SettingsController::class, 'editDailyAttendance'])->name('settings.edit-daily-attendance');
+    Route::get('/settings/get-attendance-data', [SettingsController::class, 'getAttendanceData'])->name('settings.get-attendance-data');
+    Route::post('/settings/update-attendance-data/{id}', [SettingsController::class, 'updateAttendance'])->name('settings.update-attendance-data');
     
      
     /* shifts */

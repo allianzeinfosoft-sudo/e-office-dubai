@@ -553,7 +553,7 @@ return [
             ],
             [
                 'title' => 'Edit Daily Attendance',
-                'route' =>  '',
+                'route' =>  '/settings/edit-daily-attendance',
                 'permission' => ['edit attendance'],
             ]
         ]
