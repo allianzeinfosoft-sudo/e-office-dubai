@@ -42,22 +42,25 @@
                             <li class="active d-flex justify-content-between" data-target="inbox">
                               <a href="javascript:void(0);" onclick="getMails('inbox');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-mail"></i>
-                                <span class="align-middle ms-2">Inbox</span></a>
-                                <div class="badge bg-label-primary rounded-pill badge-center">4</div>
+                                <span class="align-middle ms-2">Inbox</span>
+                              </a>
+                                <div class="badge bg-label-primary rounded-pill badge-center">{{ $counts['inbox'] }}</div>
                             </li>
 
-                            <li class="d-flex" data-target="sent">
+                            <li class="d-flex justify-content-between" data-target="sent">
                                 <a href="javascript:void(0);" onclick="getMails('sent');" class="d-flex flex-wrap align-items-center">
                                     <i class="ti ti-send ti-xs"></i>
                                     <span class="align-middle ms-2">Sent</span>
-                                </a>
+                                  </a>
+                                  <div class="badge bg-label-success rounded-pill badge-center">{{ $counts['sent'] }}</div>
                             </li>
 
-                            <li class="d-flex" data-target="draft">
+                            <li class="d-flex justify-content-between" data-target="draft">
                                 <a href="javascript:void(0);" onclick="getMails('draft');" class="d-flex flex-wrap align-items-center">
                                     <i class="ti ti-file"></i>
                                     <span class="align-middle ms-2">Draft</span>
-                                </a>
+                                  </a>
+                                  <div class="badge bg-label-info rounded-pill badge-center">{{ $counts['draft'] }}</div>
                             </li>
 
                             <li class="d-flex justify-content-between" data-target="starred">
@@ -65,21 +68,23 @@
                                     <i class="ti ti-star"></i>
                                     <span class="align-middle ms-2">Starred</span>
                                 </a>
-                                <div class="badge bg-label-warning rounded-pill badge-center">10</div>
+                                <div class="badge bg-label-warning rounded-pill badge-center">{{ $counts['starred'] }}</div>
                             </li>
-
-                            <li class="d-flex align-items-center" data-target="spam">
+                              
+                            <li class="d-flex justify-content-between" data-target="spam">
                               <a href="javascript:void(0);" onclick="getMails('spam');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-info-circle"></i>
                                 <span class="align-middle ms-2">Spam</span>
                               </a>
+                              <div class="badge bg-label-dark rounded-pill badge-center">{{ $counts['spam'] }}</div>
                             </li>
 
-                            <li class="d-flex align-items-center" data-target="trash">
+                            <li class="d-flex justify-content-between" data-target="trash">
                               <a href="javascript:void(0);" onclick="getMails('trash');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-trash"></i>
                                 <span class="align-middle ms-2">Trash</span>
                               </a>
+                              <div class="badge bg-label-danger rounded-pill badge-center">{{ $counts['trash'] }}</div>
                             </li>
                           </ul>
                           <!--/ Email Filters -->
@@ -88,34 +93,20 @@
                       </div>
                       <!--/ Email Sidebar -->
 
-                      <!-- Emails List -->
-                      <div class="col app-emails-list">
-                        <div class="shadow-none border-0">
-                          <div class="emails-list-header p-3 py-lg-3 py-2">
+                        <!-- Emails List -->
+                        <div class="col app-emails-list">
+                          <div class="shadow-none border-0">
+                            <div class="emails-list-header p-3 py-lg-3 py-2">
 
-                            <!-- Email List: Search -->
                             <div class="d-flex justify-content-between align-items-center">
-
-                              <div class="d-flex align-items-center w-100">
-                                <i class="ti ti-menu-2 ti-sm cursor-pointer d-block d-lg-none me-3" data-bs-toggle="sidebar" data-target="#app-email-sidebar" data-overlay></i>
-                                <div class="mb-0 mb-lg-2 w-100">
-                                  <div class="input-group input-group-merge shadow-none">
-                                    <span class="input-group-text border-0 ps-0" id="email-search">
-                                      <i class="ti ti-search"></i>
-                                    </span>
-                                    <input type="text" class="form-control email-search-input border-0" placeholder="Search mail" aria-label="Search mail" aria-describedby="email-search" />
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div class="d-flex align-items-center mb-0 mb-md-2">
-                                <i class="ti ti-rotate-clockwise rotate-180 scaleX-n1-rtl cursor-pointer email-refresh me-2 mt-1"></i>
-                              </div>
-
+                            <div class="d-flex align-items-center w-100">
+                              <h5 class="text-capitalize" id="emails-list-title">Inbox </h5></h5>
                             </div>
+                            
+                          </div>
 
-                            <hr class="mx-n3 emails-list-header-hr" />
-
+                          <hr class="mx-n3 emails-list-header-hr">
+                          
                             <!-- Email List: Actions -->
                             <div class="d-flex justify-content-between align-items-center">
                               <div class="d-flex align-items-center">
@@ -125,7 +116,7 @@
                                 </div>
                                 <i class="ti ti-trash email-list-delete cursor-pointer me-2" onclick="moveToTrash()"></i>
                                 <input type="hidden" name="current_folder" id="current_folder">
-                                <i class="ti ti-mail-opened email-list-read cursor-pointer me-2"></i>
+                                <i class="ti ti-mail-opened email-list-read cursor-pointer me-2" onclick="markAsRead()"></i>
 
                                 <div class="dropdown me-2">
                                   <button class="btn p-0" type="button" id="dropdownMenuFolderOne" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="ti ti-folder"></i></button>
@@ -313,8 +304,8 @@
           placeholder: 'Write your message... ',
           theme: 'snow'
         });
-
-
+        
+  
   $(function(){
     getMails('inbox');
 
@@ -406,10 +397,9 @@
 
     });
 
-
-
     function getMails(folder = 'inbox') {
       $('#current_folder').val(folder);
+      $('#emails-list-title').text(folder);
       $.ajax({
           url: '/mail-boxes/folder/' + folder,
           type: 'GET',
@@ -432,17 +422,22 @@
                               <i class="email-list-item-bookmark ti ti-star ti-xs d-sm-inline-block d-none cursor-pointer ms-2 me-3 ${mail.is_starred ? 'text-warning' : ''}" onclick="markAsStarred(${mail.id})" id="bookmark_${mail.id}"></i>
                               <img src="${ profileImage }" alt="user-avatar" class="d-block flex-shrink-0 rounded-circle me-sm-3 me-2" height="32" width="32" />
                               <div class="email-list-item-content ms-2 ms-sm-0 me-2">
+                                  ${mail.mark_as_read ? '<em>' : '<strong>' }
                                   <span class="h6 email-list-item-username me-2">${mail.from_user ? mail.from_user.full_name : 'Unknown Sender'}</span>
                                   <span class="email-list-item-subject d-xl-inline-block d-block">${mail.subject.substring(0, 60)}...</span>
+                                  ${mail.mark_as_read ? '</em>'  : '</strong>' }
                               </div>
                               <div class="email-list-item-meta ms-auto d-flex align-items-center">
-                                  ${mail.attachments ? `<span class="email-list-item-attachment ti ti-paperclip ti-xs cursor-pointer me-2 float-end float-sm-none"></span>` : ''}
+                                  ${ mail.attachments ? `<span class="email-list-item-attachment ti ti-paperclip ti-xs cursor-pointer me-2 float-end float-sm-none"></span>` : '' }
                                   <span class="email-list-item-label badge badge-dot bg-danger d-none d-md-inline-block me-2" data-label="private"></span>
                                   <small class="email-list-item-time text-muted">${ timeAgo(mail.created_at) }</small>
                                   <ul class="list-inline email-list-item-actions text-nowrap">
-                                      <li class="list-inline-item email-read"><i class="ti ti-mail-opened"></i></li>
-                                      <li class="list-inline-item email-delete"><i class="ti ti-trash"></i></li>
-                                      <li class="list-inline-item"><i class="ti ti-archive"></i></li>
+                                      <li class="list-inline-item email-read"> 
+                                        ${mail.mark_as_read 
+                                        ? `<i class="ti ti-mail-opened" onclick="markAsRead(${mail.id})"></i>`
+                                        : `<i class="ti ti-mail" onclick="markAsRead(${mail.id})"></i>` }
+                                        </li>
+                                      <li class="list-inline-item email-delete"><i class="ti ti-trash" onclick="moveToFolder('trash', ${mail.id})"></i></li>
                                   </ul>
                               </div>
                           </div>
@@ -495,8 +490,13 @@
             if(response.status) {
               alert(status === 3 ? 'Mail sent!' : 'Draft saved!');
               $('.email-compose-form')[0].reset();
-              quill.root.innerHTML = '';
-              $('#emailComposeSidebar').modal('hide');
+              $('#emailContacts').val(null).trigger('change');
+              massgeQuill.root.innerHTML = '';
+              const composeModalEl = document.getElementById('emailComposeSidebar');
+              const composeModal = bootstrap.Modal.getInstance(composeModalEl);
+              if (composeModal) {
+                composeModal.hide();  // ✅ Properly hides the modal
+              }
 
             } else {
                 alert('Something went wrong!');
@@ -559,51 +559,128 @@ function timeAgo(dateStr) {
 
 function moveToTrash(){
   var current_folder = $('#current_folder').val();
-  // Get all checked checkboxes
-  let selectedIds = $('.email-list-item-input:checked').map(function () {
-    return $(this).val();
-  }).get(); // Convert jQuery object to array
 
-  if (selectedIds.length === 0) {
-    alert('No emails selected.');
-    return;
-  }
+  if(current_folder == 'trash'){
+    if(confirm('Are you sure you want to permanently delete the selected email(s)?')){
 
-  let url = "{{ route('mail-boxes.move-to-folder') }}"; // You will define this route
+      let selectedIds = $('.email-list-item-input:checked').map(function () {
+        return $(this).val();
+      }).get(); // Convert jQuery object to array
+    
+      if (selectedIds.length === 0) {
+        alert('No emails selected.');
+        return;
+      }
+      const url = "{{ route('mail-boxes.destroy') }}"; // You will define this route
 
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: {
-      _token: '{{ csrf_token() }}',
-      mailIds: selectedIds,
-      folder: 'trash'
-    },
-    dataType: "json",
-    success: function (response) {
-      console.log('Moved to trash:', response);
-      getMails(current_folder);
-      // Optionally reload or refresh the UI here
-    },
-    error: function (xhr, status, error) {
-      console.error('Error moving emails:', error);
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+          _token: '{{ csrf_token() }}',
+          mailIds: selectedIds
+        },
+        dataType: "json",
+        success: function (response) {
+          alert('Email(s) permanently deleted.');
+          getMails(current_folder);
+        },
+        error: function (xhr, status, error) {
+          console.error('Error deleting emails:', error);
+          alert('Failed to delete email(s).');
+        }
+      });
     }
-  });
+
+  }else{
+    // Get all checked checkboxes
+    let selectedIds = $('.email-list-item-input:checked').map(function () {
+      return $(this).val();
+    }).get(); // Convert jQuery object to array
+  
+    if (selectedIds.length === 0) {
+      alert('No emails selected.');
+      return;
+    }
+  
+    let url = "{{ route('mail-boxes.move-to-folder') }}"; // You will define this route
+  
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: {
+        _token: '{{ csrf_token() }}',
+        mailIds: selectedIds,
+        folder: 'trash'
+      },
+      dataType: "json",
+      success: function (response) {
+        console.log('Moved to trash:', response);
+        getMails(current_folder);
+        // Optionally reload or refresh the UI here
+      },
+      error: function (xhr, status, error) {
+        console.error('Error moving emails:', error);
+      }
+    });
+  }
 }
 
-function moveToFolder(folder){
-  var current_folder = $('#current_folder').val();
-  // Get all checked checkboxes
-  let selectedIds = $('.email-list-item-input:checked').map(function () {
-    return $(this).val();
-  }).get(); // Convert jQuery object to array
+$(document).on('click', '.reply-button', function () {
+  const fromId = $(this).data('from-id');
+  const fromName = $(this).data('from-name');
+  const subject = $(this).data('subject');
+  const message = $(this).data('message');
+  const date = $(this).data('date');
 
-  if (selectedIds.length === 0) {
-    alert('No emails selected.');
-    return;
+  replyToMail({
+    from_user_id: fromId,
+    from_name: fromName,
+    subject: subject,
+    message: message,
+    date: date
+  });
+});
+
+$(document).on('click', '.forward-button', function () {
+  const fromId = $(this).data('from-id');
+  const fromName = $(this).data('from-name');
+  const subject = $(this).data('subject');
+  const message = $(this).data('message');
+  const date = $(this).data('date');
+
+  forwardMail({
+    from_user_id: fromId,
+    from_name: fromName,
+    subject: subject,
+    message: message,
+    date: date
+  });
+});
+
+
+function moveToFolder(folder, id = null) {
+  event.stopPropagation();
+  var current_folder = $('#current_folder').val();
+
+  let selectedIds;
+
+  if (id) {
+    // Single ID passed, use it
+    selectedIds = [id];
+  } else {
+    // Get all checked checkboxes
+    selectedIds = $('.email-list-item-input:checked').map(function () {
+      return $(this).val();
+    }).get(); // Convert jQuery object to array
+
+    if (selectedIds.length === 0) {
+      alert('No emails selected.');
+      return;
+    }
   }
 
-  let url = "{{ route('mail-boxes.move-to-folder') }}"; // You will define this route
+  let url = "{{ route('mail-boxes.move-to-folder') }}";
 
   $.ajax({
     type: "POST",
@@ -616,7 +693,6 @@ function moveToFolder(folder){
     dataType: "json",
     success: function (response) {
       getMails(current_folder);
-      // Optionally reload or refresh the UI here
     },
     error: function (xhr, status, error) {
       console.error('Error moving emails:', error);
@@ -653,6 +729,122 @@ function markAsStarred(mailId){
   });
 }
 
+function markAsRead(mailId = null){
+  var current_folder = $('#current_folder').val();
+  
+  if(mailId){
+    event.stopPropagation();
+    let url = "{{ route('mail-boxes.mark-read') }}";
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: {
+        '_token': '{{ csrf_token() }}',
+        'mailId': mailId
+      },
+      dataType: "json",
+      success: function (response) {
+        getMails(current_folder);
+      },
+      error: function (xhr, status, error) {
+        console.error('Error:', error);
+      }
+    });
+
+  }else{
+      // Get all checked checkboxes
+      let selectedIds = $('.email-list-item-input:checked').map(function () {
+        return $(this).val();
+      }).get(); // Convert jQuery object to array
+    
+      if (selectedIds.length === 0) {
+        alert('No emails selected.');
+        return;
+      }
+    
+      let url = "{{ route('mail-boxes.mark-as-read') }}"; // You will define this route
+    
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+          _token: '{{ csrf_token() }}',
+          mailIds: selectedIds,
+        },
+        dataType: "json",
+        success: function (response) {
+          console.log('Moved to trash:', response);
+          getMails(current_folder);
+          // Optionally reload or refresh the UI here
+        },
+        error: function (xhr, status, error) {
+          console.error('Error moving emails:', error);
+        }
+      });
+  }
+
+}
+
+/* replay function */
+function replyToMail(mail) {
+  // Open modal
+  const composeModal = new bootstrap.Modal(document.getElementById('emailComposeSidebar'));
+  composeModal.show();
+
+  setTimeout(() => {
+    // Set recipient
+    $('#emailContacts').val(mail.from_user_id).trigger('change');
+
+    // Set subject
+    let subject = mail.subject || '';
+    if (!subject.toLowerCase().startsWith('re:')) {
+      subject = 'Re: ' + subject;
+    }
+    $('#email-subject').val(subject);
+
+    // Quill setup
+    let quill = Quill.find($('.email-editor')[0]) || new Quill('.email-editor', { theme: 'snow' });
+
+    // Clear and insert quoted message
+    quill.setContents([]);
+    const quotedMessage = `<p></p><p></p><p>________________________________________________________________________________________________________________</p>
+      <p><strong>On ${mail.date}, ${mail.from_name} wrote:</strong></p>
+      ${mail.message}
+      `;
+    quill.root.innerHTML = quotedMessage;
+
+  }, 300);
+}
+
+function forwardMail(mail) {
+  // Open modal
+  const composeModal = new bootstrap.Modal(document.getElementById('emailComposeSidebar'));
+  composeModal.show();
+
+  setTimeout(() => {
+    // Set recipient
+    $('#emailContacts').val(mail.from_user_id).trigger('change');
+
+    // Set subject
+    let subject = mail.subject || '';
+    if (!subject.toLowerCase().startsWith('fwd:')) {
+      subject = 'Fwd: ' + subject;
+    }
+    $('#email-subject').val(subject);
+
+    // Quill setup
+    let quill = Quill.find($('.email-editor')[0]) || new Quill('.email-editor', { theme: 'snow' });
+
+    // Clear and insert forwarded message
+    quill.setContents([]);
+    const forwardedMessage = `<p></p><p></p><p>________________________________________________________________________________________________________________</p>
+      <p><strong>On ${mail.date}, ${mail.from_name} wrote:</strong></p>
+      ${mail.message}
+      `;
+    quill.root.innerHTML = forwardedMessage;
+
+  }, 300);
+}
 
 </script>
 @endpush

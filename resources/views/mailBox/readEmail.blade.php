@@ -27,15 +27,15 @@
 
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <i class="ti ti-trash cursor-pointer me-3" data-bs-toggle="sidebar" data-target="#app-email-view"></i>
-            <i class="ti ti-mail-opened cursor-pointer me-3"></i>
+            <i class="ti ti-trash cursor-pointer me-3" data-bs-toggle="sidebar" data-target="#app-email-view" onclick="moveToFolder('trash', {{ $mail->id }})"></i>
+            <i class="ti ti-mail-opened cursor-pointer me-3" onclick="markAsRead({{ $mail->id }})"></i>
 
             <div class="dropdown me-3">
                 <button class="btn p-0" type="button" id="dropdownMenuFolderTwo" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ti ti-folder"></i></button>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuFolderTwo">
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="ti ti-info-circle ti-xs me-1"></i><span class="align-middle">Spam</span></a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="ti ti-pencil ti-xs me-1"></i><span class="align-middle">Draft</span></a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="ti ti-trash ti-xs me-1"></i><span class="align-middle">Trash</span></a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="moveToFolder('spam', {{ $mail->id }})"><i class="ti ti-info-circle ti-xs me-1"></i><span class="align-middle">Spam</span></a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="moveToFolder('draft', {{ $mail->id }})"><i class="ti ti-pencil ti-xs me-1"></i><span class="align-middle">Draft</span></a>
+                    <a class="dropdown-item" href="javascript:void(0)" onclick="moveToFolder('trash', {{ $mail->id }})"><i class="ti ti-trash ti-xs me-1"></i><span class="align-middle">Trash</span></a>
                 </div>
             </div>
         </div>
@@ -62,9 +62,26 @@
         <div class="dropdown me-3 d-flex align-self-center">
             <button class="btn p-0" type="button" id="dropdownEmailTwo" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ti ti-dots-vertical"></i></button>
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownEmailTwo">
-                <a class="dropdown-item scroll-to-reply" href="javascript:void(0)"><i class="ti ti-corner-up-left me-1"></i><span class="align-middle">Reply</span></a>
-                <a class="dropdown-item" href="javascript:void(0)"><i class="ti ti-corner-up-right me-1"></i><span class="align-middle">Forward</span></a>
-                <a class="dropdown-item" href="javascript:void(0)"> <i class="ti ti-alert-octagon me-1"></i> <span class="align-middle">Report</span></a>
+                <a class="dropdown-item scroll-to-reply reply-button"
+                    href="javascript:void(0)"
+                    data-from-id="{{ $mail->from_user_id }}"
+                    data-from-name="{{ $mail->fromUser->name }}"
+                    data-subject="{{ $mail->subject }}"
+                    data-message="{!! htmlentities($mail->message) !!}"
+                    data-date="{{ $mail->created_at->format('d M Y, h:i A') }}">
+                    <i class="ti ti-corner-up-left me-1"></i>
+                    <span class="align-middle">Reply</span>
+                </a>
+                <a class="dropdown-item scroll-to-forward forward-button"
+                    href="javascript:void(0)"
+                    data-from-id="{{ $mail->from_user_id }}"
+                    data-from-name="{{ $mail->fromUser->name }}"
+                    data-subject="Fwd: {{ $mail->subject }}"
+                    data-message="{!! htmlentities($mail->message) !!}"
+                    data-date="{{ $mail->created_at->format('d M Y, h:i A') }}">
+                    <i class="ti ti-share me-1"></i>
+                    <span class="align-middle">Forward</span>
+                </a>
             </div>
         </div>
         </div>

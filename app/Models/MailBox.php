@@ -18,6 +18,9 @@ class MailBox extends Model
         'attachments',
         'status',
         'folder',
+        'is_starred',
+        'from_user_id',
+        'mark_as_read',
     ];
 
     protected $casts = [
@@ -51,9 +54,7 @@ class MailBox extends Model
     }
 
     public static function folders(){
-        return [
-            'inbox', 'draft', 'starred', 'sent', 'spam', 'trash', 'pending', 'failed'
-        ];
+        return [ 'inbox', 'draft', 'starred', 'sent', 'spam', 'trash', 'pending', 'failed'];
     }
 
     public function fromUser(){

@@ -22,8 +22,28 @@ class MailBoxController extends Controller
             ]);
         }
         //
+        $userId = auth()->id();
+
+        $counts = [
+            'inbox' => MailBox::whereJsonContains('to_user_ids', (string) $userId)
+                            ->where('folder', 'sent')->count(),
+            'sent' => MailBox::where('from_user_id', $userId)
+                            ->where('folder', 'sent')->count(),
+            'draft' => MailBox::where('from_user_id', $userId)
+                            ->where('folder', 'draft')->count(),
+            'spam' => MailBox::where(function($q) use ($userId) {
+                            $q->where('from_user_id', $userId)
+                            ->orWhereJsonContains('to_user_ids', (string) $userId);
+                        })->where('folder', 'spam')->count(),
+            'trash' => MailBox::where(function($q) use ($userId) {
+                            $q->where('from_user_id', $userId)
+                            ->orWhereJsonContains('to_user_ids', (string) $userId);
+                        })->where('folder', 'trash')->count(),
+            'starred' => MailBox::where(['from_user_id'=> $userId, 'is_starred' => 1])->count(),
+        ];
         $data['meta_title'] = 'Email';
         $data['employees'] = Employee::all();
+        $data['counts'] = $counts;
         return view('mailBox.index', $data);
     }
 
@@ -142,25 +162,18 @@ class MailBoxController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(MailBox $mailBox)
-    {
-        //
-        $mail = MailBox::find($id);
+    public function destroy(Request $request){
 
-        if (!$mail) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Mail not found.'
-            ], 404);
+            $mailIds = $request->input('mailIds');
+
+            if (!is_array($mailIds) || empty($mailIds)) {
+                return response()->json(['status' => false, 'message' => 'No emails selected.'], 400);
+            }
+
+            // Delete emails permanently
+            MailBox::whereIn('id', $mailIds)->delete();
+            return response()->json(['status' => true, 'message' => 'Emails deleted successfully.']);
         }
-
-        $mail->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Mail deleted successfully.'
-        ]);
-    }
 
     public function folder($folder){
 
@@ -257,5 +270,33 @@ class MailBoxController extends Controller
         ]);
 
         return response()->json(['status' => 'success']);
+    }
+
+    public function markAsRead(Request $request){
+        $validated = $request->validate([
+            'mailIds' => 'required|array'
+        ]);
+        MailBox::whereIn('id', $validated['mailIds'])->update([
+            'mark_as_read' => 1
+        ]);
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function markRead(Request $request){
+        $request->validate([
+            'mailId' => 'required|integer|exists:mail_boxes,id',
+        ]);
+    
+        $mail = MailBox::find($request->mailId);
+    
+        // Toggle is_starred value
+        $mail->mark_as_read = $mail->mark_as_read ? 0 : 1;
+        $mail->save();
+    
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Mail mark as read updated.',
+        ]);
     }
 }

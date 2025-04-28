@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\LoginLimitedTime;
 use App\Models\Workshift;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 class SettingsController extends Controller
@@ -137,8 +138,21 @@ class SettingsController extends Controller
 
      }
 
-     public function change_shift()
-     {
+     /* Custom Mark Out */
+     public function customMakeOut(){
+        $data['meta_title'] = 'Custom Mark Out';
+        return view('settings.custom-mark-out', $data);
+     }
 
+     public function customAttendanceEntry(){
+        $data['meta_title'] = 'Custom Attendance Entry';
+        $data['employees'] = Employee::get();
+        return view('settings.customAttendanceEntry', $data);
+     }
+
+     public function fullDayAttendanceEntry(){
+        $data['meta_title'] = 'Full Day Attendance Entry';
+        $data['employees'] = Employee::get();
+        return view('settings.fullDayAttendanceEntry', $data);
      }
 }
