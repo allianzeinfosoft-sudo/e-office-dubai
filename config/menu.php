@@ -543,7 +543,7 @@ return [
             ],
             [
                 'title' => 'Fullday Entry',
-                'route' =>  '',
+                'route' =>  '/settings/full-day-attendance-entry',
                 'permission' => ['full day entry'],
             ],
             [

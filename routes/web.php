@@ -75,6 +75,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/attendance/emplyee-markin/{id}',[AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin');
     Route::delete('/attendance/destroy/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
     Route::post('/attendance/custom-attendance-entry', [AttendanceController::class, 'customAttendanceEntry'])->name('attendance.custom-attendance-entry');
+    Route::post('attendance/full-day-attendance-entry', [AttendanceController::class, 'storeFullDayEntry'])->name('attendance.full-day-attendance-entry');
+
 
     /* roles */
     Route::resource('roles', RoleController::class);
@@ -196,7 +198,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/recruitments/{recruitment}/destroy', [RecruitmentController::class, 'destroy'])->name('recruitments.destroy');
     Route::get('/recruitments/{recruitment}/show', [RecruitmentController::class, 'show'])->name('recruitments.show');
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
-    
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
     
     /*feeds*/
@@ -276,6 +277,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/shift-times',[SettingsController::class, 'userShifts'])->name('users.shifts');
     Route::post('/update-user-shift', [SettingsController::class, 'update_user_shift'])->name('update.user.shift');
     Route::post('/save-login-limited-time',[SettingsController::class,'store_login_limited_time'])->name('save.login_limited_time');
+    Route::get('/settings/full-day-attendance-entry', [SettingsController::class, 'fullDayAttendanceEntry'])->name('settings.full-day-attendance-entry');
     
      
     /* shifts */

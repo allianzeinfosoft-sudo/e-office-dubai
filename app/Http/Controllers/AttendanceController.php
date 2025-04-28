@@ -538,59 +538,110 @@ class AttendanceController extends Controller{
 
 
     public function customAttendanceEntry(Request $request)
-{
-    $request->validate([
-        'employee' => 'required',
-        'signin_date' => 'required',
-        'signin_time' => 'required'
-    ]);
+    {
+        $request->validate([
+            'employee' => 'required',
+            'signin_date' => 'required',
+            'signin_time' => 'required'
+        ]);
 
-    $employeeId = $request->employee;
-    $signinDate = date('Y-m-d', strtotime($request->signin_date));
-    $signinTime = $request->signin_time;
+        $employeeId = $request->employee;
+        $signinDate = date('Y-m-d', strtotime($request->signin_date));
+        $signinTime = $request->signin_time;
 
-    $user = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+        $user = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
 
-    // Save or update Attendance
-    $attendance = Attendance::updateOrCreate(
-        [
-            'emp_id' => $employeeId,
-            'signin_date' => $signinDate,
-        ],
-        [
-            'username' => $user->user->username,
-            'signin_time' => $signinTime,
-            'signin_late_note' => $request->signin_late_note ?? null,
-            'punchin_type' => 'Custom',
-            'ipaddress' => $request->ip(),
-            'status' => 'custom',
-            'custom_status' => '1'
-        ]
-    );
+        // Save or update Attendance
+        $attendance = Attendance::updateOrCreate(
+            [
+                'emp_id' => $employeeId,
+                'signin_date' => $signinDate,
+            ],
+            [
+                'username' => $user->user->username,
+                'signin_time' => $signinTime,
+                'signin_late_note' => $request->signin_late_note ?? null,
+                'punchin_type' => 'Custom',
+                'ipaddress' => $request->ip(),
+                'status' => 'custom',
+                'custom_status' => '1'
+            ]
+        );
 
-    // Save or update CustomAttendance
-    CustomAttendance::updateOrCreate(
-        [
-            'emp_id' => $employeeId,
-            'signin_date' => $signinDate,
-        ],
-        [
-            'username' => $user->username,
-            'picktime' => $signinTime,
-            'reason' => $request->signin_late_note ?? null,
-            'status' => 0,
-            'approved_by' => null
-        ]
-    );
+        // Save or update CustomAttendance
+        CustomAttendance::updateOrCreate(
+            [
+                'emp_id' => $employeeId,
+                'signin_date' => $signinDate,
+            ],
+            [
+                'username' => $user->username,
+                'picktime' => $signinTime,
+                'reason' => $request->signin_late_note ?? null,
+                'status' => 0,
+                'approved_by' => null
+            ]
+        );
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Attendance saved successfully.',
-        'data' => [
-            'signin_time' => date('h:i A', strtotime($attendance->signin_time))
-        ]
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Attendance saved successfully.',
+            'data' => [
+                'signin_time' => date('h:i A', strtotime($attendance->signin_time))
+            ]
+        ]);
+    }
+
+    public function storeFullDayEntry(Request $request){
+        $validated = $request->validate([
+            'emp_id'           => 'required|exists:employees,user_id', // Ensure employee exists in the system
+            'signin_date'      => 'required|date_format:d-m-Y',
+            'signout_date'     => 'required|date_format:d-m-Y',
+            'signin_time'      => 'required',
+            'break_time'       => 'nullable',
+            'signout_time'     => 'required',
+            'working_hours'    => 'required',
+            'signin_late_note' => 'nullable|string|max:500',
+        ]);
+
+        $employeeId = $request->emp_id;
+        $user = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+
+        try {
+            $attendanceData = [
+                'username'         => $user->user->username,
+                'emp_id'           => $validated['emp_id'],
+                'signin_date'      => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'),
+                'signout_date'     => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signout_date'])->format('Y-m-d'),
+                'signin_time'      => $validated['signin_time'],
+                'break_time'       => $validated['break_time'] ?? '00:00',  // Default to '00:00' if break_time is null
+                'signout_time'     => $validated['signout_time'],
+                'working_hours'    => $validated['working_hours'],
+                'signin_late_note' => $validated['signin_late_note'] ?? null, // Null if not provided
+                'signout_late_note'=> $validated['signin_late_note'] ?? null, // Same logic for signout_late_note
+                'status'           => 'mark-out',
+                'punchin_type'     => 'custom',
+                'punchout_type'    => 'custom',
+                'custom_status'    => '1',
+                'ipaddress'        => $request->ip()
+            ];
+
+            // Check if an attendance record for this employee already exists for the given signin_date
+            Attendance::updateOrCreate(
+                [
+                    'emp_id'      => $validated['emp_id'],
+                    'signin_date' => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'), // Make sure to format dates as Y-m-d
+                ],
+                $attendanceData // If it exists, it will be updated; if not, it will be created
+            );
+
+            return response()->json(['status' => 'success', 'message' => 'Full day attendance entry saved successfully.']);
+        } catch (\Exception $e) {
+            // Log the error message for debugging
+            \Log::error('Error in storing full day entry: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
+        }
+    }
 
 
 }

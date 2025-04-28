@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\LoginLimitedTime;
 use App\Models\Workshift;
-use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 class SettingsController extends Controller
