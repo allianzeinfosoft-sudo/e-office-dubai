@@ -2,6 +2,10 @@
 
 @section('css')
 <style>
+  .layout-page{
+    background-color: #00000075;
+  }
+
   .w-35 {
     width: 35% !important;
   }
@@ -22,7 +26,7 @@
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
 
-  <div class="layout-container">
+  <div class="layout-container {{ $background_class ?? 'bg-eoffice' }} ">
     
     <x-menu /> <!-- Load the menu component here -->
 
@@ -40,170 +44,230 @@
 
           <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
-            <div class="row">
+            <div class="row mt-md-5">
 
-              <div class="col-lg-7 mb-4">
-
-                <!-- Attendance Marking Card -->
-                <div class="card bg-primary text-white mb-4">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between">
-                            <small class="d-block mb-1 text-white"> {{ ucfirst(Auth::user()->username ?? 'N/A') }} </small>
-                        </div>
-                        <h4 class="card-title mb-1 text-white"> <i class="ti ti-clock ti-sm"></i> {{ $meta_title }}</h4>
-                    </div>
-                    <div class="card-body">
-                      <div class="row">
-
-                        @if($attendance)
-                            @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-                                <div class="alert alert-success" id="last-punch-time" role="alert">
-                                    Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}
-                                </div>
-                            @elseif($attendance->status === 'mark-out')
-                                <div class="alert alert-warning" id="last-punch-time" role="alert">
-                                    <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
-                                </div>
-                            @endif
-                        @endif
-
-                        <div class="text-center d-grid gap-2 col-lg-12">
-                            @if(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-
-                                @php
-                                  $loginLimitTime = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
-                                  $now = \Carbon\Carbon::now();
-                                  $isLate = $now->gt($loginLimitTime);
-
-                                  $todayName = $now->format('l'); // E.g., "Monday"
-
-                                  
-                                  $fixedWeekOffs = ['Saturday', 'Sunday'];
-
-                                  
-                                  $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
-                                  $customWeekOffs = array_map('trim', explode(',', $employeeWeekOffs));
-
-                                  $allWeekOffs = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
-                                  $isWeekOffToday = in_array($todayName, $allWeekOffs);
-                                @endphp
-
-                                @if ($isLate)
-                                  <div class="alert alert-warning" id="last-punch-time" role="alert">
-                                    <strong>Mark-in time expired for today.</strong>
-                                  </div>
-                                @elseif ($isWeekOffToday)
-                                    <div class="alert alert-warning" id="last-punch-time" role="alert">
-                                      <strong>Today ({{ $todayName }}) is your week off.</strong>
-                                    </div>
-                                @endif
-                                
-
-                                <button type="button" id="mark-in-btn" class="btn rounded-pill btn-success waves-effect waves-light {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}>
-                                    <i class="ti ti-login ti-sm"></i> Mark-in
-                                </button>
-                            @else
-                                <button type="button" id="mark-out-btn" class="btn rounded-pill btn-danger waves-effect waves-light">
-                                    <i class="ti ti-logout ti-sm"></i> Mark-out
-                                </button>
-                            @endif
-                        </div>
-
-                      </div>
-                    </div>
-                </div>
-
-                <!-- Attendance summary report -->
-                <div class="card mb-4">
-                  <div class="card-header pb-0 d-flex justify-content-between mb-lg-n4">
-                    <div class="card-title mb-0">
-                      <h5 class="mb-0">No of Working Days</h5>
-                      <small class="text-muted">Weekly Earnings Overview</small>
-                    </div>
-                  </div>
-
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-12 col-md-3 d-flex flex-column align-self-end">
-                        <div class="d-flex gap-2 align-items-center mb-2 pb-1 flex-wrap">
-                          <h1 class="mb-0">{{ $days_of_worked ?? '0' }}</h1>
-                          <div class="badge rounded bg-label-success">Days</div>
-                        </div>
-                        <small class="text-muted">Completed</small>
-                      </div>
-                      <div class="col-12 col-md-9">
-                        <div id="weeklyEarningReports"></div>
-                      </div>
-                    </div>
-
-                    <div class="border rounded p-3 mt-2">
-                      <div class="row gap-4 gap-sm-0">
-                        <div class="col-12 col-sm-4">
-                          <div class="d-flex gap-2 align-items-center">
-                            <div class="badge rounded bg-label-primary p-1">
+                <!-- Statistics -->
+                <div class="col-12 col-xl-12 col-lg-12 mt-5">
+                  <div class="row g-4 mb-4 justify-content-center">
+                    <div class="col-sm-6 col-xl-4">
+                      <div class="card card-bg">
+                        <div class="card-body">
+                          <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                              <div class="d-flex align-items-center my-1">
+                                <h4 class="mb-0 me-2">{{ $days_of_worked ?? '0' }}</h4>                               
+                              </div>
+                              <span>No of Working Days</span>
+                            </div>
+                            <span class="badge bg-label-warning rounded p-2">
                               <i class="ti ti-calendar ti-sm"></i>
-                            </div>
-                            <h6 class="mb-0"> Working Days</h6>
-                          </div>
-                          <h4 class="my-2 pt-1"> {{ $days_of_worked ?? '0' }} </h4>
-                          <div class="progress w-75" style="height: 4px">
-                            <div class="progress-bar" role="progressbar" style="width: {{ $totalWorkingDays > 0 ? ($days_of_worked * 100) / $totalWorkingDays : 0 }}%" aria-valuenow="{{ $days_of_worked }}" aria-valuemin="0" aria-valuemax="{{ $totalWorkingDays }}"></div>
-                          </div>
-                        </div>
-
-                        <div class="col-12 col-sm-4">
-                          <div class="d-flex gap-2 align-items-center">
-                            <div class="badge rounded bg-label-info p-1"><i class="ti ti-hourglass ti-sm"></i></div>
-                            <h6 class="mb-0"> Total Worked Hours</h6>
-                          </div>
-                          <h4 class="my-2 pt-1">{{ $totalWorkedHours ?? '0' }}</h4>
-                          <div class="progress w-75" style="height: 4px">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ $progressPercentage }}%" aria-valuenow="{{ $progressPercentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                        </div>
-                        <div class="col-12 col-sm-4">
-                          <div class="d-flex gap-2 align-items-center">
-                            <div class="badge rounded bg-label-danger p-1">
-                              <i class="ti ti-clock ti-sm"></i>
-                            </div>
-                            <h6 class="mb-0">Avg. Working Hours</h6>
-                          </div>
-                          <h4 class="my-2 pt-1">{{ $avgWorkedHours ?? '0' }}</h4>
-                          <div class="progress w-75" style="height: 4px">
-                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $avgProgressPercentage }}%" aria-valuenow="{{ $avgProgressPercentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-              </div>
-              
-              <!-- Attendance Options -->
-              <div class="col-lg-5 col-sm-6 mb-4">
-                <div class="card mb-4">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="d-grid gap-2 col-lg-12">
-                        <button class="btn rounded-pill btn-warning btn-lg waves-effect waves-light" onclick="customModal()" type="button">Custom</button>
-                        <button class="btn rounded-pill btn-primary btn-lg waves-effect waves-light" onclick="emergencyModal()" type="button">Emergency</button>
+                    <div class="col-sm-6 col-xl-4">
+                      <div class="card card-bg ">
+                        <div class="card-body">
+                          <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                              <div class="d-flex align-items-center my-1">
+                                <h4 class="mb-0 me-2">{{ $totalWorkedHours ?? '0' }}</h4>
+                              </div>
+                              <span>Total Working Hours</span>
+                            </div>
+                            <span class="badge bg-label-warning rounded p-2">
+                              <i class="ti ti-hourglass-high  ti-sm"></i>
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
+                    <div class="col-sm-6 col-xl-4">
+                      <div class="card card-bg ">
+                        <div class="card-body">
+                          <div class="d-flex align-items-start justify-content-between">
+                            <div class="content-left">
+                              <div class="d-flex align-items-center my-1">
+                                <h4 class="mb-0 me-2">{{ $avgWorkedHours ?? '0' }}</h4>
+                              </div>
+                              <span>Avg. Working Hour(s)</span>
+                            </div>
+                            <span class="badge bg-label-warning rounded p-2">
+                              <i class="ti ti-info-circle ti-sm"></i>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>                    
                   </div>
                 </div>
+                <!--/ Statistics -->                
+             
+                <div class="col-12 col-xl-12 col-lg-12 ">
+                  <div class="row g-4 mb-4 align-items-center">
+                  
+                    <!-- Markin module -->
+                    <div class="col-12 col-xl-8 col-lg-8">
+                      <div class="card card-sm">
+                        <div class="card-header">
+                            <h4 class="card-title mb-1"> <i class="ti ti-user ti-sm"></i> {{ ucfirst(Auth::user()->username ?? 'N/A') }} </h4>
+                        </div>
+                        
+                        <div class="card-body">                     
+                          <div class="row mb-4 g-4">
 
-                <div class="card mb-4">
-                  <div class="card-body pb-0">
-                    <h5 class="card-title mb-0 mt-2">Total Hours</h5>
+                            <div class="col-sm-6 col-xl-6">
+                              <div class="card">
+                                <div class="card-body">
+                                  <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                      <div class="d-flex align-items-center my-1">
+                                        <h4 class="mb-0 me-2">{{ date('d-m-Y') }}</h4>                               
+                                      </div>
+                                      <span>{{ date('l') }}</span>
+                                    </div>
+                                    <span class="badge bg-label-warning rounded p-2">
+                                      <i class="ti ti-calendar ti-sm"></i>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-sm-6 col-xl-6">
+                              <div class="card">
+                                <div class="card-body">
+                                  <div class="d-flex align-items-start justify-content-between">
+                                    <div class="content-left">
+                                      <div class="d-flex align-items-center my-1">
+                                        <h4 class="mb-0 me-2"><span id="attendance_clock">00:00:00 </span> </h4>
+                                      </div>
+                                      <span>Time</span>
+                                    </div>
+                                    <span class="badge bg-label-warning rounded p-2">
+                                      <i class="ti ti-clock  ti-sm"></i>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+
+                          <div class="row mb-4 g-4">
+                            <div class="col-lg-12">
+                              @if($attendance)
+                                  @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
+                                      <div class="badge bg-label-success p-3 w-100" id="last-punch-time" role="alert">
+                                          Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}
+                                      </div>
+                                  @elseif($attendance->status === 'mark-out')
+                                      <div class="badge bg-label-warning p-3 w-100" id="last-punch-time" role="alert">
+                                          <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
+                                      </div>
+                                  @endif
+                              @endif
+                            </div>
+  
+                            <div class="text-center d-grid gap-2 col-lg-12">
+                              @if(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
+
+                                    @php
+                                      $loginLimitTime = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
+                                      $now = \Carbon\Carbon::now();
+                                      $isLate = $now->gt($loginLimitTime);
+    
+                                      $todayName = $now->format('l'); // E.g., "Monday"
+    
+                                      
+                                      $fixedWeekOffs = ['Saturday', 'Sunday'];
+    
+                                      
+                                      $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
+                                      $customWeekOffs = array_map('trim', explode(',', $employeeWeekOffs));
+    
+                                      $allWeekOffs = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
+                                      $isWeekOffToday = in_array($todayName, $allWeekOffs);
+                                    @endphp
+  
+                                  @if ($isLate)
+                                    <div class="badge bg-label-warning p-3 w-100" id="last-punch-time" role="alert">
+                                      <strong>Mark-in time expired for today.</strong>
+                                    </div>
+                                  @elseif ($isWeekOffToday)
+                                      <div class="badge bg-label-warning p-3 w-100" id="last-punch-time" role="alert">
+                                        <strong>Today ({{ $todayName }}) is your week off.</strong>
+                                      </div>
+                                  @endif
+
+                                  <div class="text-center">
+                                    <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
+                                  </div>
+
+                              @else
+                                  <div class="text-center">
+                                    <button type="button" id="mark-out-btn" class="btn p-3 btn-danger w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
+                                  </div>
+                              @endif
+                            </div>
+
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <!--/ Markin module -->
+                    
+                    <!-- Custom module -->
+                    <div class="col-12 col-xl-4  col-lg-4">
+                      <div class="card card-sm pt-3">
+                        <div class="row g-4 p-3">
+                          <!-- custom -->
+                          <div class="col-12 col-md-6 col-xl-12 col-lg-12 pt-2">
+                            <button type="button" class="btn p-3 btn-info w-100" onclick="customModal()" >Custom <i class="mx-1 ti ti-arrow-big-right-lines ti-sm"></i></button>
+                          </div>  
+                          <!--/ custom -->
+
+                          <!-- emergency -->
+                          <div class="col-12 col-md-6 col-xl-12 col-lg-12"> 
+                            <button type="button" class="btn p-3 btn-warning w-100" onclick="emergencyModal()">Emergency <i class="mx-1 ti ti-bolt ti-sm"></i></button>
+                          </div>
+                          <!--/ emergency -->
+
+                          <div class="col-12 col-xl-12 col-lg-12 pb-4">
+                            <div class="card badge bg-label-dark w-100 pt-3 pb-3">
+                                <div class="d-flex align-items-start justify-content-between">
+                                  <div class="content-left">
+                                    <div class="d-flex align-items-center my-1">
+                                      <h4 class="mb-0 me-2">{{ $todayWorkedHours ?? '0' }}</h4>
+                                    </div>
+                                    <span>Total Hours You Spent</span>
+                                  </div>
+                                  <div class="card-action-element">
+                                    <ul class="list-inline mb-0">
+                                      <li class="list-inline-item">
+                                        <a href="javascript:void(0);" class="card-reload"><i class="tf-icons ti ti-rotate-clockwise-2 scaleX-n1-rtl ti-sm"></i></a>
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Custom module -->
+
                   </div>
-                  <div id="supportTracker"></div>
                 </div>
+              </div>  
 
-              </div>
-              <!--/ Attendance Options -->
-            </div>
+           
           </div>
           <!-- / Content -->
 
@@ -212,17 +276,19 @@
           <!-- / Footer -->
 
           <div class="content-backdrop fade"> </div>
+
+          <!-- Overlay -->
+          <div class="layout-overlay layout-menu-toggle"></div>
+      
+          <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+          <div class="drag-target"></div>
+
         </div>
         <!-- Content wrapper -->
       </div>
       <!-- / Layout page -->
     </div>
 
-    <!-- Overlay -->
-    <div class="layout-overlay layout-menu-toggle"></div>
-
-    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
-    <div class="drag-target"></div>
   </div>
   <!-- / Layout wrapper -->
 
@@ -603,7 +669,6 @@
     const supportTracker = new ApexCharts(supportTrackerEl, supportTrackerOptions);
     supportTracker.render();
   }
-
 
   });
 

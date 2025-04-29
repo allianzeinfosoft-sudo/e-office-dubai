@@ -25,7 +25,7 @@ $(function () {
     updateClock();
 });
 
-function updateClock() {
+function updateClock(element) {
     var currentTime = new Date();
     var hours = currentTime.getHours();
     var minutes = currentTime.getMinutes();
@@ -40,5 +40,6 @@ function updateClock() {
     var timeString = hours + ":" + minutes + ":" + seconds;
 
     // Display the time on the page
-    $('#clock').html('<i class="fa fa-clock fis rounded-circle me-1"></i>' +timeString);
+    $('#clock').html('<i class="ti ti-clock fis rounded-circle fs-4"></i> ' +timeString);
+    $('#attendance_clock').html(timeString);
 }

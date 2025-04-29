@@ -25,42 +25,41 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
-        $data['meta_title']     = 'Attendance';
+        $data['meta_title'] = 'Attendance';
+      //  $data['background_class'] = 'bg-eoffice';
 
-        $user = Auth::user();
-        $today = now()->format('Y-m-d');
-        $currentMonth = now()->format('Y-m');
-        $daysInMonth = now()->daysInMonth;
-        $weekOffDays = [0, 6]; // Sunday = 0, Saturday = 6
+        $user               = Auth::user();
+        $today              = now()->format('Y-m-d');
+        $currentMonth       = now()->format('Y-m');
+        $daysInMonth        = now()->daysInMonth;
+        $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6 
+
+        /* cutofftime */
+        $cutoffTime = $user->employee->login_limited_time ?? '09:15:00';
+        $isLate = now()->format('H:i:s') > $cutoffTime;
+        $data['disableCustomMarkIn'] = $isLate;
 
         // Fetch all holidays in the current month
-        $holidays = DB::table('holidays')
-        ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])
-        ->pluck('date')
-        ->toArray();
+        $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
 
         // Fetch all attendance records for the user in this month
-        $attendanceDays = Attendance::where('username', $user->username)
-        ->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])
-        ->pluck('signin_date')
-        ->toArray();
+        $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
 
         for ($day = 1; $day < now()->day; $day++) {
-            $date = "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
-            $dayOfWeek = date('w', strtotime($date));
-    
-            $isWeekOff = in_array($dayOfWeek, $weekOffDays);
-            $isHoliday = in_array($date, $holidays);
-            $hasAttendance = in_array($date, $attendanceDays);
-    
+            $date           = "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
+            $dayOfWeek      = date('w', strtotime($date));
+            $isWeekOff      = in_array($dayOfWeek, $weekOffDays);
+            $isHoliday      = in_array($date, $holidays);
+            $hasAttendance  = in_array($date, $attendanceDays);
+            
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
                 // Check if leave exists that covers this date
                 $leaveExists = DB::table('leaves')
-                    ->where('user_id', $user->id)
-                    ->whereDate('leave_from', '<=', $date)
-                    ->whereDate('leave_to', '>=', $date)
-                    ->exists();
-    
+                ->where('user_id', $user->id)
+                ->whereDate('leave_from', '<=', $date)
+                ->whereDate('leave_to', '>=', $date)
+                ->exists();
+                
                 if (!$leaveExists) {
                     // User missed work on a working day without leave
                     return redirect()->route('leaves.create', ['date' => $date])
@@ -68,7 +67,7 @@ class AttendanceController extends Controller{
                 }
             }
         }
-        
+
         $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
@@ -115,6 +114,11 @@ class AttendanceController extends Controller{
         $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
+        /* Mark In Approvel Chek */
+        
+
+
+        /* Mission Mark Out First */
         $missingMarkOut = Attendance::where('username', Auth::user()->username)
         ->where('signin_date', '<', now()->format('Y-m-d')) // Check dates before today
         ->whereNull('signout_time') // No sign-out time means the user has not marked out
@@ -203,7 +207,7 @@ class AttendanceController extends Controller{
         $data['weekOffDays'] = $weekOffDays;
         $data['totalWorkingDays'] = $totalWorkingDays;
 
-         /* $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
+        /* $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
             $query->select(DB::raw(1))
                 ->from('work_reports')
                 ->whereColumn('work_reports.report_date', 'attendances.signin_date')
@@ -214,7 +218,6 @@ class AttendanceController extends Controller{
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
                  ->on('work_reports.username', '=', 'attendances.username');
         })
-
         ->select(
             'attendances.id',
             'attendances.emp_id',
@@ -403,7 +406,7 @@ class AttendanceController extends Controller{
             'username' => Auth::user()->username,
             'emp_id' => Auth::user()->id,
             'picktime' => $request->signin_time,
-            'reason' => $request->signin_late_note,
+            'reason' => $request->signin_late_note ?? 'custom Mark In',
             'signin_date' => date('Y-m-d', strtotime($request->signin_date)),
             'status' => 0, // Assuming 0 means pending status
             'approved_by' => null
@@ -549,7 +552,7 @@ class AttendanceController extends Controller{
         $signinDate = date('Y-m-d', strtotime($request->signin_date));
         $signinTime = $request->signin_time;
 
-        $user = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+        $Employee = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
 
         // Save or update Attendance
         $attendance = Attendance::updateOrCreate(
@@ -558,7 +561,7 @@ class AttendanceController extends Controller{
                 'signin_date' => $signinDate,
             ],
             [
-                'username' => $user->user->username,
+                'username' => $Employee->user->username,
                 'signin_time' => $signinTime,
                 'signin_late_note' => $request->signin_late_note ?? null,
                 'punchin_type' => 'Custom',
@@ -569,7 +572,7 @@ class AttendanceController extends Controller{
         );
 
         // Save or update CustomAttendance
-        CustomAttendance::updateOrCreate(
+        /* CustomAttendance::updateOrCreate(
             [
                 'emp_id' => $employeeId,
                 'signin_date' => $signinDate,
@@ -581,7 +584,7 @@ class AttendanceController extends Controller{
                 'status' => 0,
                 'approved_by' => null
             ]
-        );
+        ); */
 
         return response()->json([
             'success' => true,
@@ -614,7 +617,7 @@ class AttendanceController extends Controller{
                 'signin_date'      => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'),
                 'signout_date'     => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signout_date'])->format('Y-m-d'),
                 'signin_time'      => $validated['signin_time'],
-                'break_time'       => $validated['break_time'] ?? '00:00',  // Default to '00:00' if break_time is null
+                'break_time'       => $validated['break_time'] ?? '00:00:00',  // Default to '00:00' if break_time is null
                 'signout_time'     => $validated['signout_time'],
                 'working_hours'    => $validated['working_hours'],
                 'signin_late_note' => $validated['signin_late_note'] ?? null, // Null if not provided

@@ -263,7 +263,7 @@
                     <div class="col-md-4 mb-3">
                         <label for="login_limited_time" class="form-label">Login Limited Time:</label>
                         <div class="input-group input-group-merge">
-                          <input type="time" class="form-control" id="login_limited_time" name="login_limited_time" value="{{ old('login_limited_time', $user->employee->login_limited_time) ?? '' }}" placeholder="Enter login limited time">
+                          <input type="time" class="form-control" id="login_limited_time" step="1" name="login_limited_time" value="{{ old('login_limited_time', $user->employee->login_limited_time) ?? '' }}" placeholder="Enter login limited time">
                         </div>
                       </div>
 

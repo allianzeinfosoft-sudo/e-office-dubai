@@ -17,7 +17,10 @@
 
         <!-- Digital Clock -->
         <li class="nav-item me-1 me-xl-0">
-          <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px"> <span id="clock" class="text-primary"><i class="fa fa-clock fis rounded-circle me-1"></i> 00:00:00 </span> </a>
+          <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px">
+            <span id="clock" class="text-primary d-flex align-items-center gap-2">
+              <i class="ti ti-clock fis rounded-circle fs-4"></i> 00:00:00 </span> 
+            </a>
         </li>
         <!-- / Digital Clock -->
 

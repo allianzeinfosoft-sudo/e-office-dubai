@@ -57,7 +57,7 @@ class WorkReportController extends Controller
     // ✅ Create WorkReport
     $workReport = WorkReport::create([
         'username'          => Auth::user()->username,
-        'emp_id'            => $request->emp_id,
+        'emp_id'            => Auth::user()->id,
         'project_name'      => $request->project_name,
         'type_of_work'      => $request->type_of_work,
         'time_of_work'      => $request->time_of_work,
