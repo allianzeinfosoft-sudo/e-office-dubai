@@ -61,7 +61,11 @@
 
     <!-- Scripts -->
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
-
+    <style>
+         .layout-page{
+            background-color: #00000075;
+        }
+    </style>
     @yield('css')
 </head>
 <body>

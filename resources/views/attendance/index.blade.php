@@ -2,10 +2,6 @@
 
 @section('css')
 <style>
-  .layout-page{
-    background-color: #00000075;
-  }
-
   .w-35 {
     width: 35% !important;
   }
