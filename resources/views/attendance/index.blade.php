@@ -43,11 +43,12 @@
           <!-- Content -->
 
           <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
-            <div class="row mt-md-5">
+            <h4 class="fw-bold py-3 mb-4 text-muted "><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
+
+            <div class="row">
 
                 <!-- Statistics -->
-                <div class="col-12 col-xl-12 col-lg-12 mt-5">
+                <div class="col-12 col-xl-12 col-lg-12">
                   <div class="row g-4 mb-4 justify-content-center">
                     <div class="col-sm-6 col-xl-4">
                       <div class="card card-bg">
@@ -193,7 +194,7 @@
                                       $isWeekOffToday = in_array($todayName, $allWeekOffs);
                                     @endphp
   
-                                  @if ($isLate)
+                                  @if ($isLate && $attendance->status != 'mark-out')
                                     <div class="badge bg-label-warning p-3 w-100" id="last-punch-time" role="alert">
                                       <strong>Mark-in time expired for today.</strong>
                                     </div>
@@ -223,7 +224,7 @@
                     
                     <!-- Custom module -->
                     <div class="col-12 col-xl-4  col-lg-4">
-                      <div class="card card-sm pt-3">
+                      <div class="card card-bg pt-3">
                         <div class="row g-4 p-3">
                           <!-- custom -->
                           <div class="col-12 col-md-6 col-xl-12 col-lg-12 pt-2">
