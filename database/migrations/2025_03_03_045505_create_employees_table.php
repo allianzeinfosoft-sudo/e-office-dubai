@@ -40,7 +40,7 @@ return new class extends Migration
             $table->date('join_date')->nullable();
             $table->tinyInteger('shift_id')->nullable();
             $table->tinyInteger('role')->nullable();
-            $table->tinyInteger('status')->nullable();
+            $table->tinyInteger('status')->nullable()->comment('1-New_User, 2-Active, 3-Inactive, 4-Resinged, 5-Admin, 6-Locked');
             $table->tinyInteger('login_limited_time')->nullable();
             $table->string('appointment_status')->nullable();
             $table->tinyInteger('team_lead')->nullable();

@@ -19,9 +19,9 @@ class UserSeeder extends Seeder
             ['status_name' => 'Active'],
             ['status_name' => 'Inactive'],
             ['status_name' => 'Resigned'],
-            ['status_name' => 'Admin'],
+            ['status_name' => 'Admin']
         ];
-        
+
         foreach ($statuses as $status) {
             UserStatus::firstOrCreate(
                 ['status_name' => $status['status_name']],

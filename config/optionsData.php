@@ -138,4 +138,11 @@ return [
         'lat' => 'LAST'
     ],
 
+    'holiday_group' => [
+        '1' => 'General',
+        '2' => 'Finance',
+        '3' => 'DIP',
+        '4' => 'Engineering',
+    ]
+
 ];

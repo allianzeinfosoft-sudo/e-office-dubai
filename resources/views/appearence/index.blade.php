@@ -16,13 +16,18 @@
     padding: 28px 10px;
     border-radius: 0px;
 }
+.selected-btn {
+    background-color: #198754 !important; /* Bootstrap green */
+    border-color: #198754 !important;
+    color: white;
+}
 </style>
 @stop
 
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container">
+    <div class="layout-container bg-eoffice">
         <!-- Menu -->
         <x-menu />
 
@@ -30,54 +35,92 @@
             <!-- Navbar -->
             <x-header />
 
-            <div class="content-wrapper">
-                <div class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-3"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
-
-                    <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-end mb-3">
-                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openBackgroundOffcanvas()">
-                                <span>
-                                    <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                    <span class="d-none d-sm-inline-block">Add New</span>
-                                </span>
-                            </a>
-                        </div>
-                    </div>
 
 
-                    <div class="card">
-                        <div class="card-datatable table-responsive">
-                            <table class="hover_effect datatables-basic datatables-background table border-top table-stripedc" id="datatables-background">
-                                <thead>
-                                    <tr>
-                                        <th>S.No</th>
-                                        <th>Image</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    </div>
 
+
+
+
+
+
+
+
+            <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl flex-grow-1 container-p-y">
+              <h4 class="fw-bold py-3 mb-2"><span class="text-muted fw-light"></span> Settings</h4>
+              <!-- Header -->
+              <div class="row mt-md-2">
+                <div class="tab row-bordered mb-3">
+                  <button class="tablinks active" onclick="openBg(event, 'Feed')">Feed Background</button>
+                  <button class="tablinks" onclick="openBg(event, 'Login')">Login Background</button>
+                  <button class="tablinks" onclick="openBg(event, 'All')">All Background</button>
                 </div>
 
+                <!---feed page Background change-->
+                <div id="Feed" class="tabcontent container-fluid show">
+                    <div class="card">
+                      <div class="d-flex align-items-center p-3 justify-content-between">
+                        <h5 class="fw-bold mb-0">Change Feed Background Style</h5>
+                        <a class="btn btn-info waves-effect h-px-40 waves-light" href="javascript:void(0);" onclick="openBackgroundOffcanvas()">
+                            Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i>
+                        </a>
+                      </div>
+                      <div class="row px-3">
+                        <span>No image uploaded</span>
+                      </div>
+                    </div> <!-- container-fluid, tm-container-content -->
+                    <!--Gallery-->
+                </div>
+                <!---feed page Background change-->
 
-                <!-- Footer -->
+                <!---login page Background change-->
+                <div id="Login" class="tabcontent container-fluid">
+                  <div class="card">
+                    <div class="d-flex align-items-center p-3 justify-content-between">
+                      <h5 class="fw-bold mb-0">Change Login Background Image</h5>
+                      <button type="button" class="btn btn-info waves-effect h-px-40 waves-light" href="javascript:void(0);" onclick="openBackgroundOffcanvas()">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button>
+                    </div>
+                    <div class="row px-3">
+                        <span>No image uploaded</span>
+                    </div>
+                  </div> <!-- container-fluid, tm-container-content -->
+                  <!--Gallery-->
+                </div>
+                <!---login page Background change-->
+
+                <!---all page Background change-->
+                <div id="All" class=" tabcontent container-fluid ">
+                  <div class="card">
+                    <div class="d-flex align-items-center p-3 justify-content-between">
+                      <h5 class="fw-bold mb-0">Change Background Image</h5>
+                      <button type="button" class="btn btn-info waves-effect h-px-40 waves-light">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button>
+                    </div>
+                    <div class="row px-3">
+                        <span>No image uploaded</span>
+                    </div>
+                  </div> <!-- container-fluid, tm-container-content -->
+                  <!--Gallery-->
+                </div>
+                <!---all page Background change-->
+              </div>
+            </div>
+            <!-- / Content -->
                 <x-footer />
                 <!-- / Footer -->
-            </div>
         </div>
     </div>
 </div>
 
 <!-- Add Banner -->
-{{-- <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="banner_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-35" data-bs-backdrop="static" tabindex="-1" id="appearence_background_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-plus fs-2 text-white"></i>
             <span id="offcanvas-title-container">
-                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Add Banner</h5>
-                <span class="text-white slogan">Create New Banner</span>
+                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Add Background</h5>
+                <span class="text-white slogan">Create New Background</span>
             </span>
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
@@ -85,11 +128,11 @@
     <div class="offcanvas-body">
         <div class="row">
             <div class="col-sm-12">
-                <x-banner-form action="{{ route('banner.store') }}" />
+                <x-appearence-background-form action="{{ route('appearences.store') }}" />
             </div>
         </div>
     </div>
-</div> --}}
+</div>
 
 @stop
 
@@ -97,185 +140,233 @@
 @push('js')
 <script>
 
-    // document.addEventListener("DOMContentLoaded", function () {
-    //     const form = document.getElementById('banner-form');
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById('appearence-background-form');
 
 
-    //     form.addEventListener('submit', function (e) {
-    //         e.preventDefault();
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-    //         const banner_title = document.getElementById('banner_title').value.trim();
-    //         const display_date = document.getElementById('display_date').value.trim();
-    //         const picture = document.getElementById('picture').value.trim();
-    //         const banner_details = quillBannerEditor1.root.innerText.trim();
-    //         const hiddenBanner_details = document.getElementById('banner_details');
-    //         hiddenBanner_details.value = banner_details;
+            const selectedBackgroundTypes = Array.from(document.getElementsByName('background_type[]'))
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
 
-    //         let errors = [];
+            const imageInput = document.getElementById('image');
+            const image = imageInput.files[0];
 
-    //         // === Validation ===
-    //         if (!banner_title) {
-    //             errors.push("Banner Title is required.");
-    //         }
+            let errors = [];
 
-    //         if (!display_date) {
-    //             errors.push("Display date is required.");
-    //         } else if (isNaN(Date.parse(display_date))) {
-    //             errors.push("Display date must be a valid date.");
-    //         }
+            // === Validation ===
+           if (selectedBackgroundTypes.length === 0) {
+                errors.push("At least one background type must be selected.");
+            }
 
-    //         // if (!picture) {
-    //         //     errors.push("Picture is required.");
-    //         // }
-
-    //         if (!hiddenBanner_details) {
-    //             errors.push("Banner details reason is required");
-    //         }
-
-    //         // === Show errors or submit ===
-    //         let errorBox = document.getElementById('formErrors');
-    //         if (!errorBox) {
-    //             errorBox = document.createElement('div');
-    //             errorBox.id = 'formErrors';
-    //             errorBox.className = 'alert alert-danger mt-3';
-    //             form.prepend(errorBox);
-    //         }
-
-    //         if (errors.length > 0) {
-    //             errorBox.innerHTML = '<ul class="mb-0">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
-    //         } else {
-    //             errorBox.innerHTML = ''; // Clear old errors
-    //             form.submit(); // Submit manually only if no errors
-    //         }
-    //     });
-    // });
+            if (!image) {
+                errors.push("Image is required.");
+            }
 
 
-    $(function() {
+            // === Show errors or submit ===
+            let errorBox = document.getElementById('formErrors');
+            if (!errorBox) {
+                errorBox = document.createElement('div');
+                errorBox.id = 'formErrors';
+                errorBox.className = 'alert alert-danger mt-3';
+                form.prepend(errorBox);
+            }
 
-        var backgroundTable = $('#datatables-background'),
-        select2 = $('.select2');
-        if (backgroundTable.length) {
+            if (errors.length > 0) {
+                errorBox.innerHTML = '<ul class="mb-0">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            } else {
+                errorBox.innerHTML = ''; // Clear old errors
+                form.submit(); // Submit manually only if no errors
+            }
+        });
+    });
 
-            backgroundTable.DataTable({
 
-                ajax: {
-                    type: "GET",
-                    url: "{{ route('appearences.index') }}", // Fixed syntax
-                    dataType: "json",
-                    dataSrc: "data"
-                },
-                columns: [
-                    {
-                        data: null,
-                        title: 'S.No',
-                        render: function (data, type, row, meta) {
-                            return meta.row + 1;
-                        },
-                        orderable: false, // Optional: prevent sorting on this column
-                        searchable: false // Optional: exclude from search
-                    },
-
-                    {
-                        data: 'image',
-                        title: 'Image',
-                        render: function (data, type, row) {
-                            if (data) {
-                                return `<img src="/storage/${data}" alt="Image" style="width: 150px; height: 150px; object-fit: cover; border-radius: 6px;" />`;
-                            } else {
-                                return 'No Image';
-                            }
-                        }
-                    },
-
-                    {
-                        data: null,
-                        title: 'Actions',
-                        render: function (data, type, row, full) {
-
-                            return `
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-banner" data-id="${row.id}"><i class="ti ti-trash"></i></a>
-                            `;
-                        }
-                    }
-                ]
-            });
+    $(function () {
+    $.ajax({
+        type: "GET",
+        url: "{{ route('appearences.index') }}", // Your endpoint
+        dataType: "json",
+        success: function (response) {
+            if (response.data && response.data.length) {
+                renderImages(response.data);
+            }
+        },
+        error: function (xhr) {
+            console.error("Failed to load background images:", xhr);
         }
     });
 
+
+
+    function renderImages(images) {
+    // Clear previous content
+            $('#Feed .row.px-3, #Login .row.px-3, #All .row.px-3').empty();
+
+            images.forEach(function (image) {
+
+
+                // If image has multiple categories, append to each relevant section
+                if (image.background_type) {
+                            let categories = [];
+
+                            // Parse if it's a stringified array
+                            if (typeof image.background_type === 'string') {
+                                try {
+                                    categories = JSON.parse(image.background_type);
+                                } catch (e) {
+                                    console.error('Invalid background_type format:', image.background_type);
+                                }
+                            } else if (Array.isArray(image.background_type)) {
+                                categories = image.background_type;
+                            }
+
+                            // Loop through each category
+                            categories.forEach(cat => {
+
+                                const imageHtml = `<div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 mb-5">
+                                    <div class="parent shadow">
+                                        <img src="/storage/${image.image}" alt="Image" class="img-fluid w-100 galery-cover">
+                                    </div>
+                                    <div class="d-flex justify-content-between shadow br-lb10 br-rb10 bg-white p-3">
+                                        <button class="btn btn-danger waves-effect waves-light delete-background-image delete-image-${image.id}" data-id="${image.id}" data-bg_type="${cat}">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                        <button class="btn btn-success waves-effect waves-light select-background-image select-image-${image.id}" data-id="${image.id}" data-bg_type="${cat}">
+                                            Select
+                                        </button>
+                                    </div>
+                                </div>`;
+                                switch (cat.toLowerCase()) {
+                                    case 'feeds':
+                                        $('#Feed .row.px-3').append(imageHtml);
+                                        break;
+                                    case 'login':
+                                        $('#Login .row.px-3').append(imageHtml);
+                                        break;
+                                    case 'main':
+                                    case 'all':
+                                    default:
+                                        $('#All .row.px-3').append(imageHtml);
+                                        break;
+                                }
+                            });
+
+                        }
+
+            });
+        }
+
+
+    // Delete image handler
+    $(document).on('click', '.delete-background-image', function () {
+        const id = $(this).data('id');
+        if (confirm("Are you sure you want to delete this image?")) {
+            // Your delete logic here, e.g. AJAX DELETE call
+            console.log("Deleting image with ID:", id);
+        }
+    });
+
+
+});
+
+
     /*delete banner function*/
 
-//     $(document).on('click', '.delete-banner', function(e) {
-//         e.preventDefault();
-//         const bannerId = $(this).data('id');
+    $(document).on('click', '.delete-background-image', function(e) {
+        e.preventDefault();
+        const backgroundId = $(this).data('id');
 
-//         Swal.fire({
-//                 title: "Are you sure?",
-//                 text: "You won't be able to revert this!",
-//                 icon: "warning",
-//                 showCancelButton: true,
-//                 confirmButtonColor: "#d33",
-//                 cancelButtonColor: "#3085d6",
-//                 confirmButtonText: "Yes, delete it!"
-//             }).then((result) => {
-//                 if (result.isConfirmed) {
+        Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
 
-//                         $.ajax({
-//                         url: `/banner/${bannerId}`,
-//                         type: 'DELETE',
-//                         data: {
-//                             _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-//                         },
-//                         success: function(response) {
+                        $.ajax({
+                        url: `/appearences/${backgroundId}`,
+                        type: 'DELETE',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                        },
+                        success: function(response) {
 
-//                             Swal.fire("Deleted!", "Banner has been deleted.", "success").then(() => {
-//                                 $('#datatables-banner').DataTable().ajax.reload(); // Reload table
-//                             });
+                            Swal.fire("Deleted!", "Background Image has been deleted.", "success").then(() => {
+                                $('#datatables-background').DataTable().ajax.reload(); // Reload table
+                            });
 
-//                         },
-//                         error: function(xhr) {
-//                             Swal.fire("Error!", "Something went wrong.", "error");
-//                         }
-//                         });
+                        },
+                        error: function(xhr) {
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                        });
 
-//             }
+            }
 
-//     });
-//   });
+    });
+  });
 
 
-// function openBannerOffcanvas(targetId = null) {
-//     $('#banner-form')[0].reset(); // Reset form
-//     $('#target_id').val(''); // Clear ID
-//     if (targetId) {
-//         $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Banner</h5><span class="text-white slogan">Edit New Banner</span>`);
-//         $.ajax({
-//             url: `/banner/${targetId}/edit`,
-//             type: 'GET',
-//             success: function (data) {
+function openBackgroundOffcanvas() {
+    $('#appearence-background-form')[0].reset(); // Reset form
+    $('#target_id').val(''); // Clear ID
+    var offcanvasElement = $('#appearence_background_offcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+}
 
-//                 let content = data.banner.banner_details;
-//                 let cleanContent = content.replace(/^<p>|<\/p>$/g, '');
 
-//                 $('#target_id').val(data.banner.id);
-//                 $('#banner_title').val(data.banner.banner_title);
-//                 $('#display_date').val(data.banner.display_date);
-//                 $('#banner_details').val(cleanContent);
-//                 // document.getElementById('thoughts-editor').textContent = cleanContent;
-//                 quillBannerEditor1.root.innerHTML = cleanContent;
 
-//                 const previewEdit = document.getElementById("PicturePreview");
-//                 previewEdit.src = `/storage/${data.banner.picture}`;;
-//                 previewEdit.style.display = "block";
+function openBg(evt, bgName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(bgName).style.display = "block";
+        evt.currentTarget.className += " active";
+      }
 
-//                 $('#picture').val('');
-//             }
-//         });
-//     }
-//     var offcanvasElement = $('#banner_offcanvas');
-//     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
-//     offcanvas.show();
-// }
+
+      /*set back ground image*/
+
+$(document).on('click', '.select-background-image', function () {
+    const imageId = $(this).data('id');
+    const backgroundType = $(this).data('bg_type');
+
+    $.ajax({
+        url: '/background-images/select',
+        type: 'POST',
+        data: {
+            image_id: imageId,
+            background_type: backgroundType,
+            _token: $('meta[name="csrf-token"]').attr('content') // ensure CSRF token is present
+        },
+        success: function (response) {
+
+            $(`.select-image-${response.selected.image_id}`)
+                .html('<i class="ti ti-check"></i>')
+                .removeClass('btn-success')
+                .addClass('selected-btn btn-primary');
+        },
+        error: function (xhr) {
+            console.error(xhr.responseText);
+            alert('Error updating background image.');
+        }
+    });
+});
 
 </script>
 @endpush

@@ -19,12 +19,14 @@ class HolidayController extends Controller
             'id',
             'name',
             'date',
+            'holiday_group',
         )->get()
         ->map(function ($holidays) {
             return [
                 'id' => $holidays->id,
                 'name' => $holidays->name,
                 'date' => $holidays->date,
+                'group' => $holidays->holiday_group,
 
             ];
         });
