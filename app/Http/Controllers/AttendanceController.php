@@ -358,6 +358,7 @@ class AttendanceController extends Controller{
                 ]
             ]);
         }
+
         $workingTime = CustomHelper::calculateTotalWorkingTime($attendance->signin_date, $attendance->signin_time, now()->format('Y-m-d'), now()->format('H:i:s'), $attendance->break_time);
 
         $attendance->update([
@@ -378,7 +379,13 @@ class AttendanceController extends Controller{
     }
 
     public function customMarkIn(Request $request) {
-        $existingAttendance = Attendance::where('emp_id', Auth::user()->id)->where('signin_date', now()->format('Y-m-d'))->first();
+        $userId = Auth::user()->id;
+        $signinDate = date('Y-m-d', strtotime($request->signin_date));
+
+        $existingAttendance = Attendance::where('emp_id', $userId)
+        ->where('signin_date', $signinDate)
+        ->first();
+
         if ($existingAttendance) {
             return response()->json([
                 'success' => false,
@@ -389,35 +396,40 @@ class AttendanceController extends Controller{
             ]);
         }
 
-        $attendance = Attendance::create([
-            'username' => Auth::user()->username,
-            'emp_id' => Auth::user()->id,
-            'signin_date' => date('Y-m-d', strtotime($request->signin_date)),
-            'signin_time' => $request->signin_time,
-            'signin_late_note' => $request->signin_late_note,
-            'punchin_type' => 'Custom',
-            'ipaddress' => $request->ip(),
-            'status' => 'custom',
-            'custom_status' => '1'
-        ]);
-
         // Store data in `custom_attendances` table
-        $customAttendance = CustomAttendance::create([
-            'username' => Auth::user()->username,
-            'emp_id' => Auth::user()->id,
-            'picktime' => $request->signin_time,
-            'reason' => $request->signin_late_note ?? 'custom Mark In',
-            'signin_date' => date('Y-m-d', strtotime($request->signin_date)),
-            'status' => 0, // Assuming 0 means pending status
-            'approved_by' => null
-        ]);
+
+        $customAttendance = CustomAttendance::where('emp_id', $userId)
+        ->where('signin_date', $signinDate)
+        ->first();
+
+        if ($customAttendance) {
+            // Update the existing custom attendance request
+            $customAttendance->update([
+                'picktime'    => $request->signin_time,
+                'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                'status'      => 0, // Reset to pending on update
+                'approved_by' => null
+            ]);
+    
+            $message = 'Your custom Mark In request has been updated and sent for re-approval.';
+        } else {
+            // Create new custom attendance request
+            CustomAttendance::create([
+                'username'    => Auth::user()->username,
+                'emp_id'      => $userId,
+                'picktime'    => $request->signin_time,
+                'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                'signin_date' => $signinDate,
+                'status'      => 0,
+                'approved_by' => null
+            ]);
+    
+            $message = 'Your custom Mark In has been sent for approval.';
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Attendance marked successfully',
-            'data' => [
-                'signin_time' => date('h:i A', strtotime($attendance->signin_time))
-            ]
+            'message' => $message,
         ]);
     }
 
@@ -442,9 +454,7 @@ class AttendanceController extends Controller{
 
 
     /* Emergency mark-in mark-out*/
-    public function emergencyMark(Request $request)
-    {
-
+    public function emergencyMark(Request $request){
         $data = [
             'username' => Auth::user()->username,
             'signin_time' => $request->type === 'mark-in' ? $request->time_in_out : null,
@@ -646,5 +656,42 @@ class AttendanceController extends Controller{
         }
     }
 
+    public function getIncompleteWorkingHours(){
+        $data['meta_title'] = 'Incomplete Working Hours';
 
+        $data['years'] = Attendance::selectRaw('YEAR(signin_date) as year')
+        ->distinct()
+        ->orderByDesc('year')
+        ->pluck('year');
+
+        // Get distinct months with month number and name (optional)
+        $data['months'] = Attendance::selectRaw('MONTH(signin_date) as month, MONTHNAME(signin_date) as month_name')
+        ->distinct()
+        ->orderBy('month')
+        ->get();
+
+        return view('attendance.incomplete_working_hours', $data);
+    }
+
+    public function getIncompleteWorkingHoursReport(Request $request){
+
+        $year = $request->input('year');
+        $month = $request->input('month');
+
+        // Get filtered attendance records
+        $data['attendances'] = Attendance::whereYear('signin_date', $year)
+        ->whereMonth('signin_date', $month)
+        ->where('working_hours', '<', '08:00:00')
+        ->with('employee')
+        ->orderBy('signin_date', 'DESC')
+        ->get();
+
+        // Return a rendered Blade partial as HTML
+        $html = view('attendance.incomplete_report_table',$data)->render();
+
+        return response()->json([
+            'success' => true,
+            'html'    => $html,
+        ]);
+    }
 }

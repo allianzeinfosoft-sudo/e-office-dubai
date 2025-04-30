@@ -30,6 +30,7 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\MomController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\MailBoxController;
+use App\Http\Controllers\CustomAttendanceController;
 use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -76,6 +77,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/attendance/destroy/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
     Route::post('/attendance/custom-attendance-entry', [AttendanceController::class, 'customAttendanceEntry'])->name('attendance.custom-attendance-entry');
     Route::post('attendance/full-day-attendance-entry', [AttendanceController::class, 'storeFullDayEntry'])->name('attendance.full-day-attendance-entry');
+    Route::get('attendance/incomplete-working-hours', [AttendanceController::class, 'getIncompleteWorkingHours'])->name('attendance.incomplete-working-hours');
+    Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
+
 
 
     /* roles */
@@ -293,6 +297,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     /* Appearence */
     Route::resource('appearences', AppearenceController::class);
     Route::post('/background-images/select', [AppearenceController::class, 'Bg_select'])->name('background-images.select');
+
+    /* Custom Attendance */
+    Route::get('/custom-attendance', [CustomAttendanceController::class, 'index'])->name('custom-attendance.index');
+    Route::get('/custom-attendance/accept-custom-mark-in/{id}', [CustomAttendanceController::class, 'acceptCustomMarkIn'])->name('custom-attendance.accept-custom-mark-in');
+    Route::get('/custom-attendance/reject-custom-mark-in/{id}', [CustomAttendanceController::class, 'rejectCustomMarkIn'])->name('custom-attendance.reject-custom-mark-in');
 
 });
 

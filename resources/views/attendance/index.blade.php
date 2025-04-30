@@ -304,7 +304,7 @@
   
             <div class="col-12 mb-3">
               <label for="signin_time" class="form-label">Time</label>
-              <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
+              <input type="time" id="signin_time" name="signin_time" step="1" class="form-control" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
               <input type="hidden" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
             </div>
   
@@ -344,7 +344,7 @@
   
             <div class="col-12 mb-3">
               <label for="time_in_out" class="form-label">Time</label>
-              <input type="time" id="time_in_out" name="time_in_out" class="form-control" value="{{ date('H:i:s') }}" placeholder="Time" />
+              <input type="time" id="time_in_out" name="time_in_out" class="form-control" step="1" value="{{ date('H:i:s') }}" placeholder="Time" />
             </div>
           </form>
         </div>
@@ -473,193 +473,6 @@
         });
     });
     
-    const categories = @json($categories);
-    const seriesData = @json($seriesData);
-    const weeklyEarningReportsEl = document.querySelector('#weeklyEarningReports');
-    
-    const weeklyEarningReportsConfig = {
-      chart: { 
-        height: 202, 
-        parentHeightOffset: 0,
-        type: 'bar',
-        toolbar: { show: false }
-      },
-      plotOptions: { 
-        bar: { 
-          barHeight: '60%',
-          columnWidth: '38%',
-          startingShape: 'rounded',
-          endingShape: 'rounded',
-          borderRadius: 4,
-          distributed: true
-        }
-      },
-      grid: {
-        show: true,
-        padding: {
-          top: 10,
-          bottom: 0,
-          left: 10,
-          right: 10
-        }
-      },
-      colors: ['#28a745'], // Green for working days
-      dataLabels: {
-        enabled: false
-      },
-      series: [
-        {
-          name: 'Worked Hours',
-          data: seriesData
-        }
-      ],
-      legend: {
-        show: false
-      },
-      xaxis: {
-        categories: categories,
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-        labels: {
-          style: {
-            colors: '#6c757d',
-            fontSize: '10px',
-            fontFamily: 'Public Sans'
-          }
-        }
-      },
-      yaxis: {
-        labels: {
-          style: {
-            colors: '#6c757d',
-            fontSize: '10px',
-            fontFamily: 'Public Sans'
-          }
-        }
-      },
-      tooltip: {
-        enabled: true,
-        y: {
-          formatter: (value) => `${value} hrs`
-        }
-      },
-      responsive: [
-        {
-          breakpoint: 1025,
-          options: {
-            chart: {
-              height: 199
-            }
-          }
-        }
-      ]
-    };
-
-    if (typeof weeklyEarningReportsEl !== undefined && weeklyEarningReportsEl !== null) {
-      const weeklyEarningReports = new ApexCharts(weeklyEarningReportsEl, weeklyEarningReportsConfig);
-      weeklyEarningReports.render();
-    }
-    
-    // Support Tracker - Radial Bar Chart
-
-  const todayProgressPercentage = @json($todayProgressPercentage);
-  const todayWorkedHours = @json($todayWorkedHours);
-
-  const supportTrackerEl = document.querySelector('#supportTracker'),
-    supportTrackerOptions = {
-      series: [todayProgressPercentage],
-      labels: [`Total Worked Hrs (${todayWorkedHours})`],
-      chart: {
-        height: 360,
-        type: 'radialBar'
-      },
-      plotOptions: {
-        radialBar: {
-          offsetY: 10,
-          startAngle: -140,
-          endAngle: 130,
-          hollow: {
-            size: '65%'
-          },
-          track: {
-            background: '#fff',
-            strokeWidth: '100%'
-          },
-          dataLabels: {
-            name: {
-              offsetY: -20,
-              color: '#a5a3ae',
-              fontSize: '13px',
-              fontWeight: '400',
-              fontFamily: 'Public Sans'
-            },
-            value: {
-              offsetY: 10,
-              color: '#5d596c',
-              fontSize: '38px',
-              fontWeight: '600',
-              fontFamily: 'Public Sans'
-            }
-          }
-        }
-      },
-      colors: [config.colors.primary],
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: 'dark',
-          shadeIntensity: 0.5,
-          gradientToColors: [config.colors.primary],
-          inverseColors: true,
-          opacityFrom: 1,
-          opacityTo: 0.6,
-          stops: [30, 70, 100]
-        }
-      },
-      stroke: {
-        dashArray: 10
-      },
-      grid: {
-        padding: {
-          top: -20,
-          bottom: 5
-        }
-      },
-      states: {
-        hover: {
-          filter: {
-            type: 'none'
-          }
-        },
-        active: {
-          filter: {
-            type: 'none'
-          }
-        }
-      },
-      responsive: [
-        {
-          breakpoint: 1025,
-          options: {
-            chart: {
-              height: 330
-            }
-          }
-        },
-        {
-          breakpoint: 769,
-          options: {
-            chart: {
-              height: 280
-            }
-          }
-        }
-      ]
-    };
-  if (typeof supportTrackerEl !== undefined && supportTrackerEl !== null) {
-    const supportTracker = new ApexCharts(supportTrackerEl, supportTrackerOptions);
-    supportTracker.render();
-  }
 
   });
 
@@ -704,8 +517,9 @@
             if (response.success) {
                 toastr.success(response.message);
                 $('#customMarkingForm')[0].reset(); // Clear form after success
-                $('#modelCustom').modal('hide'); // Close modal after success
-                window.location.reload();
+                const offcanvasElement = document.getElementById('customMarkingOffcanvas');
+                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                if (offcanvas) offcanvas.hide();
             } else {
                 toastr.error(response.message);
             }
