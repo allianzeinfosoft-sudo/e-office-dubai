@@ -154,7 +154,7 @@
 
                           </div>
 
-                          <div class="row mb-4 g-4">
+                          <div class="row g-4">
                             <div class="col-lg-12">
                               @if($attendance)
                                   @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
@@ -190,7 +190,7 @@
                                       $isWeekOffToday = in_array($todayName, $allWeekOffs);
                                     @endphp
   
-                                  @if ($isLate && $attendance->status != 'mark-out')
+                                  @if ($isLate)
                                     <div class="badge bg-label-warning p-3 w-100" id="last-punch-time" role="alert">
                                       <strong>Mark-in time expired for today.</strong>
                                     </div>
