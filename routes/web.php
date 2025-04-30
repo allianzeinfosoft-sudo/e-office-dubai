@@ -48,7 +48,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['web'])->group(function () {
+Route::group(['middleware' => ['web']], function () {
+
     Auth::routes();
     Route::get('/', function () {
         return view('auth/login');
