@@ -1,4 +1,22 @@
 @extends('layouts.app')
+@section('css')
+<style>
+.w-35 {
+    width: 35% !important;
+}
+.w-45 {
+    width: 45% !important;
+}
+.offcanvas-close{
+    position: absolute;
+    top: 0px;
+    left: -32px;  /* Moves the button outside the offcanvas */
+    z-index: 1055; /* Ensures it stays on top */
+    padding: 28px 10px;
+    border-radius: 0px;
+}
+</style>
+@stop
 @section('content')
  <!-- Layout wrapper -->
  <div class="layout-wrapper layout-content-navbar">
@@ -29,6 +47,7 @@
                     <th>S.No</th>
                     <th>Name of Holiday</th>
                     <th>Date of Holiday</th>
+                    <th>Holiday Group</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -38,12 +57,29 @@
           <!-- Modal to add new record -->
           <div class="offcanvas offcanvas-end" id="add-new-holiday">
             <div class="offcanvas-header border-bottom">
-              <h5 class="offcanvas-title" id="holidayModalLabel">New Holiday</h5>
-              <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <span class="d-flex justify-content-between align-items-center gap-2">
+                    <i class="ti ti-file-plus fs-2 text-white"></i>
+                    <span id="offcanvas-title-container">
+                        <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Add Holidayt</h5>
+                        <span class="text-white slogan">Create New Holiday</span>
+                    </span>
+                </span>
+                <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
             </div>
             <div class="offcanvas-body flex-grow-1">
               <form class="add-new-record pt-0 row g-2" method="post" action="{{ route('holidays.store') }}" id="form-add-new-shift">
                 @csrf
+
+                <div class="col-sm-12">
+                    <label class="form-label" for="shift_id">Holiday Group</label>
+                    <select name="holiday_group" id="holiday_group" class="form-control">
+                        @foreach (config('optionsData.holiday_group') as $key => $value)
+                            <option value="{{ $key }}">{{ $value ?? 'N/A' }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+
                 <div class="col-sm-12">
                     <label class="form-label" for="shift_id">Holiday Name</label>
                     <div class="input-group input-group-merge">
@@ -139,6 +175,19 @@ if (dtHolidayTable.length) {
       { data: 'name', title: 'Name of Holiday' },
       { data: 'date', title: 'Date of Holiday' },
       {
+        data: 'group',
+        title: 'Holiday Group',
+            render: function(data, type, row) {
+                switch (data) {
+                case 1: return 'General';
+                case 2: return 'Finance';
+                case 3: return 'DIP';
+                case 4: return 'Engineering';
+                default: return 'Unknown';
+                }
+            }
+        },
+      {
         targets: 3,
         render: function(data, type, full, meta){
             let holiday_id = full['id'];
@@ -148,7 +197,7 @@ if (dtHolidayTable.length) {
       },
 
     ],
-      order: [[2, 'desc']],
+
       dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
       displayLength: 7,
       lengthMenu: [7, 10, 25, 50, 75, 100],

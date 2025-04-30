@@ -60,7 +60,7 @@
           </div>
           <!-- /Logo -->
           <h3 class="mb-1 fw-bold">{{ __('en.welcome') }} </h3>
-          <p class="mb-4">{{ __('en.slogan') }}</p> 
+          <p class="mb-4">{{ __('en.slogan') }}</p>
           <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}">
             @csrf
             <div class="mb-3">
@@ -76,9 +76,11 @@
               <div class="d-flex justify-content-between">
                 <label class="form-label" for="password">{{ __('en.password')}} </label>
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" tabindex="3">
-                    <small>{{ __('en.forgot_password')}}</small>
+
+                    <a href="mailto:hr@mail.allianzegroup.com?subject={{ 'Please Reset My Password' }}&body={{ urlencode('Reason:') }}">
+                        <small>{{ __('en.forgot_password')}}</small>
                     </a>
+
                 @endif
               </div>
               <div class="input-group input-group-merge">
@@ -92,7 +94,7 @@
               </div>
             </div>
             <div class="mb-3">
-              <div class="form-check"> 
+              <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} tabindex="4">
                 <label class="form-check-label" for="remember">
                     {{ __('en.remember_me') }}
@@ -114,5 +116,5 @@
       <!-- /Login -->
     </div>
   </div>
-  
+
 @endsection

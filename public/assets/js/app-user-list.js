@@ -152,12 +152,6 @@ $(function () {
               '<div class="d-flex align-items-center">' +
               '<a href="javascript:;" class="text-body edit-user" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
               '<a href="javascript:;" class="text-body delete-user" data-user-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
-              '<div class="dropdown-menu dropdown-menu-end m-0">' +
-              '<a href="' +
-              userView +
-              '" class="dropdown-item">View</a>' +
-              '<a href="javascript:;" class="dropdown-item">Suspend</a>' +
-              '</div>' +
               '</div>'
             );
           }
