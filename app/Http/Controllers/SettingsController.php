@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\LoginLimitedTime;
 use App\Models\Workshift;
+use App\Models\Project;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
+
 class SettingsController extends Controller
 {
     public function list_work_shift()
@@ -138,20 +142,86 @@ class SettingsController extends Controller
      }
 
      /* Custom Mark Out */
-     public function customMakeOut(){
+    public function customMakeOut(){
         $data['meta_title'] = 'Custom Mark Out';
         return view('settings.custom-mark-out', $data);
-     }
+    }
 
-     public function customAttendanceEntry(){
+    public function customAttendanceEntry(){
         $data['meta_title'] = 'Custom Attendance Entry';
         $data['employees'] = Employee::get();
         return view('settings.customAttendanceEntry', $data);
-     }
+    }
 
-     public function fullDayAttendanceEntry(){
+    public function fullDayAttendanceEntry(){
         $data['meta_title'] = 'Full Day Attendance Entry';
         $data['employees'] = Employee::get();
         return view('settings.fullDayAttendanceEntry', $data);
-     }
+    }
+
+    public function customWorkReportEntry(){
+        $data['meta_title'] = 'Custom Work Report Entry';
+        $data['employees'] = Employee::get();
+        $data['projects'] = Project::all();
+        return view('settings.customWorkReportEntry', $data);
+    }
+
+    public function editDailyAttendance(){
+        $data['meta_title'] = 'Edit Daily Attendance';
+        $data['employees'] = Employee::get();
+        return view('settings.editDailyAttendance', $data);
+    }
+
+    public function getAttendanceData(Request $request){
+        $signin_date = Carbon::createFromFormat('d-m-Y', $request->date)->format('Y-m-d');
+        $emp_id = $request->emp_id;
+        $data = Attendance::where('emp_id', $emp_id)
+                  ->where('signin_date', $signin_date)
+                  ->first();
+
+        return response()->json([
+            'success' => true,
+            'data' =>$data
+        ]);
+    }
+
+    public function updateAttendance(Request $request, $id){
+
+        $validated = $request->validate([
+            'emp_id'         => 'required',
+            'signin_date'    => 'required',
+            'signin_time'    => 'required',
+            'break_time'     => 'nullable',
+            'signout_time'   => 'required',
+            'working_hours'  => 'required',
+        ]);
+
+        try {
+            $signinDate = Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d');
+
+            // Find the existing attendance by ID
+            $attendance = Attendance::find($id);
+
+            if (!$attendance) {
+                return response()->json(['status' => 'error', 'message' => 'Attendance record not found.']);
+            }
+
+            // Update attendance fields
+            $attendance->update([
+                'emp_id'        => $validated['emp_id'],   // Don't forget to update emp_id if needed
+                'signin_date'   => $signinDate,
+                'signin_time'   => $validated['signin_time'],
+                'break_time'    => $validated['break_time'] ?? '00:00',
+                'signout_time'  => $validated['signout_time'],
+                'working_hours' => $validated['working_hours'],
+            ]);
+
+            return response()->json(['status' => 'success', 'message' => 'Attendance updated successfully.']);
+
+        } catch (\Exception $e) {
+            \Log::error('Error updating attendance: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
+        }
+    }
+
 }

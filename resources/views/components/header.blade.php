@@ -17,7 +17,10 @@
 
         <!-- Digital Clock -->
         <li class="nav-item me-1 me-xl-0">
-          <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px"> <span id="clock" class="text-primary"><i class="fa fa-clock fis rounded-circle me-1"></i> 00:00:00 </span> </a>
+          <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px">
+            <span id="clock" class="text-primary d-flex align-items-center gap-2">
+              <i class="ti ti-clock fis rounded-circle fs-4"></i> 00:00:00 </span> 
+            </a>
         </li>
         <!-- / Digital Clock -->
 
@@ -66,17 +69,17 @@
                     <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                          <i class="ti ti-calendar fs-4"></i>
+                          <i class="ti ti-clock fs-4"></i>
                         </span>
-                        <a href="app-calendar.html" class="stretched-link">Calendar</a>
-                        <small class="text-muted mb-0">Appointments</small>
+                        <a href="{{ route('custom-attendance.index') }}" class="stretched-link">Approvel</a>
+                        <small class="text-muted mb-0">Custom Attendance</small>
                       </div>
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                          <i class="ti ti-file-invoice fs-4"></i>
+                          <i class="ti ti-unlink fs-4"></i>
                         </span>
-                        <a href="app-invoice-list.html" class="stretched-link">Invoice App</a>
-                        <small class="text-muted mb-0">Manage Accounts</small>
+                        <a href="{{ route('attendance.incomplete-working-hours') }}" class="stretched-link">Incomplete</a>
+                        <small class="text-muted mb-0">Working Hours</small>
                       </div>
                     </div>
                     <div class="row row-bordered overflow-visible g-0">

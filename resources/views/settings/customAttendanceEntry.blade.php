@@ -27,7 +27,7 @@
                                     <h4 class="card-title mb-1"> <i class="ti ti-clock ti-sm"></i> {{ $meta_title }}</h4>
                                 </div>
                                 <div class="card-body">
-                                    <form id="customMarkingForm" action="{{ route('attendance.custom-mark-in') }}" method="post">
+                                    <form id="customAttendanceForm" action="{{ route('attendance.custom-attendance-entry') }}" method="post">
                                         <div class="row">
                                             @csrf
                                             <div class="col-12 mb-3">
@@ -48,12 +48,12 @@
                                     
                                             <div class="col-6 mb-3">
                                                 <label for="signin_time" class="form-label">Time</label>
-                                                <input type="time" id="signin_time" name="signin_time" class="form-control" value=""  placeholder="Time" />
+                                                <input type="time" id="signin_time" name="signin_time" step="1" class="form-control" value=""  placeholder="Time" />
                                             </div>
                                             
                                             <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
                                                 <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close"> Close </button>
-                                                <button type="submit" onclick="customMarking()"class="btn btn-primary"> Submit </button>
+                                                <button type="button" onclick="customAttendanceEntry()"class="btn btn-primary"> Submit </button>
                                             </div>
                                         </div>
                                     </form>
@@ -95,32 +95,41 @@
         
     });
 
-    function customMarking() {
-    var url = "{{ route('attendance.custom-attendance-entry') }}";
-    var formData = $('#customMarkingForm').serialize();
+    function customAttendanceEntry() {
+        var url = "{{ route('attendance.custom-attendance-entry') }}";
+        var formData = $('#customAttendanceForm').serialize();
 
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: formData,
-        dataType: "json",
-        headers: {
-            'X-CSRF-TOKEN': $('input[name="_token"]').val()
-        },
-        success: function (response) {
-            if (response.success) {
-                alert(response.message);
-                $('#customMarkingForm')[0].reset();
-                $('.select2').val(null).trigger('change');
-            } else {
-                alert(response.message || 'Entry failed.');
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: formData,
+            dataType: "json",
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#customAttendanceForm')[0].reset();
+                    $('.select2').val(null).trigger('change');
+                     // Success message or reload
+                     Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.reload(); // or you can reset the form or close the modal
+                    });
+                    
+                } else {
+                    alert(response.message || 'Entry failed.');
+                }
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+                window.location.reload();
             }
-        },
-        error: function (xhr) {
-            console.error(xhr.responseText);
-            window.location.reload();
-        }
-    });
-}
+        });
+    }
 </script>
 @endpush

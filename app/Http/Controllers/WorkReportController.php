@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\workReport;
 use App\Models\Attendance;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,9 @@ class WorkReportController extends Controller
         'total_time'        => 'required|string', // Ensure total_time is provided
     ]);
 
+    
+
+
     // Convert productivity_hour to integer
     $productivity_hour = is_numeric($request->productivity_hour) ? (int) $request->productivity_hour : 0;
 
@@ -53,7 +57,7 @@ class WorkReportController extends Controller
     // ✅ Create WorkReport
     $workReport = WorkReport::create([
         'username'          => Auth::user()->username,
-        'emp_id'            => $request->emp_id,
+        'emp_id'            => Auth::user()->id,
         'project_name'      => $request->project_name,
         'type_of_work'      => $request->type_of_work,
         'time_of_work'      => $request->time_of_work,
@@ -188,5 +192,71 @@ class WorkReportController extends Controller
         }
         $workReport->delete();
         return response()->json(['success' => true, 'message' => 'Work report deleted successfully!']);
+    }
+
+    public function customWorkstore(Request $request){
+        // Validate the incoming request
+        $request->validate([
+            'emp_id'            => 'required|exists:employees,user_id', // Ensure emp_id exists in the employee table
+            'report_date'       => 'required|date',
+            'project_name'      => 'required|string',
+            'type_of_work'      => 'required|string',
+            'total_tasks'       => 'nullable|integer',
+            'productivity_hour' => 'nullable|numeric',
+            'time_of_work'      => 'nullable|string',
+            'total_records'     => 'nullable|integer',
+            'comments'          => 'nullable|string',
+            'total_time'        => 'required|string', // Ensure total_time is a string (e.g., HH:MM:SS)
+        ]);
+
+        $reportDate = \Carbon\Carbon::createFromFormat('d-m-Y', $request->report_date)->format('Y-m-d');
+
+        // Retrieve the employee
+        $employee = Employee::with('user')->where('user_id', $request->emp_id)->first();
+
+        // If employee doesn't exist, return an error
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found.',
+            ], 404);
+        }
+
+        // Convert productivity_hour to integer or default to 0
+        $productivity_hour = is_numeric($request->productivity_hour) ? (int) $request->productivity_hour : 0;
+
+        // Convert total_time to seconds (if stored as HH:MM:SS)
+        list($hours, $minutes, $seconds) = array_pad(explode(":", $request->total_time), 3, 0);
+        $totalTimeInSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+
+        // Define unique attributes for finding the record to update (e.g., employee and report date)
+        $attributes = [
+            'emp_id'       => $request->emp_id,
+            'report_date'  => $reportDate,  // Assuming report_date is unique for the employee
+        ];
+
+        // Define the data to be inserted or updated
+        $data = [
+            'username'          => $employee->user->username, // Ensure the employee has a 'username' attribute
+            'emp_id'            => $request->emp_id,
+            'project_name'      => $request->project_name,
+            'type_of_work'      => $request->type_of_work,
+            'time_of_work'      => $request->time_of_work,
+            'total_time'        => gmdate("H:i:s", $totalTimeInSeconds), // Store as HH:MM:SS
+            'comments'          => $request->comments,
+            'total_records'     => $request->total_records,
+            'report_date'       => $reportDate,
+            'productivity_hour' => $productivity_hour,
+        ];
+
+        // Use updateOrCreate to either update or create the work report
+        $workReport = WorkReport::updateOrCreate($attributes, $data);
+
+        // Return a success response with the created or updated report data
+        return response()->json([
+            'success' => true,
+            'data' => $workReport,
+            'message' => 'Work report submitted successfully!',
+        ]);
     }
 }

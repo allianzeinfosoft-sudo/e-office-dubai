@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="layout-wrapper layout-content-navbar">
+<div class="layout-wrapper layout-content-navbar {{ $background_class ?? 'bg-eoffice' }}">
     <div class="layout-container">
         <x-menu /> <!-- Load the menu component here -->
       <!-- Layout container -->
-      <div class="layout-page">
+      <div class="layout-page ">
         <!-- Navbar -->
 
         <x-header />

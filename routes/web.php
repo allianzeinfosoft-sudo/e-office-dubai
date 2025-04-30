@@ -30,6 +30,7 @@ use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\MomController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\MailBoxController;
+use App\Http\Controllers\CustomAttendanceController;
 use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -76,6 +77,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/attendance/emplyee-markin/{id}',[AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin');
     Route::delete('/attendance/destroy/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
     Route::post('/attendance/custom-attendance-entry', [AttendanceController::class, 'customAttendanceEntry'])->name('attendance.custom-attendance-entry');
+    Route::post('attendance/full-day-attendance-entry', [AttendanceController::class, 'storeFullDayEntry'])->name('attendance.full-day-attendance-entry');
+    Route::get('attendance/incomplete-working-hours', [AttendanceController::class, 'getIncompleteWorkingHours'])->name('attendance.incomplete-working-hours');
+    Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
+
+
 
     /* roles */
     Route::resource('roles', RoleController::class);
@@ -164,7 +170,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/work-report/{workReport}/edit', [WorkReportController::class, 'edit'])->name('work-report.edit');
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
-
+    Route::post('/work-report/custom-workstore', [WorkReportController::class, 'customWorkstore'])->name('work-report.custom-workstore');
+    
     /* Works Module */
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
     Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
@@ -200,7 +207,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/recruitments/{recruitment}/destroy', [RecruitmentController::class, 'destroy'])->name('recruitments.destroy');
     Route::get('/recruitments/{recruitment}/show', [RecruitmentController::class, 'show'])->name('recruitments.show');
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
-
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
 
     /*feeds*/
@@ -250,6 +256,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('appreciation', AppreciationController::class);
 
     /* Mailbox */
+    
     // Route::get('/mail-box', [MailBoxController::class, 'index'])->name('mailbox.index');
     Route::resource('mail-boxes', MailBoxController::class);
     Route::get('/mail-boxes/folder/{folder}', [MailBoxController::class, 'folder']);
@@ -280,11 +287,22 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/shift-times',[SettingsController::class, 'userShifts'])->name('users.shifts');
     Route::post('/update-user-shift', [SettingsController::class, 'update_user_shift'])->name('update.user.shift');
     Route::post('/save-login-limited-time',[SettingsController::class,'store_login_limited_time'])->name('save.login_limited_time');
-
-
+    Route::get('/settings/full-day-attendance-entry', [SettingsController::class, 'fullDayAttendanceEntry'])->name('settings.full-day-attendance-entry');
+    Route::get('/settings/custom-work-report-entry', [SettingsController::class, 'customWorkReportEntry'])->name('settings.custom-work-report-entry');
+    Route::get('/settings/edit-daily-attendance', [SettingsController::class, 'editDailyAttendance'])->name('settings.edit-daily-attendance');
+    Route::get('/settings/get-attendance-data', [SettingsController::class, 'getAttendanceData'])->name('settings.get-attendance-data');
+    Route::post('/settings/update-attendance-data/{id}', [SettingsController::class, 'updateAttendance'])->name('settings.update-attendance-data');
+    
+    /* shifts */
+    
     /* Appearence */
     Route::resource('appearences', AppearenceController::class);
     Route::post('/background-images/select', [AppearenceController::class, 'Bg_select'])->name('background-images.select');
+
+    /* Custom Attendance */
+    Route::get('/custom-attendance', [CustomAttendanceController::class, 'index'])->name('custom-attendance.index');
+    Route::get('/custom-attendance/accept-custom-mark-in/{id}', [CustomAttendanceController::class, 'acceptCustomMarkIn'])->name('custom-attendance.accept-custom-mark-in');
+    Route::get('/custom-attendance/reject-custom-mark-in/{id}', [CustomAttendanceController::class, 'rejectCustomMarkIn'])->name('custom-attendance.reject-custom-mark-in');
 
 });
 

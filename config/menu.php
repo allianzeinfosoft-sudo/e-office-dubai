@@ -543,17 +543,17 @@ return [
             ],
             [
                 'title' => 'Fullday Entry',
-                'route' =>  '',
+                'route' =>  '/settings/full-day-attendance-entry',
                 'permission' => ['full day entry'],
             ],
             [
                 'title' => 'Custom Work Report Entry',
-                'route' =>  '',
+                'route' =>  '/settings/custom-work-report-entry',
                 'permission' => ['custom work report entry'],
             ],
             [
                 'title' => 'Edit Daily Attendance',
-                'route' =>  '',
+                'route' =>  '/settings/edit-daily-attendance',
                 'permission' => ['edit attendance'],
             ]
         ]
