@@ -156,57 +156,17 @@
 
                           <div class="row g-4">
                             <div class="col-lg-12">
-                              @if($attendance)
-                                  @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-                                      <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                          Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}
-                                      </div>
-                                      <div class="text-center">
-                                          <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
-                                      </div>
-                                  @elseif($attendance->status === 'mark-out')
-                                      <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                          <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
-                                      </div>
-                                  @endif
-
-                              @elseif(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-                                  @php
-                                    $loginLimitTime = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
-                                    $now = \Carbon\Carbon::now();
-                                    $isLate = $now->gt($loginLimitTime);
-                                    $todayName = $now->format('l'); // E.g., "Monday"
-                                    $fixedWeekOffs = ['Saturday', 'Sunday'];
-                                    $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
-                                    $customWeekOffs = array_map('trim', explode(',', $employeeWeekOffs));
-                                    $allWeekOffs = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
-                                    $isWeekOffToday = in_array($todayName, $allWeekOffs);
-                                  @endphp
-
-                                  @if ($isLate)
-                                  <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                    <strong>Mark-in time expired for today.</strong>
-                                  </div>
-                                  @elseif ($isWeekOffToday)
-                                    <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                      <strong>Today ({{ $todayName }}) is your week off.</strong>
-                                    </div>
-                                  @endif
-
-                                <div class="text-center">
-                                  <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
+                                <div class="badge bg-label-warning p-3 w-100" id="last-punch-time" role="alert">
+                                    <strong>Incomplete Working Hours</strong> Please contact your supervisor.
                                 </div>
-
-                              @else
-                                <div class="text-center">
-                                  <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
-                                </div>
-                              @endif
-
                             </div>
   
                             <div class="text-center d-grid gap-2 col-lg-12">
                               
+                                  <div class="text-center">
+                                    <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 disabled" >  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
+                                  </div>
+
                             </div>
 
                           </div>
@@ -222,13 +182,13 @@
                         <div class="row g-4 p-3">
                           <!-- custom -->
                           <div class="col-12 col-md-6 col-xl-12 col-lg-12 pt-2">
-                            <button type="button" class="btn p-3 btn-info w-100" onclick="customModal()" >Custom <i class="mx-1 ti ti-arrow-big-right-lines ti-sm"></i></button>
+                            <button type="button" class="btn p-3 btn-info w-100 disabled" >Custom <i class="mx-1 ti ti-arrow-big-right-lines ti-sm"></i></button>
                           </div>  
                           <!--/ custom -->
 
                           <!-- emergency -->
                           <div class="col-12 col-md-6 col-xl-12 col-lg-12"> 
-                            <button type="button" class="btn p-3 btn-warning w-100" onclick="emergencyModal()">Emergency <i class="mx-1 ti ti-bolt ti-sm"></i></button>
+                            <button type="button" class="btn p-3 btn-warning w-100 disabled">Emergency <i class="mx-1 ti ti-bolt ti-sm"></i></button>
                           </div>
                           <!--/ emergency -->
 
@@ -286,81 +246,6 @@
 
   </div>
   <!-- / Layout wrapper -->
-
-
-
-
-
-<!-- Offcanvas for Custom Marking  -->
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="customMarkingOffcanvas" aria-labelledby="staticBackdropLabel">
-  <div class="offcanvas-header bg-primary">
-      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  Custom Marking </h5>
-      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="row">
-          <form id="customMarkingForm" action="{{ route('attendance.custom-mark-in') }}" method="post">
-            @csrf
-            <div class="col-12 mb-3">
-              <label for="signin_date" class="form-label">Date</label>
-              <input type="text" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Date" disabled readonly />
-            </div>
-  
-            <div class="col-12 mb-3">
-              <label for="signin_time" class="form-label">Time</label>
-              <input type="time" id="signin_time" name="signin_time" step="1" class="form-control" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
-              <input type="hidden" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
-            </div>
-  
-            <div class="col-12 mb-3">
-              <label for="signin_late_note" class="form-label">Reason</label>
-              <textarea id="signin_late_note" name="signin_late_note" class="form-control"  placeholder="Reason" rows="5"></textarea>
-            </div>
-          </form>
-          <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close"> Close </button>
-            <button type="submit" onclick="customMarking()"class="btn btn-primary"> Submit </button>
-          </div>
-    </div>
-  </div>
-  <div class="offcanvas-footer"></div>
-</div>
-
-<!-- Offcanvas for Emergency Marking  -->
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="emergencyMarkingOffcanvas" aria-labelledby="staticBackdropLabel">
-  <div class="offcanvas-header bg-primary">
-    <h5 class="offcanvas-title text-white" id="staticBackdropLabel">  <i class="ti ti-device-watch float-start fs-3"></i> Emergency Marking</h5>
-    <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="row">
-      <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
-        @csrf
-            <div class="col-12 mb-3">
-              <label for="signin_date" class="form-label">Date</label>
-              <input type="date" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
-            </div>
-
-            <div class="col-12 mb-3">
-              <label for="signin_late_note" class="form-label">Reason</label>
-              <textarea id="signin_late_note" name="signin_late_note" class="form-control" placeholder="Reason" rows="5"></textarea>
-            </div>
-  
-            <div class="col-12 mb-3">
-              <label for="time_in_out" class="form-label">Time</label>
-              <input type="time" id="time_in_out" name="time_in_out" class="form-control" step="1" value="{{ date('H:i:s') }}" placeholder="Time" />
-            </div>
-          </form>
-        </div>
-        <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
-          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
-          <button type="button" onclick="emergencyMarkIn()" class="btn btn-success">Mark In</button>
-          <button type="button" onclick="emergencyMarkOut()" class="btn btn-danger">Mark Out</button>
-        </div>
-  </div>
-  <div class="offcanvas-footer"></div>
-</div>
-
 
 @endsection
 

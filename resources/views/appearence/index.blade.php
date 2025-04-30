@@ -202,73 +202,52 @@
 
 
 
-    function renderImages(images) {
+function renderImages(images) {
     // Clear previous content
-            $('#Feed .row.px-3, #Login .row.px-3, #All .row.px-3').empty();
+    $('#Feed .row.px-3, #Login .row.px-3, #All .row.px-3').empty();
 
-            images.forEach(function (image) {
+    images.forEach(function (image) {
+        if (!image.background_type) return;
 
+        const cat = image.background_type.toLowerCase();
+        const isActive = image.is_active;
 
-                // If image has multiple categories, append to each relevant section
-                if (image.background_type) {
-                            let categories = [];
+        // Determine button state
+        const selectBtnClass = isActive ? 'btn-primary selected-btn' : 'btn-success';
+        const selectBtnText = isActive ? '<i class="ti ti-check"></i>' : 'Select';
 
-                            // Parse if it's a stringified array
-                            if (typeof image.background_type === 'string') {
-                                try {
-                                    categories = JSON.parse(image.background_type);
-                                } catch (e) {
-                                    console.error('Invalid background_type format:', image.background_type);
-                                }
-                            } else if (Array.isArray(image.background_type)) {
-                                categories = image.background_type;
-                            }
+        const imageHtml = `<div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 mb-5">
+            <div class="parent shadow">
+                <img src="/storage/${image.image}" alt="Image" class="img-fluid w-100 galery-cover">
+            </div>
+            <div class="d-flex justify-content-between shadow br-lb10 br-rb10 bg-white p-3">
+                <button class="btn btn-danger waves-effect waves-light delete-background-image delete-image-${image.id}" data-id="${image.id}" data-bg_type="${cat}">
+                    <i class="ti ti-trash"></i>
+                </button>
+                <button class="btn ${selectBtnClass} waves-effect waves-light select-background-image select-image-${image.id}" data-id="${image.id}" data-bg_type="${cat}">
+                    ${selectBtnText}
+                </button>
+            </div>
+        </div>`;
 
-                            // Loop through each category
-                            categories.forEach(cat => {
-
-                                const imageHtml = `<div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 mb-5">
-                                    <div class="parent shadow">
-                                        <img src="/storage/${image.image}" alt="Image" class="img-fluid w-100 galery-cover">
-                                    </div>
-                                    <div class="d-flex justify-content-between shadow br-lb10 br-rb10 bg-white p-3">
-                                        <button class="btn btn-danger waves-effect waves-light delete-background-image delete-image-${image.id}" data-id="${image.id}" data-bg_type="${cat}">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
-                                        <button class="btn btn-success waves-effect waves-light select-background-image select-image-${image.id}" data-id="${image.id}" data-bg_type="${cat}">
-                                            Select
-                                        </button>
-                                    </div>
-                                </div>`;
-                                switch (cat.toLowerCase()) {
-                                    case 'feeds':
-                                        $('#Feed .row.px-3').append(imageHtml);
-                                        break;
-                                    case 'login':
-                                        $('#Login .row.px-3').append(imageHtml);
-                                        break;
-                                    case 'main':
-                                    case 'all':
-                                    default:
-                                        $('#All .row.px-3').append(imageHtml);
-                                        break;
-                                }
-                            });
-
-                        }
-
-            });
-        }
-
-
-    // Delete image handler
-    $(document).on('click', '.delete-background-image', function () {
-        const id = $(this).data('id');
-        if (confirm("Are you sure you want to delete this image?")) {
-            // Your delete logic here, e.g. AJAX DELETE call
-            console.log("Deleting image with ID:", id);
+        // Append image to the correct section
+        switch (cat) {
+            case 'feeds':
+                $('#Feed .row.px-3').append(imageHtml);
+                break;
+            case 'login':
+                $('#Login .row.px-3').append(imageHtml);
+                break;
+            case 'main':
+            case 'all':
+            default:
+                $('#All .row.px-3').append(imageHtml);
+                break;
         }
     });
+}
+
+
 
 
 });
@@ -342,31 +321,40 @@ function openBg(evt, bgName) {
 
       /*set back ground image*/
 
-$(document).on('click', '.select-background-image', function () {
-    const imageId = $(this).data('id');
-    const backgroundType = $(this).data('bg_type');
+      $(document).on('click', '.select-background-image', function () {
+            const imageId = $(this).data('id');
+            const backgroundType = $(this).data('bg_type');
 
-    $.ajax({
-        url: '/background-images/select',
-        type: 'POST',
-        data: {
-            image_id: imageId,
-            background_type: backgroundType,
-            _token: $('meta[name="csrf-token"]').attr('content') // ensure CSRF token is present
-        },
-        success: function (response) {
+            $.ajax({
+                url: '/background-images/select',
+                type: 'POST',
+                data: {
+                    image_id: imageId,
+                    background_type: backgroundType,
+                    _token: $('meta[name="csrf-token"]').attr('content') // ensure CSRF token is present
+                },
+                success: function (response) {
+                    // Optional UI feedback before reload
+                    $(`.select-image-${response.selected.image_id}`)
+                        .html('<i class="ti ti-check"></i>')
+                        .removeClass('btn-success')
+                        .addClass('selected-btn btn-primary');
 
-            $(`.select-image-${response.selected.image_id}`)
-                .html('<i class="ti ti-check"></i>')
-                .removeClass('btn-success')
-                .addClass('selected-btn btn-primary');
-        },
-        error: function (xhr) {
-            console.error(xhr.responseText);
-            alert('Error updating background image.');
-        }
-    });
-});
+                    // Show success notification
+                    toastr.success('Background image updated successfully.');
+
+                    // Delay and reload
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000); // wait 1 second for user to see toast
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseText);
+                    toastr.error('Error updating background image.');
+                }
+            });
+        });
+
 
 </script>
 @endpush

@@ -39,6 +39,9 @@ class AttendanceController extends Controller{
         $isLate = now()->format('H:i:s') > $cutoffTime;
         $data['disableCustomMarkIn'] = $isLate;
 
+        
+
+
         // Fetch all holidays in the current month
         $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
 
@@ -114,7 +117,12 @@ class AttendanceController extends Controller{
         $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
-        /* Mark In Approvel Chek */
+        /* incomplete working hours */
+        $nonApprovedIncompleteWorkingHours = Attendance::where('username', $user->username)->where('is_incomplete', 1)->where('incomplete_approved', 0)->count();
+
+        if ($nonApprovedIncompleteWorkingHours > 0) {
+            return view('attendance.no_action_from', $data);
+        }
         
 
 
@@ -286,7 +294,9 @@ class AttendanceController extends Controller{
             
             return view('attendance.work_report', $data);
         } else {
+
             return view('attendance.index', $data);
+    
         }
     }
 
@@ -341,14 +351,14 @@ class AttendanceController extends Controller{
             'username' => Auth::user()->username,
             'signin_date' => now()->format('Y-m-d')
         ])->first();
-
+    
         if (!$attendance) {
             return response()->json([
                 'success' => false,
                 'message' => 'You have not marked in yet.',
             ]);
         }
-
+    
         if ($attendance->signout_time) {
             return response()->json([
                 'success' => false,
@@ -358,17 +368,26 @@ class AttendanceController extends Controller{
                 ]
             ]);
         }
-
-        $workingTime = CustomHelper::calculateTotalWorkingTime($attendance->signin_date, $attendance->signin_time, now()->format('Y-m-d'), now()->format('H:i:s'), $attendance->break_time);
-
+    
+        $workingTime = CustomHelper::calculateTotalWorkingTime(
+            $attendance->signin_date,
+            $attendance->signin_time,
+            now()->format('Y-m-d'),
+            now()->format('H:i:s'),
+            $attendance->break_time
+        );
+    
+        $isIncomplete = strtotime($workingTime['total_working_time']) < strtotime('08:00:00') ? 1 : 0;
+    
         $attendance->update([
             'signout_time' => now()->format('H:i:s'),
             'signout_date' => now()->format('Y-m-d'),
             'punchout_type' => 'Web',
             'status' => 'mark-out',
-            'working_hours' => $workingTime['total_working_time']
+            'working_hours' => $workingTime['total_working_time'],
+            'is_incomplete' => $isIncomplete
         ]);
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Marked out successfully',
@@ -438,17 +457,32 @@ class AttendanceController extends Controller{
             'signout_time'      => 'required',
             'signout_late_note' => 'required',
         ]);
-
-        $markOut                    = Attendance::findOrFail($id);
-        $workingTime                = CustomHelper::calculateTotalWorkingTime($markOut->signin_date, $markOut->signin_time, $request->signout_date, $request->signout_time, $markOut->break_time);
+    
+        $markOut = Attendance::findOrFail($id);
+    
+        $workingTime = CustomHelper::calculateTotalWorkingTime(
+            $markOut->signin_date,
+            $markOut->signin_time,
+            $request->signout_date,
+            $request->signout_time,
+            $markOut->break_time
+        );
+    
+        $totalWorkingTime = $workingTime['total_working_time'] ?? '00:00:00';
+    
         $markOut->signout_time      = $request->signout_time;
         $markOut->signout_date      = $request->signout_date;
         $markOut->signout_late_note = $request->signout_late_note;
         $markOut->status            = 'mark-out';
         $markOut->punchout_type     = 'custom';
-        $markOut->working_hours     = $workingTime['total_working_time'] ?? 0;
+        $markOut->working_hours     = $totalWorkingTime;
+    
+        if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
+            $markOut->is_incomplete = 1;
+        }
+    
         $markOut->save();
-
+    
         return response()->json(['success' => true, 'message' => 'Mark out updated successfully.']);
     }
 
@@ -670,6 +704,12 @@ class AttendanceController extends Controller{
         ->orderBy('month')
         ->get();
 
+        $data['pending_approvels'] = Attendance::where('is_incomplete', 1)
+        ->where('incomplete_approved', 0)
+        ->with('employee') // optional: if you need employee details
+        ->orderBy('signin_date', 'desc')
+        ->get();
+
         return view('attendance.incomplete_working_hours', $data);
     }
 
@@ -693,5 +733,21 @@ class AttendanceController extends Controller{
             'success' => true,
             'html'    => $html,
         ]);
+    }
+
+    public function approveIncompleteAttendance($id){
+
+    $attendance = Attendance::findOrFail($id);
+
+        if ($attendance->is_incomplete && !$attendance->incomplete_approved) {
+            $attendance->incomplete_approved = 1;
+            $attendance->incomplete_approved_by = Auth::id();
+            $attendance->incomplete_approved_at = now();
+            $attendance->save();
+
+            return redirect()->back()->with('success', 'Attendance approved successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Invalid or already approved record.');
     }
 }

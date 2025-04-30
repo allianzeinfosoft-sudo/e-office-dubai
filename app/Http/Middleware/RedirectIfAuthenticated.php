@@ -22,7 +22,7 @@ class RedirectIfAuthenticated
         if (!session()->has('_token')) {
             logger('Session token not present');
         }
-        
+
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
