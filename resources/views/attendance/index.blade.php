@@ -176,16 +176,10 @@
                                       $loginLimitTime = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                       $now = \Carbon\Carbon::now();
                                       $isLate = $now->gt($loginLimitTime);
-    
                                       $todayName = $now->format('l'); // E.g., "Monday"
-    
-                                      
                                       $fixedWeekOffs = ['Saturday', 'Sunday'];
-    
-                                      
                                       $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
                                       $customWeekOffs = array_map('trim', explode(',', $employeeWeekOffs));
-    
                                       $allWeekOffs = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
                                       $isWeekOffToday = in_array($todayName, $allWeekOffs);
                                     @endphp
@@ -206,7 +200,7 @@
 
                               @else
                                   <div class="text-center">
-                                    <button type="button" id="mark-out-btn" class="btn p-3 btn-danger w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
+                                    <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
                                   </div>
                               @endif
                             </div>
