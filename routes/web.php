@@ -110,7 +110,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/lock-profile/{id}',[UserController::class,'lockProfile'])->name('user.lock_profile');
     Route::post('/change-password',[UserController::class,'change_password'])->name('change_password');
     Route::post('/check-old-password', [UserController::class, 'checkOldPassword'])->name('check_old_password');
-
+    Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
+    Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
@@ -175,7 +176,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
     Route::post('/work-report/custom-workstore', [WorkReportController::class, 'customWorkstore'])->name('work-report.custom-workstore');
-    
+
     /* Works Module */
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
     Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
@@ -260,7 +261,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('appreciation', AppreciationController::class);
 
     /* Mailbox */
-    
+
     // Route::get('/mail-box', [MailBoxController::class, 'index'])->name('mailbox.index');
     Route::resource('mail-boxes', MailBoxController::class);
     Route::get('/mail-boxes/folder/{folder}', [MailBoxController::class, 'folder']);
@@ -296,9 +297,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/settings/edit-daily-attendance', [SettingsController::class, 'editDailyAttendance'])->name('settings.edit-daily-attendance');
     Route::get('/settings/get-attendance-data', [SettingsController::class, 'getAttendanceData'])->name('settings.get-attendance-data');
     Route::post('/settings/update-attendance-data/{id}', [SettingsController::class, 'updateAttendance'])->name('settings.update-attendance-data');
-    
+
     /* shifts */
-    
+
     /* Appearence */
     Route::resource('appearences', AppearenceController::class);
     Route::post('/background-images/select', [AppearenceController::class, 'Bg_select'])->name('background-images.select');

@@ -13,6 +13,7 @@ use Spatie\Permission\Guard;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\WildcardPermission;
 
+
 trait HasPermissions
 {
     private $permissionClass;
@@ -97,7 +98,7 @@ trait HasPermissions
                 return $permission;
             }
 
-            return $this->getPermissionClass()->findByName($permission, $this->getDefaultGuardName());
+            return $this->getPermissionClass()::findByName($permission, $this->getDefaultGuardName());
         }, $permissions);
     }
 
@@ -119,14 +120,14 @@ trait HasPermissions
         $permissionClass = $this->getPermissionClass();
 
         if (is_string($permission)) {
-            $permission = $permissionClass->findByName(
+            $permission = $permissionClass::findByName(
                 $permission,
                 $guardName ?? $this->getDefaultGuardName()
             );
         }
 
         if (is_int($permission)) {
-            $permission = $permissionClass->findById(
+            $permission = $permissionClass::findById(
                 $permission,
                 $guardName ?? $this->getDefaultGuardName()
             );
@@ -152,7 +153,7 @@ trait HasPermissions
         $guardName = $guardName ?? $this->getDefaultGuardName();
 
         if (is_int($permission)) {
-            $permission = $this->getPermissionClass()->findById($permission, $guardName);
+            $permission = $this->getPermissionClass()::findById($permission, $guardName);
         }
 
         if ($permission instanceof Permission) {
@@ -271,11 +272,11 @@ trait HasPermissions
         $permissionClass = $this->getPermissionClass();
 
         if (is_string($permission)) {
-            $permission = $permissionClass->findByName($permission, $this->getDefaultGuardName());
+            $permission = $permissionClass::findByName($permission, $this->getDefaultGuardName());
         }
 
         if (is_int($permission)) {
-            $permission = $permissionClass->findById($permission, $this->getDefaultGuardName());
+            $permission = $permissionClass::findById($permission, $this->getDefaultGuardName());
         }
 
         if (! $permission instanceof Permission) {
@@ -411,11 +412,11 @@ trait HasPermissions
         $permissionClass = $this->getPermissionClass();
 
         if (is_numeric($permissions)) {
-            return $permissionClass->findById($permissions, $this->getDefaultGuardName());
+            return $permissionClass::findById($permissions, $this->getDefaultGuardName());
         }
 
         if (is_string($permissions)) {
-            return $permissionClass->findByName($permissions, $this->getDefaultGuardName());
+            return $permissionClass::findByName($permissions, $this->getDefaultGuardName());
         }
 
         if (is_array($permissions)) {

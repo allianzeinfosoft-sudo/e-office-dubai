@@ -24,197 +24,370 @@
           <div class="content-wrapper">
             <!-- Content -->
             <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">User / View /</span> Account</h4>
-              <div class="row">
-                <!-- User Sidebar -->
-                <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
-                  <!-- User Card -->
-                    @include('components.user.about_component');
-                  <!-- /User Card -->
-                </div>
-                <!--/ User Sidebar -->
+                <h4 class="fw-bold py-3 mb-5"><span class="text-muted fw-light">User Profile /</span> Profile</h4>
+                <!-- Header -->
+                <div class="row justify-content-around">
+                  <div class="col-12">
+                    <div class="card mb-4 card-bg1">
+                      <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
+                        <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
+                          <img
+                            src="{{ asset('storage/' . $user->employee->profile_image ?? '' ) }}"
+                            alt="user image"
+                            class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img" />
 
-                <!-- User Content -->
-                <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
+                            {{-- <img
+                            src="../../assets/img/avatars/bg3.jpg"
+                            alt="user image"
+                            class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img" /> --}}
 
-                 <!-- Modern -->
-                    <div class="row">
-                        <!-- Modern Wizard -->
-                        <div class="col-12 mb-4">
-                            @include('components.user.details_tab_componet');
-                        </div>
-                    </div>
-                        <!--/ User Content -->
-              </div>
 
-              <!-- Modal -->
-              <!-- Edit User Modal -->
-              <div class="modal fade" id="editUser" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-simple modal-edit-user">
-                  <div class="modal-content p-3 p-md-5">
-                    <div class="modal-body">
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      <div class="text-center mb-4">
-                        <h3 class="mb-2">Edit User Information</h3>
-                        <p class="text-muted">Updating user details will receive a privacy audit.</p>
-                      </div>
-                      <form id="editUserForm" class="row g-3" onsubmit="return false">
-                        <div class="col-12 col-md-6">
-                          <label class="form-label" for="modalEditUserFirstName">First Name</label>
-                          <input
-                            type="text"
-                            id="modalEditUserFirstName"
-                            name="modalEditUserFirstName"
-                            class="form-control"
-                            placeholder="John" />
                         </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label" for="modalEditUserLastName">Last Name</label>
-                          <input
-                            type="text"
-                            id="modalEditUserLastName"
-                            name="modalEditUserLastName"
-                            class="form-control"
-                            placeholder="Doe" />
-                        </div>
-                        <div class="col-12">
-                          <label class="form-label" for="modalEditUserName">Username</label>
-                          <input
-                            type="text"
-                            id="modalEditUserName"
-                            name="modalEditUserName"
-                            class="form-control"
-                            placeholder="john.doe.007" />
-                        </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label" for="modalEditUserEmail">Email</label>
-                          <input
-                            type="text"
-                            id="modalEditUserEmail"
-                            name="modalEditUserEmail"
-                            class="form-control"
-                            placeholder="example@domain.com" />
-                        </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label" for="modalEditUserStatus">Status</label>
-                          <select
-                            id="modalEditUserStatus"
-                            name="modalEditUserStatus"
-                            class="form-select"
-                            aria-label="Default select example">
-                            <option selected>Status</option>
-                            <option value="1">Active</option>
-                            <option value="2">Inactive</option>
-                            <option value="3">Suspended</option>
-                          </select>
-                        </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label" for="modalEditTaxID">Tax ID</label>
-                          <input
-                            type="text"
-                            id="modalEditTaxID"
-                            name="modalEditTaxID"
-                            class="form-control modal-edit-tax-id"
-                            placeholder="123 456 7890" />
-                        </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label" for="modalEditUserPhone">Phone Number</label>
-                          <div class="input-group">
-                            <span class="input-group-text">US (+1)</span>
-                            <input
-                              type="text"
-                              id="modalEditUserPhone"
-                              name="modalEditUserPhone"
-                              class="form-control phone-number-mask"
-                              placeholder="202 555 0111" />
+                        <div class="flex-grow-1 mt-3 mt-sm-5">
+                          <div class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
+                            <div class="user-profile-info">
+                              <h4>{{ $user->employee->full_name ?? 'N/A'}}</h4>
+                              <ul
+                                class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
+                                <li class="list-inline-item"><i class="ti ti-color-swatch mt-n2"></i> {{ $user->employee->department->department ?? 'N/A' }}</li>
+                                <li class="list-inline-item"><i class="ti ti-user mt-n2"></i> {{ $user->employee->designation->designation ?? 'N/A' }}</li>
+                                <li class="list-inline-item"><a href="mailto:johnmathewallianze@mail.allianzegroup.com"><i class="ti ti-mail mt-n1"></i> {{ $user->email ?? 'N/A' }}</a></li>
+                              </ul>
+                            </div>
+                            <span class="btn btn-primary">
+                              <li class="list-inline-item"><i class="ti ti-user mt-n2"></i>{{ $user->employee->employeeID ?? 'N/A' }}</li>
+                            </span>
                           </div>
                         </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label" for="modalEditUserLanguage">Language</label>
-                          <select
-                            id="modalEditUserLanguage"
-                            name="modalEditUserLanguage"
-                            class="select2 form-select"
-                            multiple>
-                            <option value="">Select</option>
-                            <option value="english" selected>English</option>
-                            <option value="spanish">Spanish</option>
-                            <option value="french">French</option>
-                            <option value="german">German</option>
-                            <option value="dutch">Dutch</option>
-                            <option value="hebrew">Hebrew</option>
-                            <option value="sanskrit">Sanskrit</option>
-                            <option value="hindi">Hindi</option>
-                          </select>
-                        </div>
-                        <div class="col-12 col-md-6">
-                          <label class="form-label" for="modalEditUserCountry">Country</label>
-                          <select
-                            id="modalEditUserCountry"
-                            name="modalEditUserCountry"
-                            class="select2 form-select"
-                            data-allow-clear="true">
-                            <option value="">Select</option>
-                            <option value="Australia">Australia</option>
-                            <option value="Bangladesh">Bangladesh</option>
-                            <option value="Belarus">Belarus</option>
-                            <option value="Brazil">Brazil</option>
-                            <option value="Canada">Canada</option>
-                            <option value="China">China</option>
-                            <option value="France">France</option>
-                            <option value="Germany">Germany</option>
-                            <option value="India">India</option>
-                            <option value="Indonesia">Indonesia</option>
-                            <option value="Israel">Israel</option>
-                            <option value="Italy">Italy</option>
-                            <option value="Japan">Japan</option>
-                            <option value="Korea">Korea, Republic of</option>
-                            <option value="Mexico">Mexico</option>
-                            <option value="Philippines">Philippines</option>
-                            <option value="Russia">Russian Federation</option>
-                            <option value="South Africa">South Africa</option>
-                            <option value="Thailand">Thailand</option>
-                            <option value="Turkey">Turkey</option>
-                            <option value="Ukraine">Ukraine</option>
-                            <option value="United Arab Emirates">United Arab Emirates</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="United States">United States</option>
-                          </select>
-                        </div>
-                        <div class="col-12">
-                          <label class="switch">
-                            <input type="checkbox" class="switch-input" />
-                            <span class="switch-toggle-slider">
-                              <span class="switch-on"></span>
-                              <span class="switch-off"></span>
-                            </span>
-                            <span class="switch-label">Use as a billing address?</span>
-                          </label>
-                        </div>
-                        <div class="col-12 text-center">
-                          <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>
-                          <button
-                            type="reset"
-                            class="btn btn-label-secondary"
-                            data-bs-dismiss="modal"
-                            aria-label="Close">
-                            Cancel
-                          </button>
-                        </div>
-                      </form>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <!--/ Header -->
+
+                <!-- User Profile Content -->
+                <div class="row justify-content-around px-3 px-lg-0">
+                  <!-- About User -->
+                  <div class="col-xl-5 col-lg-5 mb-3 card card-bg1">
+                    <div class="card-body">
+                      <h5 class="card-action-title mb-0">About</h5>
+                      <ul class="list-unstyled mt-3 mb-0">
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-eye mt-n2"></i>Age: &nbsp;</span><span>{{ $user->employee->age ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Date of Birth: &nbsp;</span><span>{{ $user->employee->dob ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-user mt-n2"></i>Gender: &nbsp;</span><span>{{ isset($user->employee->gender) ? ucfirst(\Illuminate\Support\Str::camel($user->employee->gender)) : 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-heart mt-n2"></i>Blood Group: &nbsp;</span><span>{{ $user->employee->blood_group ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold "><i class="ti ti-phone-call mt-n2"></i>Contact: &nbsp;</span>
+                          <span>{{ $user->employee->phonenumber ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Join Date: &nbsp;</span><span>{{ $user->employee->join_date ?? 'N/A' }}</span>
+                        </li>
+                        <hr>
+                        <li class="d-flex align-items-center mb-3">
+                          <div class="timeline-event">
+                            <div class="timeline-header">
+                              <i class="ti ti-medal mt-n2"></i><span class="fw-bold">Qualification:</span>
+                            </div>
+                            <div class="mx-1 mt-2">
+                              <span>{{ $user->employee->qualification ?? 'N/A' }}</span>
+                            </div>
+                          </div>
+                        </li>
+
+                        <li class="d-flex align-items-center mb-3">
+                          <div class="timeline-event">
+                            <div class="timeline-header">
+                              <i class="ti ti-calendar mt-n2"></i><span class="fw-bold">Experiencee:</span>
+                            </div>
+                            <div class="mx-1 mt-2">
+                              <span class="btn btn-label-success">8 years, 1 months, 14 days</span>
+                            </div>
+                          </div>
+                        </li>
+
+                        <li class="d-flex align-items-center mb-0">
+                          <div class="timeline-event">
+                            <div class="timeline-header">
+                              <i class="ti ti-map mt-n2"></i><span class="fw-bold">Address:</span>
+                            </div>
+                            <div class="mx-1 mt-2">
+                              <span >{{ $user->employee->address ?? 'N/A' }}</span>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <!--/ About User -->
+
+                  <!-- Other Info -->
+                  <div class="col-lg-6 col-xl-6 mb-3 card card-bg1">
+                    <div class="card-body">
+                      <h5 class="card-action-title mb-0">Other Info</h5>
+                      <ul class="list-unstyled mt-3 mb-0">
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-mail mt-n1"></i>Email: &nbsp;</span>
+                          <span>{{ $user->employee->personal_email ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-brand-tabler mt-n1"></i>ESI No: &nbsp;</span>
+                          <span>{{ $user->employee->esi_no ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-layout-cards mt-n1"></i>PF No: &nbsp;</span>
+                          <span>{{ $user->employee->pf_no ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-credit-card mt-n1"></i>PAN: &nbsp;</span>
+                          <span>{{ $user->employee->pan ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-brand-mastercard mt-n1"></i>Aadhaar (UID): &nbsp;</span>
+                          <span>{{ $user->employee->aadhaar ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-cardboards mt-n1"></i>Electroal ID: &nbsp;</span>
+                          <span>{{ $user->employee->electoral_id ?? 'N/A' }}</span>
+                        </li>
+                        <li class="mb-3">
+                          <div class="d-flex justify-content-between align-items-start">
+                            <div class="">
+                              <h6 class="mb-0"><i class="ti ti-phone-call mt-n1"></i><span class="fw-bold ">Emergency Contact:</span></h6>
+                            </div>
+                            <div>
+                              <p class="mb-0 "><span class="text-muted">{{ $user->employee->mobile_relationship ?? 'N/A' }}: </span>{{ $user->employee->mobile_number ?? 'N/A' }} </p>
+                              <p class="mb-0 mt-2"><span class="text-muted">{{ $user->employee->landline_relationship ?? 'N/A' }} (LandLine): </span>{{ $user->employee->landline ?? 'N/A' }} </p>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                      <hr>
+                      <h5 class="card-action-title mb-0">Banking Information </h5>
+                      <ul class="list-unstyled mb-0 mt-3">
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-building mt-n2"></i>Bank Name: &nbsp;</span>
+                          <span>{{ $user->employee->bank_name ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-hexagons mt-n2"></i>Branch: &nbsp;</span>
+                          <span>{{ $user->employee->bank_branch ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-user mt-n2"></i>Beneficiary Name: &nbsp;</span>
+                          <span>{{ $user->employee->beneficiary_name ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-id-badge mt-n2"></i>Account Number: &nbsp;</span>
+                          <span>{{ $user->employee->account_number ?? 'N/A' }}</span>
+                        </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-mail mt-n1"></i>IFSC Code: &nbsp;</span>
+                          <span>UTIB0001161</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <!--/ Other Info -->
+                </div>
+
+                <div class="row justify-content-around px-3 px-lg-0">
+                  <!-- Activity Timeline -->
+                  <div class="col-xl-7 col-lg-7 mb-3 card card-bg1">
+                    <div class="card-header align-items-center">
+                      <h5 class="card-action-title mb-0">Activity Timeline</h5>
+                    </div>
+                    <div class="card-body row pb-0">
+                      <div class="col-lg-6 col-sm-6 mb-4">
+                        <div class="card">
+                          <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0">
+                              <h5 class="mb-0 me-2">0</h5>
+                              <small>This Month Leave(s)</small>
+                            </div>
+                            <div class="card-icon">
+                              <span class="badge bg-label-success rounded-pill p-2">
+                                <i class="ti ti-bolt ti-sm"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-6 col-sm-6 mb-4">
+                        <div class="card">
+                          <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0">
+                              <h5 class="mb-0 me-2">1.5</h5>
+                              <small>Total Leave(s) Taken</small>
+                            </div>
+                            <div class="card-icon">
+                              <span class="badge bg-label-success rounded-pill p-2">
+                                <i class="ti ti-drone ti-sm"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-6 col-sm-6 mb-4">
+                        <div class="card">
+                          <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0">
+                              <h5 class="mb-0 me-2">1</h5>
+                              <small>Off Days</small>
+                            </div>
+                            <div class="card-icon">
+                              <span class="badge bg-label-success rounded-pill p-2">
+                                <i class="ti ti-drone ti-sm"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-6 col-sm-6 mb-4">
+                        <div class="card">
+                          <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0">
+                              <h5 class="mb-0 me-2">12.5</h5>
+                              <small>Pending Leave(s)</small>
+                            </div>
+                            <div class="card-icon">
+                              <span class="badge bg-label-success rounded-pill p-2">
+                                <i class="ti ti-server ti-sm"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-6 col-sm-6 mb-4">
+                        <div class="card">
+                          <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0">
+                              <h5 class="mb-0 me-2">15</h5>
+                              <small>Total Leave(s) Alloted</small>
+                            </div>
+                            <div class="card-icon">
+                              <span class="badge bg-label-success rounded-pill p-2">
+                                <i class="ti ti-hourglass-high ti-sm"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-6 col-sm-6 mb-5">
+                        <div class="card">
+                          <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0">
+                              <h5 class="mb-1">10</h5>
+                              <small>Past Year Leave(s)</small>
+                            </div>
+                            <div class="card-icon">
+                              <span class="badge bg-label-success rounded-pill p-2">
+                                <i class="ti ti-calendar ti-sm"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-12 col-sm-12 mb-5">
+                        <div class="card">
+                          <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0">
+                              <div>
+                                <span class="badge bg-label-warning me-2">Full: 1</span>
+                                <span class="badge bg-label-primary me-2">Half: 1</span>
+                                <span class="badge bg-label-success">Off Days: 1</span>
+                              </div>
+                              <small>Leave(s) Category Wise</small>
+                            </div>
+                            <div class="card-icon">
+                              <span class="badge bg-label-success rounded-pill p-2">
+                                <i class="ti ti-info-circle"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                  <!--/ Activity Timeline -->
+
+                  <!-- Donut Chart -->
+                  <div class="col-xl-4 col-lg-4 card card-bg1 mb-3">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                      <div>
+                        <h5 class="card-title mb-0">Expense Ratio</h5>
+                        <small class="text-muted">Spending on various categories</small>
+                      </div>
+                      <div class="dropdown d-none d-sm-flex">
+                        <button
+                          type="button"
+                          class="btn dropdown-toggle px-0"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false">
+                          <i class="ti ti-calendar"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a>
+                          </li>
+                          <li>
+                            <hr class="dropdown-divider" />
+                          </li>
+                          <li>
+                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a>
+                          </li>
+                          <li>
+                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="card-body ">
+                      <div id="donutChart"></div>
+                    </div>
+                  </div>
+                  <!-- /Donut Chart -->
+                </div>
+
+                <!-- Projects table -->
+                <div class="row justify-content-around px-3 ">
+                  <div class="card">
+                      <div class="card-datatable table-responsive">
+                        <table class="datatables-projects table border-top">
+                          <thead>
+                            <tr>
+                              <th>Project Name	</th>
+                              <th>Task Name	</th>
+                              <th>Performance</th>
+                              <th>Status</th>
+                            </tr>
+                          </thead>
+                        </table>
+                      </div>
+                  </div>
+                </div>
+                <!--/ Projects table -->
+
+                <!--/ User Profile Content -->
               </div>
-              <!--/ Edit User Modal -->
-
-
-
-              <!-- /Modal -->
-            </div>
-            <!-- / Content -->
-            <div class="content-backdrop fade"></div>
-          </div>
 
 
 
@@ -239,21 +412,28 @@
   <!-- / Layout wrapper -->
 @endsection
 
+
+@push('js')
+<script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+<script src="{{ asset('assets/js/charts-apex.js') }}"></script>
 <script>
-  function previewImage(event) {
 
-   const input = event.target;
-   const preview = document.getElementById("imagePreview");
+    function previewImage(event) {
 
-   if (input.files && input.files[0]) {
-     const reader = new FileReader();
+     const input = event.target;
+     const preview = document.getElementById("imagePreview");
 
-     reader.onload = function(e) {
-       preview.src = e.target.result;
-       preview.style.display = "block";
-     };
+     if (input.files && input.files[0]) {
+       const reader = new FileReader();
 
-     reader.readAsDataURL(input.files[0]);
-   }
-}
+       reader.onload = function(e) {
+         preview.src = e.target.result;
+         preview.style.display = "block";
+       };
+
+       reader.readAsDataURL(input.files[0]);
+     }
+  }
 </script>
+@endpush
+

@@ -503,7 +503,7 @@ return [
             ],
             [
                 'title' => 'Assign Open Work',
-                'route' =>  '',
+                'route' =>  'assign_open_work',
                 'permission' => ['assign open work'],
             ],
             [
