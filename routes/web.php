@@ -31,6 +31,8 @@ use App\Http\Controllers\MomController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\MailBoxController;
 use App\Http\Controllers\CustomAttendanceController;
+use App\Http\Controllers\ReportController;
+
 use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -305,6 +307,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/custom-attendance', [CustomAttendanceController::class, 'index'])->name('custom-attendance.index');
     Route::get('/custom-attendance/accept-custom-mark-in/{id}', [CustomAttendanceController::class, 'acceptCustomMarkIn'])->name('custom-attendance.accept-custom-mark-in');
     Route::get('/custom-attendance/reject-custom-mark-in/{id}', [CustomAttendanceController::class, 'rejectCustomMarkIn'])->name('custom-attendance.reject-custom-mark-in');
+
+    /* Reports  */
+    Route::get('/reports/user-overview', [ReportController::class, 'user_overview'])->name('reports.user-overview');
+    
 
 });
 

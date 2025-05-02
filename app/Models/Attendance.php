@@ -28,6 +28,10 @@ class Attendance extends Model
         'actual_signout_date',
         'pending',
         'ipaddress',
+        'is_incomplete',
+        'incomplete_approved',
+        'incomplete_approved_by',
+        'incomplete_approved_at'
     ];
 
 

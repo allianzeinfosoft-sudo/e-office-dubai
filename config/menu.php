@@ -107,7 +107,7 @@ return [
         'submenu' => [
             [
                 'title' => 'My Overview',
-                'route' => '#',
+                'route' => 'reports/user-overview',
                 'permission' => ['view my overview'],
             ],
             [
