@@ -49,13 +49,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => ['web']], function () {
+Route::middleware(['web'])->group(function () {
+    Auth::routes();  // or your custom login routes
 
-    Auth::routes();
     Route::get('/', function () {
         return view('auth/login');
     });
-
+    
     Route::post('/logout', function () {
         Auth::logout();
         session()->invalidate();
@@ -63,6 +63,7 @@ Route::group(['middleware' => ['web']], function () {
         return redirect('/');
     })->name('logout');
 });
+
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');

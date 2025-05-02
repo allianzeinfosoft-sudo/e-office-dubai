@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
+use Illuminate\Session\Store as SessionStore;
+
 class RedirectIfAuthenticated
 {
     /**
@@ -15,12 +17,15 @@ class RedirectIfAuthenticated
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string ...$guards): Response
-    {
-        logger('Middleware: session started = ' . (session()->isStarted() ? 'yes' : 'no'));
+    public function handle(Request $request, Closure $next, string ...$guards): Response {
+        if (method_exists($request, 'hasSession') && $request->hasSession()) {
+            logger('Middleware: session started = ' . ($request->session()->isStarted() ? 'yes' : 'no'));
 
-        if (!session()->has('_token')) {
-            logger('Session token not present');
+            if (!$request->session()->has('_token')) {
+                logger('Session token not present');
+            }
+        } else {
+            logger('Session not yet available');
         }
 
         $guards = empty($guards) ? [null] : $guards;
