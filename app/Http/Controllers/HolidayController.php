@@ -24,9 +24,9 @@ class HolidayController extends Controller
         ->map(function ($holidays) {
             return [
                 'id' => $holidays->id,
-                'name' => $holidays->name,
-                'date' => $holidays->date,
-                'group' => $holidays->holiday_group,
+                'name' => $holidays->name ? $holidays->name : 'N/A',
+                'date' => $holidays->date ? date('d-m-Y', strtotime($holidays->date)) : 'N/A',
+                'group' => $holidays->holiday_group ? $holidays->holiday_group : 'N/A',
 
             ];
         });

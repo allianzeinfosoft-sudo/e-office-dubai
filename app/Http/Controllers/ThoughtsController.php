@@ -19,10 +19,10 @@ class ThoughtsController extends Controller
                 return [
                     'id' => $thoughts->id,
                     'thoughts_title' => $thoughts->thoughts_title ? $thoughts->thoughts_title : '',
-                    'display_date' => $thoughts->display_date ? $thoughts->display_date : '',
+                    'display_date' => $thoughts->display_date ?  date('d-m-Y', strtotime($thoughts->display_date)) : 'N/A',
                     'thoughts_detatils' => $thoughts->thoughts_details ? $thoughts->thoughts_details : '',
                     'picture' => $thoughts->picture ? $thoughts->picture : '',
-                    'created_at' => $thoughts->created_at ? $thoughts->created_at : '',
+                    'created_at' => $thoughts->created_at ? date('d-m-Y', strtotime($thoughts->created_at)) : '',
                 ];
             });
 

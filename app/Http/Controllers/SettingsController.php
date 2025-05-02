@@ -10,6 +10,7 @@ use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SettingsController extends Controller
 {
@@ -44,6 +45,8 @@ class SettingsController extends Controller
 
         $response = response()->json(['data' => $workshifts]);
         $json_data = json_decode($response->getContent(), true)['data'];
+
+
         return json_encode(['data' => $json_data]);
     }
 
@@ -84,10 +87,10 @@ class SettingsController extends Controller
                     'user_id' => $usersShifts->user_id,
                     'picture' => $usersShifts->profile_image ? $usersShifts->profile_image : '',
                     'name' => $usersShifts->full_name ? $usersShifts->full_name : '',
-                    'user_name' => $usersShifts->user->username ? $usersShifts->user->username : '',
-                    'shift_start_time' => $usersShifts->workshift->shift_start_time ? $usersShifts->workshift->shift_start_time : '',
+                    'user_name' => $usersShifts->user ? $usersShifts->user->username : '',
+                    'shift_start_time' => $usersShifts->workshift ? $usersShifts->workshift->shift_start_time : '',
                     'shift_end_time' => $usersShifts->workshift->shift_end_time ? $usersShifts->workshift->shift_end_time : '',
-                    'wildcard_entry' => $usersShifts->login_limited_time_info->limited_time ? $usersShifts->login_limited_time_info->limited_time : '',
+                    'wildcard_entry' => $usersShifts->login_limited_time ? $usersShifts->login_limited_time_info->limited_time : '',
                 ];
             });
 
@@ -219,7 +222,7 @@ class SettingsController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Attendance updated successfully.']);
 
         } catch (\Exception $e) {
-            \Log::error('Error updating attendance: ' . $e->getMessage());
+            Log::error('Error updating attendance: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
         }
     }

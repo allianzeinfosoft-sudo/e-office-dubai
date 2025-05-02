@@ -18,10 +18,10 @@ class BannerController extends Controller
                 return [
                     'id' => $banner->id,
                     'banner_title' => $banner->banner_title ? $banner->banner_title : '',
-                    'display_date' => $banner->display_date ? $banner->display_date : '',
+                    'display_date' => $banner->display_date ? date('d-m-Y',strtotime($banner->display_date)) : '',
                     'banner_detatils' => $banner->banner_details ? $banner->banner_details : '',
                     'picture' => $banner->picture ? $banner->picture : '',
-                    'created_at' => $banner->created_at ? $banner->created_at : '',
+                    'created_at' => $banner->created_at ? date('d-m-Y',strtotime($banner->created_at)) : '',
                 ];
             });
 

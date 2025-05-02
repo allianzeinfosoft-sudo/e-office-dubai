@@ -47,6 +47,7 @@
      <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/cards-advance.css') }}" />
     <!-- Page -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-profile.css') }}" />
 
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
@@ -133,9 +134,9 @@
 
     <!-- Page JS -->
     <script src="{{ asset('assets/js/pages-auth.js') }}"></script>
-    @if(request()->is('home'))
+    {{-- @if(request()->is('home')) --}}
         <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script>
-    @endif
+    {{-- @endif --}}
     @if(request()->is('roles'))
         <script src="{{ asset('assets/js/app-access-roles.js') }}"></script>
         <script src="{{ asset('assets/js/modal-add-role.js') }}"></script>
@@ -163,11 +164,11 @@
     <script src="{{ asset('assets/js/general.js') }}"></script>
 
     @if (!request()->is('attendance'))
-    <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
-    <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="{{ asset('assets/js/form-wizard-numbered.js') }}"></script>
-    <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script>
+        <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
+        <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
+        <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+        <script src="{{ asset('assets/js/form-wizard-numbered.js') }}"></script>
+        <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script>
     @endif
 
     @if(Route::is('leaves.*'))

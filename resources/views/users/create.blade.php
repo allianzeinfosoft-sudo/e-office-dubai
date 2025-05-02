@@ -346,6 +346,12 @@
                         <input type="text" class="form-control" name="account_number" id="account_number" value="{{ old('account_number') }}" placeholder="Enter account number"/>
                       </div>
                     </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="ifsc" class="form-label">IFSC:</label>
+                        <div class="input-group input-group-merge">
+                          <input type="text" class="form-control" name="ifsc" id="ifsc" value="{{ old('ifsc') }}" placeholder="Enter IFSC"/>
+                        </div>
+                      </div>
                   </div>
                 </div>
               </div>
