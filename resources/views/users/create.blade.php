@@ -42,7 +42,7 @@
                     <div class="col-md-4 mb-3">
                       <label for="employee_id" class="form-label">Employoee ID:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" name="employeeID" id="employeeID" value="{{ $nextEmployeeId ?? '' }}" placeholder="Enter username" aria-describedby="employeeID" readonly/>
+                        <input type="text" class="form-control" name="employeeID" id="employeeID" value="{{ $nextEmployeeId ?? '' }}" placeholder="Enter username" aria-describedby="employeeID" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -149,12 +149,12 @@
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="group" class="form-label">Group:</label>
+                      <label for="group" class="form-label">Group:<span class="mandatory">*</span></label>
                       <div class="input-group input-group-merge">
                       <select class="form-select" id="group" name="group">
                         <option value="">Select Group</option>
-                        @foreach (['G1','G2','G3','G4','G5'] as $group)
-                                <option value="{{ $group }}" {{ (old('group') == $group) ? 'selected' : '' }}>{{ $group }}</option>
+                        @foreach ($roles as $role)
+                                <option value="{{ $role->name }}" {{ (old('group') == $role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
                         @endforeach
                       </select>
                       </div>
