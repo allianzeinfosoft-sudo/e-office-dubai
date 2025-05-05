@@ -39,13 +39,23 @@ class UserController extends Controller
      */
     public function create()
     {
-        $lastEmployee = User::latest('id')->first();
+        $lastEmployee = Employee::latest('id')->first();
         $departments = Department::all();
         $employees = Employee::all();
+        $nextEmployeeId = 0;
+        if($employees)
+        {
+            $lastEmployee_id = Employee::orderBy('employeeID', 'asc')->value('employeeID');
+            $nextEmployeeId = $lastEmployee_id+1;
+        }
+        else
+        {
+            $nextEmployeeId = 1;
+        }
         $user_statuses = UserStatus::all();
         $work_shifts = Workshift::all();
-        $nextId = $lastEmployee ? ((int) filter_var($lastEmployee->id, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
-        $nextEmployeeId = 'AIS' . $nextId;
+        // $nextId = $lastEmployee ? ((int) filter_var($lastEmployee->id, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
+
         $roles = Role::all();
         return view('users.create', compact('nextEmployeeId',
         'employees','departments',
@@ -79,11 +89,11 @@ class UserController extends Controller
         $user = User::create([
             'username'  => $request->username,
             'email'     => $request->email,
-            'role'      => 'Employee',
+            'role'      => $request->group,
             'password'  => Hash::make($request->email),
         ]);
 
-        $user->assignRole('Employee');
+        $user->assignRole($request->group);
         if($user)
         {
             $profileImagePath = null;
@@ -346,7 +356,7 @@ class UserController extends Controller
     public function profileEdit($userId){
         $lastEmployee = User::latest('id')->first();
         $nextId = $lastEmployee ? ((int) filter_var($lastEmployee->id, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
-        $data['nextEmployeeId'] = 'AIS' . $nextId;
+        $data['nextEmployeeId'] = $nextId;
 
         $data['meta_title'] = 'Edit Update Profile';
         $data['loginUser'] = User::where('id', $userId)->get()->first();
