@@ -45,8 +45,9 @@ class UserController extends Controller
         $nextEmployeeId = 0;
         if($employees)
         {
-            $lastEmployee_id = Employee::orderBy('employeeID', 'asc')->value('employeeID');
+            $lastEmployee_id = Employee::orderBy('employeeID', 'desc')->value('employeeID');
             $nextEmployeeId = $lastEmployee_id+1;
+
         }
         else
         {
@@ -68,23 +69,25 @@ class UserController extends Controller
     public function store(Request $request)
     {
 
-        $validatedData = $request->validate([
+        // dd($request->all());
+        // $validatedData = $request->validate([
 
-            'employeeID' => 'required|unique:employees,employeeID',
-            'username' => 'required|unique:users,username',
-            'email' => 'required|unique:users,email|email',
-            'full_name' => 'required',
-            'phonenumber' => 'required|unique:employees',
-            'mobile_number' => 'nullable|unique:employees',
-            'landline' => 'nullable',
-            'personal_email' => 'nullable|unique:employees|email',
-            'aadhaar' => 'nullable|unique:employees',
-            'date_of_birth' => 'date',
-            'join_date' => 'date',
-            'profile_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'employeeID' => 'required|unique:employees,employeeID',
+        //     'username' => 'required|unique:users,username',
+        //     'email' => 'required|unique:users,email|email',
+        //     'full_name' => 'required',
+        //     'phonenumber' => 'required|unique:employees',
+        //     'mobile_number' => 'nullable|unique:employees',
+        //     'landline' => 'nullable',
+        //     'personal_email' => 'nullable|unique:employees|email',
+        //     'aadhaar' => 'nullable|unique:employees',
+        //     'date_of_birth' => 'date',
+        //     'join_date' => 'date',
+        //     'profile_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
 
 
-        ]);
+
+        // ]);
 
         $user = User::create([
             'username'  => $request->username,
