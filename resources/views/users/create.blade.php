@@ -100,7 +100,7 @@
                     <div class="col-md-4 mb-3">
                       <label for="blood_group" class="form-label">Blood Group:</label>
                         <select id="blood_group" name="blood_group" class="select2 form-select form-select-lg" data-allow-clear="true">
-                            <option selected>Please select</option>
+                            <option>Please select</option>
                             @foreach (["O-ve", "O+ve", "A-ve", "A+ve", "B-ve", "B+ve", "AB-ve"] as $group)
                                 <option value="{{ $group }}" {{ (old('blood_group') == $group) ? 'selected' : '' }} >{{ $group }}</option>";
                             @endforeach

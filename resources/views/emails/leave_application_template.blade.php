@@ -14,7 +14,7 @@
     <p>Below are the details of my leave request:</p>
     <ul>
         <li><strong>Employee Name:</strong> {{ $details['employee_name'] }}</li>
-        <li><strong>Employee ID:</strong> {{ $details['employee_id'] }}</li>
+        <li><strong>Employee ID:</strong> {{ $details['employeeID'] }}</li>
         <li><strong>Leave Type:</strong> {{ $details['leave_type'] }}</li>
         <li><strong>Number of Days:</strong> {{ $details['days_count'] }}</li>
     </ul>
