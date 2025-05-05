@@ -63,7 +63,29 @@
                                                     <h5 class="card-title mb-0">Monthly Total Working Hours</h5>
                                                 </div>
                                                 <div class="card-body">
-                                                    <canvas id="barChart" class="chartjs" data-height="100px"></canvas>
+                                                    @php
+                                                        $isDarkStyle = $isDarkStyle ?? false;
+                                                    @endphp
+                                                    
+                                                    <x-charts.bar-chart 
+                                                        id="workingHoursChart"
+                                                        :labels="$labels"
+                                                        :data="$average_hours"
+                                                        :colors="[
+                                                            'cardColor' => $isDarkStyle ? '#1E1E2D' : '#ffffff',
+                                                            'headingColor' => $isDarkStyle ? '#ffffff' : '#000000',
+                                                            'labelColor' => '#999',
+                                                            'legendColor' => '#333',
+                                                            'borderColor' => '#eee'
+                                                        ]"
+                                                        barColor="#28dac6"
+                                                        :isRtl="false"
+                                                        :maxY="300"
+                                                        :stepY="50"
+                                                        height="300px"
+                                                    />
+
+                                                    <!-- <canvas id="barChart" class="chartjs" data-height="100px"></canvas> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -110,7 +132,8 @@
                                                     <h5 class="card-title mb-0">Current Work Analytics</h5>
                                                 </div>
                                                 <div class="card-body">
-                                                    <canvas id="doughnutChart" class="chartjs mb-4" data-height="350"></canvas>
+                                                    
+                                                    
                                                     <ul class="doughnut-legend d-flex justify-content-around ps-0 mb-2 pt-1">
                                                         
                                                         <li class="ct-series-0 d-flex flex-column">
@@ -374,118 +397,14 @@
 
 
 @push('js')
-<script src="{{ asset('assets/vendor/libs/chartjs/chartjs.js') }}"></script>
+
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <!-- <script src="{{ asset('assets/js/charts-chartjs.js') }}"></script> -->
 <script src="{{ asset('assets/js/charts-apex.js') }}"></script>
 <script>
     $(function () {
         $('#working-hours-report').dataTable();
-         // Color Variables
-        const purpleColor = '#836AF9',
-            yellowColor = '#ffe800',
-            cyanColor = '#28dac6',
-            orangeColor = '#FF8132',
-            orangeLightColor = '#FDAC34',
-            oceanBlueColor = '#299AFF',
-            greyColor = '#4F5D70',
-            greyLightColor = '#EDF1F4',
-            blueColor = '#2B9AFF',
-            blueLightColor = '#84D0FF';
-
-        let cardColor, headingColor, labelColor, borderColor, legendColor;
-
-        if (isDarkStyle) {
-            cardColor = config.colors_dark.cardColor;
-            headingColor = config.colors_dark.headingColor;
-            labelColor = config.colors_dark.textMuted;
-            legendColor = config.colors_dark.bodyColor;
-            borderColor = config.colors_dark.borderColor;
-        } else {
-            cardColor = config.colors.cardColor;
-            headingColor = config.colors.headingColor;
-            labelColor = config.colors.textMuted;
-            legendColor = config.colors.bodyColor;
-            borderColor = config.colors.borderColor;
-        }
-
-        // Set height according to their data-height
-        // --------------------------------------------------------------------
-        const chartList = document.querySelectorAll('.chartjs');
-        chartList.forEach(function (chartListItem) {
-            chartListItem.height = chartListItem.dataset.height;
-        });
-
-        const barChart = document.getElementById('barChart');
-        const chartLabels = {!! json_encode($labels) !!};
-        const chartData = {!! json_encode($average_hours) !!};
-
-        if (barChart) {
-            const barChartVar = new Chart(barChart, {
-            type: 'bar',
-            data: {
-                labels: chartLabels,
-                datasets: [
-                {
-                    data: chartData,
-                    backgroundColor: cyanColor,
-                    borderColor: 'transparent',
-                    maxBarThickness: 15,
-                    borderRadius: {
-                    topRight: 15,
-                    topLeft: 15
-                    }
-                }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                duration: 500
-                },
-                plugins: {
-                tooltip: {
-                    rtl: isRtl,
-                    backgroundColor: cardColor,
-                    titleColor: headingColor,
-                    bodyColor: legendColor,
-                    borderWidth: 1,
-                    borderColor: borderColor
-                },
-                legend: {
-                    display: false
-                }
-                },
-                scales: {
-                x: {
-                    grid: {
-                    color: borderColor,
-                    drawBorder: false,
-                    borderColor: borderColor
-                    },
-                    ticks: {
-                    color: labelColor
-                    }
-                },
-                y: {
-                    min: 0,
-                    max: 300,
-                    grid: {
-                    color: borderColor,
-                    drawBorder: false,
-                    borderColor: borderColor
-                    },
-                    ticks: {
-                    stepSize: 50,
-                    color: labelColor
-                    }
-                }
-                }
-            }
-            });
-        }
-
+         
 
          // Doughnut Chart
         // --------------------------------------------------------------------

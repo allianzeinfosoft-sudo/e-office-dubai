@@ -3,6 +3,7 @@
 </div>
 
 @push('js')
+<script src="{{ asset('assets/vendor/libs/chartjs/chartjs.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const chartEl = document.getElementById('{{ $id }}');
@@ -28,9 +29,9 @@
             new Chart(chartEl, {
                 type: 'bar',
                 data: {
-                    labels: $labels,
+                    labels: {!! json_encode($labels) !!},
                     datasets: [{
-                        data: $data,
+                        data: {!! json_encode($data) !!},
                         backgroundColor: '{{ $barColor }}',
                         borderColor: 'transparent',
                         maxBarThickness: 15,

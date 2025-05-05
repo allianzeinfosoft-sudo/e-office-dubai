@@ -29,19 +29,30 @@ class BarChart extends Component
         int $stepY = 50,
         string $height = '300px'
     ) {
-        $this->id = $id;
-        $this->labels = $labels;
-        $this->data = $data;
-        $this->colors = $colors;
+        $this->id       = $id;
+        $this->labels   = $labels;
+        $this->data     = $data;
+        $this->colors   = $colors;
         $this->barColor = $barColor;
-        $this->isRtl = $isRtl;
-        $this->maxY = $maxY;
-        $this->stepY = $stepY;
-        $this->height = $height;
+        $this->isRtl    = $isRtl;
+        $this->maxY     = $maxY;
+        $this->stepY    = $stepY;
+        $this->height   = $height;
     }
 
     public function render()
     {
-        return view('components.charts.bar-chart');
+        return view('components.charts.bar-chart')->with([
+            'id'        => $this->id,
+            'labels'    => $this->labels,
+            'data'      => $this->data,
+            'colors'    => $this->colors,
+            'barColor'  => $this->barColor,
+            'isRtl'     => $this->isRtl,
+            'maxY'      => $this->maxY,
+            'stepY'     => $this->stepY,
+            'height'    => $this->height,
+        ]);
+
     }
 }
