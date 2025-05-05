@@ -129,15 +129,16 @@ $(function () {
           targets: 6,
           render: function (data, type, full, meta) {
             var $status = full['status'];
+            var status = statusObj[$status];
+
+            if (!status) {
+                return '<span class="badge bg-secondary text-capitalized">Unknown</span>';
+            }
 
             return (
-              '<span class="badge ' +
-              statusObj[$status].class +
-              '" text-capitalized>' +
-              statusObj[$status].title +
-              '</span>'
+                '<span class="badge ' + status.class + ' text-capitalized">' + status.title + '</span>'
             );
-          }
+        }
         },
         {
           // Actions
@@ -151,18 +152,12 @@ $(function () {
               '<div class="d-flex align-items-center">' +
               '<a href="javascript:;" class="text-body edit-user" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
               '<a href="javascript:;" class="text-body delete-user" data-user-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
-              '<div class="dropdown-menu dropdown-menu-end m-0">' +
-              '<a href="' +
-              userView +
-              '" class="dropdown-item">View</a>' +
-              '<a href="javascript:;" class="dropdown-item">Suspend</a>' +
-              '</div>' +
               '</div>'
             );
           }
         }
       ],
-      order: [[1, 'desc']],
+      order: [[0, 'asc']],
 
 
     });

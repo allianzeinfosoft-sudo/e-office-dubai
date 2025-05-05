@@ -28,7 +28,7 @@
                     <div class="card">
                        <meta name="auth-user-id" content="{{ Auth::user()->id }}">
                       <div class="card-datatable table-responsive">
-                        <table class="datatables-leave-status table border-top">
+                        <table class="datatables-leave-status table border-top" id="leave-status-table">
                           <thead>
                             <tr>
                               <th>S.No</th>
@@ -39,6 +39,7 @@
                               <th>Leave Reason</th>
                               <th>Apply Date</th>
                               <th>Status</th>
+                              <th>Action</th>
                             </tr>
                           </thead>
                         </table>
@@ -136,19 +137,64 @@ $(function () {
           {
             targets: 8,
             render: function(data, type, full, meta){
-                return `<button type="button" class="btn btn-label-pinterest waves-effect">
+                return `<button type="button" class="btn btn-sm btn-label-pinterest waves-effect">
                             Pending
                           </button>`;
             }
 
+           },
+           {
+            targets: 9,
+            render:function(data, type, full, mete){
+                return `<a href="javascript:void(0)" class="delete-leave" data-id="${full.id}"><i class="ti ti-trash"></i></a>`;
+            }
            }
         ],
 
       });
     }
 
-  });
 
+    /*delete leave function*/
+
+    $(document).on('click', '.delete-leave', function(e) {
+        e.preventDefault();
+        const leaveId = $(this).data('id');
+
+        Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                        $.ajax({
+                        url: `/leaves/${leaveId}`,
+                        type: 'DELETE',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                        },
+                        success: function(response) {
+
+                            Swal.fire("Deleted!", "Leave has been deleted.", "success").then(() => {
+                                $('#leave-status-table').DataTable().ajax.reload(); // Reload table
+                            });
+
+                        },
+                        error: function(xhr) {
+                            Swal.fire("Error!", "Something went wrong.", "error");
+                        }
+                        });
+
+            }
+
+    });
+  });
+});
 
 </script>
 @stop

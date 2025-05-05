@@ -20,7 +20,8 @@
 
     <!-- Core CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/rtl/core.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/rtl/theme-semi-dark.css') }}" />
+    {{-- <link rel="stylesheet" href="{{ asset('assets/vendor/css/rtl/theme-semi-dark.css') }}" /> --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/rtl/theme-default.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
 
     <!-- Vendors CSS -->
@@ -46,6 +47,7 @@
      <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/cards-advance.css') }}" />
     <!-- Page -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-profile.css') }}" />
 
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
@@ -61,7 +63,11 @@
 
     <!-- Scripts -->
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
-
+    <style>
+         .layout-page{
+            background-color: #00000075;
+        }
+    </style>
     @yield('css')
 </head>
 <body>
@@ -73,11 +79,11 @@
         {{-- </main> --}}
     </div>
     <!-- Core JS -->
-     
+
     <!-- build:js assets/vendor/js/core.js -->
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js') }}"></script> --}}
 
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
@@ -128,9 +134,9 @@
 
     <!-- Page JS -->
     <script src="{{ asset('assets/js/pages-auth.js') }}"></script>
-    @if(request()->is('home'))
+    {{-- @if(request()->is('home')) --}}
         <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script>
-    @endif
+    {{-- @endif --}}
     @if(request()->is('roles'))
         <script src="{{ asset('assets/js/app-access-roles.js') }}"></script>
         <script src="{{ asset('assets/js/modal-add-role.js') }}"></script>
@@ -158,11 +164,11 @@
     <script src="{{ asset('assets/js/general.js') }}"></script>
 
     @if (!request()->is('attendance'))
-    <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
-    <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="{{ asset('assets/js/form-wizard-numbered.js') }}"></script>
-    <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script>
+        <script src="{{ asset('assets/js/forms-editors.js') }}"></script>
+        <script src="{{ asset('assets/js/forms-pickers.js') }}"></script>
+        <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+        <script src="{{ asset('assets/js/form-wizard-numbered.js') }}"></script>
+        <script src="{{ asset('assets/js/form-wizard-validation.js') }}"></script>
     @endif
 
     @if(Route::is('leaves.*'))

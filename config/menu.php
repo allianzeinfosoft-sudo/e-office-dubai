@@ -1,105 +1,102 @@
 <?php
 return [
+
     [
         'title' => 'Dashboards',
         'icon' => 'ti ti-building-store',
         'route' => 'home',
-        /* 'badge' => 3,
-        'submenu' => [
-            [
-                'title' => 'Analytics',
-                'route' => 'index.html',
-                'submenu' => [
-                    [
-                        'title' => 'Performance',
-                        'route' => 'analytics/performance'
-                    ],
-                    [
-                        'title' => 'Revenue',
-                        'route' => 'analytics/revenue'
-                    ]
-                ]
-            ],
-            [
-                'title' => 'CRM',
-                'route' => 'dashboards-crm.html'
-            ],
-            [
-                'title' => 'eCommerce',
-                'route' => 'dashboards-ecommerce.html'
-            ],
-        ] */
+        'isActive' => ['home'],
+    ],
+    [
+        'title' => 'EOffice Feeds',
+        'icon' => 'ti ti-gift',
+        'route' => 'feeds',
+        'isActive' => ['feeds'],
+        'permission' => ['view feeds'],
+
     ],
     [
         'header' => 'Modules'
-    ],
-    [
-        'title' => 'Attendance',
-        'icon' => 'ti ti-alarm',
-        'route' => 'attendance',
-        'isActive' => ['attendance*'],
-    ],
-    [
-        'title' => 'Works',
-        'icon' => 'ti ti-building-bank',
-        'route' => 'javascript:void(0);',
-        // 'badge' => 3,
-        'submenu' => [
-            [
-                'title' => 'Work Status',
-                'route' => 'works/status',
-            ],
-            [
-                'title' => 'SDU Project Status',
-                'route' => 'works/sud-project-status'
-            ],
-            [
-                'title' => 'Temporary Status',
-                'route' => 'works/temporary-status'
-            ],
-            [
-                'title' => 'Entry Open Markin',
-                'route' => 'works/entry-open'
-            ],
-        ]
-    ],
-    [
-        'title' => 'Projects',
-        'icon' => 'ti ti-briefcase',
-        'route' => 'javascript:void(0);',
-        'isActive' => ['projects*', 'project*', 'tasks-project*', 'productivity-target*'],
-        'submenu' => [
-            [
-                'title' => 'Projects',
-                'route' =>  'projects',
-                'isActive' => ['projects', 'project*'],
-            ],
-            [
-                'title' => 'Project Tasks',
-                'route' =>  'tasks-project',
-                'isActive' => ['tasks-project*'],
-            ],
-            [
-                'title' => 'Productivity Targets',
-                'route' =>  'productivity-target',
-                'isActive' => ['productivity-target*'],
-            ],
-
-        ]
     ],
     [
         'title' => 'Users',
         'icon' => 'ti ti-users',
         'route' => 'javascript:void(0);',
         'isActive' => ['users*'],
+        'permission' => ['view users', 'view userCreate'],
         'submenu' => [
             [
                 'title' => 'Users',
                 'route' =>  'users',
+                'permission' => ['view users'],
             ],
             [
                 'title' => 'Add Users',
                 'route' =>  '/users/create',
+                'permission' => ['view userCreate'],
+            ],
+        ]
+    ],
+    [
+        'title' => 'My Account',
+        'icon' => 'ti ti-user',
+        'route' => 'javascript:void(0);',
+        'submenu' => [
+            [
+                'title' => 'My Profile',
+                'route' =>  '#'
+            ],
+            [
+                'title' => 'Change Password',
+                'route' =>  '#'
+            ],
+            [
+                'title' => 'Edit Profile',
+                'route' =>  '#'
+            ],
+        ]
+    ],
+    [
+        'title' => 'Salary',
+        'icon' => 'ti ti-cash',
+        'route' => 'javascript:void(0);',
+        'permission' => ['view salary'],
+        'submenu' => [
+
+            [
+                'title' => 'Salary Slip',
+                'route' =>  '/salarySlip/view',
+            ],
+        ]
+    ],
+    [
+        'title' => 'Attendance',
+        'icon' => 'ti ti-alarm',
+        'route' => 'attendance',
+        'permission' => ['view attendance'],
+        'isActive' => ['attendance*'],
+    ],
+    [
+        'title' => 'Works',
+        'icon' => 'ti ti-building-bank',
+        'permission' => ['view work status', 'view temporary status', 'open markin'],
+        'route' => 'javascript:void(0);',
+        // 'badge' => 3,
+        'submenu' => [
+            [
+                'title' => 'Work Status',
+                'route' => 'works/status',
+                'permission' => ['view work status'],
+            ],
+            [
+                'title' => 'Temporary Status',
+                'route' => 'works/temporary-status',
+                'permission' => ['view temporary status'],
+            ],
+            [
+                'title' => 'Entry Open Markin',
+                'route' => 'works/entry-open',
+                'permission' => ['open markin'],
             ],
         ]
     ],
@@ -110,24 +107,29 @@ return [
         'submenu' => [
             [
                 'title' => 'My Overview',
-                'route' => '#',
+                'route' => 'reports/user-overview',
+                'permission' => ['view my overview'],
             ],
             [
                 'title' => 'My Attendance',
-                'route' => '#'
+                'route' => '#',
+                'permission' => ['view attendance report'],
             ],
             [
                 'title' => 'My Work Report',
-                'route' => '#'
+                'route' => '#',
+                'permission' => ['view my work report'],
             ],
             [
                 'title' => 'My Emergency Report',
-                'route' => '#'
+                'route' => '#',
+                'permission' => ['view emergency report'],
             ],
             [
-                'title' => 'Salary Slip',
+                'title' => 'Salary Slip Report',
                 'route' => '#',
-                'badge' => 'new',
+                'permission' => ['view salary slip'],
+                // 'badge' => 'new',
             ],
         ]
     ],
@@ -135,8 +137,19 @@ return [
         'title' => 'Survey',
         'icon' => 'ti ti-rocket',
         'route' => 'javascript:void(0);',
-        'badge' => "New",
+        'permission' => ['create survey','assign survey','view surveys'],
+        // 'badge' => "New",
         'submenu' => [
+            [
+                'title' => 'Add Survey',
+                'route' => '#',
+                'permission' => ['create survey'],
+            ],
+            [
+                'title' => 'Assign Survey',
+                'route' => '#',
+                'permission' => ['assign survey'],
+            ],
             [
                 'title' => 'View Survey',
                 'route' => '#',
@@ -144,57 +157,83 @@ return [
         ]
     ],
     [
+        'title' => 'SAR',
+        'icon' => 'ti ti-replace',
+        'route' => 'javascript:void(0);',
+        'permission' => ['view SARs','review SAR'],
+        'submenu' => [
+            [
+                'title' => 'SAR Form',
+                'route' =>  '#',
+                'permission' => ['view SARs'],
+            ],
+            [
+                'title' => 'SAR Reviews',
+                'route' =>  '#',
+                'permission' => ['review SAR'],
+            ],
+        ]
+    ],
+    [
         'title' => 'PAR',
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',
+        'permission' => ['view PAR','create PAR', 'assign PAR'],
         'badge' => "New",
         'submenu' => [
+            [
+                'title' => 'Add PAR',
+                'route' => '#',
+                'permission' => ['create PAR'],
+            ],
+            [
+                'title' => 'Assing PAR',
+                'route' => '#',
+                'permission' => ['assign PAR'],
+            ],
             [
                 'title' => 'View PAR',
                 'route' => '#',
             ],
+
         ]
     ],
     [
         'title' => 'Leave',
         'icon' => 'ti ti-leaf',
         'route' => 'javascript:void(0);',
+        'permission' => ['create leave request','leave status','leave summary','custom leave', 'pending leave request','leave allocation'],
         'submenu' => [
             [
                 'title' => 'Apply Leave',
                 'route' =>  '/leaves/create',
-            ],
-            [
-                'title' => 'Pending Request',
-                'route' =>  'pending-leaves',
+                'permission' => ['create leave request'],
             ],
             [
                 'title' => 'Leave Status',
                 'route' =>  'leave-status',
+                'permission' => ['leave status'],
             ],
             [
                 'title' => 'Leave Summary',
                 'route' =>  'leaves',
+                'permission' => ['leave summary'],
             ],
+            [
+                'title' => 'Custom Leave',
+                'route' =>  '/custom_leave',
+                'permission' => ['custom leave'],
+            ],
+            [
+                'title' => 'Pending Request',
+                'route' =>  'pending-leaves',
+                'permission' => ['pending leave request'],
+            ],
+
             [
                 'title' => 'Leave Allocation',
                 'route' =>  '/leave-allocation',
-            ],
-        ]
-    ],
-    [
-        'title' => 'Salary Slip',
-        'icon' => 'ti ti-cash',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
-
-            // [
-            //     'title' => 'Uploload Salary Slip',
-            //     'route' =>  '/salarySlip/upload',
-            // ],
-            [
-                'title' => 'Salary Slip',
-                'route' =>  '/salarySlip/view',
+                'permission' => ['leave allocation'],
             ],
         ]
     ],
@@ -207,10 +246,13 @@ return [
         'title' => 'View',
         'icon' => 'ti ti-eye',
         'route' => 'javascript:void(0);',
+        'permission' => ['view though','view appreciation','view birthday', 'view event', 'view policy', 'view holiday', 'view reminder'],
         'submenu' => [
             [
                 'title' => 'Thought Of The Day',
-                'route' =>  '#',
+                'route' =>  'thoughts',
+                'permission' => ['view thought'],
+
             ],
             [
                 'title' => ' Appreciation',
@@ -219,6 +261,7 @@ return [
             [
                 'title' => 'Birthdays',
                 'route' =>  '#',
+                'permission' => ['view birthday'],
             ],
             [
                 'title' => 'Announcement',
@@ -226,20 +269,93 @@ return [
             ],
             [
                 'title' => 'Company Policies ',
-                'route' =>  '#',
+                'route' =>  '/view/company-policies',
+                'permission' => ['view policy'],
                 'badge' => "New",
             ],
             [
                 'title' => 'Events',
                 'route' =>  '#',
+                'permission' => ['view event'],
             ],
             [
                 'title' => 'Holidays',
                 'route' =>  '#',
+                'permission' => ['view holiday'],
             ],
             [
                 'title' => 'User Reminder List',
+                'route' =>  'reminder',
+                'permission' => ['view reminder'],
+            ],
+        ]
+    ],
+    [
+        'title' => 'Others',
+        'icon' => 'ti ti-rss',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['others*'],
+        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banners','view event', 'view MOM'],
+        'submenu' => [
+            [
+                'title' => 'Seen status report',
                 'route' =>  '#',
+                'isActive' => [],
+                'permission' => ['seen status report']
+            ],
+            [
+                'title' => 'Thoughts',
+                'route' =>  'thoughts',
+                'isActive' => [],
+                'permission' => ['view thought'],
+
+            ],
+            [
+                'title' => 'Appreciation',
+                'route' =>  'appreciation',
+                'isActive' => [],
+                'permission' => ['view appreciation']
+
+            ],
+            [
+                'title' => 'Policies',
+                'route' =>  'others/policies',
+                'isActive' => ['policy*'],
+                'permission' => ['view policy'],
+            ],
+            [
+                'title' => 'Announcement',
+                'route' =>  'javascript:void(0);',
+                'isActive' => ['announcements*'],
+                'permission' => [],
+                'submenu' => [
+                    [
+                        'title' => 'Announcements',
+                        'route' => "/others/announcements",
+                        'isActive' => [],
+                        'permission' => [],
+                        ''
+                    ],
+                    [
+                        'title' => 'View Banner',
+                        'route' => "banner",
+                        'isActive' => [],
+                        'permission' => ['view banners'],
+                        ''
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Events',
+                'route' =>  '/others/events',
+                'isActive' => ['events*'],
+                'permission' => ['view events'],
+            ],
+            [
+                'title' => 'MOM',
+                'route' =>  '/others/moms',
+                'isActive' => ['mom*'],
+                'permission' => [],
             ],
         ]
     ],
@@ -247,76 +363,74 @@ return [
         'title' => 'Conference Hall',
         'icon' => 'ti ti-podium',
         'route' => 'javascript:void(0);',
+        'permission' => ['create booking','view bookings','assigned booking'],
         'submenu' => [
             [
                 'title' => 'Booking',
                 'route' =>  '#',
+                'permission' => ['create booking'],
             ],
             [
                 'title' => 'View Bookings',
                 'route' =>  '#',
-            ],
-            [
-                'title' => 'My Bookings',
-                'route' =>  '#',
+                'permission' => ['view bookings'],
             ],
             [
                 'title' => 'Assigned Bookings',
                 'route' =>  '#',
+                'permission' => ['assigned booking'],
             ],
         ]
     ],
     [
-        'title' => 'Feedback',
-        'icon' => 'ti ti-replace',
+        'title' => 'Projects',
+        'icon' => 'ti ti-briefcase',
         'route' => 'javascript:void(0);',
+        'isActive' => ['projects*', 'project*', 'tasks-project*', 'productivity-target*'],
+        'permission' => ['view projects','view project task','view productivity target'],
         'submenu' => [
             [
-                'title' => 'Feedback Form',
-                'route' =>  '#',
+                'title' => 'Projects',
+                'route' =>  'projects',
+                'isActive' => ['projects', 'project*'],
+                'permission' => ['view projects'],
             ],
             [
-                'title' => 'Feedback Reviews',
-                'route' =>  '#',
+                'title' => 'Project Tasks',
+                'route' =>  'tasks-project',
+                'isActive' => ['tasks-project*'],
+                'permission' => [],
             ],
+            [
+                'title' => 'Productivity Targets',
+                'route' =>  'productivity-target',
+                'isActive' => ['productivity-target*'],
+                'permission' => [],
+            ]
         ]
     ],
-    [
-        'title' => 'My Projects ',
-        'icon' => 'ti ti-presentation',
-        'route' => '#',
-    ],
-    [
-        'title' => 'My Account',
-        'icon' => 'ti ti-user',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
-            [
-                'title' => 'My Profile',
-                'route' =>  '#',
-            ],
-            [
-                'title' => 'Change Password',
-                'route' =>  '#',
-            ],
-            [
-                'title' => 'Edit Profile',
-                'route' =>  '#',
-            ],
-        ]
-    ],
+    // [
+    //     'title' => 'My Projects ',
+    //     'icon' => 'ti ti-presentation',
+    //     'route' => '#',
+    //     'permission' => ['view myProjects'],
+    // ],
+
     [
         'title' => 'Tools',
         'icon' => 'ti ti-tools',
         'route' => 'javascript:void(0);',
+        'permission' => ['view quick notes','view event calendar', 'view KSP'],
         'submenu' => [
             [
                 'title' => 'Quick Notes',
                 'route' =>  '#',
+                'permission' => ['view quick notes'],
             ],
             [
                 'title' => 'Event Calendar',
                 'route' =>  '#',
+                'permission' => ['view event calendar'],
             ],
             [
                 'title' => 'KSP',
@@ -325,13 +439,31 @@ return [
         ]
     ],
     [
+        'title' => 'Recruitments',
+        'icon' => 'ti ti-target',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['recruitments*'],
+        'submenu' => [
+            [
+                'title' => 'RRF',
+                'route' =>  '/recruitments',
+            ],
+            [
+                'title' => 'Draff',
+                'route' =>  '/recruitments/draft-list',
+            ],
+        ]
+    ],
+    [
         'title' => 'Jobs',
         'icon' => 'ti ti-briefcase',
         'route' => 'javascript:void(0);',
+        'permission' => ['view jobs','assign job'],
         'submenu' => [
             [
                 'title' => 'My Jobs',
                 'route' =>  '#',
+                'permission' => ['view jobs'],
             ],
             [
                 'title' => 'Assign A job',
@@ -341,30 +473,14 @@ return [
                 'title' => 'Jobs Assigned by You',
                 'route' =>  '#',
             ],
+
         ]
     ],
     [
         'title' => 'Email',
         'icon' => 'ti ti-mail-forward',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
-            [
-                'title' => 'Inbox',
-                'route' =>  '#',
-            ],
-            [
-                'title' => 'Starred',
-                'route' =>  '#',
-            ],
-            [
-                'title' => 'Sent Email',
-                'route' =>  '#',
-            ],
-            [
-                'title' => 'Trash',
-                'route' =>  '#',
-            ],
-        ]
+        'route' => '/mail-boxes',
+        'permission' => ['view emails','view starred','send mail','trashed mail']
     ],
     [
         'header' => 'Settings',
@@ -373,40 +489,75 @@ return [
         'title' => 'Settings',
         'icon' => 'ti ti-switch-3',
         'route' => 'javascript:void(0);',
+        'permission' => ['change appearence','view department','assign open work' ,'manage roles', 'view holiday', 'view shift time', 'change shift time', 'custom markout', 'custom attendance', 'full day entry', 'custom work report entry', 'edit attendance'],
         'submenu' => [
             [
-                'title' => 'Work Shift',
-                'route' =>  'settings/workshift',
+                'title' => 'Change appearence',
+                'route' =>  'appearences',
+                'permission' => ['change appearence'],
             ],
             [
-                'title' => 'Branches',
-                'route' =>  'branchs',
+                'title' => 'Departments',
+                'route' =>  'departments',
+                'permission' => ['view department'],
             ],
             [
-                'title' => 'Holidays',
-                'route' =>  'holidays',
+                'title' => 'Assign Open Work',
+                'route' =>  'assign_open_work',
+                'permission' => ['assign open work'],
             ],
-        ]
-    ],
-    [
-        'title' => 'Roles & Permissions',
-        'icon' => 'ti ti-drone',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
             [
-                'title' => 'Roles',
+                'title' => 'Role Management',
                 'route' =>  'roles',
+                'permission' => ['manage roles'],
             ],
             [
-                'title' => 'Permission',
+                'title' => 'Permission Management',
                 'route' =>  'permissions',
+                'permission' => ['manage permissions'],
             ],
+            [
+                'title' => 'Holiday',
+                'route' =>  'holidays',
+                'permission' => ['view holiday'],
+            ],
+            [
+                'title' => 'Shift Time',
+                'route' =>  '/settings/workshift',
+                'permission' => ['view shift time'],
+            ],
+            [
+                'title' => 'Change Shift Time',
+                'route' =>  '/shift-times',
+                'permission' => ['change shift time'],
+            ],
+            [
+                'title' => 'Custom Markout',
+                'route' =>  '/settings/custom-mark-out',
+                'permission' => ['custom markout'],
+            ],
+            [
+                'title' => 'Custom Attendance Entry',
+                'route' =>  '/settings/custom-attendance-entry',
+                'permission' => ['custom attendance'],
+            ],
+            [
+                'title' => 'Fullday Entry',
+                'route' =>  '/settings/full-day-attendance-entry',
+                'permission' => ['full day entry'],
+            ],
+            [
+                'title' => 'Custom Work Report Entry',
+                'route' =>  '/settings/custom-work-report-entry',
+                'permission' => ['custom work report entry'],
+            ],
+            [
+                'title' => 'Edit Daily Attendance',
+                'route' =>  '/settings/edit-daily-attendance',
+                'permission' => ['edit attendance'],
+            ]
         ]
-    ],
-    [
-        'title' => 'Departments',
-        'icon' => 'ti ti-arrow-guide',
-        'route' => "/branchs",
-    ],
+    ]
+
 ];
 

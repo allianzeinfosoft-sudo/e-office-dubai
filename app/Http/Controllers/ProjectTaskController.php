@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ProjectTask;
 use App\Models\Project;
 use App\Models\Employee;
+use App\Models\Tasks;
 use Illuminate\Http\Request;
 
 class ProjectTaskController extends Controller
@@ -34,7 +35,7 @@ class ProjectTaskController extends Controller
 
                     return [
                         'id' => $task->id,
-                        'task_name' => $task->task_name, 
+                        'task_name' => $task->tasks->name ?? '', 
                         'project_name' => optional($task->project)->project_name,
                         'created_at' => date('d-m-Y', strtotime($task->created_at)),
                         'reporting_to' => $task->employee ?? '',
@@ -129,7 +130,7 @@ class ProjectTaskController extends Controller
     }
 
     public function getTasksByProject($project_id){
-        $projectTasks = ProjectTask::where('project_id', $project_id)->get();
+        $projectTasks = ProjectTask::with('tasks')->where('project_id', $project_id)->get();
         return response()->json([
             'success' => true,
             'data' => $projectTasks,
@@ -141,6 +142,21 @@ class ProjectTaskController extends Controller
         return response()->json([
             'success' => true,
             'data' => $members,
+        ]);
+    }
+
+    public function storeTaskName(Request $request){
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $task = Tasks::updateOrCreate(['name' => $validated['name']],[
+            'name'      => $validated['name'],
+        ]);
+
+        return response()->json([
+            'success' => "New task created successfully",
+            'data' => $task,
         ]);
     }
 }

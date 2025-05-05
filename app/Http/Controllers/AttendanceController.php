@@ -6,6 +6,8 @@ use App\Models\Attendance;
 use App\Models\Project;
 use App\Models\workReport;
 use App\Models\CustomAttendance;
+use App\Models\Employee;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,50 +25,52 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
-        $data['meta_title']     = 'Attendance';
+        $data['meta_title'] = 'Attendance';
+      //  $data['background_class'] = 'bg-eoffice';
 
-        $user = Auth::user();
-        $today = now()->format('Y-m-d');
-        $currentMonth = now()->format('Y-m');
-        $daysInMonth = now()->daysInMonth;
-        $weekOffDays = [0, 6]; // Sunday = 0, Saturday = 6
+        $user               = Auth::user();
+        $today              = now()->format('Y-m-d');
+        $currentMonth       = now()->format('Y-m');
+        $daysInMonth        = now()->daysInMonth;
+        $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6 
+
+        /* cutofftime */
+        $cutoffTime = $user->employee->login_limited_time ?? '09:15:00';
+        $isLate = now()->format('H:i:s') > $cutoffTime;
+        $data['disableCustomMarkIn'] = $isLate;
+
+        
+
 
         // Fetch all holidays in the current month
-        $holidays = DB::table('holidays')
-        ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])
-        ->pluck('date')
-        ->toArray();
+        $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
 
         // Fetch all attendance records for the user in this month
-        $attendanceDays = Attendance::where('username', $user->username)
-        ->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])
-        ->pluck('signin_date')
-        ->toArray();
+        $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
 
         for ($day = 1; $day < now()->day; $day++) {
-            $date = "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
-            $dayOfWeek = date('w', strtotime($date));
-    
-            $isWeekOff = in_array($dayOfWeek, $weekOffDays);
-            $isHoliday = in_array($date, $holidays);
-            $hasAttendance = in_array($date, $attendanceDays);
-    
+            $date           = "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
+            $dayOfWeek      = date('w', strtotime($date));
+            $isWeekOff      = in_array($dayOfWeek, $weekOffDays);
+            $isHoliday      = in_array($date, $holidays);
+            $hasAttendance  = in_array($date, $attendanceDays);
+            
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
                 // Check if leave exists that covers this date
                 $leaveExists = DB::table('leaves')
-                    ->where('user_id', $user->id)
-                    ->whereDate('leave_from', '<=', $date)
-                    ->whereDate('leave_to', '>=', $date)
-                    ->exists();
-    
+                ->where('user_id', $user->id)
+                ->whereDate('leave_from', '<=', $date)
+                ->whereDate('leave_to', '>=', $date)
+                ->exists();
+                
                 if (!$leaveExists) {
                     // User missed work on a working day without leave
-                    return redirect()->route('leave.apply', ['date' => $date])
+                    return redirect()->route('leaves.create', ['date' => $date])
                         ->with('error', "You missed work on $date without leave. Please apply for leave.");
                 }
             }
         }
-        
+
         $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
@@ -113,6 +117,16 @@ class AttendanceController extends Controller{
         $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
+        /* incomplete working hours */
+        $nonApprovedIncompleteWorkingHours = Attendance::where('username', $user->username)->where('is_incomplete', 1)->where('incomplete_approved', 0)->count();
+
+        if ($nonApprovedIncompleteWorkingHours > 0) {
+            return view('attendance.no_action_from', $data);
+        }
+        
+
+
+        /* Mission Mark Out First */
         $missingMarkOut = Attendance::where('username', Auth::user()->username)
         ->where('signin_date', '<', now()->format('Y-m-d')) // Check dates before today
         ->whereNull('signout_time') // No sign-out time means the user has not marked out
@@ -201,7 +215,7 @@ class AttendanceController extends Controller{
         $data['weekOffDays'] = $weekOffDays;
         $data['totalWorkingDays'] = $totalWorkingDays;
 
-         /* $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
+        /* $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
             $query->select(DB::raw(1))
                 ->from('work_reports')
                 ->whereColumn('work_reports.report_date', 'attendances.signin_date')
@@ -212,7 +226,6 @@ class AttendanceController extends Controller{
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
                  ->on('work_reports.username', '=', 'attendances.username');
         })
-
         ->select(
             'attendances.id',
             'attendances.emp_id',
@@ -281,7 +294,9 @@ class AttendanceController extends Controller{
             
             return view('attendance.work_report', $data);
         } else {
+
             return view('attendance.index', $data);
+    
         }
     }
 
@@ -336,14 +351,14 @@ class AttendanceController extends Controller{
             'username' => Auth::user()->username,
             'signin_date' => now()->format('Y-m-d')
         ])->first();
-
+    
         if (!$attendance) {
             return response()->json([
                 'success' => false,
                 'message' => 'You have not marked in yet.',
             ]);
         }
-
+    
         if ($attendance->signout_time) {
             return response()->json([
                 'success' => false,
@@ -353,16 +368,26 @@ class AttendanceController extends Controller{
                 ]
             ]);
         }
-        $workingTime = CustomHelper::calculateTotalWorkingTime($attendance->signin_date, $attendance->signin_time, now()->format('Y-m-d'), now()->format('H:i:s'), $attendance->break_time);
-
+    
+        $workingTime = CustomHelper::calculateTotalWorkingTime(
+            $attendance->signin_date,
+            $attendance->signin_time,
+            now()->format('Y-m-d'),
+            now()->format('H:i:s'),
+            $attendance->break_time
+        );
+    
+        $isIncomplete = strtotime($workingTime['total_working_time']) < strtotime('08:00:00') ? 1 : 0;
+    
         $attendance->update([
             'signout_time' => now()->format('H:i:s'),
             'signout_date' => now()->format('Y-m-d'),
             'punchout_type' => 'Web',
             'status' => 'mark-out',
-            'working_hours' => $workingTime['total_working_time']
+            'working_hours' => $workingTime['total_working_time'],
+            'is_incomplete' => $isIncomplete
         ]);
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Marked out successfully',
@@ -373,7 +398,13 @@ class AttendanceController extends Controller{
     }
 
     public function customMarkIn(Request $request) {
-        $existingAttendance = Attendance::where('emp_id', Auth::user()->id)->where('signin_date', now()->format('Y-m-d'))->first();
+        $userId = Auth::user()->id;
+        $signinDate = date('Y-m-d', strtotime($request->signin_date));
+
+        $existingAttendance = Attendance::where('emp_id', $userId)
+        ->where('signin_date', $signinDate)
+        ->first();
+
         if ($existingAttendance) {
             return response()->json([
                 'success' => false,
@@ -384,62 +415,80 @@ class AttendanceController extends Controller{
             ]);
         }
 
-        $attendance = Attendance::create([
-            'username' => Auth::user()->username,
-            'emp_id' => Auth::user()->id,
-            'signin_date' => date('Y-m-d', strtotime($request->signin_date)),
-            'signin_time' => $request->signin_time,
-            'signin_late_note' => $request->signin_late_note,
-            'punchin_type' => 'Custom',
-            'ipaddress' => $request->ip(),
-            'status' => 'custom',
-            'custom_status' => '1'
-        ]);
-
         // Store data in `custom_attendances` table
-        $customAttendance = CustomAttendance::create([
-            'username' => Auth::user()->username,
-            'emp_id' => Auth::user()->id,
-            'picktime' => $request->signin_time,
-            'reason' => $request->signin_late_note,
-            'signin_date' => date('Y-m-d', strtotime($request->signin_date)),
-            'status' => 0, // Assuming 0 means pending status
-            'approved_by' => null
-        ]);
+
+        $customAttendance = CustomAttendance::where('emp_id', $userId)
+        ->where('signin_date', $signinDate)
+        ->first();
+
+        if ($customAttendance) {
+            // Update the existing custom attendance request
+            $customAttendance->update([
+                'picktime'    => $request->signin_time,
+                'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                'status'      => 0, // Reset to pending on update
+                'approved_by' => null
+            ]);
+    
+            $message = 'Your custom Mark In request has been updated and sent for re-approval.';
+        } else {
+            // Create new custom attendance request
+            CustomAttendance::create([
+                'username'    => Auth::user()->username,
+                'emp_id'      => $userId,
+                'picktime'    => $request->signin_time,
+                'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                'signin_date' => $signinDate,
+                'status'      => 0,
+                'approved_by' => null
+            ]);
+    
+            $message = 'Your custom Mark In has been sent for approval.';
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Attendance marked successfully',
-            'data' => [
-                'signin_time' => date('h:i A', strtotime($attendance->signin_time))
-            ]
+            'message' => $message,
         ]);
     }
 
     public function customMarkOut(Request $request, $id) {
         $request->validate([
-            'signout_time' => 'required',
+            'signout_time'      => 'required',
             'signout_late_note' => 'required',
         ]);
-
+    
         $markOut = Attendance::findOrFail($id);
-        $workingTime = CustomHelper::calculateTotalWorkingTime($markOut->signin_date, $markOut->signin_time, $request->signout_date, $request->signout_time, $markOut->break_time);
-        $markOut->signout_time = $request->signout_time;
-        $markOut->signout_date = $request->signout_date;
+    
+        $workingTime = CustomHelper::calculateTotalWorkingTime(
+            $markOut->signin_date,
+            $markOut->signin_time,
+            $request->signout_date,
+            $request->signout_time,
+            $markOut->break_time
+        );
+    
+        $totalWorkingTime = $workingTime['total_working_time'] ?? '00:00:00';
+    
+        $markOut->signout_time      = $request->signout_time;
+        $markOut->signout_date      = $request->signout_date;
         $markOut->signout_late_note = $request->signout_late_note;
-        $markOut->status = 'mark-out';
-        $markOut->punchout_type = 'custom';
-        $markOut->working_hours = $workingTime['total_working_time'] ?? 0;
+        $markOut->status            = 'mark-out';
+        $markOut->punchout_type     = 'custom';
+        $markOut->working_hours     = $totalWorkingTime;
+    
+        if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
+            $markOut->is_incomplete = 1;
+        }
+    
         $markOut->save();
-
+    
         return response()->json(['success' => true, 'message' => 'Mark out updated successfully.']);
     }
 
 
     /* Emergency mark-in mark-out*/
-    public function emergencyMark(Request $request)
-    {
-
+    public function emergencyMark(Request $request){
         $data = [
             'username' => Auth::user()->username,
             'signin_time' => $request->type === 'mark-in' ? $request->time_in_out : null,
@@ -496,9 +545,209 @@ class AttendanceController extends Controller{
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Attendance $attendance)
+    public function destroy($id)
     {
         //
+        $item = Attendance::findOrFail($id);
+        $item->delete();
+
+        return response()->json(['success' => true]);
     }
 
+    public function markedInList(){
+        $markedInListData = Attendance::with('employee')
+            ->where('signin_date', date('Y-m-d'))
+            ->whereIn('status', ['mark-in', 'custom'])
+            ->orderBy('signin_time')
+            ->get();
+
+        $data = $markedInListData->map(function ($markInList) {
+            return [
+                'id' => $markInList->id,
+                'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. asset('storage/'. $markInList->employee->profile_image) . '" alt="Avatar" class="rounded-circle"></div></div>',
+                'name' => $markInList->employee->full_name,
+                'username' => $markInList->username,
+                'markin_date' => $markInList->signin_date,
+                'markin_time' => $markInList->signin_time,
+            ];
+        });
+
+        return response()->json(['success' => true, 'data' => $data]);
+    }
+
+    public function employeeMarkin($id){
+        $data = Attendance::with('employee')->find($id);
+        return response()->json([
+            'success' => true,
+            'data' =>$data
+        ]);
+    }
+
+
+    public function customAttendanceEntry(Request $request)
+    {
+        $request->validate([
+            'employee' => 'required',
+            'signin_date' => 'required',
+            'signin_time' => 'required'
+        ]);
+
+        $employeeId = $request->employee;
+        $signinDate = date('Y-m-d', strtotime($request->signin_date));
+        $signinTime = $request->signin_time;
+
+        $Employee = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+
+        // Save or update Attendance
+        $attendance = Attendance::updateOrCreate(
+            [
+                'emp_id' => $employeeId,
+                'signin_date' => $signinDate,
+            ],
+            [
+                'username' => $Employee->user->username,
+                'signin_time' => $signinTime,
+                'signin_late_note' => $request->signin_late_note ?? null,
+                'punchin_type' => 'Custom',
+                'ipaddress' => $request->ip(),
+                'status' => 'custom',
+                'custom_status' => '1'
+            ]
+        );
+
+        // Save or update CustomAttendance
+        /* CustomAttendance::updateOrCreate(
+            [
+                'emp_id' => $employeeId,
+                'signin_date' => $signinDate,
+            ],
+            [
+                'username' => $user->username,
+                'picktime' => $signinTime,
+                'reason' => $request->signin_late_note ?? null,
+                'status' => 0,
+                'approved_by' => null
+            ]
+        ); */
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Attendance saved successfully.',
+            'data' => [
+                'signin_time' => date('h:i A', strtotime($attendance->signin_time))
+            ]
+        ]);
+    }
+
+    public function storeFullDayEntry(Request $request){
+        $validated = $request->validate([
+            'emp_id'           => 'required|exists:employees,user_id', // Ensure employee exists in the system
+            'signin_date'      => 'required|date_format:d-m-Y',
+            'signout_date'     => 'required|date_format:d-m-Y',
+            'signin_time'      => 'required',
+            'break_time'       => 'nullable',
+            'signout_time'     => 'required',
+            'working_hours'    => 'required',
+            'signin_late_note' => 'nullable|string|max:500',
+        ]);
+
+        $employeeId = $request->emp_id;
+        $user = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+
+        try {
+            $attendanceData = [
+                'username'         => $user->user->username,
+                'emp_id'           => $validated['emp_id'],
+                'signin_date'      => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'),
+                'signout_date'     => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signout_date'])->format('Y-m-d'),
+                'signin_time'      => $validated['signin_time'],
+                'break_time'       => $validated['break_time'] ?? '00:00:00',  // Default to '00:00' if break_time is null
+                'signout_time'     => $validated['signout_time'],
+                'working_hours'    => $validated['working_hours'],
+                'signin_late_note' => $validated['signin_late_note'] ?? null, // Null if not provided
+                'signout_late_note'=> $validated['signin_late_note'] ?? null, // Same logic for signout_late_note
+                'status'           => 'mark-out',
+                'punchin_type'     => 'custom',
+                'punchout_type'    => 'custom',
+                'custom_status'    => '1',
+                'ipaddress'        => $request->ip()
+            ];
+
+            // Check if an attendance record for this employee already exists for the given signin_date
+            Attendance::updateOrCreate(
+                [
+                    'emp_id'      => $validated['emp_id'],
+                    'signin_date' => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'), // Make sure to format dates as Y-m-d
+                ],
+                $attendanceData // If it exists, it will be updated; if not, it will be created
+            );
+
+            return response()->json(['status' => 'success', 'message' => 'Full day attendance entry saved successfully.']);
+        } catch (\Exception $e) {
+            // Log the error message for debugging
+            \Log::error('Error in storing full day entry: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
+        }
+    }
+
+    public function getIncompleteWorkingHours(){
+        $data['meta_title'] = 'Incomplete Working Hours';
+
+        $data['years'] = Attendance::selectRaw('YEAR(signin_date) as year')
+        ->distinct()
+        ->orderByDesc('year')
+        ->pluck('year');
+
+        // Get distinct months with month number and name (optional)
+        $data['months'] = Attendance::selectRaw('MONTH(signin_date) as month, MONTHNAME(signin_date) as month_name')
+        ->distinct()
+        ->orderBy('month')
+        ->get();
+
+        $data['pending_approvels'] = Attendance::where('is_incomplete', 1)
+        ->where('incomplete_approved', 0)
+        ->with('employee') // optional: if you need employee details
+        ->orderBy('signin_date', 'desc')
+        ->get();
+
+        return view('attendance.incomplete_working_hours', $data);
+    }
+
+    public function getIncompleteWorkingHoursReport(Request $request){
+
+        $year = $request->input('year');
+        $month = $request->input('month');
+
+        // Get filtered attendance records
+        $data['attendances'] = Attendance::whereYear('signin_date', $year)
+        ->whereMonth('signin_date', $month)
+        ->where('working_hours', '<', '08:00:00')
+        ->with('employee')
+        ->orderBy('signin_date', 'DESC')
+        ->get();
+
+        // Return a rendered Blade partial as HTML
+        $html = view('attendance.incomplete_report_table',$data)->render();
+
+        return response()->json([
+            'success' => true,
+            'html'    => $html,
+        ]);
+    }
+
+    public function approveIncompleteAttendance($id){
+
+    $attendance = Attendance::findOrFail($id);
+
+        if ($attendance->is_incomplete && !$attendance->incomplete_approved) {
+            $attendance->incomplete_approved = 1;
+            $attendance->incomplete_approved_by = Auth::id();
+            $attendance->incomplete_approved_at = now();
+            $attendance->save();
+
+            return redirect()->back()->with('success', 'Attendance approved successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Invalid or already approved record.');
+    }
 }

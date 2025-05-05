@@ -17,6 +17,7 @@ use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException as ValidationValidationException;
 
 class UserController extends Controller
 {
@@ -128,6 +129,7 @@ class UserController extends Controller
                 'bank_branch' => !empty($request->bank_branch) ? $request->bank_branch : null,
                 'beneficiary_name' => !empty($request->beneficiary_name) ? $request->beneficiary_name : null,
                 'account_number' => !empty($request->account_number) ? $request->account_number : null,
+                'ifsc' => !empty($request->ifsc) ? $request->ifsc : null,
             ]);
 
 
@@ -264,6 +266,7 @@ class UserController extends Controller
             'bank_branch' => !empty($request->bank_branch) ? $request->bank_branch : null,
             'beneficiary_name' => !empty($request->beneficiary_name) ? $request->beneficiary_name : null,
             'account_number' => !empty($request->account_number) ? $request->account_number : null,
+            'ifsc'  => !empty($request->ifsc) ? $request->ifsc : null,
         ]);
         Cache::forget('users');
         return redirect()->route('users.edit', $user->id)->with('success', 'User details updated successfully!');
@@ -368,7 +371,7 @@ public function storeOrUpdate(Request $request, $id = null)
             return $value === '' ? null : $value;
         }, $request->all()));
 
-        
+
         $validatedData = $request->validate([
             'employeeID' => [
                 'required',
@@ -401,7 +404,7 @@ public function storeOrUpdate(Request $request, $id = null)
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        
+
 
         $profileImagePath = null;
 
@@ -455,9 +458,91 @@ public function storeOrUpdate(Request $request, $id = null)
         $message = $employee->wasRecentlyCreated ? 'Employee created successfully!' : 'Employee updated successfully!';
         return redirect()->back()->with('success', $message);
 
-    } catch (ValidationException $e) {
+    } catch (ValidationValidationException $e) {
         return redirect()->back()->withErrors($e->errors())->withInput();
     }
+}
+
+public function lockProfile($id)
+{
+    $user = User::find($id);
+
+    Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+
+    return view('auth.lock',compact('user'));
+}
+
+public function change_password(Request $request)
+{
+
+    $user = Auth::user();
+    // Update new password
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    return redirect()->back()->with('success', 'Password changed successfully.');
+}
+
+public function checkOldPassword(Request $request)
+{
+    $request->validate([
+        'old_password' => ['required'],
+    ]);
+
+    $user = Auth::user();
+
+    if (Hash::check($request->old_password, $user->password)) {
+        return response()->json(['success' => true]);
+    } else {
+        return response()->json(['success' => false]);
+    }
+}
+
+public function assign_open_work(Request $request)
+{
+
+     if ($request->ajax()) {
+
+        $users = User::with('employee')->get()
+        ->map(function ($users) {
+            return [
+                'id' => $users->id,
+                'picture' => $users->employee ? $users->employee->profile_image : '',
+                'full_name' => $users->employee ? $users->employee->full_name : 'N/A',
+                'open_work_status' => $users->employee ? $users->employee->open_work_status : 0,
+                'updated_date' => $users->employee ? date('d-m-Y', strtotime($users->employee->open_work_setdate)) : 'N/A'
+            ];
+        });
+
+        return response()->json([
+            'data' => $users
+        ]);
+
+    }
+
+    //
+    $data['meta_title'] = 'Assign open work';
+    return view('settings.assign_open_work', $data);
+}
+
+public function open_work_assign(Request $request)
+{
+
+
+    $employee = Employee::where('user_id',$request->id)->first();
+
+    if (!$employee) {
+        return response()->json(['message' => 'Employee not found.'], 404);
+    }
+
+    if($request->status == 'true'){ $status = 1;}else{ $status = 0;}
+    $employee->open_work_status = $status;
+    $employee->open_work_setdate = date('Y-m-d');
+    $employee->save();
+
+    return response()->json(['message' => 'Status updated successfully.']);
 }
 
 }

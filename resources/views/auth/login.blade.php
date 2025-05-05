@@ -6,66 +6,38 @@
     <div class="authentication-inner row">
       <!-- /Left Text -->
       <div class="d-none d-lg-flex col-lg-7 p-0">
-        <div class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center">
-          <img
-            src="../../assets/img/illustrations/auth-login-illustration-light.png"
-            alt="auth-login-cover"
-            class="img-fluid my-5 auth-illustration"
-            data-app-light-img="illustrations/auth-login-illustration-light.png"
-            data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
-
-          {{-- <img
-            src="../../assets/img/illustrations/bg-shape-image-light.png"
-            alt="auth-login-cover"
-            class="platform-bg"
-            data-app-light-img="illustrations/bg-shape-image-light.png"
-            data-app-dark-img="illustrations/bg-shape-image-dark.png" /> --}}
+            <div class="auth-cover-bg d-flex justify-content-center align-items-center">
+            <img
+                src="../assets/img/icons/logo-white.png"
+                alt="auth-login-cover"
+                class="img-fluid my-5 auth-illustration w-75"
+                data-app-light-img="illustrations/auth-login-illustration-light.png"
+                data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
+            </div>
         </div>
-      </div>
       <!-- /Left Text -->
 
       <!-- Login -->
-      <div class="d-flex col-12 col-lg-5 align-items-center p-sm-5 p-4">
+      <div class="d-flex col-12 col-lg-5 align-items-center bg-login p-sm-5 p-4">
         <div class="w-px-400 mx-auto">
-          <!-- Logo -->
-          <div class="app-brand mb-4">
-            <a href="index.html" class="app-brand-link gap-2">
-              <span class="app-brand-logo demo">
-                <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z"
-                    fill="#7367F0" />
-                  <path
-                    opacity="0.06"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z"
-                    fill="#161616" />
-                  <path
-                    opacity="0.06"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z"
-                    fill="#161616" />
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z"
-                    fill="#7367F0" />
-                </svg>
-              </span>
-            </a>
-          </div>
-          <!-- /Logo -->
-          <h3 class="mb-1 fw-bold">{{ __('en.welcome') }} </h3>
-          <p class="mb-4">{{ __('en.slogan') }}</p> 
+
+              <div id="timedate" class="mb-5">
+                <a id="h">12</a> :
+                <a id="m">00</a> :
+                <a id="s">00</a>
+                <a id="mi"></a><br />
+                <a id="mon" style="font-size: 20px;">January</a>
+                <a id="d" style="font-size: 20px;">1</a>,
+                <a id="y" style="font-size: 20px;">0</a>
+                
+              </div>
+          <h3 class="mb-1 text-primary fw-bold">{{ __('en.welcome') }} </h3>
+          <!-- <p class="mb-4">{{ __('en.slogan') }}</p>  -->
           <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}">
             @csrf
             <div class="mb-3">
               <label for="email" class="form-label">{{ __('en.email')}}</label>
-              <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="{{ __('en.email_placeholder')}}" autofocus tabindex="1" >
+              <input id="email" type="email" class="form-control h-px-50 @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="{{ __('en.email_placeholder')}}" autofocus tabindex="1" >
                 @error('email')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -76,13 +48,15 @@
               <div class="d-flex justify-content-between">
                 <label class="form-label" for="password">{{ __('en.password')}} </label>
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" tabindex="3">
-                    <small>{{ __('en.forgot_password')}}</small>
+
+                    <a class="text-primary" href="mailto:hr@mail.allianzegroup.com?subject={{ 'Please Reset My Password' }}&body={{ urlencode('Reason:') }}">
+                        <small>{{ __('en.forgot_password')}}</small>
                     </a>
+
                 @endif
               </div>
               <div class="input-group input-group-merge">
-                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required  placeholder="{{ __('en.password_placeholder')}}"  aria-describedby="password" autocomplete="current-password" tabindex="2">
+                <input id="password" type="password" class="form-control h-px-50 @error('password') is-invalid @enderror" name="password" required  placeholder="{{ __('en.password_placeholder')}}"  aria-describedby="password" autocomplete="current-password" tabindex="2">
                 @error('password')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -92,7 +66,7 @@
               </div>
             </div>
             <div class="mb-3">
-              <div class="form-check"> 
+              <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} tabindex="4">
                 <label class="form-check-label" for="remember">
                     {{ __('en.remember_me') }}
@@ -104,7 +78,7 @@
 
           <p class="text-center">
             <span>New on our platform?</span>
-            <a href="{{ route('register') }}" tabindex="6">
+            <a class="text-primary" href="{{ route('register') }}" tabindex="6">
               <span>{{ __('en.register')}}</span>
             </a>
           </p>
@@ -114,5 +88,47 @@
       <!-- /Login -->
     </div>
   </div>
-  
+
 @endsection
+
+@push('js')
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  initClock();
+});
+
+function updateClock() {
+  var now = new Date();
+  var sec = now.getSeconds(),
+      min = now.getMinutes(),
+      hou = now.getHours(),
+      mo = now.getMonth(),
+      dy = now.getDate(),
+      yr = now.getFullYear();
+
+  var months = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+  
+  // Add pad function to Number prototype if not already present
+  Number.prototype.pad = function(size) {
+    var s = String(this);
+    while (s.length < size) s = "0" + s;
+    return s;
+  };
+
+  var tags = ["mon", "d", "y", "h", "m", "s"];
+  var corr = [months[mo], dy, yr, hou.pad(2), min.pad(2), sec.pad(2)];
+
+  for (var i = 0; i < tags.length; i++) {
+    var el = document.getElementById(tags[i]);
+    if (el) el.textContent = corr[i];
+  }
+}
+
+function initClock() {
+  updateClock();
+  setInterval(updateClock, 1000); // Use function reference, not string
+}
+  
+</script>
+@endpush

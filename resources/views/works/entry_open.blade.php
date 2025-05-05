@@ -30,12 +30,12 @@
               <div class="col-lg-7 mb-4">
 
                 <!-- Attendance Marking Card -->
-                <div class="card bg-primary text-white mb-4">
+                <div class="card mb-4">
                     <div class="card-header">
                         <div class="d-flex justify-content-between">
-                            <small class="d-block mb-1 text-white"> {{ ucfirst(Auth::user()->username ?? 'N/A') }} </small>
+                            <small class="d-block mb-1"> {{ ucfirst(Auth::user()->username ?? 'N/A') }} </small>
                         </div>
-                        <h4 class="card-title mb-1 text-white"> <i class="ti ti-clock ti-sm"></i> {{ $meta_title }}</h4>
+                        <h4 class="card-title mb-1"> <i class="ti ti-clock ti-sm"></i> {{ $meta_title }}</h4>
                     </div>
                     <div class="card-body">
                       <div class="row">

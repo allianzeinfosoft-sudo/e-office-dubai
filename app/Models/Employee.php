@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +14,7 @@ class Employee extends Model
         'user_id','employeeID','full_name','phonenumber','reporting_to','personal_email','gender',
         'blood_group','qualification','esi_no','aadhaar','pf_no','electoral_id','pan','dob','group','address','profile_image',
         'mobile_number','mobile_relationship','landline','landline_relationship','department_id','designation_id','join_date','shift_id',
-        'role','status','login_limited_time','appointment_status','team_lead','bank_name','bank_branch','beneficiary_name',
+        'role','status','login_limited_time','open_work_status','open_work_setdate','appointment_status','team_lead','bank_name','bank_branch','beneficiary_name','ifsc',
         'account_number'
 
     ];
@@ -34,6 +35,10 @@ class Employee extends Model
     {
         return $this->belongsTo(Workshift::class, 'shift_id','id');
     }
+    public function login_limited_time_info()
+    {
+        return $this->belongsTo(LoginLimitedTime::class,'login_limited_time','id');
+    }
     public function userStatus()
     {
         return $this->belongsTo(UserStatus::class, 'status','id');
@@ -41,6 +46,11 @@ class Employee extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function getAgeAttribute()
+    {
+        return Carbon::parse($this->dob)->age;
     }
 
 }

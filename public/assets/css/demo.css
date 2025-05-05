@@ -173,5 +173,19 @@
   }
 
 
+  /* Highlight the entire row on hover */
+.hover_effect tbody tr:hover {
+    background-color: #f0f8ff; /* Light blue; change to preferred color */
+    cursor: pointer;
+}
+
+/* Optional: subtle transition for smooth effect */
+.hover_effect tbody tr {
+    transition: background-color 0.2s ease-in-out;
+}
+
+.datatable_btn:hover {
+    background-color: #e0e0e0; /* Light grey */
+}
 
 

@@ -18,4 +18,10 @@ class Designation extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function branch()
+    {
+        return $this->department?->branch;
+    }
+
 }

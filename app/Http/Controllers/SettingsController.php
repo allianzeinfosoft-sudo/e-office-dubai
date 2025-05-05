@@ -2,8 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
+use App\Models\LoginLimitedTime;
 use App\Models\Workshift;
+use App\Models\Project;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SettingsController extends Controller
 {
@@ -15,6 +22,7 @@ class SettingsController extends Controller
     public function getWorkShift()
     {
         $workshifts = Workshift::select(
+                    'id',
                     'shift_id',
                     'shift_start_time',
                     'shift_end_time',
@@ -37,6 +45,8 @@ class SettingsController extends Controller
 
         $response = response()->json(['data' => $workshifts]);
         $json_data = json_decode($response->getContent(), true)['data'];
+
+
         return json_encode(['data' => $json_data]);
     }
 
@@ -48,9 +58,70 @@ class SettingsController extends Controller
         return back()->with('success', 'Work shift created successfully!');
     }
 
-    public function delete_work_shift()
+    public function delete_work_shift($id)
     {
 
+        $workshift = Workshift::find($id);
+        $workshift->delete();
+        return response()->json(['message' => 'Workshift deleted successfully']);
+    }
+
+    public function edit_work_shift($targetId): JsonResponse
+    {
+
+        $workshift = Workshift::find($targetId);
+        $data['workshift'] = $workshift;
+        return response()->json($data);
+
+    }
+
+
+    public function userShifts(Request $request)
+    {
+
+        if ($request->ajax()) {
+
+            $usersShifts = Employee::with('workshift','user','login_limited_time_info')->get()
+            ->map(function ($usersShifts) {
+                return [
+                    'user_id' => $usersShifts->user_id,
+                    'picture' => $usersShifts->profile_image ? $usersShifts->profile_image : '',
+                    'name' => $usersShifts->full_name ? $usersShifts->full_name : '',
+                    'user_name' => $usersShifts->user ? $usersShifts->user->username : '',
+                    'shift_start_time' => $usersShifts->workshift ? $usersShifts->workshift->shift_start_time : '',
+                    'shift_end_time' => $usersShifts->workshift->shift_end_time ? $usersShifts->workshift->shift_end_time : '',
+                    'wildcard_entry' => $usersShifts->login_limited_time ? $usersShifts->login_limited_time_info->limited_time : '',
+                ];
+            });
+
+            return response()->json([
+                'data' => $usersShifts
+            ]);
+
+        }
+
+        $data['meta_title'] = 'Users Work Shifts';
+        return view('settings.change_shift_time', $data);
+    }
+
+    public function store_login_limited_time(Request $request)
+    {
+
+        LoginLimitedTime::create(['limited_time'=>$request->login_limited_time]);
+        return back()->with('success', 'Login Limited Time created successfully!');
+    }
+
+    public function update_user_shift(Request $request)
+    {
+        $updated = Employee::where('user_id', $request->user)
+        ->update([
+            'shift_id' => $request->shift,
+            'login_limited_time' => $request->login_limited_time
+        ]);
+
+        if ($updated) {
+            return back()->with('success', 'Shift time updated successfully.');
+        }
     }
 
     public function list_user_status()
@@ -72,4 +143,88 @@ class SettingsController extends Controller
      {
 
      }
+
+     /* Custom Mark Out */
+    public function customMakeOut(){
+        $data['meta_title'] = 'Custom Mark Out';
+        return view('settings.custom-mark-out', $data);
+    }
+
+    public function customAttendanceEntry(){
+        $data['meta_title'] = 'Custom Attendance Entry';
+        $data['employees'] = Employee::get();
+        return view('settings.customAttendanceEntry', $data);
+    }
+
+    public function fullDayAttendanceEntry(){
+        $data['meta_title'] = 'Full Day Attendance Entry';
+        $data['employees'] = Employee::get();
+        return view('settings.fullDayAttendanceEntry', $data);
+    }
+
+    public function customWorkReportEntry(){
+        $data['meta_title'] = 'Custom Work Report Entry';
+        $data['employees'] = Employee::get();
+        $data['projects'] = Project::all();
+        return view('settings.customWorkReportEntry', $data);
+    }
+
+    public function editDailyAttendance(){
+        $data['meta_title'] = 'Edit Daily Attendance';
+        $data['employees'] = Employee::get();
+        return view('settings.editDailyAttendance', $data);
+    }
+
+    public function getAttendanceData(Request $request){
+        $signin_date = Carbon::createFromFormat('d-m-Y', $request->date)->format('Y-m-d');
+        $emp_id = $request->emp_id;
+        $data = Attendance::where('emp_id', $emp_id)
+                  ->where('signin_date', $signin_date)
+                  ->first();
+
+        return response()->json([
+            'success' => true,
+            'data' =>$data
+        ]);
+    }
+
+    public function updateAttendance(Request $request, $id){
+
+        $validated = $request->validate([
+            'emp_id'         => 'required',
+            'signin_date'    => 'required',
+            'signin_time'    => 'required',
+            'break_time'     => 'nullable',
+            'signout_time'   => 'required',
+            'working_hours'  => 'required',
+        ]);
+
+        try {
+            $signinDate = Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d');
+
+            // Find the existing attendance by ID
+            $attendance = Attendance::find($id);
+
+            if (!$attendance) {
+                return response()->json(['status' => 'error', 'message' => 'Attendance record not found.']);
+            }
+
+            // Update attendance fields
+            $attendance->update([
+                'emp_id'        => $validated['emp_id'],   // Don't forget to update emp_id if needed
+                'signin_date'   => $signinDate,
+                'signin_time'   => $validated['signin_time'],
+                'break_time'    => $validated['break_time'] ?? '00:00',
+                'signout_time'  => $validated['signout_time'],
+                'working_hours' => $validated['working_hours'],
+            ]);
+
+            return response()->json(['status' => 'success', 'message' => 'Attendance updated successfully.']);
+
+        } catch (\Exception $e) {
+            Log::error('Error updating attendance: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
+        }
+    }
+
 }

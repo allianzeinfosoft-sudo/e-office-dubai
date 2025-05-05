@@ -17,7 +17,10 @@
 
         <!-- Digital Clock -->
         <li class="nav-item me-1 me-xl-0">
-          <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px"> <span id="clock" class="text-primary"><i class="fa fa-clock fis rounded-circle me-1"></i> 00:00:00 </span> </a>
+          <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px">
+            <span id="clock" class="text-primary d-flex align-items-center gap-2">
+              <i class="ti ti-clock fis rounded-circle fs-4"></i> 00:00:00 </span> 
+            </a>
         </li>
         <!-- / Digital Clock -->
 
@@ -66,17 +69,17 @@
                     <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                          <i class="ti ti-calendar fs-4"></i>
+                          <i class="ti ti-clock fs-4"></i>
                         </span>
-                        <a href="app-calendar.html" class="stretched-link">Calendar</a>
-                        <small class="text-muted mb-0">Appointments</small>
+                        <a href="{{ route('custom-attendance.index') }}" class="stretched-link">Approvel</a>
+                        <small class="text-muted mb-0">Custom Attendance</small>
                       </div>
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                          <i class="ti ti-file-invoice fs-4"></i>
+                          <i class="ti ti-unlink fs-4"></i>
                         </span>
-                        <a href="app-invoice-list.html" class="stretched-link">Invoice App</a>
-                        <small class="text-muted mb-0">Manage Accounts</small>
+                        <a href="{{ route('attendance.incomplete-working-hours') }}" class="stretched-link">Incomplete</a>
+                        <small class="text-muted mb-0">Working Hours</small>
                       </div>
                     </div>
                     <div class="row row-bordered overflow-visible g-0">
@@ -401,12 +404,12 @@
                       <div class="d-flex">
                         <div class="flex-shrink-0 me-3">
                           <div class="avatar avatar-online">
-                          <img src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/1.png') }}" 
-                          alt="Profile Image" 
+                          <img src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/1.png') }}"
+                          alt="Profile Image"
                           class="h-auto rounded-circle" />
                           </div>
                         </div>
-                        
+
                         <div class="flex-grow-1">
                           <span class="fw-semibold d-block">{{ ucfirst(Auth::user()->employee->full_name ?? Auth::user()->username) }}</span>
                           <small class="text-muted">{{ ucfirst(Auth::user()->employee->role ?? Auth::user()->role) }} </small>
@@ -419,30 +422,17 @@
                   </li>
                   <li><a class="dropdown-item" href="{{ route('user.profile', Auth::user()->id); }}"><i class="ti ti-user-check me-2 ti-sm"></i><span class="align-middle">My Profile </span></a></li>
                   <li><a class="dropdown-item" href="{{ route('users.profile-edit', Auth::user()->id); }}"> <i class="ti ti-edit me-2 ti-sm"></i> <span class="align-middle">Edit Profile</span></a></li>
-                  <li>
-                    <a class="dropdown-item" href="pages-account-settings-account.html">
-                      <i class="ti ti-settings me-2 ti-sm"></i>
-                      <span class="align-middle">Settings</span>
-                    </a>
-                  </li>
+
+                  <li><a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#changePasswordModal" > <i class="ti ti-lock me-2 ti-sm"></i> <span class="align-middle">Change Password</span></a></li>
+
                   <li>
                     <div class="dropdown-divider"></div>
                   </li>
-                  <li>
-                    <a class="dropdown-item" href="pages-help-center-landing.html">
-                      <i class="ti ti-lifebuoy me-2 ti-sm"></i>
-                      <span class="align-middle">Help</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="pages-faq.html">
-                      <i class="ti ti-help me-2 ti-sm"></i>
-                      <span class="align-middle">FAQ</span>
-                    </a>
-                  </li>
-                  <li>
-                    <div class="dropdown-divider"></div>
-                  </li>
+
+                  <li><a class="dropdown-item" href="{{ route('user.lock_profile', Auth::user()->id); }}">
+                    <i class="ti ti-user-check me-2 ti-sm"></i><span class="align-middle">Lock Profile </span></a>
+                </li>
+
                   <li>
                     <a class="dropdown-item"  href="{{ route('logout') }}" onclick="event.preventDefault();
                                   document.getElementById('logout-form').submit();" target="_blank">
@@ -469,6 +459,70 @@
             <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
           </div>
         </nav>
+
+
+
+
+
+        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
+              <div class="modal-content p-3 p-md-5">
+                <div class="modal-body">
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <div class="text-center mb-4">
+                    <h4 class="mb-2">Change Password</h4>
+
+                    <div class="avatar avatar-online mx-auto d-flex">
+                        <img  src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/1.png') }}"
+                             alt
+                             class=" rounded-circle" />
+                    </div>
+
+                    <h4 class="text-muted">{{ Auth::user()->employee->full_name ?? ''  }}</h4>
+                    <p class="text-muted">{{ Auth::user()->employee->designation->designation ?? '' }}</p>
+                  </div>
+                  <form id="changepassword-form" action="{{ route('change_password') }}" method="post" class="row g-3" >
+                    @csrf
+                    <div class="col-12">
+                      <label class="form-label w-100" for="old_password">Old Password</label>
+                      <div class="input-group input-group-merge">
+                        <input id="old_password" name="old_password" class="form-control" type="password" placeholder="Current Password"
+                          aria-describedby="old_password" />
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label w-100" for="modalAddCard">New Password</label>
+                        <div class="input-group input-group-merge">
+                          <input id="new_password" name="new_password" class="form-control" type="password" placeholder="New Password" aria-describedby="new_password" />
+                        </div>
+                      </div>
+
+
+                      <div class="col-12">
+                        <label class="form-label w-100" for="confirm_password">Retype New Password</label>
+                        <div class="input-group input-group-merge">
+                          <input id="confirm_password" name="confirm_password" class="form-control" type="password" placeholder="Confirm Password"
+                            aria-describedby="confirm_password" />
+                        </div>
+                      </div>
+
+
+
+                    <div class="col-12 text-center">
+                      <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>
+                      <button  type="reset" class="btn btn-label-secondary btn-reset"  data-bs-dismiss="modal" aria-label="Close">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
 
         @push('js')
         <script>
@@ -502,5 +556,84 @@
             });
 
          });
+
+// change pasword validation
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById('changepassword-form');
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault(); // Always prevent default first
+
+        // Get values
+        const oldpassword = document.getElementById('old_password').value.trim();
+        const newpassword = document.getElementById('new_password').value.trim();
+        const confirm_password = document.getElementById('confirm_password').value.trim();
+
+        let errors = [];
+
+        // === Validation ===
+        if (!oldpassword) {
+            errors.push("Old password is required.");
+        }
+
+        if (!newpassword) {
+            errors.push("New password is required.");
+        }
+
+        if (!confirm_password) {
+            errors.push("Confirm password is required.");
+        }
+
+        if (newpassword !== confirm_password) {
+            errors.push("Confirm password is not matching.");
+        }
+
+        // === Show errors or proceed ===
+        let errorBox = document.getElementById('formErrors');
+        if (!errorBox) {
+            errorBox = document.createElement('div');
+            errorBox.id = 'formErrors';
+            errorBox.className = 'alert alert-danger mt-3';
+            form.prepend(errorBox);
+        }
+
+        if (errors.length > 0) {
+            errorBox.innerHTML = '<ul class="mb-0">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            return; // Stop execution if there are validation errors
+        }
+
+        try {
+            // === Check old password with server ===
+            const response = await fetch('{{ route('check_old_password') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ old_password: oldpassword })
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                errorBox.innerHTML = '<ul class="mb-0"><li>Old password is incorrect.</li></ul>';
+                return; // Stop execution if old password doesn't match
+            }
+
+            // No errors, submit the form
+            errorBox.innerHTML = ''; // Clear errors
+            form.submit();
+        } catch (error) {
+            console.error('Error checking old password:', error);
+            errorBox.innerHTML = '<ul class="mb-0"><li>Something went wrong. Please try again.</li></ul>';
+        }
+    });
+});
+
+
+
+
+
     </script>
 @endpush

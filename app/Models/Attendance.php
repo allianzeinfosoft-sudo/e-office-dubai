@@ -28,5 +28,14 @@ class Attendance extends Model
         'actual_signout_date',
         'pending',
         'ipaddress',
+        'is_incomplete',
+        'incomplete_approved',
+        'incomplete_approved_by',
+        'incomplete_approved_at'
     ];
+
+
+    public function employee() {
+        return $this->belongsTo(Employee::class, 'emp_id', 'user_id');
+    }
 }

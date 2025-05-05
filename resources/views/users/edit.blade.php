@@ -263,7 +263,7 @@
                     <div class="col-md-4 mb-3">
                         <label for="login_limited_time" class="form-label">Login Limited Time:</label>
                         <div class="input-group input-group-merge">
-                          <input type="time" class="form-control" id="login_limited_time" name="login_limited_time" value="{{ old('login_limited_time', $user->employee->login_limited_time) ?? '' }}" placeholder="Enter login limited time">
+                          <input type="time" class="form-control" id="login_limited_time" step="1" name="login_limited_time" value="{{ old('login_limited_time', $user->employee->login_limited_time) ?? '' }}" placeholder="Enter login limited time">
                         </div>
                       </div>
 
@@ -344,6 +344,12 @@
                         <input type="text" class="form-control" name="account_number" id="account_number" value="{{ old('account_number', $user->employee->account_number) ?? '' }}" placeholder="Enter account number"/>
                       </div>
                     </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="ifsc" class="form-label">IFSC:</label>
+                        <div class="input-group input-group-merge">
+                          <input type="text" class="form-control" name="ifsc" id="ifsc" value="{{ old('ifsc', $user->employee->ifsc) ?? '' }}" placeholder="Enter IFSC"/>
+                        </div>
+                      </div>
                   </div>
                 </div>
               </div>

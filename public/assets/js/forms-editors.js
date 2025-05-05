@@ -15,23 +15,7 @@
     ['clean']
   ];
 
-    var quill = new Quill('#leave-editor', {
-        theme: 'snow',
-        placeholder: 'Type your reason here...',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, false] }],
-                ['bold', 'italic', 'underline'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['link'],
-                ['clean']
-            ]
-        }
-    });
 
-        // Capture Quill Content before Form Submission
-        document.getElementById('leaveForm').addEventListener('submit', function () {
-        document.getElementById('reason').value = quill.root.innerHTML;
-    });
+
 
 })();

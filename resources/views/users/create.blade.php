@@ -251,13 +251,13 @@
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="shift_id" class="form-label">Shift No:</label>
-                      <div class="input-group input-group-merge">
+
                         <select id="shift_id" name="shift_id" class="select2 form-select form-select-lg" data-allow-clear="true">
                          @foreach ($work_shifts as $work_shift)
                             <option selected value="{{  $work_shift->id ?? '' }}" {{ (old('shift_id' == $work_shift->id ) ? 'selected' : '' ) }}>{{  $work_shift->shift_id ?? '' }}</option>
                          @endforeach
                         </select>
-                      </div>
+
                     </div>
 
                     <div class="col-md-4 mb-3">
@@ -346,6 +346,12 @@
                         <input type="text" class="form-control" name="account_number" id="account_number" value="{{ old('account_number') }}" placeholder="Enter account number"/>
                       </div>
                     </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="ifsc" class="form-label">IFSC:</label>
+                        <div class="input-group input-group-merge">
+                          <input type="text" class="form-control" name="ifsc" id="ifsc" value="{{ old('ifsc') }}" placeholder="Enter IFSC"/>
+                        </div>
+                      </div>
                   </div>
                 </div>
               </div>
