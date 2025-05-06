@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\Attendance;
+use App\Models\Holiday;
+use App\Models\Leave;
 use App\Helpers\CustomHelper;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 
 class ReportController extends Controller
@@ -100,37 +104,84 @@ class ReportController extends Controller
     }
 
     public function monthlyOverviewReport(Request $request){
-        
-        $users = User::all(); // or filtered list of users
+        $month = $request->month ?? now()->format('m');
+        $year = $request->year ?? now()->format('Y');
 
-        $data = $users->map(function ($user) {
-            $attendances = Attendance::where('emp_id', $user->id)
-                ->whereMonth('signin_date', now()->month)
-                ->whereYear('signin_date', now()->year)
-                ->get();
+        $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
-            $totalWorkingHours = $attendances->sum('working_hours');
-            $daysWorked = $attendances->count();
-            $avgWorkingHours = $daysWorked ? $totalWorkingHours / $daysWorked : 0;
-            $workingDaysInMonth = now()->daysInMonth;
+        $users = Employee::all();
 
-            $leaves = Leave::where('user_id', $user->id)
-                ->whereMonth('leave_from', now()->month)
-                ->whereYear('leave_from', now()->year)
-                ->count();
+        $data = [];
+        $minTotalHours = null;
 
-            return [
-                'name' => $user->name,
-                'month' => now()->format('F'),
-                'avg_working_hours' => round($avgWorkingHours, 2),
-                'total_working_hours' => round($totalWorkingHours, 2),
-                'mwh_miwh_ratio' => $workingDaysInMonth ? round($totalWorkingHours / $workingDaysInMonth, 2) : 0,
-                'days_worked' => $daysWorked,
-                'working_days' => $workingDaysInMonth,
-                'leaves' => $leaves
-            ];
+        // 1. Get all weekdays in the month
+        $allDates = CarbonPeriod::create($startDate, $endDate);
+        $weekdays = collect($allDates)->filter(function ($date) {
+            return !in_array($date->dayOfWeek, [0, 6]); // Exclude Sunday (0) and Saturday (6)
         });
 
+        // 2. Get holidays in the month
+        $holidays = Holiday::whereBetween('date', [$startDate, $endDate])
+            ->pluck('date')
+            ->map(fn ($d) => Carbon::parse($d)->toDateString());
+
+        // 3. Calculate working days excluding holidays
+        $workingDays = $weekdays->filter(function ($date) use ($holidays) {
+            return !$holidays->contains($date->toDateString());
+        })->count();
+
+        foreach ($users as $index => $user) {
+            $attendances = Attendance::where('emp_id', $user->id)
+                ->whereBetween('signin_date', [$startDate, $endDate])
+                ->get();
+
+            $leaves = Leave::where('user_id', $user->id)
+                ->where(function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('leave_from', [$startDate, $endDate])
+                        ->orWhereBetween('leave_to', [$startDate, $endDate]);
+                })->count();
+
+            $totalHours = $attendances->sum(function ($a) {
+                return is_numeric($a->working_hours) ? (float) $a->working_hours : 0;
+            });
+
+            $daysWorked = $attendances->count();
+            $avgHours = $daysWorked > 0 ? $totalHours / $daysWorked : 0;
+
+            $minTotalHours = is_null($minTotalHours) ? $totalHours : min($minTotalHours, $totalHours);
+
+            $name = $user->full_name ?? 'NA';
+            $initials = collect(explode(' ', $name))
+                ->filter()
+                ->map(function ($word) {
+                    return isset($word[0]) ? strtoupper($word[0]) : '';
+                })
+                ->join('');
+
+            $initials = substr($initials, 0, 2);
+
+            if ($user && $user->profile_image) {
+                $profileImage = '<img src="' . asset('storage/' . $user->profile_image) . '" alt="Profile" width="40" height="40" class="rounded-circle">';
+            } else {
+                $profileImage = '<div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">' . $initials . '</div>';
+            }
+
+            $data[] = [
+                'index' => $index + 1,
+                'name' => $user->full_name,
+                'month' => $startDate->format('F Y'),
+                'avg_working_hours' => number_format($avgHours, 2),
+                'total_working_hours' => number_format($totalHours, 2),
+                'month_vs_min_hours' => ($workingDays * 8.00) . " / " . ($minTotalHours > 0 ? number_format($totalHours / $minTotalHours, 2) : 'N/A'),
+                'days_worked' => $daysWorked,
+                'working_days' => $workingDays,
+                'leaves' => $leaves,
+                'profile_image' => $profileImage,
+            ];
+        }
+
+        return response()->json(['data' => $data]);
     }
 
 }

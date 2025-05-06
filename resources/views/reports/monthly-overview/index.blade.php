@@ -2,7 +2,11 @@
 
 @section('css')
 <style>
-    
+    .dt-buttons{
+        float: left;
+        margin-top: 10px;
+        margin-left: 10px;
+    }
 </style>
 @stop
 
@@ -27,22 +31,25 @@
 
                             <div class="card card-bg">
                                 <div class="card-datatable">
-                                    <table class="datatables-basic datatables-working-hours-report table border-top table-stripedc table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Name</th>
-                                                <th>Month</th>
-                                                <th>Avg. Working Hours</th>
-                                                <th>Total Working Hours</th>
-                                                <th>Month Working Hours / Min Individual Working Hours</th>
-                                                <th>Days Worked</th>
-                                                <th>No. of Working Days</th>
-                                                <th>Leaves</th>
-                                            </tr>
-                                        </thead>
+                                    <div class="table-responsive">
 
-                                    </table>
+                                        <table class="datatables-basic datatables-working-hours-report table border-top table-stripedc table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Month</th>
+                                                    <th>Avg. Working Hours</th>
+                                                    <th>Total Working Hours</th>
+                                                    <th>Month Working Hours / Min Individual Working Hours</th>
+                                                    <th>Days Worked</th>
+                                                    <th>No. of Working Days</th>
+                                                    <th>Leaves</th>
+                                                </tr>
+                                            </thead>
+    
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -116,23 +123,69 @@
 <script>
     $(function () {
 
-        $('.datatables-working-hours-report').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '{{ route("report.data") }}',
-            columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                { data: 'name', name: 'name' },
-                { data: 'month', name: 'month' },
-                { data: 'avg_working_hours', name: 'avg_working_hours' },
-                { data: 'total_working_hours', name: 'total_working_hours' },
-                { data: 'mwh_miwh_ratio', name: 'mwh_miwh_ratio' },
-                { data: 'days_worked', name: 'days_worked' },
-                { data: 'working_days', name: 'working_days' },
-                { data: 'leaves', name: 'leaves' }
-            ]
-        });
+        let workingHoursTable = $('.datatables-working-hours-report');
+
+        if (workingHoursTable.length) {
+            workingHoursTable.DataTable({
+                dom: 'Bfrtip', // Show buttons
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        title: 'Monthly Working Hours Report',
+                        exportOptions: {
+                            columns: [1, 2, 3, 4, 5, 6, 7, 8] // Exclude profile image (index 0)
+                        }
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'Monthly Working Hours Report',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        exportOptions: {
+                            columns: [1, 2, 3, 4, 5, 6, 7, 8] // Exclude profile image (index 0)
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        title: 'Monthly Working Hours Report',
+                        exportOptions: {
+                            columns: [1, 2, 3, 4, 5, 6, 7, 8] // Exclude profile image (index 0)
+                        }
+                    }
+                ],
+                ajax: {
+                    type: "GET",
+                    url: "{{ route('reports.user-monthly-overview-data') }}",
+                    dataType: "json",
+                    data: function (d) {
+                        d.month = $('#month').val();
+                        d.year = $('#year').val();
+                    },
+                    dataSrc: "data"
+                },
+                processing: true,
+                columns: [
+                    { data: 'profile_image', title: '#' },
+                    { data: 'name', title: 'Name' },
+                    { data: 'month', title: 'Month' },
+                    { data: 'avg_working_hours', title: 'Avg. Working Hours' },
+                    { data: 'total_working_hours', title: 'Total Working Hours' },
+                    { data: 'month_vs_min_hours', title: 'Month Working Hours / Min Individual Working Hours' },
+                    { data: 'days_worked', title: 'Days Worked' },
+                    { data: 'working_days', title: 'No. of Working Days' },
+                    { data: 'leaves', title: 'Leaves' }
+                ]
+            });
+
+            // Reload table on form submit
+            $('#filter-form').on('submit', function (e) {
+                e.preventDefault();
+                workingHoursTable.DataTable().ajax.reload();
+            });
+        }
 
     });
+
+    
 </script>
 @endpush
