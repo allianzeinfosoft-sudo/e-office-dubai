@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Helpers\CustomHelper;
+use Carbon\Carbon;
 
 
 class ReportController extends Controller
@@ -92,10 +93,44 @@ class ReportController extends Controller
     }
     
     /* */
-    public function monthlyOvenerview(Request $request) {
+    public function monthlyOverview() {
         $data['meta_title'] = 'Monthly Overview';
         $data['employees']    = Employee::all();
         return view('reports.monthly-overview.index', $data);
+    }
+
+    public function monthlyOverviewReport(Request $request){
+        
+        $users = User::all(); // or filtered list of users
+
+        $data = $users->map(function ($user) {
+            $attendances = Attendance::where('emp_id', $user->id)
+                ->whereMonth('signin_date', now()->month)
+                ->whereYear('signin_date', now()->year)
+                ->get();
+
+            $totalWorkingHours = $attendances->sum('working_hours');
+            $daysWorked = $attendances->count();
+            $avgWorkingHours = $daysWorked ? $totalWorkingHours / $daysWorked : 0;
+            $workingDaysInMonth = now()->daysInMonth;
+
+            $leaves = Leave::where('user_id', $user->id)
+                ->whereMonth('leave_from', now()->month)
+                ->whereYear('leave_from', now()->year)
+                ->count();
+
+            return [
+                'name' => $user->name,
+                'month' => now()->format('F'),
+                'avg_working_hours' => round($avgWorkingHours, 2),
+                'total_working_hours' => round($totalWorkingHours, 2),
+                'mwh_miwh_ratio' => $workingDaysInMonth ? round($totalWorkingHours / $workingDaysInMonth, 2) : 0,
+                'days_worked' => $daysWorked,
+                'working_days' => $workingDaysInMonth,
+                'leaves' => $leaves
+            ];
+        });
+
     }
 
 }
