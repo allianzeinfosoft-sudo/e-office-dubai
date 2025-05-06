@@ -122,9 +122,7 @@ class ReportController extends Controller
         });
 
         // 2. Get holidays in the month
-        $holidays = Holiday::whereBetween('date', [$startDate, $endDate])
-            ->pluck('date')
-            ->map(fn ($d) => Carbon::parse($d)->toDateString());
+        $holidays = Holiday::whereBetween('date', [$startDate, $endDate])->pluck('date')->map(fn ($d) => Carbon::parse($d)->toDateString());
 
         // 3. Calculate working days excluding holidays
         $workingDays = $weekdays->filter(function ($date) use ($holidays) {
@@ -178,6 +176,58 @@ class ReportController extends Controller
                 'working_days' => $workingDays,
                 'leaves' => $leaves,
                 'profile_image' => $profileImage,
+            ];
+        }
+
+        return response()->json(['data' => $data]);
+    }
+
+    public function dailyAttendanceReport(){
+        $data['meta_title'] = 'Monthly Overview';
+        return view('reports.daily-attendance.index', $data);
+    }
+    public function dailyAttendanceData(Request $request){
+
+        $reportDate = Carbon::createFromFormat('d-m-Y', $request->report_date ?? now()->format('d-m-Y'))->format('Y-m-d');
+        $attendances = Attendance::with('employee')
+            ->whereDate('signin_date', $reportDate)
+            ->get();
+
+        $data = [];
+
+        foreach ($attendances as $index => $attendance) {
+            $user = $attendance->employee;
+            $name = $user->full_name ?? 'NA';
+            $initials = collect(explode(' ', $name))->map(fn($w) => strtoupper($w[0]))->join('');
+            $initials = substr($initials, 0, 2);
+
+            if ($user && $user->profile_image) {
+                $image = '<img src="'.asset('storage/'.$user->profile_image).'" width="40" height="40" class="rounded-circle" />';
+            } else {
+                $image = "<div class='rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center' style='width: 40px; height: 40px;'>$initials</div>";
+            }
+
+            $status = $attendance->status;
+
+            if ($status === 'markout') {
+                $finalStatus = ($attendance->working_hours < '08:00:00') ? 'Incomplete' : 'Complete';
+            } elseif ($status === 'markin') {
+                $finalStatus = 'Ongoing';
+            } else {
+                $finalStatus = ucfirst($status ?? '-');
+            }
+
+            $data[] = [
+                'index' => $index + 1,
+                'name' => $name,
+                'image' => $image,
+                'signin_time' => ($attendance->signin_time) ? $attendance->signin_time . '<br /> <span class="badge badge-success">' . $attendance->punchin_type . '</span>' : '-',
+                'signout_time' => $attendance->signout_time ?? '-',
+                'break_time' => $attendance->break_time ?? '-',
+                'working_hours' => $attendance->working_hours ?? '-',
+                'signin_note' => $attendance->signin_late_note ?? '-',
+                'signout_note' => $attendance->signout_late_note ?? '-',
+                'status' => $finalStatus
             ];
         }
 

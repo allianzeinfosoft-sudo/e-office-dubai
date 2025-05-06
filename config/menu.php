@@ -116,6 +116,11 @@ return [
                 'permission' => ['view monthly overview'],
             ],
             [
+                'title' => 'Daily Attendance Report',
+                'route' => '/reports/daily-attendance-report',
+                'permission' => ['view attendance report'],
+            ],
+            [
                 'title' => 'My Attendance',
                 'route' => '#',
                 'permission' => ['view attendance report'],

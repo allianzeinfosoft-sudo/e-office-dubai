@@ -37,14 +37,15 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
+                                                    <th><i class="ti ti-user ti-sm"></i></th>
                                                     <th>Name</th>
-                                                    <th>Month</th>
-                                                    <th>Avg. Working Hours</th>
-                                                    <th>Total Working Hours</th>
-                                                    <th>Month Working Hours / Min Individual Working Hours</th>
-                                                    <th>Days Worked</th>
-                                                    <th>No. of Working Days</th>
-                                                    <th>Leaves</th>
+                                                    <th>Signin Time</th>
+                                                    <th>Signout Time</th>
+                                                    <th>Break Time</th>
+                                                    <th>Working Hours</th>
+                                                    <th>Signin Note</th>
+                                                    <th>Signout Note</th>
+                                                    <th>Status</th>
                                                 </tr>
                                             </thead>
     
@@ -62,34 +63,19 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12">
+                                            
                                             <form id="filter-form"> 
                                                 @csrf
                                                 <div class="form-group mb-3">
-                                                    <label for="month">Select Month</label>
-                                                    <select name="month" id="month" class="form-control select2">
-                                                        @for ($i = 1; $i <= 12; $i++)
-                                                            @php $monthName = carbon\Carbon::create()->month($i)->format('F'); @endphp
-                                                            <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ now()->month == $i ? 'selected' : '' }}>
-                                                                {{ $monthName }}
-                                                            </option>
-                                                        @endfor
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-3">
-                                                    <label for="year">Year</label>
-                                                    <select name="year" id="year" class="form-control select2">
-                                                        <option value="">Select</option>
-                                                        @for ($year = now()->year; $year >= 2014; $year--)
-                                                            <option value="{{ $year }}" {{ now()->year == $year ? 'selected' : '' }} >{{ $year }}</option>
-                                                        @endfor
-                                                    </select>
+                                                    <label for="report_date">Select Date</label>
+                                                    <input type="text" name="report_date" class="form-control flatpickr-input" id="report_date" placeholder="Select Date" value="{{ now()->format('d-m-Y') }}">
                                                 </div>
 
                                                 <div class="form-group mb-3">
                                                     <button type="submit" class="btn btn-primary">Find</button>
                                                 </div>
                                             </form>
+
                                         </div>
                                     </div>
                                 </div>
@@ -122,67 +108,64 @@
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script>
     $(function () {
+
+        $('#report_date').flatpickr({
+            monthSelectorType: 'static',
+            altInput: true,
+            altFormat: 'd-m-Y',
+            dateFormat: 'd-m-Y'
+        });
         
         let workingHoursTable = $('.datatables-working-hours-report');
 
         if (workingHoursTable.length) {
-            workingHoursTable.DataTable({
-                dom: 'Bfrtip', // Show buttons
+            $('.datatables-working-hours-report').DataTable({
+                dom: 'Bfrtip',
                 buttons: [
-                    {
-                        extend: 'excelHtml5',
-                        title: 'Monthly Working Hours Report',
+                    { extend: 'excelHtml5', title: 'Daily Attendance Report', 
                         exportOptions: {
-                            columns: [1, 2, 3, 4, 5, 6, 7, 8] // Exclude profile image (index 0)
+                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
                         }
                     },
-                    {
-                        extend: 'pdfHtml5',
-                        title: 'Monthly Working Hours Report',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
+                    { extend: 'pdfHtml5', title: 'Daily Attendance Report', orientation: 'landscape', pageSize: 'A4', 
                         exportOptions: {
-                            columns: [1, 2, 3, 4, 5, 6, 7, 8] // Exclude profile image (index 0)
+                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
                         }
                     },
-                    {
-                        extend: 'print',
-                        title: 'Monthly Working Hours Report',
+                    { extend: 'print', title: 'Daily Attendance Report', 
                         exportOptions: {
-                            columns: [1, 2, 3, 4, 5, 6, 7, 8] // Exclude profile image (index 0)
+                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
                         }
                     }
                 ],
                 ajax: {
                     type: "GET",
-                    url: "{{ route('reports.user-monthly-overview-data') }}",
-                    dataType: "json",
-                    data: function (d) {
-                        d.month = $('#month').val();
-                        d.year = $('#year').val();
+                    url: "{{ route('reports.daily-attendance') }}",
+                    data: function(d) {
+                        d.report_date = $('#report_date').val();
                     },
                     dataSrc: "data"
                 },
-                processing: true,
                 columns: [
-                    { data: 'profile_image', title: '#' },
+                    { data: 'index', title: '#' },
+                    { data: 'image', title: '<i class="ti ti-user ti-sm"></i>', orderable: false, searchable: false },
                     { data: 'name', title: 'Name' },
-                    { data: 'month', title: 'Month' },
-                    { data: 'avg_working_hours', title: 'Avg. Working Hours' },
-                    { data: 'total_working_hours', title: 'Total Working Hours' },
-                    { data: 'month_vs_min_hours', title: 'Month Working Hours / Min Individual Working Hours' },
-                    { data: 'days_worked', title: 'Days Worked' },
-                    { data: 'working_days', title: 'No. of Working Days' },
-                    { data: 'leaves', title: 'Leaves' }
+                    { data: 'signin_time', title: 'Signin Time'},
+                    { data: 'signout_time', title: 'Signout Time' },
+                    { data: 'break_time', title: 'Break Time' },
+                    { data: 'working_hours', title: 'Working Hours' },
+                    { data: 'signin_note', title: 'Signin Note' },
+                    { data: 'signout_note', title: 'Signout Note' },
+                    { data: 'status', title: 'Status' }
                 ]
             });
-
-            // Reload table on form submit
-            $('#filter-form').on('submit', function (e) {
-                e.preventDefault();
-                workingHoursTable.DataTable().ajax.reload();
-            });
         }
+
+        // Reload table on form submit
+        $('#filter-form').on('submit', function (e) {
+            e.preventDefault();
+            workingHoursTable.DataTable().ajax.reload();
+        });
 
     });
 
