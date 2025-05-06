@@ -116,7 +116,22 @@
 <script>
     $(function () {
 
-       
+        $('.datatables-working-hours-report').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route("report.data") }}',
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                { data: 'name', name: 'name' },
+                { data: 'month', name: 'month' },
+                { data: 'avg_working_hours', name: 'avg_working_hours' },
+                { data: 'total_working_hours', name: 'total_working_hours' },
+                { data: 'mwh_miwh_ratio', name: 'mwh_miwh_ratio' },
+                { data: 'days_worked', name: 'days_worked' },
+                { data: 'working_days', name: 'working_days' },
+                { data: 'leaves', name: 'leaves' }
+            ]
+        });
 
     });
 </script>
