@@ -122,7 +122,7 @@
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script>
     $(function () {
-
+        
         let workingHoursTable = $('.datatables-working-hours-report');
 
         if (workingHoursTable.length) {
