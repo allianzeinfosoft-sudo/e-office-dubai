@@ -30,7 +30,7 @@ class FeedsController extends Controller
                         'employees' => $birthdayEmployees->map(function ($employee) {
                             return [
                                 'full_name' => $employee->full_name,
-                                'profile_image' => $employee->profile_image ?: '/assets/img/avatars/default.png',
+                                'profile_image' => $employee->profile_image ?: '/profile_pics/default-avatar.png',
                             ];
                         }),
                     ];
@@ -47,8 +47,11 @@ class FeedsController extends Controller
                     return [
                         'type' => 'announcement',
                         'display_date' => $today->format('d-F'),
+                        'title' => $announcement->name_announcement,
                         'message' => $announcement->description,
-                        'image' => $announcement->image ?: '/assets/img/backgrounds/announcement.png',
+                        // 'image' => $announcement->image ?: '/assets/img/backgrounds/announcement.png',
+                        'display_start_date' => $announcement->display_start_date,
+                        'create_date' =>  date('d-m-Y',strtotime($announcement->created_at))
                     ];
                 });
             }

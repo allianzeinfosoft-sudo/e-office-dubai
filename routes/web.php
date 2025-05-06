@@ -312,6 +312,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     /* Reports  */
     Route::get('/reports/user-overview', [ReportController::class, 'user_overview'])->name('reports.user-overview');
     Route::get('/reports/user-monthly-overview', [ReportController::class, 'monthlyOverview'])->name('reports.user-monthly-overview');
+    Route::get('/reports/user-monthly-overview-data', [ReportController::class, 'monthlyOverviewReport'])->name('reports.user-monthly-overview-data');
     
 
 });
