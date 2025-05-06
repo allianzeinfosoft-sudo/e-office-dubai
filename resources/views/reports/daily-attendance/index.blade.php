@@ -122,9 +122,21 @@
             $('.datatables-working-hours-report').DataTable({
                 dom: 'Bfrtip',
                 buttons: [
-                    { extend: 'excelHtml5', title: 'Daily Attendance Report' },
-                    { extend: 'pdfHtml5', title: 'Daily Attendance Report', orientation: 'landscape', pageSize: 'A4' },
-                    { extend: 'print', title: 'Daily Attendance Report' }
+                    { extend: 'excelHtml5', title: 'Daily Attendance Report', 
+                        exportOptions: {
+                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
+                        }
+                    },
+                    { extend: 'pdfHtml5', title: 'Daily Attendance Report', orientation: 'landscape', pageSize: 'A4', 
+                        exportOptions: {
+                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
+                        }
+                    },
+                    { extend: 'print', title: 'Daily Attendance Report', 
+                        exportOptions: {
+                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
+                        }
+                    }
                 ],
                 ajax: {
                     type: "GET",

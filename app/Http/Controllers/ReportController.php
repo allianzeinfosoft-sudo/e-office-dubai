@@ -208,7 +208,7 @@ class ReportController extends Controller
             }
 
             $status = $attendance->status;
-            
+
             if ($status === 'markout') {
                 $finalStatus = ($attendance->working_hours < '08:00:00') ? 'Incomplete' : 'Complete';
             } elseif ($status === 'markin') {
