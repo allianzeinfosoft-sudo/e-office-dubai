@@ -17,6 +17,11 @@ class Appreciation extends Model
         return $this->belongsTo(Employee::class, 'appreciant', 'user_id');
     }
 
+    public function employees()
+    {
+        return $this->belongsToMany(Employee::class, 'appreciant', 'appreciation_id', 'employee_id');
+    }
+
     public function project()
     {
         return $this->belongsTo(Project::class, 'project','id');

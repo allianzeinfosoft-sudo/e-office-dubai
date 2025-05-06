@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Salary;
 use App\Models\User;
 use App\Traits\DateFormatter;
@@ -74,7 +75,7 @@ class SalaryController extends Controller
                     }
                     else
                     {
-                        $userCheck = User::find($userId);
+                        $userCheck = Employee::firstWhere('employeeID', $userId);
                         if($userCheck)
                         {
                             $fileName = time() . '_' . $file->getClientOriginalName();
