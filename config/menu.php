@@ -106,9 +106,14 @@ return [
         'route' => 'javascript:void(0);',
         'submenu' => [
             [
-                'title' => 'My Overview',
+                'title' => 'User Overview',
                 'route' => 'reports/user-overview',
                 'permission' => ['view my overview'],
+            ],
+            [
+                'title' => 'User Monthly Overview',
+                'route' => '/reports/user-monthly-overview',
+                'permission' => ['view monthly overview'],
             ],
             [
                 'title' => 'My Attendance',

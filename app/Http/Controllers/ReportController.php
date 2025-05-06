@@ -93,9 +93,8 @@ class ReportController extends Controller
     
     /* */
     public function monthlyOvenerview(Request $request) {
-        $selected_year = $request->input('year'); // optional, pass to helpers
-        $data['monthly_report'] = CustomHelper::getMonthlyWorkReport(null, $selected_year);
         $data['meta_title'] = 'Monthly Overview';
+        $data['employees']    = Employee::all();
         return view('reports.monthly-overview.index', $data);
     }
 
