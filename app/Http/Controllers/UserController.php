@@ -46,7 +46,7 @@ class UserController extends Controller
         if($employees)
         {
             $lastEmployee_id = Employee::orderBy('employeeID', 'desc')->value('employeeID');
-            $nextEmployeeId = $lastEmployee_id+1;
+            $nextEmployeeId = (int) $lastEmployee_id+1;
 
         }
         else

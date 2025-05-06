@@ -7,7 +7,7 @@
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
 
-  <div class="layout-container">
+  <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
     
     <x-menu /> <!-- Load the menu component here -->
 

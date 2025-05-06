@@ -3,7 +3,7 @@
 @section('content')
  <!-- Layout wrapper -->
  <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container">
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
       <!-- Menu -->
       <x-menu /> <!-- Load the menu component here -->
 
