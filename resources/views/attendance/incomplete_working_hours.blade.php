@@ -106,7 +106,18 @@
                                                         <tr>
                                                             <td>{{ $index + 1 }}</td>
                                                             <td>
-                                                                <img src="{{ asset('storage/' . $attendance->employee->profile_image) }}" alt="Profile" width="40" height="40" class="rounded-circle">
+                                                                @php
+                                                                    $name = $attendance->employee->full_name ?? 'N/A';
+                                                                    $initials = collect(explode(' ', $name))->map(fn($word) => strtoupper($word[0]))->join('');
+                                                                    $initials = substr($initials, 0, 2); 
+                                                                @endphp
+                                                                @if($attendance->employee->profile_image)
+                                                                    <img src="{{ asset('storage/' . $attendance->employee->profile_image) }}" alt="Profile" width="40" height="40" class="rounded-circle">
+                                                                @else
+                                                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                                    {{ $initials }}
+                                                                    </div>
+                                                                @endif
                                                             </td>
                                                             <td>{{ $attendance->employee->full_name ?? 'N/A' }}</td>
                                                             <td>{{ $attendance->username ?? 'N/A' }}</td>
