@@ -232,7 +232,7 @@ class UserController extends Controller
         ]);
 
         // Update the user's role if needed
-        $user->syncRoles([$request->role ?? 'user']);
+        $user->syncRoles([$request->group]);
 
         // Handle profile image update
         if ($request->hasFile('profile_image')) {
@@ -282,6 +282,7 @@ class UserController extends Controller
             'ifsc'  => !empty($request->ifsc) ? $request->ifsc : null,
         ]);
         Cache::forget('users');
+
         return redirect()->route('users.edit', $user->id)->with('success', 'User details updated successfully!');
 
 

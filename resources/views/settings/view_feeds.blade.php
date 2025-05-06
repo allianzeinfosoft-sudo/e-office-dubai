@@ -426,7 +426,9 @@ function renderTimeline(data) {
 function getAnnouncementHtml(item) {
 
     const message = item.message || [];
-
+    const title = item.title || [];
+    const display_date = item.display_start_date || [];
+    const created_date = item.create_date || [];
     return `
     <span class="timeline-custom timeline-indicator timeline-indicator-primary" data-aos="zoom-in" data-aos-delay="200">
         <i class="fa fa-volume-up"></i>
@@ -435,24 +437,26 @@ function getAnnouncementHtml(item) {
         <div class="card-header p-3 bg-black mb-4 d-flex justify-content-between align-items-center flex-wrap">
             <h5 class="text-white my-1">Announcement</h5>
             <div class="meta my-1">
-                <span class="badge wrd-br bg-label-warning">${message}</span>
+                <span class="badge wrd-br bg-label-warning">${title}</span>
             </div>
         </div>
         <div class="card-body">
-            ${item.image ? `<img class="w-100" src="/storage/${item.image}" alt="${item.title}">` : ''}
-            <p class="mt-3 mb-2">${item.content}</p>
-            <p class="text-fade">
-                <b>Thank You</b><br>
-                ${item.posted_by}
-            </p>
+
+            <p class="mt-3 mb-2">${message}</p>
+
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div><button type="button" class="btn btn-primary w-100">Read More</button></div>
-                <div><span class="badge bg-dark">${item.date}</span></div>
+                <div><span class="badge bg-dark">${display_date}</span></div>
             </div>
         </div>
-        <div class="timeline-event-time">${item.date}</div></div>`;
+        <div class="timeline-event-time">${display_date}</div></div>`;
 }
 
+// <p class="text-fade">
+//                 <b>Thank You</b><br>
+//                 ${item.posted_by}
+//             </p>
+// ${item.image ? `<img class="w-100" src="/storage/${item.image}" alt="${item.title}">` : ''}
 
 // function getPollHtml(item) {
 //     const {
@@ -503,18 +507,19 @@ function getAnnouncementHtml(item) {
 function getBirthdayHtml(item) {
     const employees = item.employees || [];
     const displayDate = item.display_date || 'N/A';
+    console.log(employees);
 
     const slidesHtml = employees.map(emp => `
         <div class="swiper-slide text-center">
             <div class="card-bday">
-                <img class="bdy-img mt-5 rounded-circle" src="${emp.profile_image}" alt="${emp.full_name}">
+                <img class="bdy-img mt-5 rounded-circle" src="/storage/${emp.profile_image}" alt="${emp.full_name}">
             </div>
             <p class="bdy-name">${emp.full_name}</p>
         </div>
     `).join('');
 
     const thumbsHtml = employees.map(emp => `
-        <div class="swiper-slide" style="background-image: url(${emp.profile_image})"></div>
+        <div class="swiper-slide" style="background-image: url('/storage/${emp.profile_image}')"></div>
     `).join('');
 
     return `
