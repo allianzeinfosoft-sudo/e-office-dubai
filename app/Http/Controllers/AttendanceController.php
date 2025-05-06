@@ -556,7 +556,7 @@ class AttendanceController extends Controller{
 
     public function markedInList(){
         $markedInListData = Attendance::with('employee')
-            ->where('signin_date', date('Y-m-d'))
+            //->where('signin_date', date('Y-m-d'))
             ->whereIn('status', ['mark-in', 'custom'])
             ->orderBy('signin_time')
             ->get();
