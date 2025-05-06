@@ -62,34 +62,34 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                        <form action="" method="post"> 
-                                        @csrf
-                                        <div class="form-group mb-3">
-                                            <label for="month">Select Month</label>
-                                            <select name="month" class="form-control select2">
-                                                @for ($i = 1; $i <= 12; $i++)
-                                                    @php $monthName = carbon\Carbon::create()->month($i)->format('F'); @endphp
-                                                    <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ now()->month == $i ? 'selected' : '' }}>
-                                                        {{ $monthName }}
-                                                    </option>
-                                                @endfor
-                                            </select>
-                                        </div>
+                                            <form id="filter-form"> 
+                                                @csrf
+                                                <div class="form-group mb-3">
+                                                    <label for="month">Select Month</label>
+                                                    <select name="month" id="month" class="form-control select2">
+                                                        @for ($i = 1; $i <= 12; $i++)
+                                                            @php $monthName = carbon\Carbon::create()->month($i)->format('F'); @endphp
+                                                            <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}" {{ now()->month == $i ? 'selected' : '' }}>
+                                                                {{ $monthName }}
+                                                            </option>
+                                                        @endfor
+                                                    </select>
+                                                </div>
 
-                                        <div class="form-group mb-3">
-                                            <label for="year">Year</label>
-                                            <select name="year" id="year" class="form-control select2">
-                                                <option value="">Select</option>
-                                                @for ($year = now()->year; $year >= 2014; $year--)
-                                                    <option value="{{ $year }}" {{ now()->year == $year ? 'selected' : '' }} >{{ $year }}</option>
-                                                @endfor
-                                            </select>
-                                        </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="year">Year</label>
+                                                    <select name="year" id="year" class="form-control select2">
+                                                        <option value="">Select</option>
+                                                        @for ($year = now()->year; $year >= 2014; $year--)
+                                                            <option value="{{ $year }}" {{ now()->year == $year ? 'selected' : '' }} >{{ $year }}</option>
+                                                        @endfor
+                                                    </select>
+                                                </div>
 
-                                        <div class="form-group mb-3">
-                                            <button type="button" class="btn btn-primary">Find</button>
-                                        </div>
-                                    </form>
+                                                <div class="form-group mb-3">
+                                                    <button type="submit" class="btn btn-primary">Find</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
