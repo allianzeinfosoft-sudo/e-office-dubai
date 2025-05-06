@@ -183,7 +183,7 @@ class ReportController extends Controller
     }
 
     public function dailyAttendanceReport(){
-        $data['meta_title'] = 'Monthly Overview';
+        $data['meta_title'] = 'Daily Attendance Report';
         return view('reports.daily-attendance.index', $data);
     }
     public function dailyAttendanceData(Request $request){
@@ -232,6 +232,12 @@ class ReportController extends Controller
         }
 
         return response()->json(['data' => $data]);
+    }
+
+    public function leaveReport(){
+        $data['meta_title'] = 'Leave Report';
+        $data['employees'] = Employee::all();
+        return view('reports.leave-report.index', $data);
     }
 
 }

@@ -121,6 +121,11 @@ return [
                 'permission' => ['view attendance report'],
             ],
             [
+                'title' => 'Leave Report',
+                'route' => 'reports/leave-report',
+                'permission' => ['view leave report'],
+            ],
+            [
                 'title' => 'My Attendance',
                 'route' => '#',
                 'permission' => ['view attendance report'],

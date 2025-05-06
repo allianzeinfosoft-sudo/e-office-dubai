@@ -315,8 +315,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/user-monthly-overview-data', [ReportController::class, 'monthlyOverviewReport'])->name('reports.user-monthly-overview-data');
     Route::get('/reports/daily-attendance-report', [ReportController::class, 'dailyAttendanceReport'])->name('reports.daily-attendance-report');
     Route::get('/reports/daily-attendance', [ReportController::class, 'dailyAttendanceData'])->name('reports.daily-attendance');
-
-    
+    Route::get('/reports/leave-report', [ReportController::class, 'leaveReport'])->name('reports.leave-report');
 
 });
 
