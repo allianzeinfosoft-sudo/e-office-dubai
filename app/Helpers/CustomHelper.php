@@ -3,8 +3,10 @@
 namespace App\Helpers;
 
 use App\Models\Attendance;
+use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\workReport;
+use App\Models\LeaveAllocation;
 
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -220,5 +222,123 @@ class CustomHelper
 
         return $analysis;
     }
+
+    public static function currentAttendanceAnalytics($empId, $month = null) {
+        $month = $month ?? Carbon::now()->month; // Default to current month if not provided
+        $year = Carbon::now()->year; // Always use the current year
+    
+        // Fetch the attendance data for the specified month and current year
+        $attendances = Attendance::where('emp_id', $empId)
+            ->whereYear('signin_date', $year)
+            ->whereMonth('signin_date', $month)
+            ->get();
+    
+        if ($attendances->isEmpty()) {
+            return [
+                'emp_id' => $empId,
+                'year' => $year,
+                'month' => $month,
+                'message' => 'No attendance data found for this employee and month.',
+            ];
+        }
+    
+        $username = $attendances->first()->username;
+    
+        $completedDays = $attendances->filter(fn($e) =>
+            $e->signin_time && $e->signout_time && !$e->is_incomplete
+        )->count();
+    
+        $incompleteOrHalfDays = $attendances->filter(fn($e) =>
+            $e->is_incomplete || !$e->signout_time
+        )->count();
+    
+        $offDays = $attendances->where('status', 'Off')->count();
+    
+        $customDays = $attendances->whereNotNull('custom_status')->count();
+    
+        $totalHolidays = Holiday::whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->count();
+    
+        $totalLeaves = Leave::where('user_id', $empId)
+            ->where('status', 'Approved')
+            ->whereYear('leave_from', $year)
+            ->whereMonth('leave_from', $month)
+            ->count();
+    
+        return [
+            'emp_id'            => $empId,
+            'username'          => $username,
+            'year'              => $year,
+            'month'             => $month,
+            'completed_days'    => $completedDays,
+            'incomplete_or_half_days'   => $incompleteOrHalfDays,
+            'off_days'          => $offDays,
+            'custom_days'       => $customDays,
+            'total_holidays'    => $totalHolidays,
+            'total_leaves'      => $totalLeaves,
+        ];
+    }
+
+    public static function getEmployeeLeaveStats($userId)
+    {
+        $now = Carbon::now();
+        $currentYear = $now->year;
+        $currentMonth = $now->month;
+        $pastYear = $currentYear - 1;
+
+        // Leave Requests
+        $thisMonthLeaves = Leave::where('user_id', $userId)
+            ->whereMonth('leave_from', $currentMonth)
+            ->whereYear('leave_from', $currentYear)
+            ->where('status', 'Approved')
+            ->count();
+
+        $totalLeavesTaken = Leave::where('user_id', $userId)
+            ->where('status', 'Approved')
+            ->count();
+
+        $pastYearLeaves = Leave::where('user_id', $userId)
+            ->whereYear('leave_from', $pastYear)
+            ->where('status', 'Approved')
+            ->count();
+
+        $pendingLeaves = Leave::where('user_id', $userId)
+            ->where('status', 'Pending')
+            ->count();
+
+        // Paid Leaves (assuming 'Paid' is a leave_type)
+        $paidLeaves = Leave::where('user_id', $userId)
+            ->where('leave_type', 'Paid')
+            ->where('status', 'Approved')
+            ->count();
+
+        // Category wise current year
+        $categoryWise = Leave::select('leave_type')
+            ->where('user_id', $userId)
+            ->whereYear('leave_from', $currentYear)
+            ->where('status', 'Approved')
+            ->get()
+            ->groupBy('leave_type')
+            ->map(fn($group) => $group->count());
+
+        // Allocation
+        $leaveAllocation = LeaveAllocation::where('user_id', $userId)
+            ->where('year', $currentYear)
+            ->first();
+
+        return [
+            'this_month_leaves' => $thisMonthLeaves,
+            'total_leaves_taken' => $totalLeavesTaken,
+            'total_leaves_allotted' => $leaveAllocation->total_leaves ?? 0,
+            'total_paid_leaves' => $paidLeaves,
+            'past_year_leaves' => $pastYearLeaves,
+            'total_pending_leaves' => $pendingLeaves,
+            'used_leaves' => $leaveAllocation->used_leaves ?? 0,
+            'remaining_leaves' => $leaveAllocation->remaining_leaves ?? 0,
+            'category_wise_leaves' => $categoryWise,
+        ];
+    }
+    
    
 }

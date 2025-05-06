@@ -6,12 +6,11 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const chartEl = document.getElementById('{{ $id }}');
-
-        const cardColor = '{{ $colors["cardColor"] ?? "#fff" }}';
-        const headingColor = '{{ $colors["headingColor"] ?? "#000" }}';
-        const labelColor = '{{ $colors["labelColor"] ?? "#888" }}';
-        const legendColor = '{{ $colors["legendColor"] ?? "#333" }}';
-        const borderColor = '{{ $colors["borderColor"] ?? "#eee" }}';
+        const cardColor     = '{{ $colors["cardColor"] ?? "#fff" }}';
+        const headingColor  = '{{ $colors["headingColor"] ?? "#000" }}';
+        const labelColor    = '{{ $colors["labelColor"] ?? "#888" }}';
+        const legendColor   = '{{ $colors["legendColor"] ?? "#333" }}';
+        const borderColor   = '{{ $colors["borderColor"] ?? "#eee" }}';
 
         if (chartEl) {
             new Chart(chartEl, {
@@ -37,12 +36,12 @@
                                     return ' ' + context.label + ' : ' + context.parsed + ' %';
                                 }
                             },
-                            rtl: {{ $isRtl ? 'true' : 'false' }},
-                            backgroundColor: cardColor,
-                            titleColor: headingColor,
-                            bodyColor: legendColor,
-                            borderWidth: 1,
-                            borderColor: borderColor
+                            rtl             : {{ $isRtl ? 'true' : 'false' }},
+                            backgroundColor : cardColor,
+                            titleColor      : headingColor,
+                            bodyColor       : legendColor,
+                            borderWidth     : 1,
+                            borderColor     : borderColor
                         }
                     }
                 }

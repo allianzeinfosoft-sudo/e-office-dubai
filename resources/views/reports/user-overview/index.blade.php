@@ -132,46 +132,20 @@
                                                     <h5 class="card-title mb-0">Current Work Analytics</h5>
                                                 </div>
                                                 <div class="card-body">
+
+                                                @php
+                                                    $donutLabels = array_keys($work_analysis);
+                                                    $donutData = array_values($work_analysis);
+                                                @endphp
+
+                                                <x-charts.attendance-donut-chart
+                                                        id="workAnalyticsChart"
+                                                        :labels="$donutLabels"
+                                                        :donutsData="$donutData"
+                                                        :backgroundColors="['#2b9bf4', '#826bf8', '#3fd0bd', '#fee802', '#fee802', '#ea5455']"
+                                                        height="360px"
+                                                    />
                                                     
-                                                    
-                                                    <ul class="doughnut-legend d-flex justify-content-around ps-0 mb-2 pt-1">
-                                                        
-                                                        <li class="ct-series-0 d-flex flex-column">
-                                                            <p class="mb-0 fw-bold">Outstanding</p>
-                                                            <span class="badge badge-dot my-2 cursor-pointer rounded-pill"
-                                                                style="background-color: #836AF9 ; width: 35px; height: 6px"></span>
-                                                        </li>
-                                                        
-                                                        <li class="ct-series-1 d-flex flex-column">
-                                                            <p class="mb-0 fw-bold">Very Good</p>
-                                                            <span class="badge badge-dot my-2 cursor-pointer rounded-pill"
-                                                                style="background-color: #ffe800; width: 35px; height: 6px"></span>
-                                                        </li>
-
-                                                        <li class="ct-series-2 d-flex flex-column">
-                                                            <p class="mb-0 fw-bold">Good</p>
-                                                            <span class="badge badge-dot my-2 cursor-pointer rounded-pill"
-                                                                style="background-color: #28dac6; width: 35px; height: 6px"></span>
-                                                        </li>
-
-                                                        <li class="ct-series-3 d-flex flex-column">
-                                                            <p class="mb-0 fw-bold">Above Average</p>
-                                                            <span class="badge badge-dot my-2 cursor-pointer rounded-pill"
-                                                                style="background-color: #FF8132; width: 35px; height: 6px"></span>
-                                                        </li>
-
-                                                        <li class="ct-series-4 d-flex flex-column">
-                                                            <p class="mb-0 fw-bold">Average</p>
-                                                            <span class="badge badge-dot my-2 cursor-pointer rounded-pill"
-                                                                style="background-color: #FDAC34; width: 35px; height: 6px"></span>
-                                                        </li>
-
-                                                        <li class="ct-series-5 d-flex flex-column">
-                                                            <p class="mb-0 fw-bold">Poor</p>
-                                                            <span class="badge badge-dot my-2 cursor-pointer rounded-pill"
-                                                                style="background-color: #299AFF; width: 35px; height: 6px"></span>
-                                                        </li>
-                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -182,7 +156,21 @@
                                                     <h5 class="card-title mb-0">Current Attendance Analytics</h5>
                                                 </div>
                                                 <div class="card-body">
-                                                    <div id="donutChart"></div>
+
+                                                    <x-charts.attendance-donut-chart
+                                                        id="attendanceDonut"
+                                                        :labels="['Completed', 'Half Days', 'Off', 'Custom', 'Holidays', 'Leaves']"
+                                                        :donutsData="[
+                                                            $attendance_analytics['completed_days'] ?? 0,
+                                                            $attendance_analytics['incomplete_or_half_days'] ?? 0,
+                                                            $attendance_analytics['off_days'] ?? 0,
+                                                            $attendance_analytics['custom_days'] ?? 0,
+                                                            $attendance_analytics['total_holidays'] ?? 0,
+                                                            $attendance_analytics['total_leaves'] ?? 0
+                                                        ]"
+                                                        :backgroundColors="['#fee802', '#3fd0bd', '#826bf8', '#2b9bf4', '#f86624', '#ea5455']"
+                                                        height="360px"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -195,7 +183,7 @@
                                                         <div class="card-body">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div class="mb-0">
-                                                                    <h5 class="mb-0 me-2">0</h5>
+                                                                    <h5 class="mb-0 me-2">{{ $leave_stats['this_month_leaves'] ?? 0 }}</h5>
                                                                     <small>This Month Leave(s)</small>
                                                                 </div>
                                                                 <div class="">
@@ -213,7 +201,7 @@
                                                         <div class="card-body">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div class="mb-0">
-                                                                    <h5 class="mb-0 me-2">0</h5>
+                                                                    <h5 class="mb-0 me-2">{{ $leave_stats['total_leaves_taken'] ?? 0 }}</h5>
                                                                     <small>Total Leave(s) Taken</small>
                                                                 </div>
                                                                 <div class="">
@@ -231,7 +219,7 @@
                                                         <div class="card-body">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div class="mb-0">
-                                                                    <h5 class="mb-0 me-2">0</h5>
+                                                                    <h5 class="mb-0 me-2">{{ $leave_stats['total_leaves_allotted'] ?? 0 }}</h5>
                                                                     <small>Total Leave(s) Alloted</small>
                                                                 </div>
                                                                 <div class="">
@@ -244,30 +232,14 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-sm-4 mb-3">
-                                                    <div class="card bg-white">
-                                                        <div class="card-body">
-                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                <div class="mb-0">
-                                                                    <h5 class="mb-0 me-2">0</h5>
-                                                                    <small>Leave(s) Category Wise</small>
-                                                                </div>
-                                                                <div class="">
-                                                                    <span class="badge bg-label-success rounded-pill p-2">
-                                                                        <i class="ti ti-bolt ti-sm"></i>
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                
 
                                                 <div class="col-sm-4 mb-3">
                                                     <div class="card bg-white">
                                                         <div class="card-body">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div class="mb-0">
-                                                                    <h5 class="mb-0 me-2">0</h5>
+                                                                    <h5 class="mb-0 me-2">{{ $leave_stats['total_paid_leaves'] ?? 0 }}</h5>
                                                                     <small>Total Paid Leave(s)</small>
                                                                 </div>
                                                                 <div class="">
@@ -285,7 +257,7 @@
                                                         <div class="card-body">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div class="mb-0">
-                                                                    <h5 class="mb-0 me-2">0</h5>
+                                                                    <h5 class="mb-0 me-2">{{ $leave_stats['past_year_leaves'] ?? 0 }}</h5>
                                                                     <small>Past Year Leave(s)</small>
                                                                 </div>
                                                                 <div class="">
@@ -303,8 +275,32 @@
                                                         <div class="card-body">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div class="mb-0">
-                                                                    <h5 class="mb-0 me-2">0</h5>
+                                                                    <h5 class="mb-0 me-2">{{ $leave_stats['total_pending_leaves'] ?? 0 }}</h5>
                                                                     <small>Total Pending Leave(s)</small>
+                                                                </div>
+                                                                <div class="">
+                                                                    <span class="badge bg-label-success rounded-pill p-2">
+                                                                        <i class="ti ti-bolt ti-sm"></i>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-12 mb-3">
+                                                    <div class="card bg-white">
+                                                        <div class="card-body">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div class="mb-0">
+                                                                    <h5 class="mb-0 me-2">
+                                                                        @if ($leave_stats['category_wise_leaves'])
+                                                                            @foreach ($leave_stats['category_wise_leaves'] as $key => $category_wise_leave)
+                                                                               <span class="badge bg-label-info p-1 rounded">{{ $key }}: {{ $category_wise_leave }} </span> 
+                                                                            @endforeach
+                                                                        @endif
+                                                                    </h5>
+                                                                    <small>Leave(s) Category Wise</small>
                                                                 </div>
                                                                 <div class="">
                                                                     <span class="badge bg-label-success rounded-pill p-2">
@@ -321,8 +317,28 @@
 
                                         <div class="col-sm-12 mb-3">
                                             <div class="card bg-white">
+                                                <div class="card-header">
+                                                    <h5 class="card-title mb-0">Yearly Work Analytics - {{ date('Y') }}</h5>
+                                                </div>
                                                 <div class="card-body">
-                                                    <canvas id="barChart" class="chartjs" data-height="300"></canvas>
+                                                    <x-charts.bar-chart 
+                                                        id="yearlyHoursChart"
+                                                        :labels="$labels"
+                                                        :data="$average_hours"
+                                                        :colors="[
+                                                            'cardColor' => $isDarkStyle ? '#1E1E2D' : '#ffffff',
+                                                            'headingColor' => $isDarkStyle ? '#ffffff' : '#000000',
+                                                            'labelColor' => '#999',
+                                                            'legendColor' => '#333',
+                                                            'borderColor' => '#eee'
+                                                        ]"
+                                                        barColor="#28dac6"
+                                                        :isRtl="false"
+                                                        :maxY="300"
+                                                        :stepY="50"
+                                                        height="300px"
+                                                    />
+
                                                 </div>
                                             </div>
                                         </div>
@@ -340,34 +356,34 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <form action="" method="post">
-                                                <div class="form-group mb-3">
-                                                    <label for="user">Select User</label>
-                                                    <select name="user" id="user" class="form-control select2">
-                                                        <option value=""></option>
-                                                        @if($employees->isnotempty())
-                                                            @foreach($employees as $employee)
-                                                                <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
-                                                            @endforeach
-                                                        @endif
-                                                    </select>
-                                                </div>
+                                        <form action="{{ route('reports.user-overview') }}" method="GET"> 
+                                        @csrf
+                                        <div class="form-group mb-3">
+                                            <label for="user">Select User</label>
+                                            <select name="user" id="user" class="form-control select2">
+                                                <option value="">Select</option>
+                                                @foreach($employees as $employee)
+                                                    <option value="{{ $employee->user_id }}" {{ request('user') == $employee->user_id ? 'selected' : '' }}>
+                                                        {{ $employee->full_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
 
-                                                <div class="form-group mb-3">
-                                                    <label for="year">Year</label>
-                                                    <select name="year" id="year" class="form-control select2">
-                                                    <option value=""></option>
-                                                    @for ($year = now()->year; $year >= 2014; $year--)
-                                                        <option value="{{ $year }}">{{ $year }}</option>
-                                                    @endfor
-                                                    </select>
-                                                </div>
+                                        <div class="form-group mb-3">
+                                            <label for="year">Year</label>
+                                            <select name="year" id="year" class="form-control select2">
+                                                <option value="">Select</option>
+                                                @for ($year = now()->year; $year >= 2014; $year--)
+                                                    <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
 
-                                                <div class="form-group mb-3">
-                                                    <button type="button" class="btn btn-primary"> Find </button>
-                                                </div>
-
-                                            </form>
+                                        <div class="form-group mb-3">
+                                            <button type="submit" class="btn btn-primary">Find</button>
+                                        </div>
+                                    </form>
                                         </div>
                                     </div>
                                 </div>
@@ -397,74 +413,10 @@
 
 
 @push('js')
-
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
-<!-- <script src="{{ asset('assets/js/charts-chartjs.js') }}"></script> -->
-<script src="{{ asset('assets/js/charts-apex.js') }}"></script>
 <script>
     $(function () {
         $('#working-hours-report').dataTable();
-         
-
-         // Doughnut Chart
-        // --------------------------------------------------------------------
-
-        const doughnutChart = document.getElementById('doughnutChart');
-
-        const workAnalysisData = @json($work_analysis);
-        const doughnutLabels = Object.keys(workAnalysisData);
-        const doughnutData = Object.values(workAnalysisData);
-
-        if (doughnutChart) {
-            const doughnutChartVar = new Chart(doughnutChart, {
-            type: 'doughnut',
-            data: {
-                labels: doughnutLabels,
-                datasets: [
-                {
-                    data: doughnutData,
-                    backgroundColor: [cyanColor, orangeLightColor, config.colors.primary],
-                    borderWidth: 0,
-                    pointStyle: 'rectRounded'
-                }
-                ]
-            },
-            options: {
-                responsive: true,
-                animation: {
-                duration: 500
-                },
-                cutout: '68%',
-                plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                    label: function (context) {
-                        const label = context.labels || '',
-                        value = context.parsed;
-                        const output = ' ' + label + ' : ' + value + ' %';
-                        return output;
-                    }
-                    },
-                    // Updated default tooltip UI
-                    rtl: isRtl,
-                    backgroundColor: cardColor,
-                    titleColor: headingColor,
-                    bodyColor: legendColor,
-                    borderWidth: 1,
-                    borderColor: borderColor
-                }
-                }
-            }
-            });
-        }
-
-        /* ===================== */
-
-        
-
     });
 </script>
 @endpush

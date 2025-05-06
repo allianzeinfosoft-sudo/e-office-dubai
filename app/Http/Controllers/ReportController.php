@@ -67,24 +67,36 @@ class ReportController extends Controller
 
     /* user overview */
     public function user_overview(Request $request) {
-        //
-        if($request->ajax()) {
-            $data['employees'] = Employee::all();
-            return view('reports.user-overview.table', $data)->render();
-        }
-        $current_user = auth()->user()->id;
-        
-        $monthlyData = CustomHelper::getMonthlyTotalHours($current_user);
-
-        $data['labels'] = $monthlyData['months'];
+        $selected_user = $request->input('user') ?? auth()->id();
+        $selected_year = $request->input('year'); // optional, pass to helpers
+    
+        // Monthly hours
+        $monthlyData = CustomHelper::getMonthlyTotalHours($selected_user, $selected_year);
+        $data['labels']        = $monthlyData['months'];
         $data['average_hours'] = $monthlyData['total_hours'];
-        $data['work_analysis'] = CustomHelper::getWorkRatingAnalysis($current_user);
-        $data['monthly_report'] = CustomHelper::getMonthlyWorkReport($current_user); 
-        $data['meta_title']     = 'User Overview';
-        $data['current_user']   = Employee::where('user_id', $current_user)->get()->first();
-        $data['employees']      = Employee::all();
+    
+        // Reports
+        $data['work_analysis']  = CustomHelper::getWorkRatingAnalysis($selected_user, $selected_year);
+        $data['monthly_report'] = CustomHelper::getMonthlyWorkReport($selected_user, $selected_year);
+    
+        // Attendance + Leave
+        $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
+        $data['leave_stats']          = CustomHelper::getEmployeeLeaveStats($selected_user, $selected_year);
+    
+        // Other info
+        $data['current_user'] = Employee::where('user_id', $selected_user)->first();
+        $data['employees']    = Employee::all();
+        $data['meta_title']   = 'User Overview';
+    
         return view('reports.user-overview.index', $data);
     }
-
+    
     /* */
+    public function monthlyOvenerview(Request $request) {
+        $selected_year = $request->input('year'); // optional, pass to helpers
+        $data['monthly_report'] = CustomHelper::getMonthlyWorkReport(null, $selected_year);
+        $data['meta_title'] = 'Monthly Overview';
+        return view('reports.monthly-overview.index', $data);
+    }
+
 }
