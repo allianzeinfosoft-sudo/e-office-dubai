@@ -57,6 +57,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/dropzone/dropzone.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/ui-carousel.css') }}" />
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
@@ -131,7 +132,9 @@
 
     <!-- Main JS -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
-
+    <script src="{{ asset('assets/js/ui-carousel.js') }}"></script>
+    <script src="{{ asset('assets/js/extended-ui-timeline.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/animate-on-scroll/animate-on-scroll.js') }}"></script>
     <!-- Page JS -->
     <script src="{{ asset('assets/js/pages-auth.js') }}"></script>
     {{-- @if(request()->is('home')) --}}

@@ -138,29 +138,29 @@ return [
             ],
         ]
     ],
-    [
-        'title' => 'Survey',
-        'icon' => 'ti ti-rocket',
-        'route' => 'javascript:void(0);',
-        'permission' => ['create survey','assign survey','view surveys'],
-        // 'badge' => "New",
-        'submenu' => [
-            [
-                'title' => 'Add Survey',
-                'route' => '#',
-                'permission' => ['create survey'],
-            ],
-            [
-                'title' => 'Assign Survey',
-                'route' => '#',
-                'permission' => ['assign survey'],
-            ],
-            [
-                'title' => 'View Survey',
-                'route' => '#',
-            ],
-        ]
-    ],
+    // [
+    //     'title' => 'Survey',
+    //     'icon' => 'ti ti-rocket',
+    //     'route' => 'javascript:void(0);',
+    //     'permission' => ['create survey','assign survey','view surveys'],
+    //     // 'badge' => "New",
+    //     'submenu' => [
+    //         [
+    //             'title' => 'Add Survey',
+    //             'route' => '#',
+    //             'permission' => ['create survey'],
+    //         ],
+    //         [
+    //             'title' => 'Assign Survey',
+    //             'route' => '#',
+    //             'permission' => ['assign survey'],
+    //         ],
+    //         [
+    //             'title' => 'View Survey',
+    //             'route' => '#',
+    //         ],
+    //     ]
+    // ],
     [
         'title' => 'SAR',
         'icon' => 'ti ti-replace',

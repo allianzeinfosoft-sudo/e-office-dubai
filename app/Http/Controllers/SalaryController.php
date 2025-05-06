@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Salary;
 use App\Models\User;
 use App\Traits\DateFormatter;
@@ -74,7 +75,7 @@ class SalaryController extends Controller
                     }
                     else
                     {
-                        $userCheck = User::find($userId);
+                        $userCheck = Employee::where('employeeID', $userId)->first();
                         if($userCheck)
                         {
                             $fileName = time() . '_' . $file->getClientOriginalName();
@@ -84,7 +85,7 @@ class SalaryController extends Controller
                             $year = date('Y');
                             $month = date('n');
 
-                            $existing = Salary::where('user_id', $userId)
+                            $existing = Salary::where('user_id', $userCheck->user_id)
                                         ->where('salary_slip_year', $year)
                                         ->where('salary_slip_month', $month)
                                         ->first();
@@ -102,7 +103,7 @@ class SalaryController extends Controller
                             } else {
                                 // Create a new record
                                 Salary::create([
-                                    'user_id' => $userId,
+                                    'user_id' => $userCheck->user_id,
                                     'salary_slip' => $fileName,
                                     'salary_slip_year' => $year,
                                     'salary_slip_month' => $month,
