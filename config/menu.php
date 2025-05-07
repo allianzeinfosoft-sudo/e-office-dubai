@@ -259,7 +259,7 @@ return [
     [
         'title' => 'Gallery',
         'icon' => 'ti ti-icons',
-        'route' => '#',
+        'route' => 'gallery',
     ],
     [
         'title' => 'View',
