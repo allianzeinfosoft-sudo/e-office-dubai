@@ -316,6 +316,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/daily-attendance-report', [ReportController::class, 'dailyAttendanceReport'])->name('reports.daily-attendance-report');
     Route::get('/reports/daily-attendance', [ReportController::class, 'dailyAttendanceData'])->name('reports.daily-attendance');
     Route::get('/reports/leave-report', [ReportController::class, 'leaveReport'])->name('reports.leave-report');
+    Route::get('/reports/leave-report-data', [ReportController::class, 'leaveReportData'])->name('reports.leave-report-data');
+    Route::get('/reports/all-attendance-report', [ReportController::class, 'allAttendanceReport'])->name('reports.all-attendance-report');
+    Route::post('/reports/all-attendance-data', [ReportController::class, 'allAttendanceData'])->name('reports.all-attendance-data');
 
 });
 

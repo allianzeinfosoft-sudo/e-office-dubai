@@ -126,6 +126,11 @@ return [
                 'permission' => ['view leave report'],
             ],
             [
+                'title' => 'All Attendance Report',
+                'route' => 'reports/all-attendance-report',
+                'permission' => ['view all attendance report'],
+            ],
+            [
                 'title' => 'My Attendance',
                 'route' => '#',
                 'permission' => ['view attendance report'],

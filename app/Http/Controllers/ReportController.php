@@ -218,16 +218,16 @@ class ReportController extends Controller
             }
 
             $data[] = [
-                'index' => $index + 1,
-                'name' => $name,
-                'image' => $image,
-                'signin_time' => ($attendance->signin_time) ? $attendance->signin_time . '<br /> <span class="badge badge-success">' . $attendance->punchin_type . '</span>' : '-',
-                'signout_time' => $attendance->signout_time ?? '-',
-                'break_time' => $attendance->break_time ?? '-',
+                'index'         => $index + 1,
+                'name'          => $name,
+                'image'         => $image,
+                'signin_time'   => ($attendance->signin_time) ? $attendance->signin_time . '<br /> <span class="badge badge-success">' . $attendance->punchin_type . '</span>' : '-',
+                'signout_time'  => $attendance->signout_time ?? '-',
+                'break_time'    => $attendance->break_time ?? '-',
                 'working_hours' => $attendance->working_hours ?? '-',
-                'signin_note' => $attendance->signin_late_note ?? '-',
-                'signout_note' => $attendance->signout_late_note ?? '-',
-                'status' => $finalStatus
+                'signin_note'   => $attendance->signin_late_note ?? '-',
+                'signout_note'  => $attendance->signout_late_note ?? '-',
+                'status'        => $finalStatus
             ];
         }
 
@@ -238,6 +238,71 @@ class ReportController extends Controller
         $data['meta_title'] = 'Leave Report';
         $data['employees'] = Employee::all();
         return view('reports.leave-report.index', $data);
+    }
+
+    public function leaveReportData(Request $request){
+        $query = Leave::with('user', 'employee');
+
+        if ($request->filled('username')) {
+            $query->where('user_id', $request->username);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('leave_from', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('leave_to', '<=', $request->end_date);
+        }
+
+        $leaves = $query->get()->map(function ($leave) {
+            return [
+                'id'            => $leave->id,
+                'username'      => $leave->Employee->full_name ?? '-',
+                'leave_from'    => Carbon::parse($leave->leave_from)->format('d-m-Y'), 
+                'leave_to'      => Carbon::parse($leave->leave_to)->format('d-m-Y'), 
+                'leave_count'   => Carbon::parse($leave->leave_from)->diffInDays($leave->leave_to) + 1,
+                'leave_type'    => ucfirst($leave->leave_type),
+                'reason'        => $leave->reason,
+                'apply_date'    => $leave->created_at->format('d-m-Y'),
+                'status'        => ($leave->status == 3) ? 'Rejected' : (($leave->status == 2) ? 'Approved' : 'Pending'),
+                'action'        => '<a href="#" class="btn btn-sm btn-info">Edit</a>'
+            ];
+        });
+
+        return response()->json(['data' => $leaves]);
+    }
+
+    public function allAttendanceReport(){
+        $data['meta_title'] = 'All Attendance Report';
+        $data['employees'] = Employee::all();
+        return view('reports.all-attendance-report.index', $data);
+    }
+
+    public function allAttendanceData(Request $request){
+        $data['current_user']   = Employee::where('user_id', $request->employee_id)->first();
+        $data['day']            = $request->day;
+        $data['month']          = $request->month;
+        $data['year']           = $request->year;
+
+        $query = Attendance::with('employee', 'employee.user')->where('emp_id', $request->employee_id);
+
+        if ($request->filled('day')) {
+            // Specific date
+            $date = Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d');
+            $query->whereDate('signin_date', $date);
+        } else {
+            // Entire month
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth()->format('Y-m-d');
+            $query->whereBetween('signin_date', [$startDate, $endDate]);
+        }
+        $data['attendances'] = $query->get();
+        $html = view('reports.all-attendance-report.report-view',  $data)->render();
+
+        return response()->json([
+            'html' => $html
+        ]);
     }
 
 }

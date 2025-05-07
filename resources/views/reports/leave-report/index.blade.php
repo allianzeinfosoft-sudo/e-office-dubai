@@ -27,17 +27,15 @@
 
                     <div class="row">
 
-                        <div class="col-sm-9">
+                        <div class="col-sm-10">
 
                             <div class="card card-bg">
                                 <div class="card-datatable">
                                     <div class="table-responsive">
-
-                                        <table class="datatables-basic datatables-working-hours-report table border-top table-stripedc table-hover table-striped">
+                                        <table class="datatables-basic datatables-leave-report table border-top table-stripedc table-hover table-striped">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th><i class="ti ti-user ti-sm"></i></th>
                                                     <th>Username</th>
                                                     <th>From Date</th>
                                                     <th>To Date</th>
@@ -46,7 +44,6 @@
                                                     <th>Leave Reason</th>
                                                     <th>Apply Date</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
     
@@ -56,7 +53,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="card card-bg mb-4">
                                 <div class="card-header">
                                     <h5 class="card-title"> <i class="ti ti-filter ti-sm"></i> Filter</h5>
@@ -65,13 +62,13 @@
                                     <div class="row">
                                         <div class="col-sm-12">
                                             
-                                        <form id="filter-form" method="POST">
+                                        <form id="filter-form">
                                             @csrf
                                             <div class="form-group mb-3">
-                                                <label for="employee_id">Employee</label>
-                                                <select name="employee_id" id="employee_id" class="form-control select2">
-                                                    <option value=""> </option>
-                                                    @foreach($employees as $employee)
+                                                <label for="username">Username</label>
+                                                <select name="username" id="username" class="form-control select2">
+                                                    <option value="">All</option>
+                                                    @foreach ($employees as $employee)
                                                         <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
                                                     @endforeach
                                                 </select>
@@ -79,12 +76,12 @@
 
                                             <div class="form-group mb-3">
                                                 <label for="start_date">Start Date</label>
-                                                <input type="text" name="start_date" class="form-control flatpickr-input" id="start_date" placeholder="Start Date" />
+                                                <input type="text" id="start_date" name="start_date" class="form-control flatpickr-input" placeholder="Start Date" value="{{ date('Y-m-d') }}"  />
                                             </div>
 
                                             <div class="form-group mb-3">
                                                 <label for="end_date">End Date</label>
-                                                <input type="text" name="end_date" class="form-control flatpickr-input" id="end_date" placeholder="End Date" />
+                                                <input type="text" id="end_date" name="end_date" class="form-control flatpickr-input" placeholder="End Date" value="{{ date('Y-m-d') }}" >
                                             </div>
 
                                             <div class="form-group mb-3">
@@ -126,62 +123,47 @@
     $(function () {
 
         $('#start_date, #end_date').flatpickr({
-            monthSelectorType: 'static',
-            altInput: true,
-            altFormat: 'd-m-Y',
-            dateFormat: 'd-m-Y'
-        });
-        
-        let workingHoursTable = $('.datatables-working-hours-report');
+        altInput: true,
+        altFormat: 'd-m-Y',
+        dateFormat: 'Y-m-d'
+    });
 
-        if (workingHoursTable.length) {
-            $('.datatables-working-hours-report').DataTable({
-                dom: 'Bfrtip',
-                buttons: [
-                    { extend: 'excelHtml5', title: 'Daily Attendance Report', 
-                        exportOptions: {
-                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
-                        }
-                    },
-                    { extend: 'pdfHtml5', title: 'Daily Attendance Report', orientation: 'landscape', pageSize: 'A4', 
-                        exportOptions: {
-                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
-                        }
-                    },
-                    { extend: 'print', title: 'Daily Attendance Report', 
-                        exportOptions: {
-                            columns: [0, 2, 3, 4, 5, 6, 7, 8, 9] // Exclude profile image (index 0)
-                        }
-                    }
-                ],
-                ajax: {
-                    type: "GET",
-                    url: "{{ route('reports.daily-attendance') }}",
-                    data: function(d) {
-                        d.report_date = $('#report_date').val();
-                    },
-                    dataSrc: "data"
+    let leaveReportTable = $('.datatables-leave-report');
+
+    if (leaveReportTable.length) {
+        leaveReportTable.DataTable({
+            dom: 'Bfrtip',
+            buttons: ['excelHtml5', 'pdfHtml5', 'print'],
+            ajax: {
+                type: "GET",
+                url: "{{ route('reports.leave-report-data') }}",
+                dataType: "json",
+                data: function (d) {
+                    d.username = $('#username').val();
+                    d.start_date = $('#start_date').val();
+                    d.end_date = $('#end_date').val();
                 },
-                columns: [
-                    { data: 'index', title: '#' },
-                    { data: 'image', title: '<i class="ti ti-user ti-sm"></i>', orderable: false, searchable: false },
-                    { data: 'name', title: 'Name' },
-                    { data: 'signin_time', title: 'Signin Time'},
-                    { data: 'signout_time', title: 'Signout Time' },
-                    { data: 'break_time', title: 'Break Time' },
-                    { data: 'working_hours', title: 'Working Hours' },
-                    { data: 'signin_note', title: 'Signin Note' },
-                    { data: 'signout_note', title: 'Signout Note' },
-                    { data: 'status', title: 'Status' }
-                ]
-            });
-        }
+                dataSrc: "data"
+            },
+            processing: true,
+            columns: [
+                { data: 'id', title: '#' },
+                { data: 'username', title: 'Username' },
+                { data: 'leave_from', title: 'From date' },
+                { data: 'leave_to', title: 'To date' },
+                { data: 'leave_count', title: 'Leave Count' },
+                { data: 'leave_type', title: 'Type' },
+                { data: 'reason', title: 'Leave Reason' },
+                { data: 'apply_date', title: 'Apply Date' },
+                { data: 'status', title: 'Status' },
+            ]
+        });
 
-        // Reload table on form submit
         $('#filter-form').on('submit', function (e) {
             e.preventDefault();
-            workingHoursTable.DataTable().ajax.reload();
+            leaveReportTable.DataTable().ajax.reload();
         });
+    }
 
     });
 
