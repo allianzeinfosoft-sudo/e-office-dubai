@@ -421,4 +421,10 @@ class ReportController extends Controller
         if ($grade >= 50) return 'Average';
         return 'Poor';
     }
+
+    public function overAllWorkReport(){
+        $data['meta_title'] = 'Over All Work Report';
+        $data['employees'] = Employee::all();
+        return view('reports.all-work-report.over-all-work-report', $data);
+    }
 }
