@@ -38,14 +38,15 @@
                                                 <tr>
                                                     <th>#</th>
                                                     <th><i class="ti ti-user ti-sm"></i></th>
-                                                    <th>Name</th>
-                                                    <th>Signin Time</th>
-                                                    <th>Signout Time</th>
-                                                    <th>Break Time</th>
-                                                    <th>Working Hours</th>
-                                                    <th>Signin Note</th>
-                                                    <th>Signout Note</th>
+                                                    <th>Username</th>
+                                                    <th>From Date</th>
+                                                    <th>To Date</th>
+                                                    <th>Leave Count</th>
+                                                    <th>Type</th>
+                                                    <th>Leave Reason</th>
+                                                    <th>Apply Date</th>
                                                     <th>Status</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
     
@@ -64,17 +65,32 @@
                                     <div class="row">
                                         <div class="col-sm-12">
                                             
-                                            <form id="filter-form"> 
-                                                @csrf
-                                                <div class="form-group mb-3">
-                                                    <label for="report_date">Select Date</label>
-                                                    <input type="text" name="report_date" class="form-control flatpickr-input" id="report_date" placeholder="Select Date" value="{{ now()->format('d-m-Y') }}">
-                                                </div>
+                                        <form id="filter-form" method="POST">
+                                            @csrf
+                                            <div class="form-group mb-3">
+                                                <label for="employee_id">Employee</label>
+                                                <select name="employee_id" id="employee_id" class="form-control select2">
+                                                    <option value=""> </option>
+                                                    @foreach($employees as $employee)
+                                                        <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                                <div class="form-group mb-3">
-                                                    <button type="submit" class="btn btn-primary">Find</button>
-                                                </div>
-                                            </form>
+                                            <div class="form-group mb-3">
+                                                <label for="start_date">Start Date</label>
+                                                <input type="text" name="start_date" class="form-control flatpickr-input" id="start_date" placeholder="Start Date" />
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <label for="end_date">End Date</label>
+                                                <input type="text" name="end_date" class="form-control flatpickr-input" id="end_date" placeholder="End Date" />
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <button type="submit" class="btn btn-primary">Find</button>
+                                            </div>
+                                        </form>
 
                                         </div>
                                     </div>
@@ -109,7 +125,7 @@
 <script>
     $(function () {
 
-        $('#report_date').flatpickr({
+        $('#start_date, #end_date').flatpickr({
             monthSelectorType: 'static',
             altInput: true,
             altFormat: 'd-m-Y',
