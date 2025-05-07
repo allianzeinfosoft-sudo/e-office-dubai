@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Thoughts;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ThoughtsController extends Controller
@@ -104,5 +105,14 @@ class ThoughtsController extends Controller
         }
         $thoughts->delete();
         return response()->json(['message' => 'Thoughts deleted successfully']);
+    }
+
+    public function view_thoughts()
+    {
+        $today = Carbon::today()->toDateString();
+
+        $thought = Thoughts::whereDate('display_date', $today)->first();
+
+        return view('views.thought_of_day', compact('thought'));
     }
 }

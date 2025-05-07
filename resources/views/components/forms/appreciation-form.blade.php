@@ -14,8 +14,8 @@
     <div class="row">
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="appreciant">Name Of Appreciant</label>
-                <select name="appreciant" id="appreciant" class="form-control">
+                <label for="appreciant">Name of Appreciants</label>
+                <select name="appreciant[]" id="appreciant" class="form-control select2" multiple>
                     @foreach ($users as $user)
                         <option value="{{ $user->id }}" {{ (old('appreciant') == $user->id ) ? 'selected' : '' }}>{{ $user->employee->full_name ?? 'N/A' }}</option>
                     @endforeach

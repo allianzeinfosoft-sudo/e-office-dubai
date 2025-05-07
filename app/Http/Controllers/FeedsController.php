@@ -56,29 +56,44 @@ class FeedsController extends Controller
                 });
             }
 
-            $rawAppreciations = Appreciation::with('employees')
-                    ->whereMonth('display_date', $today->month)
-                    ->whereDay('display_date', $today->day)
-                    ->get();
 
-                $appreciations = collect();
+            // Get all appreciations for today
+            $today = now();
+            $rawAppreciations = Appreciation::whereMonth('display_date', $today->month)
+                ->whereDay('display_date', $today->day)
+                ->get();
 
-                if ($rawAppreciations->isNotEmpty()) {
-                    $appreciations = $rawAppreciations->map(function ($appreciation) {
-                        return [
-                            'type' => 'appreciation',
-                            'display_date' => \Carbon\Carbon::parse($appreciation->display_date)->format('d-F'),
-                            'employees' => $appreciation->employees->map(function ($employee) {
-                                return [
-                                    'full_name' => $employee->full_name,
-                                    'profile_image' => $employee->profile_image ?: '/assets/img/avatars/default.png',
-                                ];
-                            }),
-                            'message' => $appreciation->message,
-                            'image' => $appreciation->image ?: '/assets/img/backgrounds/cng.png',
-                        ];
-                    });
-                }
+            $appreciations = collect();
+
+            if ($rawAppreciations->isNotEmpty()) {
+                $appreciations = $rawAppreciations->map(function ($appreciation) {
+                    $employeeDetails = [];
+
+                    // Get IDs from the 'appreciant' string
+                    $ids = array_filter(explode(',', $appreciation->appreciant));
+
+                    if (!empty($ids)) {
+                        $employees = Employee::whereIn('user_id', $ids)->get(['id', 'full_name', 'profile_image']);
+
+                        $employeeDetails = $employees->map(function ($employee) {
+                            return [
+                                'full_name' => $employee->full_name,
+                                'profile_image' => $employee->profile_image ?: '/assets/img/avatars/default.png',
+                            ];
+                        })->toArray();
+                    }
+
+                    return [
+                        'type' => 'appreciation',
+                        'display_date' => \Carbon\Carbon::parse($appreciation->display_date)->format('d-F'),
+                        'employees' => $employeeDetails,
+                        'message' => $appreciation->appreciation_details,
+                        'image' => $appreciation->picture,
+                    ];
+                });
+            }
+
+
             // Combine all feeds
             $feeds = collect();
 

@@ -265,26 +265,28 @@ return [
         'title' => 'View',
         'icon' => 'ti ti-eye',
         'route' => 'javascript:void(0);',
-        'permission' => ['view though','view appreciation','view birthday', 'view event', 'view policy', 'view holiday', 'view reminder'],
+        'permission' => ['view though','view appreciation','view birthday','view announcement', 'view event', 'view policy', 'view holiday', 'view reminder'],
         'submenu' => [
             [
                 'title' => 'Thought Of The Day',
-                'route' =>  'thoughts',
+                'route' =>  '/thoughts_view',
                 'permission' => ['view thought'],
 
             ],
             [
                 'title' => ' Appreciation',
-                'route' =>  '#',
+                'route' =>  'appreciation_view',
+                'permission' => ['view appreciation']
             ],
             [
                 'title' => 'Birthdays',
-                'route' =>  '#',
+                'route' =>  'birthday_view',
                 'permission' => ['view birthday'],
             ],
             [
                 'title' => 'Announcement',
-                'route' =>  '#',
+                'route' =>  'announcement_view',
+                'permissioin' => ['view announcement'],
             ],
             [
                 'title' => 'Company Policies ',

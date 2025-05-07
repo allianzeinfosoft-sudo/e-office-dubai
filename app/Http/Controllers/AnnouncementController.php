@@ -15,13 +15,13 @@ class AnnouncementController extends Controller
     {
         if ($request->ajax()) {
             $annoncement = Announcement::orderBy('id', 'desc')->get();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Recruitments fetched successfully',
                 'data' => $annoncement->map(function ($result, $index) {
                     return [
-                        'row' => $index + 1, 
+                        'row' => $index + 1,
                         'id' => $result->id,
                         'name_announcement' => $result->name_announcement ?? '',
                         'description' => $result->description ?? '',
@@ -117,5 +117,15 @@ class AnnouncementController extends Controller
         //
         $announcement->delete();
         return response()->json(['message' => 'Announcement deleted successfully']);
+    }
+
+    public function view_announcement()
+    {
+        $announcements = Announcement::orderBy('display_start_date', 'desc')->get();
+        $grouped = $announcements->groupBy(function ($item) {
+            return Carbon::parse($item->display_start_date)->format('Y-F'); // e.g. 2025-January
+        });
+
+        return view('views.announcement', ['announcementsByMonth' => $grouped]);
     }
 }
