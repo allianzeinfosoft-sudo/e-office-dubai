@@ -132,8 +132,8 @@ return [
             ],
             [
                 'title' => 'All Work Report',
-                'route' => '#',
-                'permission' => ['view all attendance report'],
+                'route' => '/reports/all-work-report',
+                'permission' => ['view all work report'],
             ],
             [
                 'title' => 'Over All Work Report',
