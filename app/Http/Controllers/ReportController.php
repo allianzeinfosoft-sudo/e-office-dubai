@@ -305,4 +305,10 @@ class ReportController extends Controller
         ]);
     }
 
+    public function allWorkReport(){
+        $data['meta_title'] = 'All Work Report';
+        $data['employees'] = Employee::all();
+        return view('reports.all-attendance-report.index', $data);
+    }
+
 }

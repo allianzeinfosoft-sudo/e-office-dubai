@@ -131,25 +131,24 @@ return [
                 'permission' => ['view all attendance report'],
             ],
             [
-                'title' => 'My Attendance',
+                'title' => 'All Work Report',
                 'route' => '#',
-                'permission' => ['view attendance report'],
+                'permission' => ['view all attendance report'],
             ],
             [
-                'title' => 'My Work Report',
+                'title' => 'Over All Work Report',
                 'route' => '#',
-                'permission' => ['view my work report'],
+                'permission' => ['view all attendance report'],
             ],
             [
-                'title' => 'My Emergency Report',
+                'title' => 'All Emergency Attendance Report',
                 'route' => '#',
-                'permission' => ['view emergency report'],
+                'permission' => ['view all attendance report'],
             ],
             [
-                'title' => 'Salary Slip Report',
+                'title' => 'Over All Emergency Attendance Report',
                 'route' => '#',
-                'permission' => ['view salary slip'],
-                // 'badge' => 'new',
+                'permission' => ['view all attendance report'],
             ],
         ]
     ],
