@@ -59,6 +59,7 @@ class UserController extends Controller
         // $nextId = $lastEmployee ? ((int) filter_var($lastEmployee->id, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
 
         $roles = Role::all();
+
         return view('users.create', compact('nextEmployeeId',
         'employees','departments',
         'user_statuses','work_shifts','roles'));

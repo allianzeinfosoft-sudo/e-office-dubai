@@ -31,6 +31,7 @@ use App\Http\Controllers\MomController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\MailBoxController;
 use App\Http\Controllers\CustomAttendanceController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ReportController;
 
 use App\Models\Appearence;
@@ -324,5 +325,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/reports/all-attendance-data', [ReportController::class, 'allAttendanceData'])->name('reports.all-attendance-data');
     Route::get('/reports/all-work-report', [ReportController::class, 'allWorkReport'])->name('reports.all-work-report');
 
+    /*Galley*/
+    Route::resource('gallery', GalleryController::class);
 });
 

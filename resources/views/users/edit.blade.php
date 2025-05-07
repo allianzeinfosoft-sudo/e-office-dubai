@@ -149,8 +149,8 @@
                       <label for="group" class="form-label">Group:</label>
                       <select id="group" name="group" class="select2 form-select form-select-lg" data-allow-clear="true">
                         <option value="">Select Group</option>
-                        @foreach (['G1','G2','G3','G4','G5'] as $group)
-                            <option value="{{ $group }}" {{ old('group', $user->employee->group) == $group ? 'selected' : '' }}>{{ $group ?? ''}}</option>
+                        @foreach ($roles as $role)
+                                <option value="{{ $role->name }}" {{ (old('group') == $role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
                         @endforeach
                       </select>
                     </div>

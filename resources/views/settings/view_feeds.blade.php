@@ -621,7 +621,8 @@ function getAppreciationHtml(item) {
                     ${employeeHtml}
                 </div>
                 <div class="cng-img text-center">
-                    <img src="${image}" alt="Appreciation Background">
+                    <img class="w-40" src="../../assets/img/backgrounds/cng.png">
+                    <img class="w-25" src="${image}" alt="Appreciation Background">
                 </div>
                 <p class="mt-3 mb-2 text-center">
                     ${message}
