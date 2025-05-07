@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appreciation;
+use App\Models\Employee;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AppreciationController extends Controller
@@ -13,20 +15,32 @@ class AppreciationController extends Controller
         /* ajax request */
         if ($request->ajax()) {
             // Handle the AJAX request here
-            $appreciation = Appreciation::with('employee')->get()
-            ->map(function ($appreciation) {
+            $appreciations = Appreciation::all()->map(function ($appreciation) {
+                $appreciantNames = [];
+
+                if (!empty($appreciation->appreciant)) {
+                    $ids = explode(',', $appreciation->appreciant); // e.g. "95,96,97"
+                    $appreciantNames = Employee::whereIn('user_id', $ids)
+                        ->pluck('full_name')
+                        ->toArray();
+                }
+
                 return [
                     'id' => $appreciation->id,
-                    'appreciant' => $appreciation->appreciant ? $appreciation->employee->full_name : '',
-                    'display_date' => $appreciation->display_date ? \Carbon\Carbon::parse($appreciation->display_date)->format('d-m-Y') : '',
-                    'appreciation_details' => $appreciation->appreciation_details ? $appreciation->appreciation_details : '',
-                    'picture' => $appreciation->picture ? $appreciation->picture : '',
-                    'created_at' => $appreciation->created_at ? $appreciation->created_at->format('d-m-Y') : '',
+                    'appreciant' => $appreciantNames, // send array of names
+                    'display_date' => $appreciation->display_date
+                        ? \Carbon\Carbon::parse($appreciation->display_date)->format('d-m-Y') : '',
+                    'appreciation_details' => $appreciation->appreciation_details ?? '',
+                    'picture' => $appreciation->picture ?? '',
+                    'created_at' => $appreciation->created_at
+                        ? $appreciation->created_at->format('d-m-Y') : '',
                 ];
             });
 
+
+
             return response()->json([
-                'data' => $appreciation
+                'data' => $appreciations
             ]);
 
         }
@@ -45,15 +59,18 @@ class AppreciationController extends Controller
     {
 
         $appreciation = Appreciation::updateOrCreate(
-            ['id' => $request->id], // 🔍 Match condition (unique identifier)
+            ['id' => $request->id ?: null], // Ensure null, not empty string
             [
-                'appreciant'        => $request->appreciant,
-                'project'           => $request->project,
-                'display_date'      => $request->display_date,
-                'appreciation_details'  => $request->appreciation_details,
-                'picture'           => $request->picture,
+                'appreciant'           => is_array($request->appreciant)
+                                            ? implode(',', $request->appreciant)
+                                            : $request->appreciant,
+                'project'              => $request->project,
+                'display_date'         => $request->display_date,
+                'appreciation_details' => $request->appreciation_details,
+                'picture'              => $request->picture,
             ]
         );
+
 
 
          $appreciation->save();
@@ -84,4 +101,32 @@ class AppreciationController extends Controller
         $appreciation->delete();
         return response()->json(['message' => 'Appreciation deleted successfully']);
     }
+
+    public function view_appreciation()
+    {
+        $today = Carbon::today()->toDateString();
+
+        // Fetch all appreciations for today
+        $appreciations = Appreciation::get()->map(function ($item) {
+            // Exploding the comma-separated employee IDs and retrieving the corresponding Employee models
+            $employees = $item->appreciantEmployeesView()->map(function ($emp) {
+                return [
+                    'full_name' => $emp->full_name,
+                    'profile_image' => $emp->profile_image,
+                ];
+            });
+
+            return [
+                'display_date' => $item->display_date,
+                'employees' => $employees,
+                'image' => $item->picture,
+                'message' => $item->appreciation_details,
+            ];
+        });
+
+
+        // Pass the data to the view
+        return view('views.appreciation', compact('appreciations'));
+    }
+
 }

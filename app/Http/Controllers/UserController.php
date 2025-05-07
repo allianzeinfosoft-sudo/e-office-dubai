@@ -10,6 +10,7 @@ use App\Models\LeaveAllocation;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Workshift;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -557,6 +558,53 @@ public function open_work_assign(Request $request)
     $employee->save();
 
     return response()->json(['message' => 'Status updated successfully.']);
+}
+
+
+public function users_birthday()
+{
+    $employees = Employee::whereNotNull('dob')->get();
+    $today = Carbon::now();
+
+    // 🔹 Today's Birthdays
+    $todaysBirthdays = $employees->filter(function ($emp) use ($today) {
+        $dob = Carbon::parse($emp->dob);
+        return $dob->day == $today->day && $dob->month == $today->month;
+    })->map(function ($emp) {
+        return [
+            'full_name' => $emp->full_name,
+            'profile_image' => $emp->profile_image,
+            'birth_date' => Carbon::parse($emp->dob)->format('F-d'),
+        ];
+    });
+
+    // 🔹 Upcoming Birthdays (Current Month Onwards)
+    $currentMonth = $today->month;
+
+    $upcoming = $employees->filter(function ($emp) use ($currentMonth) {
+        return Carbon::parse($emp->dob)->month >= $currentMonth;
+    });
+
+    $grouped = $upcoming->sortBy(function ($emp) {
+        return Carbon::parse($emp->dob)->format('m-d');
+    })->groupBy(function ($emp) {
+        return Carbon::parse($emp->dob)->format('F');
+    });
+
+    $birthdays = $grouped->map(function ($group) {
+        return $group->map(function ($emp) {
+            return [
+                'full_name' => $emp->full_name,
+                'profile_image' => $emp->profile_image,
+                'birth_date' => Carbon::parse($emp->dob)->format('F-d'),
+            ];
+        });
+    });
+
+    return view('views.birthday_view', [
+        'birthdays' => $birthdays,
+        'todaysBirthdays' => $todaysBirthdays,
+    ]);
 }
 
 }

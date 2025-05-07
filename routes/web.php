@@ -57,7 +57,7 @@ Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
         return view('auth/login');
     });
-    
+
     Route::post('/logout', function () {
         Auth::logout();
         session()->invalidate();
@@ -112,6 +112,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/check-old-password', [UserController::class, 'checkOldPassword'])->name('check_old_password');
     Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
     Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
+    Route::get('/birthday_view', [UserController::class, 'users_birthday'])->name('birthday_view');
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
@@ -221,6 +222,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('thoughts',ThoughtsController::class);
     Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
     Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
+    Route::get('/thoughts_view', [ThoughtsController::class, 'view_thoughts'])->name('thoughts.view');
 
     /* Views/Company policies */
 
@@ -236,6 +238,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/others/announcements/store', [AnnouncementController::class, 'store'])->name('others.announcements.store');
     Route::get('/others/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('others.announcements.edit');
     Route::delete('/others/announcements/{announcement}/destroy', [AnnouncementController::class, 'destroy'])->name('others.announcements.destroy');
+    Route::get('/announcement_view', [AnnouncementController::class, 'view_announcement'])->name('announcement_view');
 
     /* Others/Events */
     Route::get('/others/events', [EventController::class, 'index'])->name('others.events.index');
@@ -259,7 +262,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);
-
+    Route::get('/appreciation_view',[AppreciationController::class, 'view_appreciation'])->name('view_appreciation');
     /* Mailbox */
 
     // Route::get('/mail-box', [MailBoxController::class, 'index'])->name('mailbox.index');
@@ -311,7 +314,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /* Reports  */
     Route::get('/reports/user-overview', [ReportController::class, 'user_overview'])->name('reports.user-overview');
-    
+
 
 });
 
