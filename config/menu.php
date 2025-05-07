@@ -122,12 +122,12 @@ return [
             ],
             [
                 'title' => 'Leave Report',
-                'route' => 'reports/leave-report',
+                'route' => '/reports/leave-report',
                 'permission' => ['view leave report'],
             ],
             [
                 'title' => 'All Attendance Report',
-                'route' => 'reports/all-attendance-report',
+                'route' => '/reports/all-attendance-report',
                 'permission' => ['view all attendance report'],
             ],
             [

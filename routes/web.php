@@ -323,6 +323,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/all-attendance-report', [ReportController::class, 'allAttendanceReport'])->name('reports.all-attendance-report');
     Route::post('/reports/all-attendance-data', [ReportController::class, 'allAttendanceData'])->name('reports.all-attendance-data');
     Route::get('/reports/all-work-report', [ReportController::class, 'allWorkReport'])->name('reports.all-work-report');
+    Route::post('/reports/all-work-report', [ReportController::class, 'allWorkReportData'])->name('reports.all-work-report');
 
 });
 

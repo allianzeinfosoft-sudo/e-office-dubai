@@ -28,34 +28,101 @@
                     <div class="row">
 
                         <div class="col-sm-10" >
-                            <div id="all-report-container" >
-                                <div class="card card-bg">
-                                    <div class="card-body">
-                                        <p class="text-center">No data found</p>
-                                    </div>
+                            <div class="card card-bg">
+                                <div class="card-body">
+                                    @if(isset($mergedData) && count($mergedData))
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="accordion mt-3" id="accordionExample">
+                                                    @foreach ($mergedData as $index => $data)
+                                                        @php
+                                                            $employee = \App\Models\Employee::where('user_id', $data['emp_id'])->first();
+                                                            $fullName = $employee ? $employee->full_name : 'Unknown';
+                                                            $accordionId = 'accordion' . $index;
+                                                        @endphp
+
+                                                        <div class="accordion-item">
+                                                            <h2 class="accordion-header" id="heading{{ $index }}">
+                                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $accordionId }}" aria-expanded="false" aria-controls="{{ $accordionId }}">
+                                                                    {{ $fullName }} - {{ $data['report_date'] }}
+                                                                </button>
+                                                            </h2>
+                                                            <hr class="separator m-0">
+
+                                                            <div id="{{ $accordionId }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $index }}" data-bs-parent="#accordionExample">
+                                                                <div class="accordion-body">
+                                                                    <div class="table-responsive mb-2">
+                                                                        <table class="table table-bordered">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Signin Time</th>
+                                                                                    <th>Signout Time</th>
+                                                                                    <th>Working Hours</th>
+                                                                                    <th>Punchin Note</th>
+                                                                                    <th>Punchout Note</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td>{{ $data['signin_time'] ?? 'N/A' }}</td>
+                                                                                    <td>{{ $data['signout_time'] ?? 'N/A' }}</td>
+                                                                                    <td>{{ $data['working_hours'] ?? 'N/A' }}</td>
+                                                                                    <td>{{ $data['punchin_note'] ?? '' }}</td>
+                                                                                    <td>{{ $data['punchout_note'] ?? '' }}</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-bordered">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Project</th>
+                                                                                    <th>Work Type</th>
+                                                                                    <th>Work Time</th>
+                                                                                    <th>Total Records</th>
+                                                                                    <th>Total Time</th>
+                                                                                    <th>Productivity Hour</th>
+                                                                                    <th>Achieved Hour</th>
+                                                                                    <th>Grade (%)</th>
+                                                                                    <th>Performance</th>
+                                                                                    <th>Comments</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach ($data['reports'] as $report)
+                                                                                    <tr>
+                                                                                        <td>{{ $report['project_name'] }}</td>
+                                                                                        <td>{{ $report['type_of_work'] }}</td>
+                                                                                        <td>{{ $report['time_of_work'] }}</td>
+                                                                                        <td>{{ $report['total_records'] }}</td>
+                                                                                        <td>{{ $report['total_time'] }}</td>
+                                                                                        <td>{{ $report['productivity_hour'] }}</td>
+                                                                                        <td>{{ $report['achieved_hour'] }}</td>
+                                                                                        <td>{{ $report['grade'] }}%</td>
+                                                                                        <td>{{ $report['performance'] }}</td>
+                                                                                        <td>{{ $report['comments'] }}</td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-warning mt-3">
+                                            No work reports found for the selected filters.
+                                        </div>
+                                    @endif
+
                                 </div>
                             </div>
-
-                            <!-- <div class="row mt-3">
-                                <div class="col-12">
-                                    <div class="card card-bg">
-                                        <div class="card-header">
-                                            <h5 class="card-title"> <i class="ti ti-filter ti-sm"></i> Avarage working hours</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <x-charts.apex-bar-chart
-                                                element-id="barChart"
-                                                :series="[
-                                                    ['name' => 'Apple', 'data' => [90, 120, 55, 100, 80, 125, 175, 70, 88, 180]],
-                                                    ['name' => 'Samsung', 'data' => [85, 100, 30, 40, 95, 90, 30, 110, 62, 20]]
-                                                ]"
-                                                :categories="['7/12', '8/12', '9/12', '10/12', '11/12', '12/12', '13/12', '14/12', '15/12', '16/12']"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
-
                         </div>
 
                         <div class="col-sm-2">
@@ -67,52 +134,46 @@
                                     <div class="row">
                                         <div class="col-sm-12">
                                             
-                                            <form id="filter-form"> 
-                                                    @csrf
+                                        <form id="filter-form" method="POST" action="{{ route('reports.all-work-report') }}">
+                                            @csrf
+                                            <div class="form-group mb-3">
+                                                <label for="employee_id">Select Employee</label>
+                                                <select name="employee_id" id="employee_id" class="form-control select2" required>
+                                                    <option value="">All Employees</option>
+                                                    @foreach ($employees as $employee)
+                                                        <option value="{{ $employee->user_id }}" >
+                                                            {{ $employee->full_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                                    <div class="form-group mb-3">
-                                                        <label for="employee_id">Select Employee</label>
-                                                        <select name="employee_id" id="employee_id" class="form-control select2" required >
-                                                            <option value="">All Employees</option>
-                                                            @foreach ($employees as $employee)
-                                                                <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
+                                            <div class="form-group mb-3">
+                                                <label for="month">Month</label>
+                                                <select name="month" id="month" class="form-control select2">
+                                                    @for ($m = 1; $m <= 12; $m++)
+                                                        @php 
+                                                            $monthName = \Carbon\Carbon::create()->month($m)->format('F'); 
+                                                            $mFormatted = str_pad($m, 2, '0', STR_PAD_LEFT);
+                                                        @endphp
+                                                        <option value="{{ $mFormatted }}" {{ request('month') == $mFormatted ? 'selected' : '' }}>{{ $monthName }}</option>
+                                                    @endfor
+                                                </select>
+                                            </div>
 
-                                                    <div class="form-group mb-3">
-                                                        <label for="day">Day</label>
-                                                        <select name="day" id="day" class="form-control select2">
-                                                            <option value="">All Days</option>
-                                                            @for ($d = 1; $d <= 31; $d++)
-                                                                <option value="{{ str_pad($d, 2, '0', STR_PAD_LEFT) }}">{{ $d }}</option>
-                                                            @endfor
-                                                        </select>
-                                                    </div>
+                                            <div class="form-group mb-3">
+                                                <label for="year">Year</label>
+                                                <select name="year" id="year" class="form-control select2">
+                                                    @for ($y = now()->year; $y >= 2014; $y--)
+                                                        <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                                    @endfor
+                                                </select>
+                                            </div>
 
-                                                    <div class="form-group mb-3">
-                                                        <label for="month">Month</label>
-                                                        <select name="month" id="month" class="form-control select2">
-                                                            @for ($m = 1; $m <= 12; $m++)
-                                                                @php $monthName = \Carbon\Carbon::create()->month($m)->format('F'); @endphp
-                                                                <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}" {{ now()->month == $m ? 'selected' : '' }} >{{ $monthName }}</option>
-                                                            @endfor
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="form-group mb-3">
-                                                        <label for="year">Year</label>
-                                                        <select name="year" id="year" class="form-control select2">
-                                                            @for ($y = now()->year; $y >= 2014; $y--)
-                                                                <option value="{{ $y }}" {{ now()->year == $y ? 'selected' : '' }} >{{ $y }}</option>
-                                                            @endfor
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="form-group mb-3">
-                                                        <button type="submit" class="btn btn-primary">Find</button>
-                                                    </div>
-                                            </form>
+                                            <div class="form-group mb-3">
+                                                <button type="submit" class="btn btn-primary">Find</button>
+                                            </div>
+                                        </form>
 
                                         </div>
                                     </div>
@@ -143,7 +204,6 @@
 
 
 @push('js')
-<script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script>
     $(function () {
 
@@ -152,30 +212,6 @@
             altInput: true,
             altFormat: 'd-m-Y',
             dateFormat: 'd-m-Y'
-        });
-        
-        // Reload table on form submit
-        $('#filter-form').on('submit', function (e) {
-            e.preventDefault();
-            var url = "{{ route('reports.all-attendance-data') }}";
-            var data = $(this).serialize();
-            $.ajax({
-                type: "post",
-                url: url,
-                data: data,
-                dataType: "json",
-                success: function (response) {
-                    $('#all-report-container').html(response.html);
-                    $('.datatables-all-attendance-report').DataTable({
-                        dom: 'Bfrtip',
-                        buttons: [
-                            { extend: 'excelHtml5', title: 'All Attendance Report'},
-                            { extend: 'pdfHtml5', title: 'All Attendance Report', orientation: 'landscape', pageSize: 'A4'},
-                            { extend: 'print', title: 'All Attendance Report'}
-                        ],
-                    });
-                }
-            });
         });
 
     });

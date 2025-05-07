@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\Attendance;
 use App\Models\Holiday;
 use App\Models\Leave;
+use App\Models\workReport;
 use App\Helpers\CustomHelper;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -308,7 +309,116 @@ class ReportController extends Controller
     public function allWorkReport(){
         $data['meta_title'] = 'All Work Report';
         $data['employees'] = Employee::all();
-        return view('reports.all-attendance-report.index', $data);
+        return view('reports.all-work-report.index', $data);
+    }
+    
+    public function allWorkReportData(Request $request){
+    
+        $request->validate([
+            'employee_id' => 'nullable|integer',
+            'day' => 'nullable|string', // optional day filter
+            'month' => 'required|string', // padded month
+            'year' => 'required|integer|min:2000',
+        ]);
+
+        $employeeId = $request->employee_id;
+        $day = $request->day;
+        $month = $request->month;
+        $year = $request->year;
+
+        // Get attendance data
+        $attendanceQuery = Attendance::query()
+            ->whereMonth('signin_date', $month)
+            ->whereYear('signin_date', $year);
+
+        if ($day) {
+            $attendanceQuery->whereDay('signin_date', $day);
+        }
+
+        if ($employeeId) {
+            $attendanceQuery->where('emp_id', $employeeId);
+        }
+
+        $attendanceData = $attendanceQuery->get()->keyBy(function ($item) {
+            return $item->emp_id . '_' . $item->signin_date;
+        });
+
+        // Get work report data
+        $workReportQuery = WorkReport::with('project', 'projectTask', 'tasks')
+            ->whereMonth('report_date', $month)
+            ->whereYear('report_date', $year);
+
+        if ($day) {
+            $workReportQuery->whereDay('report_date', $day);
+        }
+
+        if ($employeeId) {
+            $workReportQuery->where('emp_id', $employeeId);
+        }
+
+        $groupedReports = $workReportQuery->get()->groupBy(function ($item) {
+            return $item->emp_id . '_' . $item->report_date;
+        });
+
+        $mergedData = [];
+
+        foreach ($groupedReports as $key => $reports) {
+            [$empId, $reportDate] = explode('_', $key);
+            $attendance = $attendanceData->get($key);
+
+            $mergedData[] = [
+                'emp_id'        => $empId,
+                'report_date'   => $reportDate,
+                'signin_time'   => $attendance->signin_time ?? null,
+                'signout_time'  => $attendance->signout_time ?? null,
+                'working_hours' => $attendance->working_hours ?? null,
+                'punchin_note'  => $attendance->signin_late_note ?? null,
+                'punchout_note' => $attendance->signout_late_note ?? null,
+                'reports' => $reports->map(function ($report) {
+                    $totalHours = 0;
+                    if (!empty($report->total_time) && strpos($report->total_time, ':') !== false) {
+                        [$hours, $minutes] = explode(':', $report->total_time);
+                        $totalHours = ((int)$hours) + ((int)$minutes / 60);
+                    }
+
+                    $records = is_numeric($report->total_records) ? (float)$report->total_records : 0;
+                    $achievedHour = $totalHours > 0 ? ($records / $totalHours) : 0;
+
+                    $productivity = is_numeric($report->productivity_hour) ? (float)$report->productivity_hour : 0;
+                    $grade = $productivity > 0
+                        ? number_format(($achievedHour / $productivity) * 100, 2)
+                        : 0;
+
+                    return [
+                        'project_name' => $report->project->project_name ?? 'N/A',
+                        'type_of_work' => $report->tasks->name ?? 'N/A',
+                        'time_of_work' => $report->time_of_work,
+                        'total_records' => $report->total_records,
+                        'total_time' => $report->total_time,
+                        'productivity_hour' => $report->productivity_hour,
+                        'achieved_hour' => number_format($achievedHour, 2),
+                        'comments' => $report->comments,
+                        'grade' => $grade,
+                        'performance' => $this->getPerformanceCategory($grade),
+                        'report_date' => $report->report_date,
+                    ];
+                }),
+            ];
+        }
+
+        return view('reports.all-work-report.index', [
+            'mergedData' => $mergedData,
+            'meta_title' => 'All Work Report',
+            'employees' => Employee::all(),
+            'request' => $request, // Pass this if Blade needs it for old form values
+        ]);
     }
 
+    private function getPerformanceCategory($grade)
+    {
+        if ($grade >= 90) return 'Excellent';
+        if ($grade >= 75) return 'Good';
+        if ($grade >= 50) return 'Average';
+        return 'Poor';
+    }
 }
