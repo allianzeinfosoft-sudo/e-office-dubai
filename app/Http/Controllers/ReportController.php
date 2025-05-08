@@ -470,4 +470,31 @@ class ReportController extends Controller
 
         return response()->json($query->get());
     }
+
+    public function emergencyAttendanceReport(){
+        $data['meta_title'] = 'Emergency Attendance Report';
+        return view('reports.emergency-report.index', $data);
+    }
+
+    public function getEmergencyAttendance(Request $request)
+{
+    $query = Attendance::query()
+        ->where(function ($q) {
+            $q->where('status', 'emergency')
+              ->orWhere('punchin_type', 'emergency')
+              ->orWhere('punchout_type', 'emergency');
+        });
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->whereMonth('signin_date', $request->month);
+        }
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->whereYear('signin_date', $request->year);
+        }
+        
+    $records = $query->orderByDesc('signin_date')->get();
+
+    return response()->json($records);
+}
 }

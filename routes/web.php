@@ -78,7 +78,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/attendance/emergency-mark',[AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
     Route::post('/attendance/custom-mark-out/{id}',[AttendanceController::class, 'customMarkOut'])->name('attendance.custom-mark-out');
     Route::get('/attendance/marked-in-list',[AttendanceController::class, 'markedInList'])->name('attendance.marked-in-list');
-    Route::get('/attendance/emplyee-markin/{id}',[AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin');
+    Route::get('/attendance/emplyee-markin/{id}',[AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin'); 
     Route::delete('/attendance/destroy/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
     Route::post('/attendance/custom-attendance-entry', [AttendanceController::class, 'customAttendanceEntry'])->name('attendance.custom-attendance-entry');
     Route::post('attendance/full-day-attendance-entry', [AttendanceController::class, 'storeFullDayEntry'])->name('attendance.full-day-attendance-entry');
@@ -328,6 +328,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/over-all-work-report', [ReportController::class, 'overAllWorkReport'])->name('reports.over-all-work-report');
     Route::get('/reports/get-projects-by-employee', [ReportController::class, 'getProjectsByEmployee'])->name('reports.get-projects-by-employee');
     Route::post('/reports/get-employee-reports', [ReportController::class, 'getFilteredReports']) ->name('reports.get-employee-reports');
+    Route::get('/reports/emergency-reports', [ReportController::class, 'emergencyAttendanceReport']) ->name('reports.emergency-reports');
+    Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
     
 
     /*Galley*/

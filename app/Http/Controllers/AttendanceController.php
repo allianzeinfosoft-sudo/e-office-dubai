@@ -489,31 +489,84 @@ class AttendanceController extends Controller{
 
     /* Emergency mark-in mark-out*/
     public function emergencyMark(Request $request){
-        $data = [
-            'username' => Auth::user()->username,
-            'signin_time' => $request->type === 'mark-in' ? $request->time_in_out : null,
-            'signin_late_note' => $request->type === 'mark-in' ? $request->signin_late_note : null,
-            'signout_late_note' => $request->type === 'mark-out' ? $request->signin_late_note : null,
-            'signout_time' => $request->type === 'mark-out' ? $request->time_in_out : null,
-            'status' => 'emergency',
-            'punchin_type' => $request->type === 'mark-in' ? 'emergency' : null,
-            'punchout_type' => $request->type === 'mark-out' ? 'emergency' : null,
-        ];
+        $username = Auth::user()->username;
+        $userId = Auth::user()->id;
+        $signinDate = date('Y-m-d', strtotime($request->signin_date));
+        $time = $request->time_in_out;
+        $lateNote = $request->signin_late_note;
 
-        if($request->type === 'mark-in'){
-            $data['signin_date'] = date('Y-m-d', strtotime($request->signin_date));
-        }else{
-            $data['signout_date'] = date('Y-m-d', strtotime($request->signin_date));
+        if ($request->type === 'mark-in') {
+            // Check if already marked in
+            $existing = Attendance::where('username', $username)
+                ->whereDate('signin_date', $signinDate)
+                ->where('status', 'emergency')
+                ->first();
+
+            if (!$existing) {
+                Attendance::create([
+                    'username' => $username,
+                    'emp_id' => $userId,
+                    'status' => 'emergency',
+                    'signin_date' => $signinDate,
+                    'signin_time' => $time,
+                    'punchin_type' => 'emergency',
+                    'signin_late_note' => $lateNote,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Marked In successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Already marked in for this date (emergency).',
+                ]);
+            }
+
+        } elseif ($request->type === 'mark-out') {
+            $existing = Attendance::where('username', $username)
+                ->whereDate('signin_date', $signinDate)
+                ->where('status', 'emergency')
+                ->first();
+
+            if ($existing) {
+
+                $workingTime = CustomHelper::calculateTotalWorkingTime(
+                    $existing->signin_date,
+                    $existing->signin_time,
+                    $signinDate,
+                    $time,
+                    '00:00:00'
+                );
+            
+                $totalWorkingTime = $workingTime['total_working_time'] ?? '00:00:00';
+
+                $existing->update([
+                    'signout_date' => $signinDate,
+                    'signout_time' => $time,
+                    'status' => 'mark-out',
+                    'punchout_type' => 'emergency',
+                    'signout_late_note' => $lateNote,
+                    'working_hours' => $totalWorkingTime,
+                    'break_time' => '00:00:00',
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Marked Out successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot mark out without a matching emergency mark-in.',
+                ]);
+            }
         }
 
-        Attendance::updateOrCreate(
-            ['username' => Auth::user()->username, 'signin_date' => $request->signin_date],
-            $data
-        );
-
         return response()->json([
-            'success' => true,
-            'message' => $request->type === 'mark-in' ? 'Marked In successfully!' : 'Marked Out successfully!'
+            'success' => false,
+            'message' => 'Invalid type provided.',
         ]);
     }
 
