@@ -41,11 +41,12 @@
 
   // Multiple Dropzone
   // --------------------------------------------------------------------
-  const dropzoneMulti = document.querySelector('#dropzone-multi');
+  const dropzoneMulti = document.querySelector('#dropzone-multi-gallery');
   if (dropzoneMulti) {
     const myDropzoneMulti = new Dropzone(dropzoneMulti, {
       previewTemplate: previewTemplate,
       parallelUploads: 1,
+      previewsContainer: "#dropzone-multi-gallery",
       maxFilesize: 5,
       addRemoveLinks: true
     });

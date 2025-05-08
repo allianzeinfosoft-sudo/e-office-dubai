@@ -296,7 +296,7 @@ return [
             ],
             [
                 'title' => 'Events',
-                'route' =>  '#',
+                'route' =>  '/others/events',
                 'permission' => ['view event'],
             ],
             [
