@@ -327,5 +327,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
+    Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('gallery.upload.image');
+    Route::get('/gallery/{id}', [GalleryController::class, 'show'])->name('gallery.show');
+    Route::delete('/gallery/{gallery}/image', [GalleryController::class, 'deleteImage'])->name('gallery.image.delete');
+
 });
 

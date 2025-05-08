@@ -16,6 +16,11 @@
     padding: 28px 10px;
     border-radius: 0px;
 }
+
+.offcanvas-body {
+    max-height: calc(100vh - 56px); /* Adjust based on your header height */
+    overflow-y: auto;
+}
 </style>
 @stop
 
@@ -28,6 +33,7 @@
 
         <div class="layout-page">
             <!-- Navbar -->
+            <x-header />
             @php
                 $currentMonthLabel = \Carbon\Carbon::now()->format('Y-F'); // e.g., "2025-May"
             @endphp
@@ -53,24 +59,30 @@
                     <div class="row mt-md-4">
 
                         <!---Gallery-->
-                        <div class="container-fluid ">
+                        <div class="container-fluid">
                             <div class="row tm-mb-90 g-4 tm-gallery">
-                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
-                                <figure class="effect-ming tm-video-item mb-0 br-lt10 br-rt10">
-                                    <img src="../../assets/img/gallery/img-03.jpg" alt="Image" class="img-fluid w-100 galery-cover">
-                                    <figcaption class="d-flex align-items-center justify-content-center">
-                                        <h2>Clocks</h2>
-                                        <a href="gallery-masnory.html"></a>
-                                    </figcaption>
-                                </figure>
-                                <div class="d-flex justify-content-between br-lb10 br-rb10 bg-white p-3">
-                                    <span class="text-black">18 Oct 2020</span>
-                                    <span class="text-black">9,906 Images</span>
-                                </div>
-                            </div>
+                                @foreach ($galleries as $gallery)
+                                    @php
+                                        $images = json_decode($gallery->file, true);
+                                        $thumb = $images[0] ?? 'assets/img/placeholder.jpg'; // fallback image
+                                    @endphp
+                                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12 mb-5">
+                                        <figure class="effect-ming tm-video-item mb-0 br-lt10 br-rt10" style="height: 240px;">
+                                            <img src="{{ asset($thumb) }}" alt="Image" class="img-fluid w-100 galery-cover" style="width: 100%;">
+                                            <figcaption class="d-flex align-items-center justify-content-center">
+                                                <h2>{{ $gallery->title }}</h2>
+                                                <a href="{{ route('gallery.show', $gallery->id) }}"></a>
+                                            </figcaption>
+                                        </figure>
+                                        <div class="d-flex justify-content-between br-lb10 br-rb10 bg-white p-3">
+                                            <span class="text-black">{{ \Carbon\Carbon::parse($gallery->display_date)->format('d M Y') }}</span>
+                                            <span class="text-black">{{ count($images) }} Images</span>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div> <!-- row -->
-                        </div> <!-- container-fluid, tm-container-content -->
-                        <!--Gallery-->
+                        </div>
+
 
                     </div>
                     </div>
@@ -85,7 +97,7 @@
 
 
 <!-- Add Project Task -->
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="gallery_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-45" data-bs-scroll="true" data-bs-backdrop="static" tabindex="-1" id="gallery_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-plus fs-2 text-white"></i>
@@ -107,5 +119,53 @@
 @stop
 
 @push('js')
+<script>
 
+var quillLeaveEditor = new Quill('#gallery-editor',
+    { theme: 'snow',
+        placeholder: 'Type your reason here...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    ['link'],
+                    ['clean']
+                ]
+            }
+    });
+
+function openGalleryOffcanvas(targetId = null) {
+    $('#gallery-form')[0].reset(); // Reset form
+    $('#target_id').val(''); // Clear ID
+    if (targetId) {
+        $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Gallery</h5><span class="text-white slogan">Edit New Gallery</span>`);
+        $.ajax({
+            url: `/gallery/${targetId}/edit`,
+            type: 'GET',
+            success: function (data) {
+
+                // let content = data.gallery.gallery_details;
+                // let cleanContent = content.replace(/^<p>|<\/p>$/g, '');
+
+                // $('#target_id').val(data.thoughts.id);
+                // $('#thoughts_title').val(data.thoughts.thoughts_title);
+                // $('#display_date').val(data.thoughts.display_date);
+                // $('#thoughts_details').val(cleanContent);
+                // // document.getElementById('thoughts-editor').textContent = cleanContent;
+                // quillEditor1.root.innerHTML = cleanContent;
+
+                // const previewEdit = document.getElementById("PicturePreview");
+                // previewEdit.src = `/storage/${data.thoughts.picture}`;;
+                // previewEdit.style.display = "block";
+
+                // $('#picture').val('');
+            }
+        });
+    }
+    var offcanvasElement = $('#gallery_offcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+}
+</script>
 @endpush
