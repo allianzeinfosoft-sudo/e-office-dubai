@@ -8,6 +8,8 @@ use App\Models\Attendance;
 use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\workReport;
+use App\Models\Project;
+use App\Models\ProjectTask;
 use App\Helpers\CustomHelper;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -374,7 +376,7 @@ class ReportController extends Controller
                 'working_hours' => $attendance->working_hours ?? null,
                 'punchin_note'  => $attendance->signin_late_note ?? null,
                 'punchout_note' => $attendance->signout_late_note ?? null,
-                'reports' => $reports->map(function ($report) {
+                'reports'       => $reports->map(function ($report) {
                     $totalHours = 0;
                     if (!empty($report->total_time) && strpos($report->total_time, ':') !== false) {
                         [$hours, $minutes] = explode(':', $report->total_time);
@@ -426,5 +428,46 @@ class ReportController extends Controller
         $data['meta_title'] = 'Over All Work Report';
         $data['employees'] = Employee::all();
         return view('reports.all-work-report.over-all-work-report', $data);
+    }
+
+    public function getProjectsByEmployee(Request $request){
+
+        $employeeId = $request->input('employee_id');
+        // Search tasks where employee is in the comma-separated members
+        $tasks = ProjectTask::whereRaw("FIND_IN_SET(?, members)", [$employeeId])->with('project')->get();
+        // Optional: return only project IDs or names
+        $projects = $tasks->pluck('project')->filter()->unique('id')->values();
+        return response()->json($projects);
+    }
+
+    public function getFilteredReports(Request $request){
+        
+        $query = WorkReport::query();
+
+        if ($request->filled('employee_id')) {
+            $query->where('emp_id', $request->employee_id);
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_name', $request->project_id);
+        }
+
+        if ($request->filled('task_id')) {
+            $query->where('type_of_work', $request->task_id); // Adjust field name if needed
+        }
+
+        if ($request->filled('day')) {
+            $query->whereDay('report_date', $request->day);
+        }
+
+        if ($request->filled('month')) {
+            $query->whereMonth('report_date', $request->month);
+        }
+
+        if ($request->filled('year')) {
+            $query->whereYear('report_date', $request->year);
+        }
+
+        return response()->json($query->get());
     }
 }
