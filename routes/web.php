@@ -31,6 +31,7 @@ use App\Http\Controllers\MomController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\MailBoxController;
 use App\Http\Controllers\CustomAttendanceController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ReportController;
 
 use App\Models\Appearence;
@@ -57,7 +58,7 @@ Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
         return view('auth/login');
     });
-    
+
     Route::post('/logout', function () {
         Auth::logout();
         session()->invalidate();
@@ -77,14 +78,14 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/attendance/emergency-mark',[AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
     Route::post('/attendance/custom-mark-out/{id}',[AttendanceController::class, 'customMarkOut'])->name('attendance.custom-mark-out');
     Route::get('/attendance/marked-in-list',[AttendanceController::class, 'markedInList'])->name('attendance.marked-in-list');
-    Route::get('/attendance/emplyee-markin/{id}',[AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin');
+    Route::get('/attendance/emplyee-markin/{id}',[AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin'); 
     Route::delete('/attendance/destroy/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
     Route::post('/attendance/custom-attendance-entry', [AttendanceController::class, 'customAttendanceEntry'])->name('attendance.custom-attendance-entry');
     Route::post('attendance/full-day-attendance-entry', [AttendanceController::class, 'storeFullDayEntry'])->name('attendance.full-day-attendance-entry');
     Route::get('attendance/incomplete-working-hours', [AttendanceController::class, 'getIncompleteWorkingHours'])->name('attendance.incomplete-working-hours');
     Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
     Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
-
+    
 
 
     /* roles */
@@ -112,6 +113,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/check-old-password', [UserController::class, 'checkOldPassword'])->name('check_old_password');
     Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
     Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
+    Route::get('/birthday_view', [UserController::class, 'users_birthday'])->name('birthday_view');
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
@@ -176,6 +178,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
     Route::post('/work-report/custom-workstore', [WorkReportController::class, 'customWorkstore'])->name('work-report.custom-workstore');
+    Route::get('/work-report/emerbency-work-report', [WorkReportController::class, 'emergencyWorkReport'])->name('work-report.emerbency-work-report');
 
     /* Works Module */
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
@@ -221,6 +224,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('thoughts',ThoughtsController::class);
     Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
     Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
+    Route::get('/thoughts_view', [ThoughtsController::class, 'view_thoughts'])->name('thoughts.view');
 
     /* Views/Company policies */
 
@@ -236,6 +240,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/others/announcements/store', [AnnouncementController::class, 'store'])->name('others.announcements.store');
     Route::get('/others/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('others.announcements.edit');
     Route::delete('/others/announcements/{announcement}/destroy', [AnnouncementController::class, 'destroy'])->name('others.announcements.destroy');
+    Route::get('/announcement_view', [AnnouncementController::class, 'view_announcement'])->name('announcement_view');
 
     /* Others/Events */
     Route::get('/others/events', [EventController::class, 'index'])->name('others.events.index');
@@ -259,7 +264,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);
-
+    Route::get('/appreciation_view',[AppreciationController::class, 'view_appreciation'])->name('view_appreciation');
     /* Mailbox */
 
     // Route::get('/mail-box', [MailBoxController::class, 'index'])->name('mailbox.index');
@@ -315,8 +320,24 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/user-monthly-overview-data', [ReportController::class, 'monthlyOverviewReport'])->name('reports.user-monthly-overview-data');
     Route::get('/reports/daily-attendance-report', [ReportController::class, 'dailyAttendanceReport'])->name('reports.daily-attendance-report');
     Route::get('/reports/daily-attendance', [ReportController::class, 'dailyAttendanceData'])->name('reports.daily-attendance');
-
+    Route::get('/reports/leave-report', [ReportController::class, 'leaveReport'])->name('reports.leave-report');
+    Route::get('/reports/leave-report-data', [ReportController::class, 'leaveReportData'])->name('reports.leave-report-data');
+    Route::get('/reports/all-attendance-report', [ReportController::class, 'allAttendanceReport'])->name('reports.all-attendance-report');
+    Route::post('/reports/all-attendance-data', [ReportController::class, 'allAttendanceData'])->name('reports.all-attendance-data');
+    Route::get('/reports/all-work-report', [ReportController::class, 'allWorkReport'])->name('reports.all-work-report');
+    Route::post('/reports/all-work-report', [ReportController::class, 'allWorkReportData'])->name('reports.all-work-report');
+    Route::get('/reports/over-all-work-report', [ReportController::class, 'overAllWorkReport'])->name('reports.over-all-work-report');
+    Route::get('/reports/get-projects-by-employee', [ReportController::class, 'getProjectsByEmployee'])->name('reports.get-projects-by-employee');
+    Route::post('/reports/get-employee-reports', [ReportController::class, 'getFilteredReports']) ->name('reports.get-employee-reports');
+    Route::get('/reports/emergency-reports', [ReportController::class, 'emergencyAttendanceReport']) ->name('reports.emergency-reports');
+    Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
     
+
+    /*Galley*/
+    Route::resource('gallery', GalleryController::class);
+    Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('gallery.upload.image');
+    Route::get('/gallery/{id}', [GalleryController::class, 'show'])->name('gallery.show');
+    Route::delete('/gallery/{gallery}/image', [GalleryController::class, 'deleteImage'])->name('gallery.image.delete');
 
 });
 

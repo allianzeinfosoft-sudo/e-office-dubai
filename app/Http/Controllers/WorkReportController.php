@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\workReport;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -259,4 +260,13 @@ class WorkReportController extends Controller
             'message' => 'Work report submitted successfully!',
         ]);
     }
+    
+    public function emergencyWorkReport(){
+        $data['meta_title'] = 'Emergency Work Report';
+        $data['projects'] = Project::all();
+        $data['repots_posted'] = WorkReport::with(['project', 'projectTask'])
+                ->where('username', Auth::user()->username)->get();
+        return view('attendance.emergency_work_report', $data);
+    }
+    
 }

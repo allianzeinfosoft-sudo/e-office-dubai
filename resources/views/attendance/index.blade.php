@@ -337,13 +337,13 @@
       <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
         @csrf
             <div class="col-12 mb-3">
-              <label for="signin_date" class="form-label">Date</label>
-              <input type="date" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
+              <label for="emergency_signin_date" class="form-label">Date</label>
+              <input type="date" id="emergency_signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
             </div>
 
             <div class="col-12 mb-3">
-              <label for="signin_late_note" class="form-label">Reason</label>
-              <textarea id="signin_late_note" name="signin_late_note" class="form-control" placeholder="Reason" rows="5"></textarea>
+              <label for="emergency_signin_late_note" class="form-label">Reason</label>
+              <textarea id="emergency_signin_late_note" name="signin_late_note" class="form-control" placeholder="Reason" rows="5"></textarea>
             </div>
   
             <div class="col-12 mb-3">
@@ -553,8 +553,8 @@ function emergencyMarkOut() {
 function emergencyMark(type) {
     const formData = {
         _token: $('input[name="_token"]').val(),
-        signin_date: $('#signin_date').val(),
-        signin_late_note: $('#signin_late_note').val(),
+        signin_date: $('#emergency_signin_date').val(),
+        signin_late_note: $('#emergency_signin_late_note').val(),
         time_in_out: $('#time_in_out').val(),
         type: type // 'mark-in' or 'mark-out'
     };

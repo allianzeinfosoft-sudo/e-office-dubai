@@ -7,6 +7,9 @@ use App\Models\Employee;
 use App\Models\Attendance;
 use App\Models\Holiday;
 use App\Models\Leave;
+use App\Models\workReport;
+use App\Models\Project;
+use App\Models\ProjectTask;
 use App\Helpers\CustomHelper;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -183,7 +186,7 @@ class ReportController extends Controller
     }
 
     public function dailyAttendanceReport(){
-        $data['meta_title'] = 'Monthly Overview';
+        $data['meta_title'] = 'Daily Attendance Report';
         return view('reports.daily-attendance.index', $data);
     }
     public function dailyAttendanceData(Request $request){
@@ -218,20 +221,280 @@ class ReportController extends Controller
             }
 
             $data[] = [
-                'index' => $index + 1,
-                'name' => $name,
-                'image' => $image,
-                'signin_time' => ($attendance->signin_time) ? $attendance->signin_time . '<br /> <span class="badge badge-success">' . $attendance->punchin_type . '</span>' : '-',
-                'signout_time' => $attendance->signout_time ?? '-',
-                'break_time' => $attendance->break_time ?? '-',
+                'index'         => $index + 1,
+                'name'          => $name,
+                'image'         => $image,
+                'signin_time'   => ($attendance->signin_time) ? $attendance->signin_time . '<br /> <span class="badge badge-success">' . $attendance->punchin_type . '</span>' : '-',
+                'signout_time'  => $attendance->signout_time ?? '-',
+                'break_time'    => $attendance->break_time ?? '-',
                 'working_hours' => $attendance->working_hours ?? '-',
-                'signin_note' => $attendance->signin_late_note ?? '-',
-                'signout_note' => $attendance->signout_late_note ?? '-',
-                'status' => $finalStatus
+                'signin_note'   => $attendance->signin_late_note ?? '-',
+                'signout_note'  => $attendance->signout_late_note ?? '-',
+                'status'        => $finalStatus
             ];
         }
 
         return response()->json(['data' => $data]);
     }
 
+    public function leaveReport(){
+        $data['meta_title'] = 'Leave Report';
+        $data['employees'] = Employee::all();
+        return view('reports.leave-report.index', $data);
+    }
+
+    public function leaveReportData(Request $request){
+        $query = Leave::with('user', 'employee');
+
+        if ($request->filled('username')) {
+            $query->where('user_id', $request->username);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('leave_from', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('leave_to', '<=', $request->end_date);
+        }
+
+        $leaves = $query->get()->map(function ($leave) {
+            return [
+                'id'            => $leave->id,
+                'username'      => $leave->Employee->full_name ?? '-',
+                'leave_from'    => Carbon::parse($leave->leave_from)->format('d-m-Y'), 
+                'leave_to'      => Carbon::parse($leave->leave_to)->format('d-m-Y'), 
+                'leave_count'   => Carbon::parse($leave->leave_from)->diffInDays($leave->leave_to) + 1,
+                'leave_type'    => ucfirst($leave->leave_type),
+                'reason'        => $leave->reason,
+                'apply_date'    => $leave->created_at->format('d-m-Y'),
+                'status'        => ($leave->status == 3) ? 'Rejected' : (($leave->status == 2) ? 'Approved' : 'Pending'),
+                'action'        => '<a href="#" class="btn btn-sm btn-info">Edit</a>'
+            ];
+        });
+
+        return response()->json(['data' => $leaves]);
+    }
+
+    public function allAttendanceReport(){
+        $data['meta_title'] = 'All Attendance Report';
+        $data['employees'] = Employee::all();
+        return view('reports.all-attendance-report.index', $data);
+    }
+
+    public function allAttendanceData(Request $request){
+        $data['current_user']   = Employee::where('user_id', $request->employee_id)->first();
+        $data['day']            = $request->day;
+        $data['month']          = $request->month;
+        $data['year']           = $request->year;
+
+        $query = Attendance::with('employee', 'employee.user')->where('emp_id', $request->employee_id);
+
+        if ($request->filled('day')) {
+            // Specific date
+            $date = Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d');
+            $query->whereDate('signin_date', $date);
+        } else {
+            // Entire month
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth()->format('Y-m-d');
+            $query->whereBetween('signin_date', [$startDate, $endDate]);
+        }
+        $data['attendances'] = $query->get();
+        $html = view('reports.all-attendance-report.report-view',  $data)->render();
+
+        return response()->json([
+            'html' => $html
+        ]);
+    }
+
+    public function allWorkReport(){
+        $data['meta_title'] = 'All Work Report';
+        $data['employees'] = Employee::all();
+        return view('reports.all-work-report.index', $data);
+    }
+    
+    public function allWorkReportData(Request $request){
+    
+        $request->validate([
+            'employee_id' => 'nullable|integer',
+            'day' => 'nullable|string', // optional day filter
+            'month' => 'required|string', // padded month
+            'year' => 'required|integer|min:2000',
+        ]);
+
+        $employeeId = $request->employee_id;
+        $day = $request->day;
+        $month = $request->month;
+        $year = $request->year;
+
+        // Get attendance data
+        $attendanceQuery = Attendance::query()
+            ->whereMonth('signin_date', $month)
+            ->whereYear('signin_date', $year);
+
+        if ($day) {
+            $attendanceQuery->whereDay('signin_date', $day);
+        }
+
+        if ($employeeId) {
+            $attendanceQuery->where('emp_id', $employeeId);
+        }
+
+        $attendanceData = $attendanceQuery->get()->keyBy(function ($item) {
+            return $item->emp_id . '_' . $item->signin_date;
+        });
+
+        // Get work report data
+        $workReportQuery = WorkReport::with('project', 'projectTask', 'tasks')
+            ->whereMonth('report_date', $month)
+            ->whereYear('report_date', $year);
+
+        if ($day) {
+            $workReportQuery->whereDay('report_date', $day);
+        }
+
+        if ($employeeId) {
+            $workReportQuery->where('emp_id', $employeeId);
+        }
+
+        $groupedReports = $workReportQuery->get()->groupBy(function ($item) {
+            return $item->emp_id . '_' . $item->report_date;
+        });
+
+        $mergedData = [];
+
+        foreach ($groupedReports as $key => $reports) {
+            [$empId, $reportDate] = explode('_', $key);
+            $attendance = $attendanceData->get($key);
+
+            $mergedData[] = [
+                'emp_id'        => $empId,
+                'report_date'   => $reportDate,
+                'signin_time'   => $attendance->signin_time ?? null,
+                'signout_time'  => $attendance->signout_time ?? null,
+                'working_hours' => $attendance->working_hours ?? null,
+                'punchin_note'  => $attendance->signin_late_note ?? null,
+                'punchout_note' => $attendance->signout_late_note ?? null,
+                'reports'       => $reports->map(function ($report) {
+                    $totalHours = 0;
+                    if (!empty($report->total_time) && strpos($report->total_time, ':') !== false) {
+                        [$hours, $minutes] = explode(':', $report->total_time);
+                        $totalHours = ((int)$hours) + ((int)$minutes / 60);
+                    }
+
+                    $records = is_numeric($report->total_records) ? (float)$report->total_records : 0;
+                    $achievedHour = $totalHours > 0 ? ($records / $totalHours) : 0;
+
+                    $productivity = is_numeric($report->productivity_hour) ? (float)$report->productivity_hour : 0;
+                    $grade = $productivity > 0
+                        ? number_format(($achievedHour / $productivity) * 100, 2)
+                        : 0;
+
+                    return [
+                        'project_name' => $report->project->project_name ?? 'N/A',
+                        'type_of_work' => $report->tasks->name ?? 'N/A',
+                        'time_of_work' => $report->time_of_work,
+                        'total_records' => $report->total_records,
+                        'total_time' => $report->total_time,
+                        'productivity_hour' => $report->productivity_hour,
+                        'achieved_hour' => number_format($achievedHour, 2),
+                        'comments' => $report->comments,
+                        'grade' => $grade,
+                        'performance' => $this->getPerformanceCategory($grade),
+                        'report_date' => $report->report_date,
+                    ];
+                }),
+            ];
+        }
+
+        return view('reports.all-work-report.index', [
+            'mergedData' => $mergedData,
+            'meta_title' => 'All Work Report',
+            'employees' => Employee::all(),
+            'request' => $request, // Pass this if Blade needs it for old form values
+        ]);
+    }
+
+    private function getPerformanceCategory($grade)
+    {
+        if ($grade >= 90) return 'Excellent';
+        if ($grade >= 75) return 'Good';
+        if ($grade >= 50) return 'Average';
+        return 'Poor';
+    }
+
+    public function overAllWorkReport(){
+        $data['meta_title'] = 'Over All Work Report';
+        $data['employees'] = Employee::all();
+        return view('reports.all-work-report.over-all-work-report', $data);
+    }
+
+    public function getProjectsByEmployee(Request $request){
+
+        $employeeId = $request->input('employee_id');
+        // Search tasks where employee is in the comma-separated members
+        $tasks = ProjectTask::whereRaw("FIND_IN_SET(?, members)", [$employeeId])->with('project')->get();
+        // Optional: return only project IDs or names
+        $projects = $tasks->pluck('project')->filter()->unique('id')->values();
+        return response()->json($projects);
+    }
+
+    public function getFilteredReports(Request $request){
+        
+        $query = WorkReport::query();
+
+        if ($request->filled('employee_id')) {
+            $query->where('emp_id', $request->employee_id);
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_name', $request->project_id);
+        }
+
+        if ($request->filled('task_id')) {
+            $query->where('type_of_work', $request->task_id); // Adjust field name if needed
+        }
+
+        if ($request->filled('day')) {
+            $query->whereDay('report_date', $request->day);
+        }
+
+        if ($request->filled('month')) {
+            $query->whereMonth('report_date', $request->month);
+        }
+
+        if ($request->filled('year')) {
+            $query->whereYear('report_date', $request->year);
+        }
+
+        return response()->json($query->get());
+    }
+
+    public function emergencyAttendanceReport(){
+        $data['meta_title'] = 'Emergency Attendance Report';
+        return view('reports.emergency-report.index', $data);
+    }
+
+    public function getEmergencyAttendance(Request $request)
+{
+    $query = Attendance::query()
+        ->where(function ($q) {
+            $q->where('status', 'emergency')
+              ->orWhere('punchin_type', 'emergency')
+              ->orWhere('punchout_type', 'emergency');
+        });
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->whereMonth('signin_date', $request->month);
+        }
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->whereYear('signin_date', $request->year);
+        }
+        
+    $records = $query->orderByDesc('signin_date')->get();
+
+    return response()->json($records);
+}
 }

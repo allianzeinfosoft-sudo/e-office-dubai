@@ -22,7 +22,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container">
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -54,7 +54,7 @@
                                     <tr>
                                         <th>S.No</th>
                                         <th>Image</th>
-                                        <th>Title</th>
+                                        <th>Appreciants</th>
                                         <th>Details</th>
                                         <th>Display Date</th>
                                         <th>Create Date</th>
@@ -204,7 +204,14 @@
                             }
                         }
                     },
-                    { data: 'appreciant', title: 'Title' },
+                    {
+                        data: 'appreciant',
+                        title: 'Appreciants',
+                        render: function(data, type, row) {
+                            if (!Array.isArray(data)) return '';
+                            return data.map(name => `<span class="badge bg-primary mb-1">${name}</span>`).join(' ');
+                        }
+                    },
                     { data: 'appreciation_details', title: 'Details' },
                     { data: 'display_date', title: 'Display Date' },
                     { data: 'created_at', title: 'Create Date'},

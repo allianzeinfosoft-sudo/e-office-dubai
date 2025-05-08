@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
+<link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/ui-carousel.css') }}" />
 <style>
 .w-35 {
     width: 35% !important;
@@ -22,7 +23,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container bg-eoffice">
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -376,7 +377,9 @@
 
 
 @push('js')
+<script src="{{ asset('assets/js/ui-carousel.js') }}"></script>
 <script>
+
     // form validation
     $(function () {
 
@@ -387,7 +390,9 @@
         success: function (response) {
 
             if (response.data && response.data.length) {
+
                 renderTimeline(response.data);
+
             } else {
                 $(".timeline.timeline-center").html("<li class='timeline-item'>No updates for today.</li>");
             }
@@ -397,17 +402,17 @@
             $(".timeline.timeline-center").html("<li class='timeline-item text-danger'>Failed to load timeline data.</li>");
         }
     });
-});
+
 
 
 function renderTimeline(data) {
+
     const container = $(".timeline.timeline-center");
     container.empty();
 
     data.forEach(item => {
         const htmlMap = {
             announcement: getAnnouncementHtml,
-            // poll: getPollHtml,
             birthday: getBirthdayHtml,
             appreciation: getAppreciationHtml
         };
@@ -418,10 +423,35 @@ function renderTimeline(data) {
             container.append(`<li class="timeline-item pb-md-4 pb-5">${html}</li>`);
         }
     });
+    console.log("Gallery DOM:", document.querySelector(".gallery-top"));
+    // Initialize all Swipers AFTER rendering
+    setTimeout(() => initBirthdaySwiper(), 300); // Give DOM a moment
+
+
 }
 
 
 
+function initBirthdaySwiper() {
+    const galleryThumbs = new Swiper(".gallery-thumbs", {
+        spaceBetween: 10,
+        slidesPerView: 4,
+        watchSlidesProgress: true,
+    });
+
+    new Swiper(".gallery-top", {
+        spaceBetween: 10,
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        thumbs: {
+            swiper: galleryThumbs,
+        },
+    });
+}
+
+});
 
 function getAnnouncementHtml(item) {
 
@@ -507,10 +537,9 @@ function getAnnouncementHtml(item) {
 function getBirthdayHtml(item) {
     const employees = item.employees || [];
     const displayDate = item.display_date || 'N/A';
-    console.log(employees);
 
     const slidesHtml = employees.map(emp => `
-        <div class="swiper-slide text-center">
+        <div class="swiper-slide text-center" style="position: relative;">
             <div class="card-bday">
                 <img class="bdy-img mt-5 rounded-circle" src="/storage/${emp.profile_image}" alt="${emp.full_name}">
             </div>
@@ -562,14 +591,22 @@ function getAppreciationHtml(item) {
     const employees = item.employees || [];
     const displayDate = item.display_date || 'N/A';
     const message = item.message || '';
-    const image = item.image || '/assets/img/backgrounds/cng.png'; // fallback image
+    const image = item.image
+        ? `/storage/appreciation_flowers/${item.image}`
+        : '/assets/img/backgrounds/cng.png';
 
-    const employeeHtml = employees.map(emp => `
-        <div class="d-flex flex-column me-2 mb-2">
-            <img src="${emp.profile_image}" alt="${emp.full_name}" class="mx-auto border-theme rounded-circle w-px-75" />
-            <span class="bday-name">${emp.full_name}</span>
-        </div>
-    `).join('');
+    const employeeHtml = employees.map(emp => {
+        const profileImage = emp.profile_image && emp.profile_image !== '/assets/img/avatars/default.png'
+            ? `/storage/${emp.profile_image}`
+            : '/assets/img/avatars/default.png';
+
+        return `
+            <div class="d-flex flex-column me-2 mb-2 text-center">
+                <img src="${profileImage}" alt="${emp.full_name}" class="mx-auto border-theme rounded-circle w-px-75" />
+                <span class="bday-name">${emp.full_name}</span>
+            </div>
+        `;
+    }).join('');
 
     return `
         <span class="timeline-indicator timeline-custom timeline-indicator-primary" data-aos="zoom-in" data-aos-delay="200">
@@ -584,9 +621,10 @@ function getAppreciationHtml(item) {
                     ${employeeHtml}
                 </div>
                 <div class="cng-img text-center">
-                    <img src="${image}" alt="Appreciation Background">
+                    <img class="w-40" src="../../assets/img/backgrounds/cng.png">
+                    <img class="w-25" src="${image}" alt="Appreciation Background">
                 </div>
-                <p class="mt-3 mb-2">
+                <p class="mt-3 mb-2 text-center">
                     ${message}
                 </p>
                 <div class="d-flex justify-content-between align-items-center mt-5 flex-wrap">
@@ -599,17 +637,20 @@ function getAppreciationHtml(item) {
                 </div>
             </div>
             <div class="timeline-event-time">${displayDate}</div>
-        </div>`;
+        </div>
+    `;
 }
 
 
 
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const container = document.querySelector(".card-app");
-      const confettiCount = 40;
 
-      for (let i = 0; i < confettiCount; i++) {
+function runConfettiEffect(selector = ".card-app") {
+    const container = document.querySelector(selector);
+    if (!container) return;
+
+    const confettiCount = 40;
+    for (let i = 0; i < confettiCount; i++) {
         const confetti = document.createElement("div");
         confetti.classList.add("confetti", Math.random() > 0.5 ? "red" : "gold");
         confetti.style.left = `${Math.random() * 100}%`;
@@ -617,43 +658,60 @@ function getAppreciationHtml(item) {
         confetti.style.animationDuration = `${3 + Math.random() * 2}s`;
         confetti.style.animationDelay = `${Math.random() * 3}s`;
         container.appendChild(confetti);
-      }
+    }
+}
+
+function renderTimeline(data) {
+    const container = $(".timeline.timeline-center");
+    container.empty();
+
+    data.forEach(item => {
+        const htmlMap = {
+            announcement: getAnnouncementHtml,
+            birthday: getBirthdayHtml,
+            appreciation: getAppreciationHtml
+        };
+
+        const generateHtml = htmlMap[item.type];
+        if (typeof generateHtml === 'function') {
+            const html = generateHtml(item);
+            container.append(`<li class="timeline-item pb-md-4 pb-5">${html}</li>`);
+        }
     });
 
+    initConfettiForGalleryTop();
+}
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const galleryTop = document.querySelector('.gallery-top');
-        const canvas = galleryTop.querySelector('.confetti-canvas');
+function initConfettiForGalleryTop() {
+    const galleryTop = document.querySelector('.gallery-top');
+    if (!galleryTop) return;
 
-        const myConfetti = confetti.create(canvas, {
-          resize: true,
-          useWorker: true
-        });
+    const canvas = galleryTop.querySelector('.confetti-canvas');
+    if (!canvas) return;
 
-        // Continuous bright, colorful popping effect
-        setInterval(() => {
-          myConfetti({
-            particleCount: 15, // Increased number
+    const myConfetti = confetti.create(canvas, {
+        resize: true,
+        useWorker: true
+    });
+
+    setInterval(() => {
+        myConfetti({
+            particleCount: 15,
             spread: 80,
             startVelocity: 30,
             gravity: 0.5,
             ticks: 200,
             origin: {
-              x: Math.random(),
-              y: Math.random()
+                x: Math.random(),
+                y: Math.random()
             },
-            colors: [
-              '#ff0000', // red
-              '#00ff00', // lime
-              '#0000ff', // blue
-              '#ffff00', // yellow
-              '#ff00ff', // magenta
-              '#00ffff', // cyan
-              '#ffffff'  // white for extra brightness
-            ],
+            colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'],
             shapes: ['square', 'circle']
-          });
-        }, 250); // More frequent bursts
-      });
+        });
+    }, 250);
+}
+
+
+
 </script>
 @endpush

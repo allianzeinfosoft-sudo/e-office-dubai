@@ -121,25 +121,34 @@ return [
                 'permission' => ['view attendance report'],
             ],
             [
-                'title' => 'My Attendance',
-                'route' => '#',
-                'permission' => ['view attendance report'],
+                'title' => 'Leave Report',
+                'route' => '/reports/leave-report',
+                'permission' => ['view leave report'],
             ],
             [
-                'title' => 'My Work Report',
-                'route' => '#',
-                'permission' => ['view my work report'],
+                'title' => 'All Attendance Report',
+                'route' => '/reports/all-attendance-report',
+                'permission' => ['view all attendance report'],
             ],
             [
-                'title' => 'My Emergency Report',
-                'route' => '#',
-                'permission' => ['view emergency report'],
+                'title' => 'All Work Report',
+                'route' => '/reports/all-work-report',
+                'permission' => ['view all work report'],
             ],
             [
-                'title' => 'Salary Slip Report',
+                'title' => 'Over All Work Report',
+                'route' => '/reports/over-all-work-report',
+                'permission' => ['view over all work report'],
+            ],
+            [
+                'title' => 'All Emergency Attendance Report',
+                'route' => '/reports/emergency-reports',
+                'permission' => ['view emergency attendance report'],
+            ],
+            [
+                'title' => 'Over All Emergency Attendance Report',
                 'route' => '#',
-                'permission' => ['view salary slip'],
-                // 'badge' => 'new',
+                'permission' => ['view all attendance report'],
             ],
         ]
     ],
@@ -250,32 +259,34 @@ return [
     [
         'title' => 'Gallery',
         'icon' => 'ti ti-icons',
-        'route' => '#',
+        'route' => 'gallery',
     ],
     [
         'title' => 'View',
         'icon' => 'ti ti-eye',
         'route' => 'javascript:void(0);',
-        'permission' => ['view though','view appreciation','view birthday', 'view event', 'view policy', 'view holiday', 'view reminder'],
+        'permission' => ['view though','view appreciation','view birthday','view announcement', 'view event', 'view policy', 'view holiday', 'view reminder'],
         'submenu' => [
             [
                 'title' => 'Thought Of The Day',
-                'route' =>  'thoughts',
+                'route' =>  '/thoughts_view',
                 'permission' => ['view thought'],
 
             ],
             [
                 'title' => ' Appreciation',
-                'route' =>  '#',
+                'route' =>  'appreciation_view',
+                'permission' => ['view appreciation']
             ],
             [
                 'title' => 'Birthdays',
-                'route' =>  '#',
+                'route' =>  'birthday_view',
                 'permission' => ['view birthday'],
             ],
             [
                 'title' => 'Announcement',
-                'route' =>  '#',
+                'route' =>  'announcement_view',
+                'permissioin' => ['view announcement'],
             ],
             [
                 'title' => 'Company Policies ',
@@ -285,7 +296,7 @@ return [
             ],
             [
                 'title' => 'Events',
-                'route' =>  '#',
+                'route' =>  '/others/events',
                 'permission' => ['view event'],
             ],
             [
