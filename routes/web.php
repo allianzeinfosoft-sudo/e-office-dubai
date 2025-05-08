@@ -85,7 +85,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('attendance/incomplete-working-hours', [AttendanceController::class, 'getIncompleteWorkingHours'])->name('attendance.incomplete-working-hours');
     Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
     Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
-
+    
 
 
     /* roles */
@@ -178,6 +178,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::put('/work-report/{workReport}/update', [WorkReportController::class, 'update'])->name('work-report.update');
     Route::delete('/work-report/{workReport}', [WorkReportController::class, 'destroy'])->name('work-report.destroy');
     Route::post('/work-report/custom-workstore', [WorkReportController::class, 'customWorkstore'])->name('work-report.custom-workstore');
+    Route::get('/work-report/emerbency-work-report', [WorkReportController::class, 'emergencyWorkReport'])->name('work-report.emerbency-work-report');
 
     /* Works Module */
     Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
