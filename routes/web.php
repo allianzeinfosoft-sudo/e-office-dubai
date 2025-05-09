@@ -147,8 +147,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/custom_leave',[LeaveController::class,'custom_leave'])->name('custom.leave');
 
     /* Prjects */
-    Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
+    // Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/projects/get-projects', [ProjectController::class, 'getProject'])->name('projects.get-projects');
     Route::get('/project/create', [ProjectController::class, 'create'])->name('project.create');
     Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
     Route::get('/project/{project}/edit', [ProjectController::class, 'edit'])->name('project.edit');

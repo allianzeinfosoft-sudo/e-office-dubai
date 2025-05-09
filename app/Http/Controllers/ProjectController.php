@@ -14,30 +14,27 @@ class ProjectController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request){
+        // Regular page view
+        $data['meta_title'] = 'Projects';
+        return view('projects.list', $data);
+    }
 
-        /* ajax request */
-        if ($request->ajax()) {
-            // Handle the AJAX request here
-            $projects = Project::with('department', 'user')->get();
+    public function getProject(Request $request){
+        $projects = Project::with('department', 'user')->get();
             return response()->json([
                 'success' => true,
-                'message' => 'Attendance marked successfully',
+                'message' => 'Projects fetched successfully',
                 'data' => $projects->map(function ($project) {
                     return [
-                        'id' => $project->id,
-                        'project_name' => $project->project_name,
-                        'department_name' => $project->department->department, 
-                        'user_name' => $project->user->username ?? '',
-                        'start_date' => $project->start_date,
-                        'end_date' => $project->end_date,
+                        'id'              => $project->id,
+                        'project_name'    => $project->project_name,
+                        'department_name' => optional($project->department)->department ?? '',
+                        'user_name'       => optional($project->user)->username ?? '',
+                        'start_date'      => $project->start_date,
+                        'end_date'        => $project->end_date,
                     ];
                 }),
             ]);
-        }
-
-        //
-        $data['meta_title'] = 'Projects';
-        return view('projects.list', $data);
     }
 
     /**
