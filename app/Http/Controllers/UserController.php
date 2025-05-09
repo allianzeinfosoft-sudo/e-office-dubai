@@ -354,9 +354,16 @@ class UserController extends Controller
         return view('users.profile', compact('user'));
     }
 
-    public function checkEmail(Request $request){
-        $exists = User::where('email', $request->email)->exists();
-        return response()->json($exists ? false : true);
+    public function checkEmail(Request $request)
+    {
+        $email = $request->input('email');
+        $userId = $request->input('user_id');
+        $query = User::where('email', $email);
+        if ($userId) {
+            $query->where('id', '!=', $userId);
+        }
+        $exists = $query->exists();
+        return response()->json(!$exists);
     }
 
     public function profileEdit($userId){

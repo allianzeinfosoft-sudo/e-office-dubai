@@ -47,7 +47,7 @@
                     <div class="col-md-4 mb-3">
                       <label for="email_id" class="form-label">Email ID:</label>
                         <div class="input-group input-group-merge">
-                        <input class="form-control" type="email" id="email_id" name="email" value="{{ old('email',$user->email) ?? '' }}" placeholder="Enter email" />
+                        <input class="form-control" type="email" id="email" name="email" value="{{ old('email',$user->email) ?? '' }}" placeholder="Enter email" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -150,7 +150,7 @@
                       <select id="group" name="group" class="select2 form-select form-select-lg" data-allow-clear="true">
                         <option value="">Select Group</option>
                         @foreach ($roles as $role)
-                                <option value="{{ $role->name }}" {{ (old('group') == $role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
+                            <option value="{{ $role->name }}" {{ (old('group') == $role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
                         @endforeach
                       </select>
                     </div>

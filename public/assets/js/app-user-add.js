@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // Form validation for Add new User
     fv = FormValidation.formValidation(formAddNewRecord, {
       fields: {
-        employeeid: {
+        employeeID: {
           validators: {
             notEmpty: {
               message: 'The employeeid is required'
@@ -27,32 +27,39 @@ document.addEventListener('DOMContentLoaded', function (e) {
         },
         email: {
             validators: {
+              notEmpty: {
+                message: 'Email field is required'
+              },
+              emailAddress: {
+                message: 'Please enter a valid email address'
+              },
+              remote: {
+                message: 'This email is already taken',
+                url: '/check_email', // Laravel route
+                type: 'GET',
+                delay: 500,
+                data: function () {
+                  const emailInput = document.querySelector('[name="email"]');
+                  const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                  return {
+                    email: emailInput ? emailInput.value : '',
+                    _token: csrfToken ? csrfToken.getAttribute('content') : ''
+                  };
+                }
+              }
+            }
+          },
+
+        full_name: {
+            validators: {
                 notEmpty: {
-                    message: 'Email field is required'
+                message: 'Full Name field is required'
                 },
-                emailAddress: {
-                    message: 'Please enter a valid email address'
-                },
-                remote: {
-                    message: 'This email is already taken',
-                    url: '/check-email', // Laravel route
-                    type: 'POST',
-                    delay: 500, // Delay request to prevent spam
-                    data: function(validator) {
-                        return {
-                            email: validator.getFieldElements('email').val(),
-                            _token: $('meta[name="csrf-token"]').attr('content') // CSRF Token
-                        };
-                    }
+                regexp: {
+                regexp: /^[A-Za-z\s]+$/,
+                message: 'Full Name must contain only letters and spaces'
                 }
             }
-        },
-        full_name: {
-          validators: {
-            notEmpty: {
-              message: 'Full Name field is required'
-            }
-          }
         },
         aadhaar: {
           validators: {
@@ -76,18 +83,28 @@ document.addEventListener('DOMContentLoaded', function (e) {
           }
         },
         dob: {
-          validators: {
-            callback: {
-                message: 'Date of Birth cannot be in the future',
+            validators: {
+              notEmpty: {
+                message: 'Date of Birth is required'
+              },
+              callback: {
+                message: 'You must be at least 18 years old',
                 callback: function(input) {
-                    var dob = new Date(input.value);
-                    var today = new Date();
-                    today.setHours(0, 0, 0, 0); // Remove time portion
-                    return dob <= today;
+                  var dob = new Date(input.value);
+                  if (isNaN(dob.getTime())) return false; // Invalid date
+
+                  var today = new Date();
+                  var minDate = new Date(
+                    today.getFullYear() - 18,
+                    today.getMonth(),
+                    today.getDate()
+                  );
+
+                  return dob <= minDate;
                 }
+              }
             }
-          }
-        },
+          },
         mobile_number: {
             validators: {
 
@@ -97,6 +114,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 }
             }
         },
+        phonenumber: {
+            validators: {
+                notEmpty: {
+                    message: 'Phone number is required'
+                },
+                regexp: {
+                    regexp: /^[6-9]\d{9}$/,
+                    message: 'Enter a valid 10-digit phone number'
+                }
+            }
+          },
         landline: {
           validators: {
             regexp: {
@@ -125,12 +153,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
               message: 'Join date is required'
             },
             callback: {
-                message: 'Date of Birth cannot be in the future',
+                message: 'Join date cannot be in the future',
                 callback: function(input) {
-                    var dob = new Date(input.value);
+                    var joindate = new Date(input.value);
                     var today = new Date();
-                    today.setHours(0, 0, 0, 0); // Remove time portion
-                    return dob <= today;
+                    // today.setHours(0, 0, 0, 0); // Remove time portion
+                    return joindate <= today;
                 }
             }
           }
@@ -149,13 +177,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
             }
           }
         },
-        phonenumber: {
-          validators: {
-            notEmpty: {
-              message: 'Phone number_status is required'
-            }
-          }
-        },
+
         profile_image:{
           validators: {
             file: {

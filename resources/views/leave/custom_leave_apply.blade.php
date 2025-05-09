@@ -144,3 +144,20 @@
   <!-- / Layout wrapper -->
 @endsection
 
+@push('js')
+    <script>
+         var quillLeaveEditor = new Quill('#leave-editor',
+                { theme: 'snow',
+                    placeholder: 'Type your reason here...',
+                        modules: {
+                            toolbar: [
+                                [{ 'header': [1, 2, false] }],
+                                ['bold', 'italic', 'underline'],
+                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                ['link'],
+                                ['clean']
+                            ]
+                        }
+                });
+    </script>
+@endpush
