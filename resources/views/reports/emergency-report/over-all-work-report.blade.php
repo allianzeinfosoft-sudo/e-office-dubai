@@ -239,7 +239,7 @@
             let formData = $(this).serialize();
 
             $.ajax({
-                url: '/reports/get-employee-reports', // Your Laravel route
+                url: '/reports/get-emergency-reports', // Your Laravel route
                 method: 'POST',
                 data: formData,
                 success: function(response) {
@@ -248,8 +248,6 @@
                         $('#reportTable').DataTable().clear().destroy();
                     }
                     
-                    console.log(response);
-
                     let html = ``;
                     response.forEach(row => {
                         html += `<tr>

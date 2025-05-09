@@ -331,8 +331,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/reports/get-employee-reports', [ReportController::class, 'getFilteredReports']) ->name('reports.get-employee-reports');
     Route::get('/reports/emergency-reports', [ReportController::class, 'emergencyAttendanceReport']) ->name('reports.emergency-reports');
     Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
+    Route::get('/reports/over-all-emorgency-work-report', [ReportController::class, 'overAllEmergencyWorkReport'])->name('reports.over-all-emorgency-work-report');
+    Route::post('/reports/get-emergency-reports', [ReportController::class, 'getEmergencyFilteredReports']) ->name('reports.get-emergency-reports');
     
-
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
     Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('gallery.upload.image');
