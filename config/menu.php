@@ -37,25 +37,7 @@ return [
             ],
         ]
     ],
-    [
-        'title' => 'My Account',
-        'icon' => 'ti ti-user',
-        'route' => 'javascript:void(0);',
-        'submenu' => [
-            [
-                'title' => 'My Profile',
-                'route' =>  '#'
-            ],
-            [
-                'title' => 'Change Password',
-                'route' =>  '#'
-            ],
-            [
-                'title' => 'Edit Profile',
-                'route' =>  '#'
-            ],
-        ]
-    ],
+
     [
         'title' => 'Salary',
         'icon' => 'ti ti-cash',
@@ -146,8 +128,8 @@ return [
                 'permission' => ['view emergency attendance report'],
             ],
             [
-                'title' => 'Over All Emergency Attendance Report',
-                'route' => '#',
+                'title' => 'Over All Emergency Work Report',
+                'route' => '/reports/over-all-emorgency-work-report',
                 'permission' => ['view all attendance report'],
             ],
         ]

@@ -77,7 +77,7 @@
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_time" class="form-label">No. of Hours</label>
-                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" step="1" value="{{ date('H:i:s') }}" class="form-control" required />
+                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" step="1" value="" class="form-control" required />
                                                 </div>
                                             </div>    
 
@@ -89,6 +89,9 @@
                                             </div>
                                             
                                             <div class="col-sm-12 mb-2 g-2 d-flex justify-content-end">
+                                                <input type="hidden" name="emp_id" value="{{ Auth::user()->id }}" />
+                                                <input type="hidden" name="report_date" value="{{ date('Y-m-d') }}" />
+                                                <input type="hidden" name="emergency" value="1" />
                                                 <button type="button" id="submitForm" class="btn btn-primary"><i class="ti ti-plus"></i> Add</button>
                                             </div>
 
@@ -104,9 +107,9 @@
                                     <div class="d-flex justify-content-between">
                                         
                                     </div>
-                                    <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> Work Report</h4>
+                                    <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> Emergency Work Report</h4>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-datatable">
                                     <div class="row">
                                         <div class="col-sm-12 mb-2">
                                             <div class="table-responsive">
@@ -131,7 +134,7 @@
                                                             @foreach($repots_posted as $report)
                                                             <tr data-id="{{ $report->id }}">                                                            
                                                                 <td><strong>{{ $report->project->project_name?? "-" }}</strong></td>
-                                                                <td><strong>{{ $report->projectTask->task_name ?? "-"}}</strong></td>
+                                                                <td><strong>{{ $report->tasks->name ?? "-"}}</strong></td>
                                                                 <td><strong>{{ $report->total_records ?? "-" }}</strong></td>
                                                                 <td><strong>{{ $report->total_time ?? "-" }}</strong></td>
                                                                 <td><strong>{{ $report->productivity_hour ?? "-" }}</strong></td>
@@ -152,13 +155,6 @@
                                         </div>                                                        
                                     </div>
                                 </div>
-                                <div class="card-footer">
-                                    <div class="d-flex justify-content-between"></div>
-                                        <div class="d-flex align-items-right justify-content-end">
-                                            <button type="button" onclick="submitReport()" class="btn btn-primary waves-effect"><i class="ti ti-save ti-sm"></i> Submit Report</button>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -177,7 +173,7 @@
 @section('js')
 <script>
     $(function() {
-        $('.select2').select2();
+        $('#workReportTable').DataTable();
 
         $('#project_name').on('change', function () {
             let project_id = $(this).val();
@@ -258,7 +254,7 @@
 
         let html = '<tr data-id="${workReport.id}" >';
         html += `<td><strong>${workReport.project?.project_name || "-"}</strong></td>`;
-        html += `<td><strong>${workReport.project_task?.task_name || "-"}</strong></td>`;
+        html += `<td><strong>${workReport.tasks?.name || "-"}</strong></td>`;
         html += `<td><strong>${workReport.total_records || "-"}</strong></td>`;
         html += `<td><strong>${workReport.total_time || "00:00:00"}</strong></td>`;
         html += `<td><strong>${workReport.productivity_hour || "-"}</strong></td>`;
@@ -281,7 +277,7 @@
     let newRow = `
         <tr data-id="${workReport.id}">
             <td><strong>${workReport.project?.project_name || "-"}</strong></td>
-            <td><strong>${workReport.project_task?.task_name || "-"}</strong></td>
+            <td><strong>${workReport.tasks?.name || "-"}</strong></td>
             <td><strong>${workReport.total_records || "-"}</strong></td>
             <td><strong>${workReport.total_time || "00:00:00"}</strong></td>
             <td><strong>${workReport.productivity_hour || "-"}</strong></td>

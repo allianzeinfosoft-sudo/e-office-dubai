@@ -440,20 +440,85 @@ class ReportController extends Controller
         return response()->json($projects);
     }
 
-    public function getFilteredReports(Request $request){
-        
-        $query = WorkReport::query();
+    public function getFilteredReports(Request $request)
+{
+    $query = WorkReport::with(['project', 'projectTask', 'tasks'])
+        ->where('emergency', 0);
+
+    if ($request->filled('employee_id')) {
+        $query->where('emp_id', $request->employee_id);
+    }
+
+    if ($request->filled('project_id')) {
+        $query->where('project_name', $request->project_id); // Confirm if 'project_name' is correct
+    }
+
+    if ($request->filled('task_id')) {
+        $query->where('type_of_work', $request->task_id); // Confirm if 'type_of_work' is correct
+    }
+
+    if ($request->filled('day')) {
+        $query->whereDay('report_date', $request->day);
+    }
+
+    if ($request->filled('month')) {
+        $query->whereMonth('report_date', $request->month);
+    }
+
+    if ($request->filled('year')) {
+        $query->whereYear('report_date', $request->year);
+    }
+
+    return response()->json($query->get());
+}
+
+    public function emergencyAttendanceReport(){
+        $data['meta_title'] = 'Emergency Attendance Report';
+        return view('reports.emergency-report.index', $data);
+    }
+
+    public function getEmergencyAttendance(Request $request)
+    {
+        $query = Attendance::query()
+            ->where(function ($q) {
+                $q->where('status', 'emergency')
+                ->orWhere('punchin_type', 'emergency')
+                ->orWhere('punchout_type', 'emergency');
+            });
+
+            if ($request->filled('month') && $request->filled('year')) {
+                $query->whereMonth('signin_date', $request->month);
+            }
+
+            if ($request->filled('month') && $request->filled('year')) {
+                $query->whereYear('signin_date', $request->year);
+            }
+            
+        $records = $query->orderByDesc('signin_date')->get();
+
+        return response()->json($records);
+    }
+
+    public function overAllEmergencyWorkReport(){
+        $data['meta_title'] = 'Over All Work Report';
+        $data['employees'] = Employee::all();
+        return view('reports.emergency-report.over-all-work-report', $data);
+    }
+
+    public function getEmergencyFilteredReports(Request $request){
+        $query = WorkReport::with(['project', 'projectTask', 'tasks'])
+            ->where('emergency', 1);
 
         if ($request->filled('employee_id')) {
             $query->where('emp_id', $request->employee_id);
         }
 
         if ($request->filled('project_id')) {
-            $query->where('project_name', $request->project_id);
+            $query->where('project_name', $request->project_id); // Confirm if 'project_name' is correct
         }
 
         if ($request->filled('task_id')) {
-            $query->where('type_of_work', $request->task_id); // Adjust field name if needed
+            $query->where('type_of_work', $request->task_id); // Confirm if 'type_of_work' is correct
         }
 
         if ($request->filled('day')) {
@@ -470,31 +535,4 @@ class ReportController extends Controller
 
         return response()->json($query->get());
     }
-
-    public function emergencyAttendanceReport(){
-        $data['meta_title'] = 'Emergency Attendance Report';
-        return view('reports.emergency-report.index', $data);
-    }
-
-    public function getEmergencyAttendance(Request $request)
-{
-    $query = Attendance::query()
-        ->where(function ($q) {
-            $q->where('status', 'emergency')
-              ->orWhere('punchin_type', 'emergency')
-              ->orWhere('punchout_type', 'emergency');
-        });
-
-        if ($request->filled('month') && $request->filled('year')) {
-            $query->whereMonth('signin_date', $request->month);
-        }
-
-        if ($request->filled('month') && $request->filled('year')) {
-            $query->whereYear('signin_date', $request->year);
-        }
-        
-    $records = $query->orderByDesc('signin_date')->get();
-
-    return response()->json($records);
-}
 }

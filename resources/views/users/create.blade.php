@@ -54,7 +54,7 @@
                     <div class="col-md-4 mb-3">
                       <label for="email_id" class="form-label">Email ID:<span class="mandatory">*</span></label>
                         <div class="input-group input-group-merge">
-                        <input class="form-control" type="email" id="email_id" value="{{ old('email') }}" name="email" placeholder="Enter email" />
+                        <input class="form-control" type="email" id="email" value="{{ old('email') }}" name="email" placeholder="Enter email" />
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">

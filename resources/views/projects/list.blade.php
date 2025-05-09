@@ -1,40 +1,38 @@
 @extends('layouts.app')
 
 @section('css')
+
 <style>
-  .w-35 {
-    width: 35% !important;
-  }
-  .w-45 {
-    width: 45% !important;
-  }
-  .offcanvas-close{
-    position: absolute;
-    top: 0px;
-    left: -32px;  /* Moves the button outside the offcanvas */
-    z-index: 1055; /* Ensures it stays on top */
-    padding: 28px 10px;
-    border-radius: 0px;
-  }
+    .w-35 { width: 35% !important; }
+    .w-45 { width: 45% !important; }
+    .offcanvas-close {
+        position: absolute;
+        top: 0px;
+        left: -32px;
+        z-index: 1055;
+        padding: 28px 10px;
+        border-radius: 0px;
+    }
 </style>
+
 @stop
+
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
-      <!-- Menu -->
-      <x-menu />
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+        <!-- Menu -->
+        <x-menu />
 
-      <div class="layout-page">
+        <div class="layout-page">
+            <!-- Navbar -->
+            <x-header />
 
-        <!-- Navbar -->
-        <x-header />
+            <div class="content-wrapper">
+                <div class="container-xxl flex-grow-1 container-p-y">
+                    <h4 class="fw-bold py-3 mb-4 text-muted"><span class="text-muted fw-light"> Project /</span> {{ $meta_title }}</h4>
 
-        <div class="content-wrapper">
-            <div class="container-xxl flex-grow-1 container-p-y">
-                <h4 class="fw-bold py-3"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
-
-                <div class="row">
+                    <div class="row">
                     <div class="col-sm-12 d-flex justify-content-end mb-3">
                         <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="addProject()">
                             <!-- {{ route('project.create') }} -->
@@ -48,30 +46,25 @@
 
                 <div class="card">
                     <div class="card-datatable table-responsive">
-                        <div class=" float-end mt-15 mr-20">
-                        </div>
-
-                        <table class="datatables-basic datatables-projects table border-top table-stripedc table-hover table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Project</th>
-                                    <th>Department</th>
-                                    <th>Add By</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                        </table>
+                        <table class="datatables-basic datatables-projects-list table border-top table-stripedc table-hover table-striped"></table>
                     </div>  
                 </div>
-            </div>
 
-            <!-- Footer -->
-            <x-footer />
-            <!-- / Footer -->
+                </div>
+
+                <!-- Footer -->
+                <x-footer /> 
+                <!-- / Footer -->
+                 
+                <div class="content-backdrop fade"></div>
+
+                <!-- Overlay -->
+                <div class="layout-overlay layout-menu-toggle"></div>
+
+                <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+                <div class="drag-target"></div>
+            </div>
         </div>
-      </div>
     </div>
 </div>
 
@@ -116,25 +109,30 @@
         </div>
     </div>
 </div>
-
-
 @stop
 
-@section('js')
+
+@push('js')
 <script>
+    
+    $(function(){
+        var projectTable = $('.datatables-projects-list');
 
-    $(function() {
-        
-        var projectTable = $('.datatables-projects'),
-            select2 = $('.select2');
+        if (projectTable.length) {
 
-        if (projectTable.length) {            
+            // Destroy existing DataTable instance if already initialized
+            if ($.fn.DataTable.isDataTable(projectTable)) {
+                projectTable.DataTable().clear().destroy();
+            }
+
             projectTable.DataTable({
+                processing: true,
+                serverSide: false, 
                 ajax: {
                     type: "GET",
-                    url: "{{ route('projects.index') }}", // Fixed syntax
-                    dataType: "json", 
-                    dataSrc: "data"  
+                    url: "{{ route('projects.get-projects') }}", 
+                    dataType: "json",
+                    dataSrc: "data"
                 },
                 columns: [
                     { data: 'project_name', title: 'Project Name' },
@@ -142,28 +140,25 @@
                     { data: 'user_name', title: 'Added By' },
                     { data: 'start_date', title: 'Start Date' },
                     { data: 'end_date', title: 'End Date' },
-                    { 
-                        data: null, 
+                    {
+                        data: 'id',
                         title: 'Actions',
+                        orderable: false,
+                        searchable: false,
                         render: function (data, type, row) {
-                            const editUrl = "{{ route('project.edit', ':id') }}".replace(':id', row.id);
                             return `
-                                <a href="javascript:void(0)" onclick="editProject(${row.id})" class="btn btn-sm btn-icon btn-primary edit-project"><i class="ti ti-edit"></i></a>
-                                <button type="button" class="btn btn-sm  btn-icon btn-danger delete-project" onclick="deleteProject(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
+                                <a href="javascript:void(0)" onclick="editProject(${data})" class="btn btn-sm btn-icon btn-primary edit-project">
+                                    <i class="ti ti-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProject(${data})" data-id="${data}">
+                                    <i class="ti ti-trash"></i>
+                                </button>
                             `;
                         }
                     }
                 ]
             });
         }
-       
-        $('#start_date,  #end_date').flatpickr({
-            monthSelectorType: 'static',
-            altInput: true,
-            altFormat: 'd-m-Y',
-            dateFormat: 'd-m-Y'
-        });
-
     });
 
     function deleteProject(projectId) {
@@ -176,7 +171,7 @@
                 },
                 success: function(response) {
                     alert(response.message);
-                    $('.datatables-projects').DataTable().ajax.reload(); // ✅ Ensure correct table ID
+                    $('.datatables-projects-list').DataTable().ajax.reload(); // ✅ Ensure correct table ID
                 },
                 error: function(xhr) {
                     alert("Error deleting project. Please try again.");
@@ -228,7 +223,6 @@
             }
         });
     }
-    
-</script>
 
-@stop
+</script>
+@endpush
