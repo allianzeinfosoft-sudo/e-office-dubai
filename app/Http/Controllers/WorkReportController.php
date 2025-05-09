@@ -67,6 +67,7 @@ class WorkReportController extends Controller
         'report_date'       => $request->report_date,
         'total_records'     => $request->total_records,
         'productivity_hour' => $productivity_hour,
+        'emergency'         => $request->emergency ?? 0,
     ]);
 
     // ✅ Fetch attendance for the given report date
@@ -102,6 +103,7 @@ class WorkReportController extends Controller
         'data' => $workReport,
         'balance_working_hours' => $formattedBalanceTime,
         'message' => 'Work report submitted successfully!',
+        'emergency'         => $request->emergency ?? 0,
     ]);
 }
 
@@ -119,7 +121,7 @@ class WorkReportController extends Controller
      */
     public function edit(workReport $workReport){
         //
-        $workReport->load(['user', 'project', 'projectTask']);
+        $workReport->load(['user', 'project', 'projectTask','tasks']);
         return response()->json([
             'success' => true,
             'data' => $workReport,
@@ -173,7 +175,7 @@ class WorkReportController extends Controller
         $balanceTime = max($totalAttendanceTime - $totalReportedTime, 0);
         $formattedBalanceTime = gmdate("H:i:s", $balanceTime);
     
-        $workReport->load(['user', 'project', 'projectTask']);
+        $workReport->load(['user', 'project', 'projectTask', 'tasks']);
     
         return response()->json([
             'success' => true,
@@ -264,8 +266,9 @@ class WorkReportController extends Controller
     public function emergencyWorkReport(){
         $data['meta_title'] = 'Emergency Work Report';
         $data['projects'] = Project::all();
-        $data['repots_posted'] = WorkReport::with(['project', 'projectTask'])
+        $data['repots_posted'] = WorkReport::with(['project', 'projectTask', 'tasks'])
                 ->where('username', Auth::user()->username)
+                ->where('report_date', date('Y-m-d'))
                 ->where('emergency', 1)
                 ->get();
         return view('attendance.emergency_work_report', $data);
