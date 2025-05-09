@@ -104,9 +104,9 @@
                                     <div class="d-flex justify-content-between">
                                         
                                     </div>
-                                    <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> Work Report</h4>
+                                    <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> Emergency Work Report</h4>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-datatable">
                                     <div class="row">
                                         <div class="col-sm-12 mb-2">
                                             <div class="table-responsive">
@@ -177,7 +177,7 @@
 @section('js')
 <script>
     $(function() {
-        $('.select2').select2();
+        $('#workReportTable').DataTable();
 
         $('#project_name').on('change', function () {
             let project_id = $(this).val();

@@ -265,7 +265,8 @@ class WorkReportController extends Controller
         $data['meta_title'] = 'Emergency Work Report';
         $data['projects'] = Project::all();
         $data['repots_posted'] = WorkReport::with(['project', 'projectTask'])
-                ->where('username', Auth::user()->username)->get();
+                ->where('username', Auth::user()->username)
+                ->get();
         return view('attendance.emergency_work_report', $data);
     }
     

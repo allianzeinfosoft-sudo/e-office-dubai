@@ -40,7 +40,7 @@ use App\Models\Designation;
 use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Session\Middleware\StartSession;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
