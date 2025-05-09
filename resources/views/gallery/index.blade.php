@@ -17,10 +17,6 @@
     border-radius: 0px;
 }
 
-.offcanvas-body {
-    max-height: calc(100vh - 56px); /* Adjust based on your header height */
-    overflow-y: auto;
-}
 </style>
 @stop
 

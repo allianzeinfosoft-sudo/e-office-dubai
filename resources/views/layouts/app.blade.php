@@ -135,8 +135,11 @@
     <!-- Main JS -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
-    <script src="{{ asset('assets/js/extended-ui-timeline.js') }}"></script>
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 
+
+    <script src="{{ asset('assets/js/extended-ui-timeline.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/animate-on-scroll/animate-on-scroll.js') }}"></script>
     <!-- Page JS -->
     <script src="{{ asset('assets/js/pages-auth.js') }}"></script>

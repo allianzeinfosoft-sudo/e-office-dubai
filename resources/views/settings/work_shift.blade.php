@@ -117,5 +117,21 @@
   <!-- / Layout wrapper -->
 @endsection
 
+@push('js')
+<script>
+    flatpickr("#mini_break_time", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "h:i", // 12-hour format
+      time_24hr: false // true = 24-hour format; false = 12-hour with AM/PM
+    });
 
+    flatpickr("#max_break_time", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "h:i", // 12-hour format
+      time_24hr: false // true = 24-hour format; false = 12-hour with AM/PM
+    });
+  </script>
+@endpush
 
