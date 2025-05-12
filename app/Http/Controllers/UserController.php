@@ -19,6 +19,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException as ValidationValidationException;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -231,6 +232,7 @@ class UserController extends Controller
         $user->update([
             'username'  => $request->username,
             'email'     => $request->email,
+            'role' => $request->group,
         ]);
 
         // Update the user's role if needed
@@ -357,14 +359,15 @@ class UserController extends Controller
     public function checkEmail(Request $request)
     {
         $email = $request->input('email');
-        $userId = $request->input('user_id');
-        dd($request->all());
+        $userId = 95;
         $query = User::where('email', $email);
         if ($userId) {
             $query->where('id', '!=', $userId);
         }
         $exists = $query->exists();
-        return response()->json(!$exists);
+
+        Log::info('Email exists:', ['user' => $userId,'email' => $email, 'exists' => $exists]);
+        return response()->json($exists);
     }
 
     public function profileEdit($userId){

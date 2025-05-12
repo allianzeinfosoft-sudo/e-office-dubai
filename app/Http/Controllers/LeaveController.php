@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Http\Requests\LeaveRequest;
 use App\Mail\LeaveApplication;
 use App\Models\Employee;
@@ -10,6 +9,7 @@ use App\Models\LeaveAllocation;
 use App\Models\User;
 use App\Notifications\LeaveNotification;
 use App\Traits\DateFormatter;
+use App\Traits\HasLeaveRecipients;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,10 +17,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
-
 class LeaveController extends Controller
 {
-    use DateFormatter;
+    use DateFormatter, HasLeaveRecipients;
     public function index()
     {
 
@@ -108,7 +107,7 @@ class LeaveController extends Controller
         ];
 
         $leave = Leave::create($leaveData);
-        $user_details = Employee::select('full_name', 'employeeID')
+        $user_details = Employee::select('full_name', 'employeeID','reporting_to')
                             ->where('user_id', $request->user_id)
                             ->first();
 
@@ -125,20 +124,26 @@ class LeaveController extends Controller
 
 
         $leaveDetails = [
-            'manager_name'    => 'John Doe', // Optional: Get dynamically
-            'employee_name'   => $user_details->full_name,
-            'employee_id'     => $user_details->employeeID,
-            'leave_type'      => $leave->leave_type,
-            'start_date'      => $leave->leave_from,
-            'end_date'        => $leave->leave_to,
+              // Optional: Get dynamically
+            'employee'   => $user_details,
+            'leave_details'      => $leave,
             'days_count'      => $totalLeaveDays,
-            'leave_reason'    => $leave->reason,
             'employee_email'  => Auth::user()->email ?? 'no-email@example.com',
         ];
 
+        $type = 'leave_apply';
         // Mail::to('allianzeinfosoftsdu@gmail.com')->send(new LeaveApplication($leaveDetails));
-        $admin = User::where('role', 'Admin')->get();
-        Notification::send($admin, new LeaveNotification($leave, $user_details));
+
+        $recipients = $this->getLeaveRecipients($user_details)->toArray();
+        $message = 'test';
+        createNotification([
+            'type' => 'leave',
+            'recipients' => $recipients,
+            'message' => 'Alice applied for leave from May 15 to May 18',
+        ]);
+
+        // $recipient_info = User::where('id', $user_details->reporting_to)->get();
+        // Notification::send($recipient_info, new LeaveNotification($leave, $user_details, $type, $recipient_info));
         return redirect()->back()->with('success', 'Leave created successfully!');
 
     }

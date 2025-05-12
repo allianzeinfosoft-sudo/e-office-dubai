@@ -33,22 +33,24 @@ document.addEventListener('DOMContentLoaded', function (e) {
               emailAddress: {
                 message: 'Please enter a valid email address'
               },
-              remote: {
-                message: 'This email is already taken',
-                url: '/check_email', // Laravel route
-                type: 'GET',
-                delay: 500,
-                data: function () {
-                  const emailInput = document.querySelector('[name="email"]');
-                  const csrfToken = document.querySelector('meta[name="csrf-token"]');
-                  return {
-                    email: emailInput ? emailInput.value : '',
-                    _token: csrfToken ? csrfToken.getAttribute('content') : ''
-                  };
-                }
-              }
+            //   remote: {
+            //     message: 'This email is already taken',
+            //     url: '/check_email',
+            //     type: 'GET',
+            //     delay: 500,
+            //     data: function () {
+            //       const emailInput = document.querySelector('[name="email"]');
+            //       const userId = document.querySelector('[name="user_id"]');
+            //       const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            //       return {
+            //         email: emailInput ? emailInput.value : '',
+            //         user_id: userId ? userId.value : '',
+            //         _token: csrfToken ? csrfToken.getAttribute('content') : ''
+            //       };
+            //     }
+            //   }
             }
-          },
+        },
 
         full_name: {
             validators: {
