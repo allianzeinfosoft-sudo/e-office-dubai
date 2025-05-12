@@ -359,11 +359,11 @@
                         :series="[
                             [
                               'name' => 'Working Hours', 
-                              'data' => [44, 55, 41, 67, 22, 43, 21, 33, 45, 31, 87, 65]
+                              'data' => $worksBrakesData['monthlyData']['working_hours'] ?? [],
                             ],
                             [
                               'name' => 'Beak Hours',
-                              'data' => [65, 87, 31, 45, 33, 21, 43, 22, 67, 41, 33, 45]
+                              'data' => $worksBrakesData['monthlyData']['break_hours'] ?? []
                             ],
                         ]"
                         :categories="['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']"

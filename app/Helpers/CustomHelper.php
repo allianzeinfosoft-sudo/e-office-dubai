@@ -339,6 +339,84 @@ class CustomHelper
             'category_wise_leaves' => $categoryWise,
         ];
     }
+
+    public static function getMonthlyWorkBreakData($userId = null)
+{
+    $monthlyData = [];
+
+    for ($month = 1; $month <= 12; $month++) {
+        $startOfMonth = Carbon::create(null, $month, 1)->startOfMonth();
+        $endOfMonth = Carbon::create(null, $month, 1)->endOfMonth();
+
+        // Query for attendance within the month range
+        $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth]);
+
+        if ($userId) {
+            $query->where('emp_id', $userId);
+        }
+
+        $attendanceRecords = $query->get();
+
+        // Query for leaves within the month range
+        $leaveRecords = Leave::whereBetween('leave_from', [$startOfMonth, $endOfMonth])
+            ->orWhereBetween('leave_to', [$startOfMonth, $endOfMonth])
+            ->where('user_id', $userId)
+            ->get();
+
+        // Query for holidays in the month
+        $holidays = Holiday::whereMonth('date', $month)->get();
+
+        $totalWorkingHours = 0;
+        $totalBreakTime = 0;
+        $workingDays = 0;
+        $leaves = 0;
+        $offDays = count($holidays);
+        $workingHours = [];
+        $breakHours = [];
+
+        foreach ($attendanceRecords as $attendance) {
+            $signinTime = Carbon::parse($attendance->signin_time);
+            $signoutTime = Carbon::parse($attendance->signout_time);
+            $workedDuration = $signinTime->diffInMinutes($signoutTime);
+            $breakDuration = is_numeric($attendance->break_time) ? $attendance->break_time : 0;
+
+            $totalWorkingHours += $workedDuration - $breakDuration;
+            $totalBreakTime += $breakDuration;
+
+            // Increment working days if both signin and signout times are present
+            if ($attendance->signin_time && $attendance->signout_time) {
+                $workingDays++;
+            }
+
+            // Count leaves taken
+            if ($attendance->status == 'Leave') {
+                $leaves++;
+            }
+
+            // Store working hours and break hours for each day
+            $workingHours[] = round(($workedDuration - $breakDuration) / 60, 2);
+            $breakHours[] = round($breakDuration / 60, 2);
+        }
+
+        // Calculate average working hours
+        $averageWorkingHours = $workingDays > 0 ? round(($totalWorkingHours / $workingDays) / 60, 2) : 0;
+
+        // Store monthly data for each month
+        $monthlyData[] = [
+            'month' => Carbon::createFromFormat('m', $month)->format('F'),
+            'year' => $startOfMonth->year,
+            'avg_working_hours' => $averageWorkingHours,
+            'total_working_hours' => round($totalWorkingHours / 60, 2),
+            'working_days' => $workingDays,
+            'leaves' => $leaves,
+            'off_days' => $offDays,
+            'working_hours' => $workingHours,
+            'break_hours' => $breakHours,
+        ];
+    }
+
+    return $monthlyData;
+}
     
    
 }
