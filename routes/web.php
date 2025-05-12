@@ -38,8 +38,8 @@ use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
 use App\Models\Reminder;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Session\Middleware\StartSession;
 /*
 |--------------------------------------------------------------------------
@@ -52,11 +52,27 @@ use Illuminate\Session\Middleware\StartSession;
 |
 */
 
-Route::middleware(['web'])->group(function () {
-    Auth::routes();  // or your custom login routes
+/* Route::middleware(['web'])->group(function () {
+    Auth::routes();  
 
     Route::get('/', function () {
         return view('auth/login');
+    });
+
+});
+
+Route::post('/logout', function () {
+    Auth::logout();
+    session()->invalidate();
+    session()->regenerateToken();
+    return redirect('/');
+})->name('logout'); */
+
+Route::middleware(['web'])->group(function () {
+    Auth::routes(); // THIS LINE MUST BE INSIDE THIS GROUP
+
+    Route::get('/', function () {
+        return view('auth.login');
     });
 
     Route::post('/logout', function () {
@@ -202,7 +218,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /* Recruitments */
     Route::get('/recruitments', [RecruitmentController::class, 'index'])->name('recruitments.index');
-    Route::post('/recruitments/load-modal-form', [RecruitmentController::class, 'loadModalFrom'])->name('recruitments.load-modal-form');
+    //Route::post('/recruitments/load-modal-form', [RecruitmentController::class, 'loadModalFrom'])->name('recruitments.load-modal-form');
     Route::post('/recruitments/load-modal-form', [RecruitmentController::class, 'loadModalFrom'])->name('recruitments.load-modal-form');
     Route::post('/recruitments/store-graduation', [RecruitmentController::class, 'storeGraduation'])->name('recruitments.store-graduation');
     Route::post('/recruitments/store-mini-qualification', [RecruitmentController::class, 'storeMinimumQualification'])->name('recruitments.store-mini-qualification');

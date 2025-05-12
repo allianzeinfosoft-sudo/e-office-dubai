@@ -16,14 +16,19 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
+       // $this->middleware('auth')->only('logout');
     }
 
     /**
      * Run after successful authentication.
      */
-    protected function authenticated(Request $request, $user)
+   /* protected function authenticated(Request $request, $user)
     {
+        if (!$request->hasSession()) {
+            \Log::error('Session not available on login.');
+            return redirect('/')->withErrors('Session not started. Please refresh and try again.');
+        }
+
         $request->session()->regenerate();
         session(['debug_session_test' => true]);
 
@@ -31,6 +36,7 @@ class LoginController extends Controller
         \Log::info('Session Data: ', session()->all());
 
         return redirect()->intended($this->redirectPath());
-    }
+    } */
+    
 }
 
