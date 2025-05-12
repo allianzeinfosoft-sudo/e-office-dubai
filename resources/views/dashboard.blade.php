@@ -386,35 +386,6 @@
                           aria-expanded="false">
                           <i class="ti ti-calendar"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
-                              >Last 7 Days</a
-                            >
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
-                              >Last 30 Days</a
-                            >
-                          </li>
-                          <li>
-                            <hr class="dropdown-divider" />
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
-                              >Current Month</a
-                            >
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
-                          </li>
-                        </ul>
                       </div>
                     </div>
                     <div class="card-body">
@@ -422,12 +393,13 @@
                         <table class="table table-striped table-bordered table-hover table-highlight table-checkable" data-provide="datatable" data-display-rows="25" data-info="true" data-search="true" data-length-change="true" data-paginate="true">
                             <thead>
                               <tr>
-                               <th data-sortable="true" data-direction="asc">SL</th>
+                                <th data-sortable="true" data-direction="asc">SL</th>
                                 <th data-sortable="true">Name of Holiday</th>
                                 <th data-sortable="true">Date of Holiday</th>                               
                               </tr>
                             </thead>
                             <tbody>
+                              
                               <tr class="158">
                                 <td>1</td>
                                 <td>Republic Day</td>
@@ -507,42 +479,9 @@
                     <div class="card-header d-flex justify-content-between align-items-md-center align-items-start">
                       <h5 class="card-title mb-0">HOD mail List</h5>
                       <div class="dropdown">
-                        <button
-                          type="button"
-                          class="btn dropdown-toggle p-0"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false">
+                        <button type="button" class="btn dropdown-toggle p-0" data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="ti ti-calendar"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
-                              >Last 7 Days</a
-                            >
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
-                              >Last 30 Days</a
-                            >
-                          </li>
-                          <li>
-                            <hr class="dropdown-divider" />
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
-                              >Current Month</a
-                            >
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
-                          </li>
-                        </ul>
                       </div>
                     </div>
                     <div class="card-body">
@@ -556,26 +495,15 @@
                               </tr>
                             </thead>
                             <tbody>
-                              <tr class="158">
-                                <td>BPO</td>
-                                <td>Yedu Rajeevan	</td>
-                                <td>yedur@mail.allianzegroup.com	</td>                               
-                              </tr>
-                              <tr class="162">
-                                <td>Marketing</td>
-                                <td>Anuraj A N</td>
-                                <td>anuraja@mail.allianzegroup.com</td>                               
-                              </tr>
-                              <tr class="163">
-                                <td>SEO</td>
-                                <td>Jaison Thomas</td>
-                                <td>jaisont@mail.allianzegroup.com</td>                               
-                              </tr>
-                              <tr class="164">
-                                <td>DEBT</td>
-                                <td>Muhammed Shafi A	</td>
-                                <td>muhammedshafi@mail.allianzegroup.com	</td>                               
-                              </tr>                                                          
+                              @if($uniqueTeamLeads->isNotEmpty())
+                                @foreach($uniqueTeamLeads as $uniqueTeamLead)
+                                <tr class="{{$uniqueTeamLead->id}}">
+                                  <td>{{ $uniqueTeamLead->department->department ?? '' }}</td>
+                                  <td> {{ $uniqueTeamLead->full_name ?? '' }} </td>
+                                  <td><a href="mailto:{{ $uniqueTeamLead->user->email ?? ''  }}">{{ $uniqueTeamLead->user->email ?? ''  }} </a>	</td>                               
+                                </tr>
+                                @endforeach
+                              @endif                                                        
                             </tbody>
                           </table>
                         </div>

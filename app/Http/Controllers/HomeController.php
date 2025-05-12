@@ -61,6 +61,9 @@ class HomeController extends Controller
             $q->whereBetween('leave_from', [$fromDate, $toDate])->orWhereBetween('leave_to', [$fromDate, $toDate]);
         })->count();
         
+        $teamLeadIds = Employee::whereNotNull('team_lead')->distinct()->pluck('team_lead');
+        $data['uniqueTeamLeads'] = Employee::with('department', 'user')->whereIn('id', $teamLeadIds)->get();
+
         return view('dashboard', $data);
     }
 
