@@ -38,8 +38,8 @@ use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
 use App\Models\Reminder;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Session\Middleware\StartSession;
 /*
 |--------------------------------------------------------------------------
@@ -52,27 +52,11 @@ use Illuminate\Session\Middleware\StartSession;
 |
 */
 
-/* Route::middleware(['web'])->group(function () {
-    Auth::routes();  
+Route::middleware(['web'])->group(function () {
+    Auth::routes();  // or your custom login routes
 
     Route::get('/', function () {
         return view('auth/login');
-    });
-
-});
-
-Route::post('/logout', function () {
-    Auth::logout();
-    session()->invalidate();
-    session()->regenerateToken();
-    return redirect('/');
-})->name('logout'); */
-
-Route::middleware(['web'])->group(function () {
-    Auth::routes(); // THIS LINE MUST BE INSIDE THIS GROUP
-
-    Route::get('/', function () {
-        return view('auth.login');
     });
 
     Route::post('/logout', function () {
@@ -168,9 +152,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/custom_leave',[LeaveController::class,'custom_leave'])->name('custom.leave');
 
     /* Prjects */
-    // Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
+    Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-    Route::get('/projects/get-projects', [ProjectController::class, 'getProject'])->name('projects.get-projects');
     Route::get('/project/create', [ProjectController::class, 'create'])->name('project.create');
     Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
     Route::get('/project/{project}/edit', [ProjectController::class, 'edit'])->name('project.edit');
@@ -223,7 +206,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     /* Recruitments */
     Route::get('/recruitments', [RecruitmentController::class, 'index'])->name('recruitments.index');
-    //Route::post('/recruitments/load-modal-form', [RecruitmentController::class, 'loadModalFrom'])->name('recruitments.load-modal-form');
+    Route::post('/recruitments/load-modal-form', [RecruitmentController::class, 'loadModalFrom'])->name('recruitments.load-modal-form');
     Route::post('/recruitments/load-modal-form', [RecruitmentController::class, 'loadModalFrom'])->name('recruitments.load-modal-form');
     Route::post('/recruitments/store-graduation', [RecruitmentController::class, 'storeGraduation'])->name('recruitments.store-graduation');
     Route::post('/recruitments/store-mini-qualification', [RecruitmentController::class, 'storeMinimumQualification'])->name('recruitments.store-mini-qualification');
@@ -353,9 +336,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/reports/get-employee-reports', [ReportController::class, 'getFilteredReports']) ->name('reports.get-employee-reports');
     Route::get('/reports/emergency-reports', [ReportController::class, 'emergencyAttendanceReport']) ->name('reports.emergency-reports');
     Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
-    Route::get('/reports/over-all-emorgency-work-report', [ReportController::class, 'overAllEmergencyWorkReport'])->name('reports.over-all-emorgency-work-report');
-    Route::post('/reports/get-emergency-reports', [ReportController::class, 'getEmergencyFilteredReports']) ->name('reports.get-emergency-reports');
-    
+
+
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
     Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('gallery.upload.image');

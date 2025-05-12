@@ -130,7 +130,7 @@ return [
             [
                 'title' => 'Over All Emergency Work Report',
                 'route' => '/reports/over-all-emorgency-work-report',
-                'permission' => ['view all attendance report'],
+                'permission' => ['view all emergency work report'],
             ],
         ]
     ],

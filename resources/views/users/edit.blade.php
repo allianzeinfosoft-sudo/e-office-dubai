@@ -34,6 +34,7 @@
                   <div class="row card-body">
                     <div class="col-md-4 mb-3">
                       <label for="employee_id" class="form-label">Employoee ID:</label>
+                      <input type="hidden" name="user_id"  value="{{ $user->id ?? '' }}">
                       <div class="input-group input-group-merge">
                         <input type="text" class="form-control" name="employeeID" id="employeeID" value="{{ $user->employee->employeeID ?? '' }}" placeholder="Enter username" aria-describedby="employeeID" readonly/>
                       </div>
@@ -150,7 +151,7 @@
                       <select id="group" name="group" class="select2 form-select form-select-lg" data-allow-clear="true">
                         <option value="">Select Group</option>
                         @foreach ($roles as $role)
-                            <option value="{{ $role->name }}" {{ (old('group') == $role->name) ? 'selected' : '' }}>{{ $role->name }}</option>
+                            <option value="{{ $role->name }}" {{ (old('group') == $user->group) ? 'selected' : '' }}>{{ $role->name }}</option>
                         @endforeach
                       </select>
                     </div>

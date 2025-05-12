@@ -63,7 +63,7 @@
                                                     <!-- <img src="{{ asset('storage/appreciation_flowers/' . ($item['image'] ?? 'cng.png')) }}"
                                                          alt="Appreciation Background"> -->
                                                     <img src="../../assets/img/backgrounds/cng.png" alt="Appreciation Background">
-                                                    <img class="w-10" src="{{ asset('storage/appreciation_flowers/' . $item['image']) }}" alt="Appreciation Background">
+                                                    <img class="w-25" src="{{ asset('storage/appreciation_flowers/' . $item['image']) }}" alt="Appreciation Background">
                                                 </div>
                                                 <p class="mt-3 mb-2">
                                                     {!! nl2br(e($item['message'])) !!}

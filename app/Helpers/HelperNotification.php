@@ -1,0 +1,65 @@
+<?php
+
+use App\Models\HelperNotification;
+use App\Models\User;
+
+if (!function_exists('createNotification')) {
+    /**
+     * Create a new notification.
+     *
+     * @param string $type Notification type (leave, birthday, announcement, etc.)
+     * @param array $recipients Array of user IDs who should receive this
+     * @param string $message Notification message
+     *
+     * @return HelperNotification
+     */
+    function createNotification(array $data): ?HelperNotification
+    {
+
+        $type = $data['type'] ?? null;
+        if (!$type) return null;
+
+        $message = '';
+        $recipients = [];
+
+        switch ($type) {
+            case 'birthday':
+                $notification_type = $data['type'] ?? ' ';
+                $recipients = $data['recipients'] ?? ' '; // All users
+                $message = $data['message'] ?? ' ';
+                break;
+
+            case 'leave':
+                $notification_type = $data['type'] ?? ' ';
+                $recipients = $data['recipients'] ?? ' '; // All users
+                $message = $data['message'] ?? ' ';
+                break;
+
+            case 'announcement':
+                $title = $data['title'] ?? 'Important Announcement';
+                $recipients = User::pluck('id')->toArray(); // All users
+                $message = "📢 New Announcement: {$title}";
+                break;
+
+            case 'event':
+                $eventName = $data['event_name'] ?? 'An upcoming event';
+                $eventDate = $data['event_date'] ?? '';
+                $recipients = $data['recipients'] ?? User::pluck('id')->toArray();
+                $message = "📅 Don't miss: {$eventName} on {$eventDate}.";
+                break;
+
+            default:
+                // Unknown type
+                return null;
+        }
+
+        return HelperNotification::create([
+            'notification_type' => $type,
+            'recipients_ids' => $recipients,
+            'message' => $message,
+            'readers_ids' => [],
+        ]);
+    }
+}
+
+
