@@ -358,6 +358,7 @@ class UserController extends Controller
     {
         $email = $request->input('email');
         $userId = $request->input('user_id');
+        dd($request->all());
         $query = User::where('email', $email);
         if ($userId) {
             $query->where('id', '!=', $userId);

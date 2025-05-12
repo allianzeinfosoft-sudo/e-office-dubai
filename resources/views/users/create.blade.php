@@ -70,7 +70,7 @@
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                      <label for="reporting_to" class="form-label">Reporting To:</label>
+                      <label for="reporting_to" class="form-label">Reporting To (Immediate Supervisor):</label>
                         <select id="reporting_to" name="reporting_to" class="select2 form-select form-select-lg" data-allow-clear="true">
                         <option value="">Select reporting person</option>
                         @foreach ($employees as $employee)

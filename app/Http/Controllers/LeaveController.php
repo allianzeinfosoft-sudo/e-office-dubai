@@ -25,9 +25,8 @@ class LeaveController extends Controller
     {
 
             $user_id = Auth::user()->id;
-            $current_year = date('Y');
-            $leave_account_details = LeaveAllocation::where(['user_id'=>$user_id, 'year' => $current_year])->first();
-            // dd($leave_account_details);
+            $current_year = (string) date('Y');
+            $leave_account_details = LeaveAllocation::whereRaw("TRIM(user_id) = ? AND TRIM(year) = ?", [$user_id, $current_year])->first();
             return view('leave.summary',compact('leave_account_details'));
 
 

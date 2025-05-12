@@ -19,7 +19,7 @@
         <li class="nav-item me-1 me-xl-0">
           <a class="nav-link dropdown-toggle hide-arrow fs-4" href="javascript:void(0);" style="width: 150px">
             <span id="clock" class="text-primary d-flex align-items-center gap-2">
-              <i class="ti ti-clock fis rounded-circle fs-4"></i> 00:00:00 </span> 
+              <i class="ti ti-clock fis rounded-circle fs-4"></i> 00:00:00 </span>
             </a>
         </li>
         <!-- / Digital Clock -->
@@ -421,7 +421,7 @@
                     <div class="dropdown-divider"></div>
                   </li>
                   <li><a class="dropdown-item" href="{{ route('user.profile', Auth::user()->id); }}"><i class="ti ti-user-check me-2 ti-sm"></i><span class="align-middle">My Profile </span></a></li>
-                  <li><a class="dropdown-item" href="{{ route('users.profile-edit', Auth::user()->id); }}"> <i class="ti ti-edit me-2 ti-sm"></i> <span class="align-middle">Edit Profile</span></a></li>
+                  <li><a class="dropdown-item" href="{{ route('users.edit', Auth::user()->id); }}"> <i class="ti ti-edit me-2 ti-sm"></i> <span class="align-middle">Edit Profile</span></a></li>
 
                   <li><a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#changePasswordModal" > <i class="ti ti-lock me-2 ti-sm"></i> <span class="align-middle">Change Password</span></a></li>
 

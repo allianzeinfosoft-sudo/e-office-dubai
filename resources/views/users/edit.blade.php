@@ -34,6 +34,7 @@
                   <div class="row card-body">
                     <div class="col-md-4 mb-3">
                       <label for="employee_id" class="form-label">Employoee ID:</label>
+                      <input type="hidden" name="target_id" id="target_id" value="{{ $user->id ?? '' }}">
                       <div class="input-group input-group-merge">
                         <input type="text" class="form-control" name="employeeID" id="employeeID" value="{{ $user->employee->employeeID ?? '' }}" placeholder="Enter username" aria-describedby="employeeID" readonly/>
                       </div>
