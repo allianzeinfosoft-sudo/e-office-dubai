@@ -138,13 +138,11 @@
                                                     $donutData = array_values($work_analysis);
                                                 @endphp
 
-                                                <x-charts.attendance-donut-chart
-                                                        id="workAnalyticsChart"
+                                                <x-charts.attendance-donut-chart id="workAnalyticsChart"
                                                         :labels="$donutLabels"
                                                         :donutsData="$donutData"
                                                         :backgroundColors="['#2b9bf4', '#826bf8', '#3fd0bd', '#fee802', '#fee802', '#ea5455']"
-                                                        height="360px"
-                                                    />
+                                                        height="360px" />
                                                     
                                                 </div>
                                             </div>
@@ -158,7 +156,7 @@
                                                 <div class="card-body">
 
                                                     <x-charts.attendance-donut-chart
-                                                        id="attendanceDonut"
+                                                        id="dashboaddAttendanceDonut"
                                                         :labels="['Completed', 'Half Days', 'Off', 'Custom', 'Holidays', 'Leaves']"
                                                         :donutsData="[
                                                             $attendance_analytics['completed_days'] ?? 0,

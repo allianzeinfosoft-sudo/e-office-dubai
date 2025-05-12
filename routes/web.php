@@ -85,7 +85,10 @@ Route::middleware(['web'])->group(function () {
 
 
 Route::middleware(['web', 'auth'])->group(function () {
+    /* Home */
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/attendance-analytics', [HomeController::class, 'getAnalytics'])->name('attendance.analytics');
+
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
     Route::post('/attendance/mark-in',[AttendanceController::class, 'markIn'])->name('attendance.mark-in');
@@ -101,6 +104,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('attendance/incomplete-working-hours', [AttendanceController::class, 'getIncompleteWorkingHours'])->name('attendance.incomplete-working-hours');
     Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
     Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
+    
 
 
 
