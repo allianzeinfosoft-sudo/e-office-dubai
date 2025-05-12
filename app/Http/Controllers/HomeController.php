@@ -132,4 +132,96 @@ class HomeController extends Controller
         'leaveCount' => $leaveCount
     ]);
 }
+
+public function getLeaveSummary(Request $request)
+{
+    $user = Auth::user();
+    $range = $request->range ?? 'current_month';
+    $now = Carbon::now();
+
+    switch ($range) {
+        case 'today':
+            $from = $now->copy()->startOfDay();
+            $to = $now->copy()->endOfDay();
+            break;
+        case 'yesterday':
+            $from = $now->copy()->subDay()->startOfDay();
+            $to = $now->copy()->subDay()->endOfDay();
+            break;
+        case 'last_7_days':
+            $from = $now->copy()->subDays(6)->startOfDay();
+            $to = $now->copy()->endOfDay();
+            break;
+        case 'last_30_days':
+            $from = $now->copy()->subDays(29)->startOfDay();
+            $to = $now->copy()->endOfDay();
+            break;
+        case 'last_month':
+            $from = $now->copy()->subMonth()->startOfMonth();
+            $to = $now->copy()->subMonth()->endOfMonth();
+            break;
+        default: // current_month
+            $from = $now->copy()->startOfMonth();
+            $to = $now->copy()->endOfMonth();
+            break;
+    }
+
+    // Fetch leaves within the selected range
+    $leavesInRange = Leave::where('user_id', $user->id)
+        ->whereBetween('leave_from', [$from, $to])
+        ->get();
+
+    // Initialize counters
+    $leaveThisMonth = 0;
+    $totalLeavesTaken = 0;
+    $pendingLeaves = 0;
+    $fullLeaves = 0;
+    $halfLeaves = 0;
+    $offDays = 0;
+
+    foreach ($leavesInRange as $leave) {
+        // Calculate the number of days for each leave
+        $days = Carbon::parse($leave->leave_from)->diffInDays(Carbon::parse($leave->leave_to)) + 1;
+
+        $leaveThisMonth += $days;
+
+        if ($leave->status === 'Approved') {
+            $totalLeavesTaken += $days;
+        } elseif ($leave->status === 'Pending') {
+            $pendingLeaves += $days;
+        }
+
+        if ($leave->leave_type === 'Full') {
+            $fullLeaves += $days;
+        } elseif ($leave->leave_type === 'Half') {
+            $halfLeaves += $days;
+        } elseif ($leave->leave_type === 'Off') {
+            $offDays += $days;
+        }
+    }
+
+    // Calculate past year leaves
+    $pastYearLeaves = Leave::where('user_id', $user->id)
+        ->whereYear('leave_from', $now->copy()->subYear()->year)
+        ->get()
+        ->reduce(function ($carry, $leave) {
+            $days = Carbon::parse($leave->leave_from)->diffInDays(Carbon::parse($leave->leave_to)) + 1;
+            return $carry + $days;
+        }, 0);
+
+    // Define total leaves allotted (can be made dynamic)
+    $totalLeavesAllotted = 15;
+
+    return response()->json([
+        'leaveThisMonth' => $leaveThisMonth,
+        'totalLeavesTaken' => $totalLeavesTaken,
+        'pendingLeaves' => $pendingLeaves,
+        'pastYearLeaves' => $pastYearLeaves,
+        'totalLeavesAllotted' => $totalLeavesAllotted,
+        'fullLeaves' => $fullLeaves,
+        'halfLeaves' => $halfLeaves,
+        'offDays' => $offDays
+    ]);
+}
+
 }

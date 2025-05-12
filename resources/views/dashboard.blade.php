@@ -25,7 +25,7 @@
                         <a href="javascript:;"><span class="badge bg-label-warning">{{ $employee->employeeID ?? '' }}</span></a>
                       </div>
                       <div class="mx-auto my-3">
-                        <img src="../assets/img/avatars/3.png" alt="Avatar Image" class="rounded-circle w-px-100">
+                        <img src="{{ $employee->profile_image ? asset('storage/' . $employee->profile_image) : asset('assets/img/avatars/1.png' ) }}"  alt="Avatar Image" class="rounded-circle w-px-100">
                       </div>
                       <h5 class="mb-2">{{ $employee->full_name ?? '' }}</h5>
                       <div class="d-flex gap-3 mb-2 justify-content-center text-primary fw-bold">
@@ -134,36 +134,22 @@
                         <small class="text-muted">May</small>
                       </div>
                       <div class="dropdown d-none d-sm-flex">
-                        <button
-                          type="button"
-                          class="btn dropdown-toggle px-0"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false">
+                        <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="ti ti-calendar"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a>
-                          </li>
+                          <li> <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" onclick="updateLeaveSummary('today')" >Today</a> </li>
+                          <li> <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" onclick="updateLeaveSummary('yesterday')">Yesterday</a></li>
+                          <li> <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" onclick="updateLeaveSummary('last_7_days')">Last 7 Days</a></li>
+                          <li> <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" onclick="updateLeaveSummary('last_30_days')">Last 30 Days</a></li>
                           <li>
                             <hr class="dropdown-divider" />
                           </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
-                          </li>
+                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" onclick="updateLeaveSummary('current_month')">Current Month</a></li>
+                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" onclick="updateLeaveSummary('last_month')">Last Month</a></li>
                         </ul>
+
+                          
                       </div>
                     </div>
                     <div class="card-body row pb-0">
@@ -171,7 +157,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">0</h5>
+                              <h5 class="mb-0 me-2" id="leaveThisMonth">0</h5>
                               <small>This Month Leave(s)</small>
                             </div>
                             <div class="card-icon">
@@ -186,7 +172,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">1.5</h5>
+                              <h5 class="mb-0 me-2" id="totalLeavesTaken">1.5</h5>
                               <small>Total Leave(s) Taken</small>
                             </div>
                             <div class="card-icon">
@@ -201,7 +187,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">1</h5>
+                              <h5 class="mb-0 me-2" id="offDays">1</h5>
                               <small>Off Days</small>
                             </div>
                             <div class="card-icon">
@@ -216,7 +202,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">12.5</h5>
+                              <h5 class="mb-0 me-2" id="pendingLeaves">12.5</h5>
                               <small>Pending Leave(s)</small>
                             </div>
                             <div class="card-icon">
@@ -231,7 +217,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">15</h5>
+                              <h5 class="mb-0 me-2" id="totalLeavesAllotted">15</h5>
                               <small>Total Leave(s) Alloted</small>
                             </div>
                             <div class="card-icon">
@@ -246,7 +232,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-1">10</h5>
+                              <h5 class="mb-1" id="pastYearLeaves">10</h5>
                               <small>Past Year Leave(s)</small>
                             </div>
                             <div class="card-icon">
@@ -261,7 +247,7 @@
                         <div class="card">                          
                           <div class="card-body d-flex justify-content-between align-items-center">                            
                             <div class="card-title mb-0">
-                              <div>
+                              <div id="leaveCategorySummary">
                                 <span class="badge bg-label-warning me-2">Full: 1</span>                          
                                 <span class="badge bg-label-primary me-2">Half: 1</span>                           
                                 <span class="badge bg-label-success">Off Days: 1</span>                              
@@ -297,30 +283,14 @@
                           aria-expanded="false">
                           <i class="ti ti-calendar"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a>
-                          </li>
-                          <li>
-                            <hr class="dropdown-divider" />
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
-                              >Current Month</a
-                            >
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
-                          </li>
+                         <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a href="javascript:void(0);"  class="dropdown-item d-flex align-items-center">Today</a></li>
+                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a></li>
+                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a></li>
+                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a></li>
+                          <li><hr class="dropdown-divider" /></li>
+                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a></li>
+                          <li><a href="javascript:void(0);"  class="dropdown-item d-flex align-items-center">Last Month</a></li>
                         </ul>
                       </div>
                     </div>
@@ -659,5 +629,33 @@
     }
   });
 });
+
+
+function updateLeaveSummary(range) {
+  $.ajax({
+    url: "{{ route('leave.summary') }}",
+    method: 'GET',
+    data: { range: range },
+    success: function (response) {
+      $('#leaveThisMonth').text(response.leaveThisMonth);
+      $('#totalLeavesTaken').text(response.totalLeavesTaken);
+      $('#offDays').text(response.offDays);
+      $('#pendingLeaves').text(response.pendingLeaves);
+      $('#totalLeavesAllotted').text(response.totalLeavesAllotted);
+      $('#pastYearLeaves').text(response.pastYearLeaves);
+
+      // Update category summary
+      $('#leaveCategorySummary').html(`
+        <span class="badge bg-label-warning me-2">Full: ${response.fullLeaves}</span>
+        <span class="badge bg-label-primary me-2">Half: ${response.halfLeaves}</span>
+        <span class="badge bg-label-success">Off Days: ${response.offDays}</span>
+      `);
+    },
+    error: function () {
+      alert('Failed to fetch leave summary.');
+    }
+  });
+}
+
 </script>
 @endpush

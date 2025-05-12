@@ -88,6 +88,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     /* Home */
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/attendance-analytics', [HomeController::class, 'getAnalytics'])->name('attendance.analytics');
+    Route::get('/leave-summary', [HomeController::class, 'getLeaveSummary'])->name('leave.summary');
 
     /* Attendance */
     Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
