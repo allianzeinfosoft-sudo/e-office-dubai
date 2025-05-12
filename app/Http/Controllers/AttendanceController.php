@@ -494,7 +494,7 @@ class AttendanceController extends Controller{
         $signinDate = date('Y-m-d', strtotime($request->signin_date));
         $time = $request->time_in_out;
         $lateNote = $request->signin_late_note;
-
+        
         if ($request->type === 'mark-in') {
             // Check if already marked in
             $existing = Attendance::where('username', $username)
@@ -531,7 +531,6 @@ class AttendanceController extends Controller{
                 ->first();
 
             if ($existing) {
-
                 $workingTime = CustomHelper::calculateTotalWorkingTime(
                     $existing->signin_date,
                     $existing->signin_time,
@@ -551,11 +550,14 @@ class AttendanceController extends Controller{
                     'working_hours' => $totalWorkingTime,
                     'break_time' => '00:00:00',
                 ]);
-
+                
+                // return redirect()->route('work-report.emerbency-work-report')->with('success', 'Marked Out successfully!');
+    
                 return response()->json([
                     'success' => true,
                     'message' => 'Marked Out successfully!',
-                ]);
+                ]); 
+                
             } else {
                 return response()->json([
                     'success' => false,
@@ -617,7 +619,7 @@ class AttendanceController extends Controller{
         $data = $markedInListData->map(function ($markInList) {
             return [
                 'id' => $markInList->id,
-                'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. asset('storage/'. $markInList->employee->profile_image) . '" alt="Avatar" class="rounded-circle"></div></div>',
+                'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. (($markInList->employee->profile_image) ? asset('storage/'. $markInList->employee->profile_image) : asset('assets/img/avatars/1.png') ) . '" alt="Avatar" class="rounded-circle"></div></div>',
                 'name' => $markInList->employee->full_name,
                 'username' => $markInList->username,
                 'markin_date' => $markInList->signin_date,

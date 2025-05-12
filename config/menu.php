@@ -128,8 +128,8 @@ return [
                 'permission' => ['view emergency attendance report'],
             ],
             [
-                'title' => 'Over All Emergency Attendance Report',
-                'route' => '#',
+                'title' => 'Over All Emergency Work Report',
+                'route' => '/reports/over-all-emorgency-work-report',
                 'permission' => ['view all attendance report'],
             ],
         ]

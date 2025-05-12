@@ -2,20 +2,22 @@
 
 @section('css')
 <style>
-  .w-35 {
-    width: 35% !important;
-  }
-  .w-45 {
-    width: 45% !important;
-  }
-  .offcanvas-close{
-    position: absolute;
-    top: 0px;
-    left: -32px;  /* Moves the button outside the offcanvas */
-    z-index: 1055; /* Ensures it stays on top */
-    padding: 28px 10px;
-    border-radius: 0px;
-  }
+    .w-35 {
+        width: 35% !important;
+    }
+
+    .w-45 {
+        width: 45% !important;
+    }
+
+    .offcanvas-close{
+        position: absolute;
+        top: 0px;
+        left: -32px;  /* Moves the button outside the offcanvas */
+        z-index: 1055; /* Ensures it stays on top */
+        padding: 28px 10px;
+        border-radius: 0px;
+    }
 </style>
 @stop
 
@@ -337,8 +339,8 @@
       <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
         @csrf
             <div class="col-12 mb-3">
-              <label for="emergency_signin_date" class="form-label">Date</label>
-              <input type="date" id="emergency_signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
+                <label for="emergency_signin_date" class="form-label">Date</label>
+                <input type="text" id="emergency_signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}" placeholder="Date" readonly />
             </div>
 
             <div class="col-12 mb-3">
@@ -578,8 +580,20 @@ function emergencyMark(type) {
             if (response.success) {
                 toastr.success(response.message);
                 $('#emergencyMarkingForm')[0].reset(); // Clear form after success
-                $('#emergencyMarking').modal('hide'); // Close modal after success
-                window.location.reload();
+                //$('#emergencyMarking').modal('hide'); // Close modal after success
+
+                var offcanvasElement = $('#emergencyMarkingOffcanvas');
+                var offcanvas = new bootstrap.Offcanvas(offcanvasElement[0]);
+                offcanvas.hide();
+                if(type == 'mark-in') {
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 300);
+                }else{
+                  setTimeout(() => {
+                    window.location.href = "{{ route('work-report.emerbency-work-report') }}";
+                  }, 300);
+                }
             } else {
                 toastr.error(response.message);
             }
