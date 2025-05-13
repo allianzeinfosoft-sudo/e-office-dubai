@@ -65,7 +65,7 @@
                 <a class="dropdown-item scroll-to-reply reply-button"
                     href="javascript:void(0)"
                     data-from-id="{{ $mail->from_user_id }}"
-                    data-from-name="{{ mail->userData->username ?? '' }}"
+                    data-from-name="{{ $mail->userData->username ?? '' }}"
                     data-subject="{{ $mail->subject }}"
                     data-message="{!! htmlentities($mail->message) !!}"
                     data-date="{{ $mail->created_at->format('d M Y, h:i A') }}">
