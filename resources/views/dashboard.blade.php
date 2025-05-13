@@ -22,7 +22,7 @@
                   <div class="card card-bg ">                   
                     <div class="card-body text-center py-3">
                       <div class="d-flex justify-content-end">
-                        <a href="javascript:;"><span class="badge bg-label-warning">{{ $employee->employeeID ?? '' }}</span></a>
+                        <a href="javascript:;"><span class="badge bg-label-warning">{{ $employee && $employee->employeeID ?? '' }}</span></a>
                       </div>
                       <div class="mx-auto my-3">
                         <img 
@@ -38,7 +38,7 @@
                       </div>
                       <span><i class="ti ti-mail mt-n1 me-1"></i> <a href="mailto:{{ $employee->user->email ?? ''}}"> {{ $employee->user->email ?? ''}} </a></span>                     
                       <div class="d-flex justify-content-center mt-2 mb-3">
-                        <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Date of Join : &nbsp;</span><span>{{ $employee->dob ? date('d-m-Y', strtotime($employee->dob)) : ''  }}</span>
+                        <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Date of Join : &nbsp;</span><span>{{ $employee && $employee->join_date ? date('d-m-Y', strtotime($employee->join_date)) : ''  }}</span>
                       </div>                     
                     </div>
                   </div>
