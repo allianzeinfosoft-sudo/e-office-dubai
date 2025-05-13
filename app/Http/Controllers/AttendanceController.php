@@ -220,9 +220,10 @@ class AttendanceController extends Controller{
                 ->whereColumn('work_reports.username', 'attendances.username');
         })->first();  */
 
-        $missingReport = Attendance::where('emp_id', Auth::user()->id) ->leftJoin('work_reports', function ($join) {
+        $missingReport = Attendance::where('attendances.emp_id', Auth::user()->id)
+        ->leftJoin('work_reports', function ($join) {
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
-                 ->on('work_reports.username', '=', 'attendances.username');
+                ->on('work_reports.username', '=', 'attendances.username');
         })
         ->select(
             'attendances.id',
@@ -244,8 +245,9 @@ class AttendanceController extends Controller{
             'attendances.break_time',
             'attendances.status'
         )
-        ->havingRaw('total_reported_time < total_attendance_time') // Ensure reported time is less than attendance time
-        ->where('attendances.status', 'mark-out') 
+        ->havingRaw('total_reported_time < total_attendance_time')
+        ->where('attendances.status', 'mark-out')
+        ->orderBy('attendances.signin_date', 'desc')
         ->first();
 
         //dd($missingReport);
