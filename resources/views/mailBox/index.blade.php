@@ -414,6 +414,8 @@
                     ? `/storage/${mail.fromUser.profile_image}`
                     : '../../assets/img/avatars/1.png';
 
+                    const name = mail?.fromUser?.full_name || mail?.userData?.username || 'Unknown';
+
                       emailList += `
                       <li class="email-list-item" data-starred="${mail.is_starred == 1 ? 'true' : 'false'}" onclick="openMail(${mail.id})">
                           <div class="d-flex align-items-center">
@@ -425,7 +427,7 @@
                               <img src="${ profileImage }" alt="user-avatar" class="d-block flex-shrink-0 rounded-circle me-sm-3 me-2" height="32" width="32" />
                               <div class="email-list-item-content ms-2 ms-sm-0 me-2">
                                   ${mail.mark_as_read ? '<em>' : '<strong>' }
-                                  <span class="h6 email-list-item-username me-2">${mail.fromUser ? mail.fromUser.full_name :  mail.userData.username }</span>
+                                  <span class="h6 email-list-item-username me-2">${ name }</span>
                                   <span class="email-list-item-subject d-xl-inline-block d-block">${mail.subject.substring(0, 60)}...</span>
                                   ${mail.mark_as_read ? '</em>'  : '</strong>' }
                               </div>
