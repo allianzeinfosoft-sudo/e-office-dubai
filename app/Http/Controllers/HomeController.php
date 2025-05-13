@@ -65,7 +65,7 @@ class HomeController extends Controller
         $data['uniqueTeamLeads'] = Employee::with('department', 'user')->whereIn('id', $teamLeadIds)->get();
         $data['worksBrakesData'] = CustomHelper::getMonthlyWorkBreakData($selected_user);
         $data['barChartData'] = CustomHelper::getMonthlyWorkBreakDataForBarChart($selected_user);
-        $data['work_analysis']  = CustomHelper::getWorkRatingAnalysis($selected_user, $selected_year);
+        $data['work_analysis']  = CustomHelper::getWorkRatingAnalysisMonthly($selected_user);
 
         return view('dashboard', $data);
     }

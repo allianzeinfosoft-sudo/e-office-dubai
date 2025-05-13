@@ -119,6 +119,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
     Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
     Route::get('/birthday_view', [UserController::class, 'users_birthday'])->name('birthday_view');
+    
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
@@ -154,6 +155,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/projects/get-projects', [ProjectController::class, 'getProject'])->name('projects.get-projects');
     Route::get('/project/create', [ProjectController::class, 'create'])->name('project.create');
     Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
     Route::get('/project/{project}/edit', [ProjectController::class, 'edit'])->name('project.edit');
