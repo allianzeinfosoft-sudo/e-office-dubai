@@ -106,15 +106,16 @@ class MailBoxController extends Controller
      */
     public function show(MailBox $mailBox)
     {
-        //
-        $data['mail'] = $mailBox;
+        $mailBox->load('fromUser'); // Eager load the relation
 
-        if (!$data['mail']) {
+        if (!$mailBox) {
             return response()->json([
                 'status' => false,
                 'message' => 'Mail not found.'
             ], 404);
         }
+
+        $data['mail'] = $mailBox;
 
         $html = view('mailBox.readEmail', $data)->render();
 
@@ -123,7 +124,6 @@ class MailBoxController extends Controller
             'html' => $html,
         ]);
     }
-
     /**
      * Show the form for editing the specified resource.
      */
