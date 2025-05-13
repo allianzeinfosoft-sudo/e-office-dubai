@@ -277,32 +277,15 @@
                     <div class="card-header d-flex align-items-center justify-content-between">
                       <div>
                         <h5 class="card-title mb-0">Current Productive Time Analytics</h5>
-                        <small class="text-muted">May</small>
-                      </div>
-                      <div class="dropdown d-none d-sm-flex">
-                        <button
-                          type="button"
-                          class="btn dropdown-toggle px-0"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false">
-                          <i class="ti ti-calendar"></i>
-                        </button>
-                         <ul class="dropdown-menu dropdown-menu-end">
-                          <li><a href="javascript:void(0);"  class="dropdown-item d-flex align-items-center">Today</a></li>
-                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a></li>
-                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a></li>
-                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a></li>
-                          <li><hr class="dropdown-divider" /></li>
-                          <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a></li>
-                          <li><a href="javascript:void(0);"  class="dropdown-item d-flex align-items-center">Last Month</a></li>
-                        </ul>
+                        <small class="text-muted">{{ date('F') }}</small>
                       </div>
                     </div>
                     <div class="card-body pb-5">
+                      
                       <x-charts.attendance-donut-chart
                         id="attendanceDonut"
-                        :labels="['Completed', 'Half Days', 'Off', 'Custom', 'Holidays', 'Leaves']"
-                        :donutsData="[100, 20, 30, 40, 50, 60]"
+                        :labels="['Outstanding', 'Very Good', 'Good', 'Above Average', 'Average', 'Poor']"
+                        :donutsData="[$work_analysis['Outstanding'], $work_analysis['Very Good'], $work_analysis['Good'], $work_analysis['Above Average'], $work_analysis['Average'], $work_analysis['Poor']]"
                         :backgroundColors="['#fee802', '#3fd0bd', '#826bf8', '#2b9bf4', '#f86624', '#ea5455']"
                         height="360px"
                       />
@@ -548,6 +531,8 @@
 @push('js')
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script>
+  updateLeaveSummary('current_month');
+  
   $(document).on('click', '.filter-range', function () {
   const range = $(this).data('range');
 
