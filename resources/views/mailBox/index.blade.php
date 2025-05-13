@@ -410,8 +410,8 @@
               if (response.status && response.data.length > 0) {
                   response.data.forEach(function(mail) {
                     
-                    const profileImage = mail && mail.from_user && mail.from_user.profile_image
-                    ? `/storage/${mail.from_user.profile_image}`
+                    const profileImage = mail && mail.fromUser && mail.fromUser.profile_image
+                    ? `/storage/${mail.fromUser.profile_image}`
                     : '../../assets/img/avatars/1.png';
 
                       emailList += `
@@ -425,7 +425,7 @@
                               <img src="${ profileImage }" alt="user-avatar" class="d-block flex-shrink-0 rounded-circle me-sm-3 me-2" height="32" width="32" />
                               <div class="email-list-item-content ms-2 ms-sm-0 me-2">
                                   ${mail.mark_as_read ? '<em>' : '<strong>' }
-                                  <span class="h6 email-list-item-username me-2">${mail.from_user ? mail.from_user.full_name : 'Unknown Sender'}</span>
+                                  <span class="h6 email-list-item-username me-2">${mail.fromUser ? mail.fromUser.full_name :  mail.userData.username }</span>
                                   <span class="email-list-item-subject d-xl-inline-block d-block">${mail.subject.substring(0, 60)}...</span>
                                   ${mail.mark_as_read ? '</em>'  : '</strong>' }
                               </div>

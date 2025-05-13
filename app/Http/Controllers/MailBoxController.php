@@ -14,7 +14,7 @@ class MailBoxController extends Controller
     public function index(Request $request)
     {
         if($request->ajax()) {
-            $mails = MailBox::orderBy('created_at', 'desc')->get();
+            $mails = MailBox::with(['fromUser', 'userData'])->orderBy('created_at', 'desc')->get();
 
             return response()->json([
                 'status' => true,
