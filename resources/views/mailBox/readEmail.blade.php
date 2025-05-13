@@ -52,8 +52,8 @@
         <div class="d-flex align-items-center mb-sm-0 mb-3">
         <img src="../../assets/img/avatars/1.png" alt="user-avatar" class="flex-shrink-0 rounded-circle me-3" height="40" width="40" />
         <div class="flex-grow-1 ms-1">
-            <h6 class="m-0">{{ $mail->fromUser->full_name ?? 'Unknown Sender' }}</h6>
-            <small class="text-muted"> < {{ $mail->fromUser->personal_email ?? '' }} ></small>
+            <h6 class="m-0">{{ $mail->fromUser->full_name ?? $mail->userData->username }}</h6>
+            <small class="text-muted"> < {{ $mail->userData->email ?? '' }} ></small>
         </div>
         </div>
         <div class="d-flex align-items-center">
@@ -65,7 +65,7 @@
                 <a class="dropdown-item scroll-to-reply reply-button"
                     href="javascript:void(0)"
                     data-from-id="{{ $mail->from_user_id }}"
-                    data-from-name="{{ $mail->fromUser->name }}"
+                    data-from-name="{{ mail->userData->username ?? '' }}"
                     data-subject="{{ $mail->subject }}"
                     data-message="{!! htmlentities($mail->message) !!}"
                     data-date="{{ $mail->created_at->format('d M Y, h:i A') }}">
@@ -75,7 +75,7 @@
                 <a class="dropdown-item scroll-to-forward forward-button"
                     href="javascript:void(0)"
                     data-from-id="{{ $mail->from_user_id }}"
-                    data-from-name="{{ $mail->fromUser->name }}"
+                    data-from-name="{{ mail->userData->username ?? '' }}"
                     data-subject="Fwd: {{ $mail->subject }}"
                     data-message="{!! htmlentities($mail->message) !!}"
                     data-date="{{ $mail->created_at->format('d M Y, h:i A') }}">

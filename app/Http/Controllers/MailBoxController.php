@@ -106,7 +106,7 @@ class MailBoxController extends Controller
      */
     public function show(MailBox $mailBox)
     {
-        $mailBox->load('fromUser'); // Eager load the relation
+        $mailBox->load(['fromUser', 'userData']); // Eager load the relation
 
         if (!$mailBox) {
             return response()->json([

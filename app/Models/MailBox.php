@@ -61,4 +61,8 @@ class MailBox extends Model
         return $this->belongsTo(Employee::class, 'from_user_id', 'user_id');
     }
 
+    public function userData(){
+        return $this->belongsTo(User::class, 'from_user_id', 'id');
+    }
+
 }
