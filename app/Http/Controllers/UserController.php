@@ -45,6 +45,7 @@ class UserController extends Controller
         $departments = Department::all();
         $employees = Employee::all();
         $lastEmployeeId = Employee::orderBy('id', 'desc')->value('employeeID');
+        
         if ($lastEmployeeId) {
             // Extract numeric part from last ID
             preg_match('/^([A-Z]+)(\d+)$/', $lastEmployeeId, $matches);

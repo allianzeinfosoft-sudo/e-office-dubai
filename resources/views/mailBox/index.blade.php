@@ -409,9 +409,11 @@
 
               if (response.status && response.data.length > 0) {
                   response.data.forEach(function(mail) {
-                    const profileImage = mail.from_user.profile_image
+                    
+                    const profileImage = mail && mail.from_user && mail.from_user.profile_image
                     ? `/storage/${mail.from_user.profile_image}`
                     : '../../assets/img/avatars/1.png';
+
                       emailList += `
                       <li class="email-list-item" data-starred="${mail.is_starred == 1 ? 'true' : 'false'}" onclick="openMail(${mail.id})">
                           <div class="d-flex align-items-center">
