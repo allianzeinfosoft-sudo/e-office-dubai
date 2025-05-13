@@ -344,78 +344,159 @@ class CustomHelper
 {
     $monthlyData = [];
 
-    for ($month = 1; $month <= 12; $month++) {
-        $startOfMonth = Carbon::create(null, $month, 1)->startOfMonth();
-        $endOfMonth = Carbon::create(null, $month, 1)->endOfMonth();
+    $today = Carbon::now();
+    $startOfMonth = $today->copy()->startOfMonth();
+    $endOfMonth = $today->copy()->endOfDay(); // current day till now
 
-        // Query for attendance within the month range
-        $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth]);
+    // Attendance records for current month up to today
+    $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth]);
 
-        if ($userId) {
-            $query->where('emp_id', $userId);
-        }
-
-        $attendanceRecords = $query->get();
-
-        // Query for leaves within the month range
-        $leaveRecords = Leave::whereBetween('leave_from', [$startOfMonth, $endOfMonth])
-            ->orWhereBetween('leave_to', [$startOfMonth, $endOfMonth])
-            ->where('user_id', $userId)
-            ->get();
-
-        // Query for holidays in the month
-        $holidays = Holiday::whereMonth('date', $month)->get();
-
-        $totalWorkingHours = 0;
-        $totalBreakTime = 0;
-        $workingDays = 0;
-        $leaves = 0;
-        $offDays = count($holidays);
-        $workingHours = [];
-        $breakHours = [];
-
-        foreach ($attendanceRecords as $attendance) {
-            $signinTime = Carbon::parse($attendance->signin_time);
-            $signoutTime = Carbon::parse($attendance->signout_time);
-            $workedDuration = $signinTime->diffInMinutes($signoutTime);
-            $breakDuration = is_numeric($attendance->break_time) ? $attendance->break_time : 0;
-
-            $totalWorkingHours += $workedDuration - $breakDuration;
-            $totalBreakTime += $breakDuration;
-
-            // Increment working days if both signin and signout times are present
-            if ($attendance->signin_time && $attendance->signout_time) {
-                $workingDays++;
-            }
-
-            // Count leaves taken
-            if ($attendance->status == 'Leave') {
-                $leaves++;
-            }
-
-            // Store working hours and break hours for each day
-            $workingHours[] = round(($workedDuration - $breakDuration) / 60, 2);
-            $breakHours[] = round($breakDuration / 60, 2);
-        }
-
-        // Calculate average working hours
-        $averageWorkingHours = $workingDays > 0 ? round(($totalWorkingHours / $workingDays) / 60, 2) : 0;
-
-        // Store monthly data for each month
-        $monthlyData[] = [
-            'month' => Carbon::createFromFormat('m', $month)->format('F'),
-            'year' => $startOfMonth->year,
-            'avg_working_hours' => $averageWorkingHours,
-            'total_working_hours' => round($totalWorkingHours / 60, 2),
-            'working_days' => $workingDays,
-            'leaves' => $leaves,
-            'off_days' => $offDays,
-            'working_hours' => $workingHours,
-            'break_hours' => $breakHours,
-        ];
+    if ($userId) {
+        $query->where('emp_id', $userId);
     }
 
+    $attendanceRecords = $query->get();
+
+    // Leaves within the current month till date
+    $leaveRecords = Leave::where(function ($q) use ($startOfMonth, $endOfMonth) {
+        $q->whereBetween('leave_from', [$startOfMonth, $endOfMonth])
+          ->orWhereBetween('leave_to', [$startOfMonth, $endOfMonth]);
+    });
+
+    if ($userId) {
+        $leaveRecords->where('user_id', $userId);
+    }
+
+    $leaveRecords = $leaveRecords->get();
+
+    // Holidays in current month up to today
+    $holidays = Holiday::whereBetween('date', [$startOfMonth, $endOfMonth])->get();
+
+    $totalWorkingHours = 0;
+    $totalBreakTime = 0;
+    $workingDays = 0;
+    $leaves = 0;
+    $offDays = count($holidays);
+    $workingHours = [];
+    $breakHours = [];
+
+    foreach ($attendanceRecords as $attendance) {
+        $signinTime = Carbon::parse($attendance->signin_time);
+        $signoutTime = Carbon::parse($attendance->signout_time);
+        $workedDuration = $signinTime->diffInMinutes($signoutTime);
+        $breakDuration = is_numeric($attendance->break_time) ? $attendance->break_time : 0;
+
+        $totalWorkingHours += $workedDuration - $breakDuration;
+        $totalBreakTime += $breakDuration;
+
+        if ($attendance->signin_time && $attendance->signout_time) {
+            $workingDays++;
+        }
+
+        if ($attendance->status == 'Leave') {
+            $leaves++;
+        }
+
+        $workingHours[] = round(($workedDuration - $breakDuration) / 60, 2);
+        $breakHours[] = round($breakDuration / 60, 2);
+    }
+
+    $averageWorkingHours = $workingDays > 0 ? round(($totalWorkingHours / $workingDays) / 60, 2) : 0;
+
+    $monthlyData[] = [
+        'month' => $startOfMonth->format('F'),
+        'year' => $startOfMonth->year,
+        'avg_working_hours' => $averageWorkingHours,
+        'total_working_hours' => round($totalWorkingHours / 60, 2),
+        'working_days' => $workingDays,
+        'leaves' => $leaves,
+        'off_days' => $offDays,
+        'working_hours' => $workingHours,
+        'break_hours' => $breakHours,
+    ];
+
     return $monthlyData;
+}
+
+public static function getMonthlyWorkBreakDataForBarChart($userId = null)
+{
+    $today = Carbon::now();
+    $startOfMonth = $today->copy()->startOfMonth();
+    $endOfMonth = $today->copy()->endOfDay();
+
+    // Step 1: Get leave dates for the current user in the current month
+    $leaveDates = collect();
+    if ($userId) {
+        $leaves = Leave::where('user_id', $userId)
+            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('leave_from', [$startOfMonth, $endOfMonth])
+                  ->orWhereBetween('leave_to', [$startOfMonth, $endOfMonth]);
+            })
+            ->get();
+
+        foreach ($leaves as $leave) {
+            $from = Carbon::parse($leave->leave_from);
+            $to = Carbon::parse($leave->leave_to);
+            while ($from->lte($to)) {
+                $leaveDates->push($from->format('Y-m-d'));
+                $from->addDay();
+            }
+        }
+    }
+
+    // Step 2: Get attendance records for the current month
+    $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth]);
+    if ($userId) {
+        $query->where('emp_id', $userId);
+    }
+
+    $attendanceRecords = $query->get()->groupBy(function ($item) {
+        return Carbon::parse($item->signin_date)->format('Y-m-d');
+    });
+
+    $workingHours = [];
+    $breakHours = [];
+    $dateLabels = [];
+
+    // Step 3: Loop through each day of the current month up to today
+    for ($day = 1; $day <= $today->day; $day++) {
+        $date = Carbon::createFromDate($today->year, $today->month, $day);
+        $dateKey = $date->format('Y-m-d');
+        $label = $date->format('d'); // Day number as string, e.g. "01", "02"
+
+        // Skip Saturdays and Sundays
+        if ($date->isSaturday() || $date->isSunday()) {
+            continue;
+        }
+
+        // Skip leave days
+        if ($leaveDates->contains($dateKey)) {
+            continue;
+        }
+
+        $workingHours[$label] = 0;
+        $breakHours[$label] = 0;
+
+        if (isset($attendanceRecords[$dateKey])) {
+            foreach ($attendanceRecords[$dateKey] as $attendance) {
+                $signinTime = Carbon::parse($attendance->signin_time);
+                $signoutTime = Carbon::parse($attendance->signout_time);
+                $workedDuration = $signinTime->diffInMinutes($signoutTime);
+                $breakDuration = is_numeric($attendance->break_time) ? $attendance->break_time : 0;
+
+                $workingHours[$label] += round(($workedDuration - $breakDuration) / 60, 2);
+                $breakHours[$label] += round($breakDuration / 60, 2);
+            }
+        }
+
+        $dateLabels[] = $label;
+    }
+
+    return [
+        'dates' => $dateLabels, // e.g. ['01', '02', ..., '13']
+        'working_hours' => array_values($workingHours),
+        'break_hours' => array_values($breakHours),
+    ];
 }
     
    

@@ -342,31 +342,39 @@
                             </tr>
                           </thead>
                           <tbody>
-                            <tr class="">
-                                <td>January</td>
-                                <td class="text-special">08:08:03</td>
-                                <td>170:49:0</td>
-                                <td>21</td>
-                                <td>1</td>
-                                <td><label class="label label-success">2</label></td>
-                                <td><label class="label label-inverse">2025</label></td>
-                            </tr>                                                           
+                            @if($worksBrakesData)
+                              @foreach($worksBrakesData as $key => $data)
+                              @php
+
+                              @endphp
+                              <tr>
+                                <td>{{ $data['month'] ?? '' }}</td>
+                                <td class="text-special">{{ $data['avg_working_hours'] ?? '00:00:00' }}</td>
+                                <td>{{ $data['total_working_hours'] ?? '00:00:00' }}</td>
+                                <td>{{ $data['working_days'] ?? 0 }}</td>
+                                <td>{{ $data['leaves'] ?? 0 }}</td>
+                                <td><label class="label label-success">{{ $data['off_days'] ?? 0 }}</label></td>
+                                <td><label class="label label-inverse">{{ $data['year'] ?? '' }}</label></td>
+                            </tr>                                                                                      
+                              @endforeach
+                            @endif
                           </tbody>
                         </table>
                       </div>
+                      
                       <x-charts.apex-bar-chart 
                         elementId="barChart"
                         :series="[
                             [
                               'name' => 'Working Hours', 
-                              'data' => $worksBrakesData['monthlyData']['working_hours'] ?? [],
+                              'data' => $barChartData['working_hours'] ?? [],
                             ],
                             [
                               'name' => 'Beak Hours',
-                              'data' => $worksBrakesData['monthlyData']['break_hours'] ?? []
+                              'data' => $barChartData['break_hours'] ?? [],
                             ],
                         ]"
-                        :categories="['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']"
+                        :categories="$worksBrakesData['dates'] ?? []"
                         height="300" />
                     </div>
                   </div>

@@ -57,13 +57,14 @@ class HomeController extends Controller
         $data['workingDays'] = $attendances->count();
 
         // Leave count
-        $data['leaveCount'] = Leave::where('user_id', $user->id) ->where(function ($q) use ($fromDate, $toDate) {
+        $data['leaveCount'] = Leave::where('user_id', $user->id)->where(function ($q) use ($fromDate, $toDate) {
             $q->whereBetween('leave_from', [$fromDate, $toDate])->orWhereBetween('leave_to', [$fromDate, $toDate]);
         })->count();
 
         $teamLeadIds = Employee::whereNotNull('team_lead')->distinct()->pluck('team_lead');
         $data['uniqueTeamLeads'] = Employee::with('department', 'user')->whereIn('id', $teamLeadIds)->get();
         $data['worksBrakesData'] = CustomHelper::getMonthlyWorkBreakData($selected_user);;
+        $data['barChartData'] = CustomHelper::getMonthlyWorkBreakDataForBarChart($selected_user);;
 
         return view('dashboard', $data);
     }
