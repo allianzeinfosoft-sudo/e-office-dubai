@@ -220,7 +220,7 @@ class AttendanceController extends Controller{
                 ->whereColumn('work_reports.username', 'attendances.username');
         })->first();  */
 
-        $missingReport = Attendance::leftJoin('work_reports', function ($join) {
+        $missingReport = Attendance::where('emp_id', Auth::user()->id) ->leftJoin('work_reports', function ($join) {
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
                  ->on('work_reports.username', '=', 'attendances.username');
         })
