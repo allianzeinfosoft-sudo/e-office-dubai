@@ -34,6 +34,14 @@ class AttendanceController extends Controller{
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6 
 
+        $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+        $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
+
+        if($user->employee?->join_date == $today){
+
+            return view('attendance.index', $data);
+        }
+
         /* cutofftime */
         $cutoffTime = $user->employee->login_limited_time ?? '09:15:00';
         $isLate = now()->format('H:i:s') > $cutoffTime;
@@ -71,8 +79,7 @@ class AttendanceController extends Controller{
             }
         }
 
-        $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
-        $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
+        
 
         $daysInMonth    = now()->daysInMonth;
         $workedHours    = [];
