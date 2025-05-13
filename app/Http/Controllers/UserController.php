@@ -185,11 +185,12 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::with('employee')->findOrFail($id);
-        if($user->employee->department_id != null)
-        {
+        if ($user->employee && $user->employee->department_id !== null) {
             $departmentId = $user->employee->department_id;
-            $designations = Designation::where('department_id',$departmentId)->get();
-        } else { $designations = []; }
+            $designations = Designation::where('department_id', $departmentId)->get();
+        } else {
+            $designations = collect(); // or [] if you prefer plain array
+        }
         $employees = Employee::all();
         $departments = Department::all();
         $work_shifts = Workshift::all();
