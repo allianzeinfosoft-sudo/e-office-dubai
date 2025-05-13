@@ -96,13 +96,13 @@
                     <div class="col-md-4 mb-3">
                       <label for="blood_group" class="form-label">Blood Group:</label>
                         <select id="blood_group" name="blood_group" class="select2 form-select form-select-lg" data-allow-clear="true">
-                            <option value="" disabled {{ old('blood_group', $user->employee->blood_group) ? '' : 'selected' }}>Please select</option>
-                            @foreach (['O-ve', 'O+ve', 'A-ve', 'A+ve', 'B-ve', 'B+ve', 'AB-ve', 'AB+ve'] as $bloodType)
-                                <option value="{{ $bloodType }}" {{ old('blood_group', $user->employee->blood_group) == $bloodType ? 'selected' : '' }}>
-                                    {{ $bloodType }}
-                                </option>
-                            @endforeach
-                        </select>
+                          <option value="" disabled {{ old('blood_group', $user->employee->blood_group) ? '' : 'selected' }}>Please select</option>
+                          @foreach (['O-ve', 'O+ve', 'A-ve', 'A+ve', 'B-ve', 'B+ve', 'AB-ve', 'AB+ve'] as $bloodType)
+                              <option value="{{ $bloodType }}" {{ old('blood_group', $user->employee->blood_group) === $bloodType ? 'selected' : '' }}>
+                                  {{ $bloodType }}
+                              </option>
+                          @endforeach
+                      </select>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="qualification" class="form-label">Qualification:</label>
@@ -151,9 +151,12 @@
                       <select id="group" name="group" class="select2 form-select form-select-lg" data-allow-clear="true">
                         <option value="">Select Group</option>
                         @foreach ($roles as $role)
-                            <option value="{{ $role->name }}" {{ (old('group') == $user->group) ? 'selected' : '' }}>{{ $role->name }}</option>
+                            <option value="{{ $role->name }}" 
+                                {{ old('group', $user->employee->group) == $role->name ? 'selected' : '' }}>
+                                {{ $role->name }}
+                            </option>
                         @endforeach
-                      </select>
+                    </select>
                     </div>
                     <div class="col-md-4 mb-3">
                       <label for="group" class="form-label">Address:</label>
@@ -273,7 +276,7 @@
                         <select id="role" name="role" class="select2 form-select form-select-lg" data-allow-clear="true">
                             <option selected value="">Please select</option>
                             @foreach ($roles as $role)
-                                <option selected value="{{ $role->name }}" {{ old('role', $user->employee->role) == $role->id ? 'selected' : '' }}>{{ $role->name ?? '' }}</option>
+                                <option value="{{ $role->name }}" {{ old('role', $user->employee->role) == $role->name ? 'selected' : '' }} > {{ $role->name ?? '' }} </option>
                             @endforeach
                         </select>
                     </div>
@@ -282,7 +285,7 @@
                         <select id="status" name="status" class="select2 form-select form-select-lg" data-allow-clear="true">
                           <option selected value="">Please select</option>
                            @foreach ($user_statuses as $user_status)
-                                <option value="{{ $user_status->id }}" {{ old('status', $user->employee->status) == $user_status->id ? 'selected' : '' }}>{{ $user_status->status_name ?? '' }}</option>
+                                <option value="{{ $user_status->id }}" {{ old('status', $user->employee->status) == $user_status->id ? 'selected' : '' }}> {{ $user_status->status_name ?? '' }} </option>
                            @endforeach
                         </select>
                     </div>
