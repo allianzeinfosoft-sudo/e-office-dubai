@@ -150,7 +150,7 @@ $(function () {
             const user_id =  full['id'];
             return (
               '<div class="d-flex align-items-center">' +
-              '<a href="users/' + user_id + '/edit" class="text-body edit-user_new" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
+              '<a href="javascript:void(0);" class="text-body edit-user" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
               '<a href="javascript:void(0);" class="text-body delete-user" data-user-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
               '</div>'
             );
