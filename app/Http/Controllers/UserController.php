@@ -44,17 +44,19 @@ class UserController extends Controller
         $lastEmployee = Employee::latest('id')->first();
         $departments = Department::all();
         $employees = Employee::all();
-        $nextEmployeeId = 0;
-        if($employees)
-        {
-            $lastEmployee_id = Employee::orderBy('employeeID', 'desc')->value('employeeID');
-            $nextEmployeeId = (int) $lastEmployee_id+1;
+        $lastEmployeeId = Employee::orderBy('id', 'desc')->value('employeeID');
+        if ($lastEmployeeId) {
+            // Extract numeric part from last ID
+            preg_match('/^([A-Z]+)(\d+)$/', $lastEmployeeId, $matches);
+            $prefix = $matches[1] ?? 'AIS';
+            $number = isset($matches[2]) ? (int) $matches[2] + 1 : 1;
+        } else {
+            $prefix = 'AIS';
+            $number = 1;
+        }
 
-        }
-        else
-        {
-            $nextEmployeeId = 1;
-        }
+        $nextEmployeeId = $prefix . str_pad($number, 3, '0', STR_PAD_LEFT);
+
         $user_statuses = UserStatus::all();
         $work_shifts = Workshift::all();
         // $nextId = $lastEmployee ? ((int) filter_var($lastEmployee->id, FILTER_SANITIZE_NUMBER_INT)) + 1 : 1;
