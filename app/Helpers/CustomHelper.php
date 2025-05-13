@@ -507,6 +507,54 @@ public static function getMonthlyWorkBreakDataForBarChart($userId = null)
         'leave_dates' => $leaveDates->unique()->values()->toArray(),     // useful for front-end to highlight leave
     ];
 }
+
+public static function getWorkRatingAnalysisMonthly($empId)
+{
+    $now = Carbon::now();
+    $month = $now->month;
+    $year = $now->year;
+
+    $records = WorkReport::where('emp_id', $empId)
+        ->whereYear('report_date', $year)
+        ->whereMonth('report_date', $month)
+        ->get();
+
+    $analysis = [
+        'Outstanding' => 0,
+        'Very Good' => 0,
+        'Good' => 0,
+        'Above Average' => 0,
+        'Average' => 0,
+        'Poor' => 0,
+    ];
+
+    foreach ($records as $record) {
+        $totalTime = floatval($record->total_time);
+        $productiveTime = floatval($record->productivity_hour);
+
+        if ($totalTime <= 0) {
+            continue; // skip invalid entries
+        }
+
+        $percentage = ($productiveTime / $totalTime) * 100;
+
+        if ($percentage >= 90) {
+            $analysis['Outstanding']++;
+        } elseif ($percentage >= 75) {
+            $analysis['Very Good']++;
+        } elseif ($percentage >= 60) {
+            $analysis['Good']++;
+        } elseif ($percentage >= 50) {
+            $analysis['Above Average']++;
+        } elseif ($percentage >= 30) {
+            $analysis['Average']++;
+        } else {
+            $analysis['Poor']++;
+        }
+    }
+
+    return $analysis;
+}
     
    
 }

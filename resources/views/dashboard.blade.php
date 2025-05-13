@@ -25,7 +25,11 @@
                         <a href="javascript:;"><span class="badge bg-label-warning">{{ $employee->employeeID ?? '' }}</span></a>
                       </div>
                       <div class="mx-auto my-3">
-                        <img src="{{ $employee->profile_image ? asset('storage/' . $employee->profile_image) : asset('assets/img/avatars/1.png' ) }}"  alt="Avatar Image" class="rounded-circle w-px-100">
+                        <img 
+                            src="{{ $employee && $employee->profile_image ? asset('storage/' . $employee->profile_image) : asset('assets/img/avatars/1.png') }}"  
+                            alt="Avatar Image" 
+                            class="rounded-circle w-px-100"
+                        >
                       </div>
                       <h5 class="mb-2">{{ $employee->full_name ?? '' }}</h5>
                       <div class="d-flex gap-3 mb-2 justify-content-center text-primary fw-bold">
