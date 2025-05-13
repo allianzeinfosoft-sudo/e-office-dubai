@@ -216,12 +216,12 @@ $(function () {
         });
     });
 
-    document.querySelectorAll(".edit-user").forEach((element) => {
-        element.addEventListener("click", function () {
-            let userId = this.getAttribute("data-edit-user-id"); // Corrected
-            // Redirect to the edit page
+    document.addEventListener("click", function (e) {
+        if (e.target.closest(".edit-user")) {
+            const element = e.target.closest(".edit-user");
+            const userId = element.getAttribute("data-edit-user-id");
             window.location.href = `/users/${userId}/edit`;
-        });
+        }
     });
 }
 
