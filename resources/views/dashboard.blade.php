@@ -361,7 +361,7 @@
                           </tbody>
                         </table>
                       </div>
-                      
+
                       <x-charts.apex-bar-chart 
                         elementId="barChart"
                         :series="[
@@ -374,7 +374,7 @@
                               'data' => $barChartData['break_hours'] ?? [],
                             ],
                         ]"
-                        :categories="$worksBrakesData['dates'] ?? []"
+                        :categories="$barChartData['dates'] ?? []"
                         height="300" />
                     </div>
                   </div>

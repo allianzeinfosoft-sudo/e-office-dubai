@@ -456,26 +456,36 @@ public static function getMonthlyWorkBreakDataForBarChart($userId = null)
 
     $workingHours = [];
     $breakHours = [];
-    $dateLabels = [];
+    $dateMap = collect();
 
     // Step 3: Loop through each day of the current month up to today
     for ($day = 1; $day <= $today->day; $day++) {
         $date = Carbon::createFromDate($today->year, $today->month, $day);
         $dateKey = $date->format('Y-m-d');
-        $label = $date->format('d'); // Day number as string, e.g. "01", "02"
 
         // Skip Saturdays and Sundays
         if ($date->isSaturday() || $date->isSunday()) {
             continue;
         }
 
-        // Skip leave days
-        if ($leaveDates->contains($dateKey)) {
-            continue;
-        }
+        $dateMap->put($dateKey, [
+            'isLeave' => $leaveDates->contains($dateKey),
+        ]);
+    }
 
-        $workingHours[$label] = 0;
-        $breakHours[$label] = 0;
+    // Also include leave days even if they fall on weekends
+    foreach ($leaveDates as $leaveDate) {
+        if (!$dateMap->has($leaveDate)) {
+            $dateMap->put($leaveDate, ['isLeave' => true]);
+        }
+    }
+
+    // Sort by date
+    $sortedDates = $dateMap->keys()->sort()->values();
+
+    foreach ($sortedDates as $dateKey) {
+        $workingHours[$dateKey] = 0;
+        $breakHours[$dateKey] = 0;
 
         if (isset($attendanceRecords[$dateKey])) {
             foreach ($attendanceRecords[$dateKey] as $attendance) {
@@ -484,18 +494,17 @@ public static function getMonthlyWorkBreakDataForBarChart($userId = null)
                 $workedDuration = $signinTime->diffInMinutes($signoutTime);
                 $breakDuration = is_numeric($attendance->break_time) ? $attendance->break_time : 0;
 
-                $workingHours[$label] += round(($workedDuration - $breakDuration) / 60, 2);
-                $breakHours[$label] += round($breakDuration / 60, 2);
+                $workingHours[$dateKey] += round(($workedDuration - $breakDuration) / 60, 2);
+                $breakHours[$dateKey] += round($breakDuration / 60, 2);
             }
         }
-
-        $dateLabels[] = $label;
     }
 
     return [
-        'dates' => $dateLabels, // e.g. ['01', '02', ..., '13']
-        'working_hours' => array_values($workingHours),
-        'break_hours' => array_values($breakHours),
+        'dates' => $sortedDates->toArray(),                              // e.g. ['2025-05-01', ..., '2025-05-13']
+        'working_hours' => array_values($workingHours),       // in hours
+        'break_hours' => array_values($breakHours),           // in hours
+        'leave_dates' => $leaveDates->unique()->values()->toArray(),     // useful for front-end to highlight leave
     ];
 }
     
