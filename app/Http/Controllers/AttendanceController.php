@@ -195,8 +195,6 @@ class AttendanceController extends Controller{
             ? round(($totalMinutes / $possibleMinutes) * 100)
             : 0;
 
-
-
         // Calculate average worked hours per day
         if ($workedDays > 0) {
             $avgMinutes = round($totalMinutes / $workedDays);
