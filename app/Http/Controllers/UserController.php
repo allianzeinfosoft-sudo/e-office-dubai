@@ -45,7 +45,7 @@ class UserController extends Controller
         $departments = Department::all();
         $employees = Employee::all();
         $lastEmployeeId = Employee::orderBy('id', 'desc')->value('employeeID');
-        
+
         if ($lastEmployeeId) {
             // Extract numeric part from last ID
             preg_match('/^([A-Z]+)(\d+)$/', $lastEmployeeId, $matches);
@@ -363,14 +363,13 @@ class UserController extends Controller
     public function checkEmail(Request $request)
     {
         $email = $request->input('email');
-        $userId = 95;
+        // $userId = 95;
         $query = User::where('email', $email);
-        if ($userId) {
-            $query->where('id', '!=', $userId);
-        }
+        // if ($userId) {
+        //     $query->where('id', '!=', $userId);
+        // }
         $exists = $query->exists();
-
-        Log::info('Email exists:', ['user' => $userId,'email' => $email, 'exists' => $exists]);
+        // Log::info('Email exists:', ['user' => $userId,'email' => $email, 'exists' => $exists]);
         return response()->json($exists);
     }
 
@@ -620,6 +619,17 @@ public function users_birthday()
     return view('views.birthday_view', [
         'birthdays' => $birthdays,
         'todaysBirthdays' => $todaysBirthdays,
+    ]);
+}
+
+
+
+public function checkEmployeeId(Request $request)
+{
+    $exists = Employee::where('employeeID', $request->employeeID)->exists();
+
+    return response()->json([
+        'valid' => !$exists // FormValidation expects `valid: true` if value is allowed
     ]);
 }
 

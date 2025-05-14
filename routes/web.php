@@ -121,6 +121,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
     Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
     Route::get('/birthday_view', [UserController::class, 'users_birthday'])->name('birthday_view');
+    Route::post('/check-employee-id', [UserController::class, 'checkEmployeeId']);
 
     /* department */
     Route::resource('departments',DepartmentController::class);

@@ -11,12 +11,23 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // Form validation for Add new User
     fv = FormValidation.formValidation(formAddNewRecord, {
       fields: {
-        employeeID: {
-          validators: {
+         employeeID: {
+        validators: {
             notEmpty: {
-              message: 'The employeeid is required'
+            message: 'The employee ID is required'
+            },
+            remote: {
+            message: 'This employee ID already exists',
+            method: 'POST',
+            url: '/check-employee-id',  // Create this route
+            data: function() {
+                return {
+                _token: document.querySelector('input[name="_token"]').value, // CSRF token for Laravel
+                employeeID: formAddNewRecord.querySelector('[name="employeeID"]').value
+                };
             }
-          }
+            }
+        }
         },
         username: {
           validators: {
@@ -63,27 +74,28 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 }
             }
         },
-        aadhaar: {
-          validators: {
-              stringLength: {
-                  min: 12,
-                  max: 12,
-                  message: 'Aadhaar must be exactly 12 digits'
-              },
-              regexp: {
-                  regexp: /^[0-9]{12}$/,
-                  message: 'Aadhaar must contain only numbers'
-              }
-          }
-        },
-        esi_no: {
-          validators: {
-            regexp: {
-                regexp: /^[0-9]{10}$/,
-                message: 'ESI Number must contain only numbers'
-            }
-          }
-        },
+        // aadhaar: {
+        //   validators: {
+        //       stringLength: {
+        //           min: 12,
+        //           max: 12,
+        //           message: 'Aadhaar must be exactly 12 digits'
+        //       },
+        //       regexp: {
+        //           regexp: /^[0-9]{12}$/,
+        //           message: 'Aadhaar must contain only numbers'
+        //       }
+        //   }
+        // },
+
+        // esi_no: {
+        //   validators: {
+        //     regexp: {
+        //         regexp: /^[0-9]{10}$/,
+        //         message: 'ESI Number must contain only numbers'
+        //     }
+        //   }
+        // },
         dob: {
             validators: {
               notEmpty: {
