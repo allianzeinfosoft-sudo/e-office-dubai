@@ -248,6 +248,7 @@ class RecruitmentController extends Controller
 
     /* Add grduation */
     public function storeGraduation(Request $request){
+        
         $validated = $request->validate([
             'graduation' => 'required|string|max:255',
         ]);
@@ -257,11 +258,12 @@ class RecruitmentController extends Controller
             ['graduation' => $validated['graduation']]  // update if exists (or same)
         );
 
-        return response()->json([
+        return redirect()->route('recruitments.index')->with('success', 'Graduation saved successfully!');
+        /* return response()->json([
             'success' => true,
             'data' => $data,
             'message' => 'Graduation saved successfully!',
-        ]);
+        ]); */
     
     }
     /* Add Minimum Qualification */
@@ -274,12 +276,13 @@ class RecruitmentController extends Controller
             ['name' => $validated['name']], // search by name
             ['name' => $validated['name']]  // update if exists (or same)
         );
+        return redirect()->route('recruitments.index')->with('success', 'Minimum Qualification saved successfully!');
 
-        return response()->json([
+        /* return response()->json([
             'success' => true,
             'data' => $data,
             'message' => 'Minimum Qualification saved successfully!',
-        ]);
+        ]); */
     }
     /* Add Minimum Qualification */
     public function storePosition(Request $request){
@@ -293,11 +296,13 @@ class RecruitmentController extends Controller
             ['department_id' => $validated['department_id'], 'designation' => $validated['designation']]  // update if exists (or same)
         );
 
-        return response()->json([
+        return redirect()->route('recruitments.index')->with('success', 'New position saved successfully!');
+
+        /* return response()->json([
             'success' => true,
             'data' => $data,
             'message' => 'Minimum Qualification saved successfully!',
-        ]);
+        ]); */
     }
     public function storeProject(Request $request){
         $validated = $request->validate([
@@ -318,21 +323,23 @@ class RecruitmentController extends Controller
     }
 
     /* Add Skills */
-    public function storeSkills(Request $request){
+    public function storeSkills(Request $request)
+    {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'skill_name' => 'required|string|max:255',
         ]);
 
-        $data = Skills::updateOrCreate(
-            ['name' => $validated['name']], // search by name
-            ['name' => $validated['name']]  // update if exists (or same)
+        $skill = Skills::updateOrCreate(
+            ['name' => $validated['skill_name']], // match existing by name
+            ['name' => $validated['skill_name']]  // same value updated (optional here)
         );
+        return redirect()->route('recruitments.index')->with('success', 'Skill saved successfully!');
 
-        return response()->json([
+        /* return response()->json([
             'success' => true,
-            'data' => $data,
-            'message' => 'Minimum Qualification saved successfully!',
-        ]);
+            'data' => $skill,
+            'message' => 'Skill saved successfully!',
+        ]); */
     }
 
     /* Add Keywords */
@@ -345,12 +352,12 @@ class RecruitmentController extends Controller
             ['name' => $validated['name']], // search by name
             ['name' => $validated['name']]  // update if exists (or same)
         );
-
-        return response()->json([
+        return redirect()->route('recruitments.index')->with('success', 'Keywords saved successfully!');
+        /* return response()->json([
             'success' => true,
             'data' => $data,
             'message' => 'Minimum Qualification saved successfully!',
-        ]);
+        ]); */
     }
 
     public function draftList(Request $request){

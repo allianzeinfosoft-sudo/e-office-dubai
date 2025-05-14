@@ -17,6 +17,10 @@
             <label for="designation" class="form-label">Position</label>
             <input type="text" id="designation" name="designation" class="form-control" placeholder="Name">
         </div>
+        <div class="clearfix"></div>
+        <div class="col-12 mb-3">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
     </div>
 </form>
                               

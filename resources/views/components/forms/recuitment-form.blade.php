@@ -153,7 +153,7 @@
                     <div class="form-group">
                         <div class="d-flex justify-content-between">
                             <label for="projectId">Project Name </label>
-                            <a class="text-danger" href="javascript:void(0);" onclick="openPopupModal('project-form', 'projectId', 'Add Projects')"><i class="ti ti-plus"></i>New</a>
+                            <!-- <a class="text-danger" href="javascript:void(0);" onclick="openPopupModal('project-form', 'projectId', 'Add Projects')"><i class="ti ti-plus"></i>New</a> -->
                         </div>
                         <select class="form-control select2" name="projectId" id="projectId" data-placeholder="Select Project">
                             <option value=""></option>
@@ -394,12 +394,7 @@
         
             <div class="modal-body">
                 
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Close</button>
-                <button type="button" onclick="saveFormDate()"  class="btn btn-primary waves-effect waves-light">Save</button>
-            </div>
+            </div>            
         </div>
     </div>
 </div>
@@ -445,34 +440,6 @@
             },
             error: function (xhr) {
                 alert('AJAX Error: ' + xhr.statusText);
-            }
-        });
-    }
-
-    function saveFormDate(){
-        let form = $('#formData');
-        let url = form.attr('action');
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: form.serialize(),
-            success: function (response) {
-                if (response.success) {
-                    form[0].reset();
-                    toastr["success"](response.message);
-                    const modalEl = document.getElementById('popUpModel');
-                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                    if (modalInstance) modalInstance.hide();
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 300);
-                }
-            },
-            error: function (xhr) {
-                let errors = xhr.responseJSON.errors;
-                if (errors && errors.graduation) {
-                    toastr["danger"](errors.graduation[0]);
-                }
             }
         });
     }

@@ -452,7 +452,7 @@ return [
                 'route' =>  '/recruitments',
             ],
             [
-                'title' => 'Draff',
+                'title' => 'Draft',
                 'route' =>  '/recruitments/draft-list',
             ],
         ]
