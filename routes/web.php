@@ -356,7 +356,7 @@ Route::middleware(['web', 'auth'])->group(function () {
             'message' => 'This is a test'
         ])->render();
 
-        $to = 'developers@allianzetechnologies.com';
+        $to = 'vinayak@mail.allianzegroup.com';
         $subject = 'Test Mail';
 
         return CustomHelper::sendNotificationMail($to, $subject, $html)
