@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MailBox;
 use App\Models\Employee;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\CustomHelper;
 
@@ -99,16 +100,24 @@ class MailBoxController extends Controller
 
             $mail->attachments = json_encode($files); // Save as JSON array
         }
-        $mail->save();
+        $mail->save(); 
 
+        $toUserIds = json_decode($request->to_user_ids, true); // ensure this is an array
+
+        if (is_array($toUserIds) && !empty($toUserIds)) {
+            $emails = User::whereIn('id', $toUserIds)->pluck('email')->toArray();
+        } else {
+            $emails = [];
+        }
+        
         // Send notification email
         $htmlBody = view('emails.notification', [
-            'name' => 'Email Notification',
-            'message' => 'Your account has been updated successfully.'
+            'name' => 'Team',
+            'message' => 'You are receiving a new email',
         ])->render();
-
+        
         CustomHelper::sendNotificationMail(
-            'jersong@mail.allianzegroup.com',
+            $emails,
             $mail->subject,
             $htmlBody,
         );
