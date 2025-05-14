@@ -46,7 +46,7 @@ class MailBoxController extends Controller
             'starred' => MailBox::where(['from_user_id'=> $userId, 'is_starred' => 1])->count(),
         ];
         $data['meta_title'] = 'Email';
-        $data['employees'] = Employee::all();
+        $data['employees'] = Employee::with('user')->get();
         $data['counts'] = $counts;
         return view('mailBox.index', $data);
     }
@@ -204,7 +204,7 @@ class MailBoxController extends Controller
 
         $userId = auth()->id();
 
-        $query = MailBox::with('fromUser');
+        $query = MailBox::with('fromUser', 'userData');
 
         switch ($folder) {
             case 'inbox':

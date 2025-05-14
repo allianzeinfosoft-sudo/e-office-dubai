@@ -177,7 +177,7 @@
                                   <select class="select2 select-email-contacts form-select" id="emailContacts" name="emailContacts" multiple>
                                     @if($employees->isnotempty())
                                         @foreach($employees as $employee)
-                                            <option data-avatar="{{$employee->profile_image}}" value="{{$employee->user_id}}">{{ $employee->full_name }}</option>
+                                            <option data-avatar="{{$employee->profile_image}}" value="{{$employee->user_id}}">{{ $employee->full_name }} < {{ $employee->user->email }} ></option>
                                         @endforeach
                                     @endif
                                   </select>
@@ -414,7 +414,7 @@
                     ? `/storage/${mail.fromUser.profile_image}`
                     : '../../assets/img/avatars/1.png';
 
-                    const name = mail?.fromUser?.full_name || mail?.userData?.username || 'Unknown';
+                    const name = mail?.from_user?.full_name || mail?.user_data?.username || 'Unknown';
 
                       emailList += `
                       <li class="email-list-item" data-starred="${mail.is_starred == 1 ? 'true' : 'false'}" onclick="openMail(${mail.id})">
