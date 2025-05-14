@@ -57,8 +57,8 @@ class ProjectController extends Controller
             'department_id'     => 'required|exists:departments,id',
             'start_date'        => 'required|date',
             'end_date'          => 'required|date|after_or_equal:start_date',
-            'total_hours'       => 'nullable|numeric',
-            'total_day'         => 'nullable|numeric',
+            'total_hours'       => 'nullable',
+            'total_day'         => 'nullable',
         ]);
 
         // Create project
@@ -104,8 +104,8 @@ class ProjectController extends Controller
             'department_id'     => 'required',
             'start_date'        => 'required|date',
             'end_date'          => 'required|date|after_or_equal:start_date',
-            'total_hours'       => 'nullable|numeric',
-            'total_day'         => 'nullable|numeric',
+            'total_hours'       => 'nullable',
+            'total_day'         => 'nullable',
         ]);
 
         // Find the project
@@ -113,13 +113,13 @@ class ProjectController extends Controller
 
         // Update project data
         $project->update([
-            'project_name'      => $request->project_name,
-            'project_add_person'=> $request->project_add_person,
-            'department_id'     => $request->department_id,
-            'start_date'        => Carbon::parse($request->start_date)->setTimeFrom(Carbon::now()),
-            'end_date'          => Carbon::parse($request->end_date)->setTimeFrom(Carbon::now()),
-            'total_hours'       => $request->total_hours,
-            'total_day'         => $request->total_day,
+            'project_name'       => $request->project_name,
+            'project_add_person' => $request->project_add_person,
+            'department_id'      => $request->department_id,
+            'start_date'         => Carbon::parse($request->start_date)->setTimeFrom(Carbon::now()),
+            'end_date'           => Carbon::parse($request->end_date)->setTimeFrom(Carbon::now()),
+            'total_hours'        => is_numeric($request->total_hours) ? $request->total_hours : 0.00,
+            'total_day'          => is_numeric($request->total_day) ? $request->total_day : 0,
         ]);
 
         return redirect()->route('projects.index')->with('success', 'Project updated successfully');
