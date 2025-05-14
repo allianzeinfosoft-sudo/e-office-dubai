@@ -66,25 +66,6 @@
     <div class="drag-target"></div>
   </div>
   <!-- / Layout wrapper -->
-
-
-  <!--  Add New Credit Card -->
-  <div class="col-12 col-sm-6 col-lg-4 mb-4">
-    <div class="card">
-      <div class="card-body text-center">
-        <i class="mb-3 ti ti-credit-card ti-lg"></i>
-        <h5>Add New Credit Card</h5>
-        <p>Quickly collect the credit card details, built in input mask and form validation support.</p>
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#addNewCCModal">
-          Show
-        </button>
-      </div>
-    </div>
-  </div>
   <!--/  Add New Credit Card -->
 
   <!-- Add New Credit Card Modal -->

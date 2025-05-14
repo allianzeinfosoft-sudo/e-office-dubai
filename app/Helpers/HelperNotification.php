@@ -48,6 +48,13 @@ if (!function_exists('createNotification')) {
                 $message = "📅 Don't miss: {$eventName} on {$eventDate}.";
                 break;
 
+            case 'policy':
+                $eventName = $data['event_name'] ?? 'An upcoming event';
+                $eventDate = $data['event_date'] ?? '';
+                $recipients = $data['recipients'] ?? User::pluck('id')->toArray();
+                $message = "📅 {$data['message']}.";
+                break;
+
             default:
                 // Unknown type
                 return null;

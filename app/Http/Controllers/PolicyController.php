@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use Carbon\Carbon;
 use App\Models\Policy;
 use Illuminate\Http\Request;
@@ -105,6 +106,15 @@ class PolicyController extends Controller
                 'attachments'       => $validatedData['attachments'] ?? '',
             ]
         );
+
+         $recipients = Employee::whereNotNull('user_id')->pluck('user_id')->toArray();
+
+                    $message = 'New Policy Released';
+                    createNotification([
+                        'type' => 'policy',
+                        'recipients' => $recipients,
+                        'message' => $message,
+                    ]);
 
         return response()->json([
             'message' => 'Policy saved successfully!',

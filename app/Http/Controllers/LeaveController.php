@@ -135,11 +135,11 @@ class LeaveController extends Controller
         // Mail::to('allianzeinfosoftsdu@gmail.com')->send(new LeaveApplication($leaveDetails));
 
         $recipients = $this->getLeaveRecipients($user_details)->toArray();
-        $message = 'test';
+        $message = 'New leave application received from'.$user_details->full_name;
         createNotification([
             'type' => 'leave',
             'recipients' => $recipients,
-            'message' => 'Alice applied for leave from May 15 to May 18',
+            'message' => $message,
         ]);
 
         // $recipient_info = User::where('id', $user_details->reporting_to)->get();
@@ -272,6 +272,14 @@ class LeaveController extends Controller
                     LeaveAllocation::where('user_id', $leave->user_id)
                     ->increment('used_leaves', $leaveDays);
 
+                    $recipients = [(string) $leave->user_id];
+                    $message = 'Leave application approved';
+                    createNotification([
+                        'type' => 'leave',
+                        'recipients' => $recipients,
+                        'message' => $message,
+                    ]);
+
                     return redirect()->back()->with('success', 'Leave Approved successfully!');
                 }
                 return redirect()->back()->with('error', 'Failed to update leave status!');
@@ -286,7 +294,18 @@ class LeaveController extends Controller
                 $leave->status = 3;
                 $leave->approved_cancel_date = date('Y-m-d H:i:s');
                 $leave->save();
+
+                $recipients = [(string) $leave->user_id];
+                $message = 'Leave application rejected';
+                createNotification([
+                    'type' => 'leave',
+                    'recipients' => $recipients,
+                    'message' => $message,
+                ]);
                 return redirect()->back()->with('success', 'Leave Rejected successfully!');
+
+
+
             } else {
                 return redirect()->back()->with('error', 'Invalid user!');
             }
