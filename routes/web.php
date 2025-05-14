@@ -41,6 +41,8 @@ use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Session\Middleware\StartSession;
+use App\Helpers\CustomHelper;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -345,6 +347,22 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('gallery.upload.image');
     Route::get('/gallery/{id}', [GalleryController::class, 'show'])->name('gallery.show');
     Route::delete('/gallery/{gallery}/image', [GalleryController::class, 'deleteImage'])->name('gallery.image.delete');
+
+
+    /* Mail Testing Route */
+    Route::get('/test-mail', function () {
+        $html = view('emails.notification', [
+            'name' => 'Tester',
+            'message' => 'This is a test'
+        ])->render();
+
+        $to = 'developers@allianzetechnologies.com';
+        $subject = 'Test Mail';
+
+        return CustomHelper::sendNotificationMail($to, $subject, $html)
+            ? 'Mail sent successfully!'
+            : 'Mail sending failed!';
+    });
 
 });
 
