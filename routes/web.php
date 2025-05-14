@@ -89,7 +89,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('attendance/incomplete-working-hours', [AttendanceController::class, 'getIncompleteWorkingHours'])->name('attendance.incomplete-working-hours');
     Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
     Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
-    
+
 
 
 
@@ -119,7 +119,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
     Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
     Route::get('/birthday_view', [UserController::class, 'users_birthday'])->name('birthday_view');
-    
+
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
@@ -199,7 +199,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/holiday-delete/{holidayId}', [HolidayController::class, 'destroy'])->name('holiday.destroy');
 
     /* Notification */
-    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    // Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications.fetch');
+    Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead']);
+
+
 
     /*salary*/
     Route::get('/salarySlip/view',[SalaryController::class, 'view_salary_slip'])->name('view.salary.slip');

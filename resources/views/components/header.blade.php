@@ -144,14 +144,13 @@
                   data-bs-auto-close="outside"
                   aria-expanded="false">
                   <i class="ti ti-bell ti-md"></i>
-                  @if(auth()->user()->unreadNotifications->count())
-                  <span class="badge bg-danger rounded-pill badge-notifications">
-                         {{ auth()->user()->unreadNotifications->count() }}
+
+                  <span class="badge bg-danger rounded-pill badge-notifications" id="notif-count">
+                        0
                   </span>
-                  @endif
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0">
-                  <li class="dropdown-menu-header border-bottom">
+                  {{-- <li class="dropdown-menu-header border-bottom">
                     <div class="dropdown-header d-flex align-items-center py-3">
                       <h5 class="text-body mb-0 me-auto">Notification</h5>
                       <a
@@ -163,12 +162,12 @@
                         ><i class="ti ti-mail-opened fs-4"></i
                       ></a>
                     </div>
-                  </li>
+                  </li> --}}
                   <li class="dropdown-notifications-list scrollable-container">
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush" id="notification-dropdown">
 
 
-                        @foreach(auth()->user()->unreadNotifications->take(5) as $notification)
+                        {{-- @foreach(auth()->user()->unreadNotifications->take(5) as $notification)
                             <li class="list-group-item list-group-item-action dropdown-notifications-item">
                                 <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
@@ -193,7 +192,7 @@
                                 </div>
                                 </div>
                             </li>
-                      @endforeach
+                      @endforeach --}}
 
                       {{-- <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
@@ -380,13 +379,13 @@
                       </li> --}}
                     </ul>
                   </li>
-                  <li class="dropdown-menu-footer border-top">
+                  {{-- <li class="dropdown-menu-footer border-top">
                     <a
                       href="javascript:void(0);"
                       class="dropdown-item d-flex justify-content-center text-primary p-2 h-px-40 mb-1 align-items-center">
                       View all notifications
                     </a>
-                  </li>
+                  </li> --}}
                 </ul>
               </li>
               <!--/ Notification -->

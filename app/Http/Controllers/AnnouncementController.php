@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Announcement;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
@@ -74,6 +75,15 @@ class AnnouncementController extends Controller
                 'display_end_date' => $validatedData['display_end_date']?? '',
                 'description' => $validatedData['description']?? '',            ]
         );
+
+        $recipients = Employee::whereNotNull('user_id')->pluck('user_id')->toArray();
+
+                    $message = 'New Announcement Created';
+                    createNotification([
+                        'type' => 'announcement',
+                        'recipients' => $recipients,
+                        'message' => $message,
+                    ]);
 
         return response()->json([
             'message' => 'Announcement saved successfully!',

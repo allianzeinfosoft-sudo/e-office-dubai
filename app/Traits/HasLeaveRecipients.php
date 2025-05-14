@@ -22,7 +22,7 @@ trait HasLeaveRecipients
             return collect();// no manager assigned
         }
 
-        return Employee::where('user_id', $user_details->reporting_to)->pluck('id');
+        return Employee::where('user_id', $user_details->reporting_to)->pluck('user_id');
     }
 }
 
