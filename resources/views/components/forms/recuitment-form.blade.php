@@ -10,8 +10,8 @@
 
                 <div class="col-sm-12 mb-3">
                     <div class="form-group">
-                        <label for="jobTitle">Job Title</label>
-                        <input type="text" name="jobTitle" id="jobTitle" class="form-control" placeholder="Job Title" />
+                        <label for="jobTitle">Job Title <span class="text-danger">*</span></label>
+                        <input type="text" name="jobTitle" id="jobTitle" class="form-control" placeholder="Job Title" required />
                     </div>
                 </div>
 
@@ -85,8 +85,8 @@
 
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
-                        <label for="empId">Project Leader</label>
-                        <select class="form-control select2" name="empId" id="empId" data-placeholder="Select Employee">
+                        <label for="empId">Project Leader <span class="text-danger">*</span></label>
+                        <select class="form-control select2" name="empId" id="empId" data-placeholder="Select Employee" required>
                             <option value=""></option>
                             @if($projectLeaders->isNotEmpty())
                                 @foreach($projectLeaders as $result)
@@ -99,15 +99,15 @@
 
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
-                        <label for="rrfDate">Date</label>
-                        <input type="date" name="rrfDate" id="rrfDate" class="form-control flatpickr-input" placeholder="RRF Date" />
+                        <label for="rrfDate">Date <span class="text-danger">*</span></label>
+                        <input type="date" name="rrfDate" id="rrfDate" class="form-control flatpickr-input" placeholder="RRF Date" required />
                     </div>
                 </div>
 
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
-                        <label for="branchId">Branch</label>
-                        <select class="form-control select2" name="branchId" id="branchId" data-placeholder="Select Branch">
+                        <label for="branchId">Branch <span class="text-danger">*</span></label>
+                        <select class="form-control select2" name="branchId" id="branchId" data-placeholder="Select Branch" required>
                             <option value=""></option>
                             @if($branches->isNotEmpty())
                                 @foreach($branches as $result)
@@ -120,8 +120,8 @@
 
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
-                        <label for="departmentId">Division</label>
-                        <select class="form-control select2" name="departmentId" id="departmentId" data-placeholder="Select Department">
+                        <label for="departmentId">Division <span class="text-danger">*</span></label>
+                        <select class="form-control select2" name="departmentId" id="departmentId" data-placeholder="Select Department" required>
                             <option value=""></option>
                             @if($divisions->isNotEmpty())
                                 @foreach($divisions as $result)
@@ -135,10 +135,10 @@
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
                         <div class="d-flex justify-content-between">
-                            <label for="positionId">Position</label>
+                            <label for="positionId">Position <span class="text-danger">*</span></label>
                             <a class="text-danger" href="javascript:void(0);" onclick="openPopupModal('position-form', 'positionId', 'Add Position')"><i class="ti ti-plus"></i>New</a>
                         </div>
-                        <select class="form-control select2" name="positionId" id="positionId" data-placeholder="Select Position">
+                        <select class="form-control select2" name="positionId" id="positionId" data-placeholder="Select Position" required>
                             <option value=""></option>
                             @if($positions->isNotEmpty())
                                 @foreach($positions as $result)
@@ -152,7 +152,7 @@
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
                         <div class="d-flex justify-content-between">
-                            <label for="projectId">Project Name</label>
+                            <label for="projectId">Project Name </label>
                             <a class="text-danger" href="javascript:void(0);" onclick="openPopupModal('project-form', 'projectId', 'Add Projects')"><i class="ti ti-plus"></i>New</a>
                         </div>
                         <select class="form-control select2" name="projectId" id="projectId" data-placeholder="Select Project">
@@ -168,8 +168,8 @@
 
                 <div class="col-sm-4 mb-3">
                     <div class="form-group">
-                        <label for="noOfPersons">No of Person </label>
-                        <select class="form-control select2" name="noOfPersons" id="noOfPersons" data-placeholder="Select No of Persons">
+                        <label for="noOfPersons">No of Person <span class="text-danger">*</span> </label>
+                        <select class="form-control select2" name="noOfPersons" id="noOfPersons" data-placeholder="Select No of Persons" required>
                             <option value=""></option>
                             @foreach(config('optionsData.noOfPersons') as $key => $label)
                                 <option value="{{ $key }}"> {{ $label }} </option>
@@ -181,7 +181,7 @@
                 <div class="col-sm-8 mb-3">
                     <div class="form-group">
                         <label for="shiftId">Shift </label>
-                        <select class="form-control select2" name="shiftId" id="shiftId" data-placeholder="Select Shift">
+                        <select class="form-control select2" name="shiftId" id="shiftId" data-placeholder="Select Shift" >
                             <option value=""></option>
                             @if($shifts->isNotEmpty())
                                 @foreach($shifts as $result)
@@ -207,7 +207,7 @@
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
                         <label for="jobType">Job Type </label>
-                        <select class="form-control select2" name="jobType" id="jobType" data-placeholder="Select Job Type">
+                        <select class="form-control select2" name="jobType" id="jobType" data-placeholder="Select Job Type" >
                         <option value=""></option>
                             @foreach(config('optionsData.jobType') as $key => $label)
                                 <option value="{{ $key }}"> {{ $label }} </option>
@@ -219,7 +219,7 @@
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
                         <label for="interviewer">Interviewer </label>
-                        <select class="form-control select2" name="interviewer" id="interviewer" data-placeholder="Select Inerviewer">
+                        <select class="form-control select2" name="interviewer" id="interviewer" data-placeholder="Select Inerviewer" >
                             <option value=""></option>
                             @if($interViewer->isNotEmpty())
                                 @foreach($interViewer as $result)

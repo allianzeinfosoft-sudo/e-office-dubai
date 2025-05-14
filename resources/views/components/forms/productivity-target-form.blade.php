@@ -65,7 +65,7 @@
         <div class="col-sm-6 mb-3">
             <div class="form-group">
                 <label for="target_year">Target Month & Year</label>
-                <input type="month" name="target_year" id="target_year" class="form-control flatpickr-input" placeholder="Target Year" 
+                <input type="month" name="target_year" id="target_year" class="form-control flatpickr-input" placeholder="Target Year" required 
                        value="{{ isset($productivityTarget) ? date('Y-m', strtotime($productivityTarget->target_year)) : date('Y-m') }}" />
             </div>
         </div>
