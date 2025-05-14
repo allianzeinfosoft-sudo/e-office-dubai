@@ -108,7 +108,7 @@ class MailBoxController extends Controller
         ])->render();
 
         CustomHelper::sendNotificationMail(
-            'developers@allianzetechnologies.com',
+            'jersong@mail.allianzegroup.com',
             $mail->subject,
             $htmlBody,
         );
