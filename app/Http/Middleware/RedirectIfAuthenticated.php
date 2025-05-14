@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Session\Store as SessionStore;
@@ -17,17 +17,21 @@ class RedirectIfAuthenticated
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string ...$guards): Response {
+    public function handle(Request $request, Closure $next, string ...$guards): Response
+    {
+        // SAFELY log session status (optional)
         if (method_exists($request, 'hasSession') && $request->hasSession()) {
-            logger('Middleware: session started = ' . ($request->session()->isStarted() ? 'yes' : 'no'));
-
-            if (!$request->session()->has('_token')) {
-                logger('Session token not present');
+            $session = $request->getSession();
+            if ($session && $session->isStarted()) {
+                logger('Session is available and started');
+            } else {
+                logger('Session not started yet');
             }
         } else {
-            logger('Session not yet available');
+            logger('Session store not set yet');
         }
 
+        // Handle auth guards
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {
@@ -38,4 +42,5 @@ class RedirectIfAuthenticated
 
         return $next($request);
     }
+
 }

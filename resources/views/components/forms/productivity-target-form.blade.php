@@ -91,7 +91,7 @@
                     $('#project_task_id').empty();
                     var html = '<option value=""></option>';
                     response.data.forEach(projectTask => {
-                        html += '<option value="'+projectTask.id+'">'+projectTask.tasks.name+'</option>';
+                        html += '<option value="'+projectTask.tasks.id+'">'+projectTask.tasks.name+'</option>';
                     });
                     $('#project_task_id').html(html);
                 }

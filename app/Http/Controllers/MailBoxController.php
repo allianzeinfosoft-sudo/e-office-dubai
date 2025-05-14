@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\MailBox;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Helpers\CustomHelper;
+
 
 class MailBoxController extends Controller
 {
@@ -98,6 +100,18 @@ class MailBoxController extends Controller
             $mail->attachments = json_encode($files); // Save as JSON array
         }
         $mail->save();
+
+        // Send notification email
+        $htmlBody = view('emails.notification', [
+            'name' => 'Email Notification',
+            'message' => 'Your account has been updated successfully.'
+        ])->render();
+
+        CustomHelper::sendNotificationMail(
+            'developers@allianzetechnologies.com',
+            $mail->subject,
+            $htmlBody,
+        );
 
         return response()->json(['status' => true, 'message' => 'Mail saved successfully!']);
     }

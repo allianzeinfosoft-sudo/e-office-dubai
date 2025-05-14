@@ -9,6 +9,9 @@ use App\Models\workReport;
 use App\Models\LeaveAllocation;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;  
+use Illuminate\Support\Facades\Log;
+
 use Carbon\Carbon;
 use DateTime;
 
@@ -520,12 +523,12 @@ public static function getWorkRatingAnalysisMonthly($empId)
         ->get();
 
     $analysis = [
-        'Outstanding' => 0,
-        'Very Good' => 0,
-        'Good' => 0,
+        'Outstanding'   => 0,
+        'Very Good'     => 0,
+        'Good'          => 0,
         'Above Average' => 0,
-        'Average' => 0,
-        'Poor' => 0,
+        'Average'       => 0,
+        'Poor'          => 0,
     ];
 
     foreach ($records as $record) {
@@ -555,6 +558,38 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
     return $analysis;
 }
+
+    /**
+         * Send notification email with HTML body
+         *
+         * @param string|array $to
+         * @param string $subject
+         * @param string $htmlBody
+         * @param array $cc
+         * @param array $bcc
+         * @return bool
+     */
+    public static function sendNotificationMail($to, string $subject, string $htmlBody, array $cc = [], array $bcc = []): bool{
+        try {
+            Mail::send([], [], function ($message) use ($to, $subject, $htmlBody, $cc, $bcc) {
+                
+                $message->to($to)->subject($subject)->html($htmlBody); // ✅ Replaced setBody with html()
+                
+                if (!empty($cc)) {
+                    $message->cc($cc);
+                }
+
+                if (!empty($bcc)) {
+                    $message->bcc($bcc);
+                }
+            });
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Mail sending failed: ' . $e->getMessage());
+            return false;
+        }
+    }
     
    
 }
