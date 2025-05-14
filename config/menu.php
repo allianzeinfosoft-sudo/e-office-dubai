@@ -340,7 +340,7 @@ return [
                         ''
                     ],
                     [
-                        'title' => 'View Banner',
+                        'title' => 'Banner',
                         'route' => "banner",
                         'isActive' => [],
                         'permission' => ['view banners'],
@@ -558,6 +558,11 @@ return [
                 'title' => 'Edit Daily Attendance',
                 'route' =>  '/settings/edit-daily-attendance',
                 'permission' => ['edit attendance'],
+            ],
+            [
+                'title' => 'Leave Approvals',
+                'route' => '/leave_approver/list',
+                'permission' => [],
             ]
         ]
     ]
