@@ -138,18 +138,30 @@
 
     
     $(function(){
-        $('.flatpickr-input').flatpickr({
-            monthSelectorType: 'static',
+
+        const endPicker = $("#display_end_date").flatpickr({
             altInput: true,
             altFormat: 'd-m-Y',
             dateFormat: 'd-m-Y'
         });
+
+        $("#display_start_date").flatpickr({
+            altInput: true,
+            altFormat: 'd-m-Y',
+            dateFormat: 'd-m-Y',
+            onChange: function(selectedDates, dateStr, instance) {
+                // Set minDate of end date based on start date
+                $("#display_end_date")[0]._flatpickr.set('minDate', dateStr);
+            }
+        });
+
         var annoncementTable = $('.datatables-announcement');
         
         if(annoncementTable.length){
+
             annoncementTable.DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 ajax: {
                     type: "GET",
                     url: "{{ route('others.announcements.index') }}", // Fixed syntax

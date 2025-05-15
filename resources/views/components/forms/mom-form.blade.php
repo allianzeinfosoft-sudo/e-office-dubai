@@ -6,22 +6,22 @@
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="mom_title">MOM Title</label>
-                <input type="text" name="mom_title" id="mom_title" class="form-control" placeholder="Enter MOM Title" />
+                <label for="mom_title">MOM Title <span class="text-danger">*</span></label>
+                <input type="text" name="mom_title" id="mom_title" class="form-control" placeholder="Enter MOM Title" required />
             </div>
         </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="mom_date">MOM Date</label>
-                <input type="text" name="mom_date" id="mom_date" class="form-control flatpickr-input" placeholder="Select Date" />
+                <label for="mom_date">MOM Date <span class="text-danger">*</span></label>
+                <input type="text" name="mom_date" id="mom_date" class="form-control flatpickr-input" placeholder="Select Date" required />
             </div>
         </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="created_by">Created By</label>
-                <select name="created_by" id="created_by" class="form-control select2">
+                <label for="created_by">Created By <span class="text-danger">*</span> </label>
+                <select name="created_by" id="created_by" class="form-control select2" required>
                     <option value="">Select Employee</option>
                     @foreach($createdBy as $result)
                         <option value="{{ $result->user_id }}">{{ $result->full_name }}</option>

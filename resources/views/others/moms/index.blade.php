@@ -140,7 +140,7 @@
 
     momTable.DataTable({
         processing: true,
-        serverSide: true,
+        serverSide: false,
         ajax: {
             type: "GET",
             url: "{{ route('others.moms.index') }}",

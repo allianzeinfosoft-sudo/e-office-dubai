@@ -6,22 +6,22 @@
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="name_announcement">Announcement Title</label>
-                <input type="text" name="name_announcement" id="name_announcement" class="form-control" placeholder="Announcement Title" />
+                <label for="name_announcement">Announcement Title <span class="text-danger">*</span></label>
+                <input type="text" name="name_announcement" id="name_announcement" class="form-control" placeholder="Announcement Title" required />
             </div>
         </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="display_start_date">Display Start Date</label>
-                <input type="text" name="display_start_date" id="display_start_date" class="form-control flatpickr-input" placeholder="Display Start Date" />
+                <label for="display_start_date">Display Start Date <span class="text-danger">*</span></label>
+                <input type="text" name="display_start_date" id="display_start_date" class="form-control flatpickr-input" placeholder="Display Start Date" required />
             </div>
         </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="display_end_date">Display End Date</label>
-                <input type="text" name="display_end_date" id="display_end_date" class="form-control flatpickr-input" placeholder="Display End Date" />
+                <label for="display_end_date">Display End Date <span class="text-danger">*</span></label>
+                <input type="text" name="display_end_date" id="display_end_date" class="form-control flatpickr-input" placeholder="Display End Date" required />
             </div>
         </div>
 
