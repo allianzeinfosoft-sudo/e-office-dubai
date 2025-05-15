@@ -22,7 +22,7 @@
                   <div class="card card-bg ">                   
                     <div class="card-body text-center py-3">
                       <div class="d-flex justify-content-end">
-                        <a href="javascript:;"><span class="badge bg-label-warning">{{ $employee && $employee->employeeID ?? '' }}</span></a>
+                        <a href="javascript:;"><span class="badge bg-label-warning">{{ $employee->employeeID ?? '' }}</span></a>
                       </div>
                       <div class="mx-auto my-3">
                         <img 
