@@ -33,8 +33,20 @@ document.addEventListener('DOMContentLoaded', function (e) {
           validators: {
             notEmpty: {
               message: 'Username field is required'
-            }
+            },
+            remote: {
+                message: 'This username is already taken',
+                url: '/check-username', // URL to server-side check
+                method: 'POST',
+                data: function() {
+                  return {
+                    _token: document.querySelector('input[name="_token"]').value, // CSRF token for Laravel
+                    username: formAddNewRecord.querySelector('[name="username"]').value
+                  };
+                }
+              }
           }
+
         },
         email: {
             validators: {
@@ -44,22 +56,21 @@ document.addEventListener('DOMContentLoaded', function (e) {
               emailAddress: {
                 message: 'Please enter a valid email address'
               },
-            //   remote: {
-            //     message: 'This email is already taken',
-            //     url: '/check_email',
-            //     type: 'GET',
-            //     delay: 500,
-            //     data: function () {
-            //       const emailInput = document.querySelector('[name="email"]');
-            //       const userId = document.querySelector('[name="user_id"]');
-            //       const csrfToken = document.querySelector('meta[name="csrf-token"]');
-            //       return {
-            //         email: emailInput ? emailInput.value : '',
-            //         user_id: userId ? userId.value : '',
-            //         _token: csrfToken ? csrfToken.getAttribute('content') : ''
-            //       };
-            //     }
-            //   }
+              remote: {
+                message: 'This email is already taken',
+                url: '/check-email',
+                method: 'POST',
+                crossDomain: false,
+                dataType: 'json',
+                delay: 500,
+                data: function () {
+                  const emailInput = document.querySelector('[name="email"]');
+                  return {
+                    email: emailInput ? emailInput.value : '',
+                    _token: document.querySelector('input[name="_token"]').value,
+                  };
+                }
+              }
             }
         },
 
