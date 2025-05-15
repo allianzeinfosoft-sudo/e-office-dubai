@@ -111,7 +111,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/user-list',[UserController::class, 'getUsers']);
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
-    Route::get('/check_email', [UserController::class, 'checkEmail'])->name('check_mail');
     Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('/users/{userId}/profile-edit', [UserController::class, 'profileEdit'])->name('users.profile-edit');
     Route::post('/users/store-or-update/{id?}', [UserController::class, 'storeOrUpdate'])->name('users.storeOrUpdate');
@@ -121,7 +120,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
     Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
     Route::get('/birthday_view', [UserController::class, 'users_birthday'])->name('birthday_view');
+    Route::post('/check-email', [UserController::class, 'checkEmail']);
     Route::post('/check-employee-id', [UserController::class, 'checkEmployeeId']);
+    Route::post('/check-username', [UserController::class, 'checkUsename']);
+
+
 
     /* department */
     Route::resource('departments',DepartmentController::class);
