@@ -12,22 +12,23 @@ document.addEventListener('DOMContentLoaded', function (e) {
     fv = FormValidation.formValidation(formAddNewRecord, {
       fields: {
          employeeID: {
-        validators: {
-            notEmpty: {
-            message: 'The employee ID is required'
-            },
-            remote: {
-            message: 'This employee ID already exists',
-            method: 'POST',
-            url: '/check-employee-id',  // Create this route
-            data: function() {
-                return {
-                _token: document.querySelector('input[name="_token"]').value, // CSRF token for Laravel
-                employeeID: formAddNewRecord.querySelector('[name="employeeID"]').value
-                };
+            validators: {
+                notEmpty: {
+                message: 'The employee ID is required'
+                },
+                remote: {
+                message: 'This employee ID already exists',
+                method: 'POST',
+                url: '/check-employee-id',  // Create this route
+                data: function() {
+                    return {
+                    _token: document.querySelector('input[name="_token"]').value, // CSRF token for Laravel
+                    employeeID: formAddNewRecord.querySelector('[name="employeeID"]').value,
+                    user_id: formAddNewRecord.querySelector('[name="user_id"]').value
+                    };
+                }
+                }
             }
-            }
-        }
         },
         username: {
           validators: {
@@ -41,7 +42,8 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 data: function() {
                   return {
                     _token: document.querySelector('input[name="_token"]').value, // CSRF token for Laravel
-                    username: formAddNewRecord.querySelector('[name="username"]').value
+                    username: formAddNewRecord.querySelector('[name="username"]').value,
+                    user_id: formAddNewRecord.querySelector('[name="user_id"]').value
                   };
                 }
               }
@@ -65,9 +67,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 delay: 500,
                 data: function () {
                   const emailInput = document.querySelector('[name="email"]');
+                  const userId = document.querySelector('[name="user_id"]');
+
                   return {
                     email: emailInput ? emailInput.value : '',
+                    user_id: userId ? userId.value : '',
                     _token: document.querySelector('input[name="_token"]').value,
+
                   };
                 }
               }
@@ -85,28 +91,55 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 }
             }
         },
-        // aadhaar: {
-        //   validators: {
-        //       stringLength: {
-        //           min: 12,
-        //           max: 12,
-        //           message: 'Aadhaar must be exactly 12 digits'
-        //       },
-        //       regexp: {
-        //           regexp: /^[0-9]{12}$/,
-        //           message: 'Aadhaar must contain only numbers'
-        //       }
-        //   }
-        // },
+        group: {
+            validators: {
+                notEmpty: {
+                message: 'Group field is required'
+                }
+            }
+        },
+        aadhaar: {
+          validators: {
+              stringLength: {
+                  min: 12,
+                  max: 12,
+                  message: 'Aadhaar must be exactly 12 digits'
+              },
+              regexp: {
+                  regexp: /^[0-9]{12}$/,
+                  message: 'Aadhaar must contain only numbers'
+              },
+              remote: {
+                message: 'This aadhar is already taken',
+                url: '/check-aadhar',
+                method: 'POST',
+                crossDomain: false,
+                dataType: 'json',
+                delay: 500,
+                data: function () {
+                  const aadharInput = document.querySelector('[name="aadhaar"]');
+                  const userId = document.querySelector('[name="user_id"]');
 
-        // esi_no: {
-        //   validators: {
-        //     regexp: {
-        //         regexp: /^[0-9]{10}$/,
-        //         message: 'ESI Number must contain only numbers'
-        //     }
-        //   }
-        // },
+                  return {
+                    aadhar: aadharInput ? aadharInput.value : '',
+                    user_id: userId ? userId.value : '',
+                    _token: document.querySelector('input[name="_token"]').value,
+
+                  };
+                }
+              }
+          }
+        },
+
+        esi_no: {
+          validators: {
+            regexp: {
+                regexp: /^[0-9]{10}$/,
+                message: 'ESI Number must contain only numbers'
+            }
+          }
+        },
+
         dob: {
             validators: {
               notEmpty: {

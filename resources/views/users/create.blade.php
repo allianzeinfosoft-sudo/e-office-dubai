@@ -33,6 +33,7 @@
             <h4 class="fw-bold py-3 mb-4">New User</h4>
             <form action="{{ route('users.store') }}" method="POST" name="userForm" id="userFormId" enctype="multipart/form-data" onsubmit="return false">
               @csrf
+            <input type="hidden" name="user_id"  value="">
             <div class="row">
               <!-- Form controls -->
               <div class="col-md-12">
@@ -267,7 +268,7 @@
                         </div>
                       </div>
 
-                    <div class="col-md-4 mb-3">
+                    {{-- <div class="col-md-4 mb-3">
                       <label for="role" class="form-label">Role:</label>
 
                         <select id="role" name="role" class="select2 form-select form-select-lg" data-allow-clear="true">
@@ -277,7 +278,7 @@
                             @endforeach
                         </select>
 
-                    </div>
+                    </div> --}}
                     <div class="col-md-4 mb-3">
                       <label for="status" class="form-label">Status:<span class="mandatory">*</span></label>
                         <select id="status" name="status" class="select2 form-select form-select-lg" data-allow-clear="true">
