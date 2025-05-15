@@ -48,7 +48,7 @@
                     <th>Department</th>
                     <th>Approval Level</th>
                     <th>Approver</th>
-                    <th>Approval Count</th>
+                    {{-- <th>Approval Count</th> --}}
                     <th></th>
                   </tr>
                 </thead>
@@ -154,12 +154,12 @@ if (dtLeaveApproverTable.length) {
             { data: 'department', title: 'Department' },
             { data: 'level', title: 'Approval Level' },
             { data: 'approver', title: 'Approver'},
-            { data: 'count', title: 'Approval Count'},
+            // { data: 'count', title: 'Approval Count'},
             {
                 targets: null,
                 render: function(data, type, full, meta){
-                    let holiday_id = full['id'];
-                    $buttons = `<a href="javascript:;" class="text-body delete-holiday" data-id="${holiday_id}"><i class="ti ti-trash ti-sm mx-2"></i></a>`;
+                    let approver_id = full['id'];
+                    $buttons = `<a href="javascript:;" class="text-body delete-approver" data-id="${approver_id}"><i class="ti ti-trash ti-sm mx-2"></i></a>`;
                     return $buttons;
                 }
             },
@@ -192,7 +192,7 @@ if (dtLeaveApproverTable.length) {
             const department = document.getElementById('department').value.trim();
             const approval_level = document.getElementById('approval-level').value.trim();
             const approver = document.getElementById('approver').value.trim();
-            const approve_count = document.getElementById('approve-count').value.trim();
+            // const approve_count = document.getElementById('approve-count').value.trim();
             let errors = [];
 
             // === Validation ===
@@ -208,9 +208,9 @@ if (dtLeaveApproverTable.length) {
                 errors.push("Approver is required");
             }
 
-            if (!approve_count) {
-                errors.push("Approver count is required");
-            }
+            // if (!approve_count) {
+            //     errors.push("Approver count is required");
+            // }
 
             // === Show errors or submit ===
             let errorBox = document.getElementById('formErrors');
@@ -228,6 +228,57 @@ if (dtLeaveApproverTable.length) {
                 form.submit(); // Submit manually only if no errors
             }
         });
+
+
+
+
+
+        // window.onload = function () {
+
+        //     document.querySelectorAll(".delete-approver").forEach((element) => {
+        //         element.addEventListener("click", function () {
+        //             let approverId = this.getAttribute("data-id"); // Corrected
+
+        //             Swal.fire({
+        //                 title: "Are you sure?",
+        //                 text: "You won't be able to revert this!",
+        //                 icon: "warning",
+        //                 showCancelButton: true,
+        //                 confirmButtonColor: "#d33",
+        //                 cancelButtonColor: "#3085d6",
+        //                 confirmButtonText: "Yes, delete it!"
+        //             }).then((result) => {
+        //                 if (result.isConfirmed) {
+        //                     fetch(`/approver-delete/${approverId}`, {
+        //                         method: "DELETE",
+        //                         headers: {
+        //                             "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+        //                             "Content-Type": "application/json"
+        //                         }
+        //                     })
+        //                     .then(response => response.json())
+        //                     .then(data => {
+        //                         if (data.success) {
+        //                             Swal.fire("Deleted!", "Approver has been deleted.", "success").then(() => {
+        //                                 location.reload(); // Reload page after deletion
+        //                             });
+        //                         } else {
+        //                             Swal.fire("Error!", "Something went wrong.", "error");
+        //                         }
+        //                     })
+        //                     .catch(error => {
+        //                         console.error("Error:", error);
+        //                         Swal.fire("Error!", "Could not delete user.", "error");
+        //                     });
+        //                 }
+        //             });
+        //         });
+        //     });
+
+        //     }
+
+
+
 
 
 });

@@ -101,7 +101,7 @@
                     <div class="col-md-4 mb-3">
                       <label for="blood_group" class="form-label">Blood Group:</label>
                         <select id="blood_group" name="blood_group" class="select2 form-select form-select-lg" data-allow-clear="true">
-                            <option>Please select</option>
+                            <option value="">Please select</option>
                             @foreach (["O-ve", "O+ve", "A-ve", "A+ve", "B-ve", "B+ve", "AB-ve"] as $group)
                                 <option value="{{ $group }}" {{ (old('blood_group') == $group) ? 'selected' : '' }} >{{ $group }}</option>";
                             @endforeach
@@ -279,6 +279,17 @@
                         </select>
 
                     </div> --}}
+                    <div class="col-md-4 mb-3">
+                      <label for="role" class="form-label">Holiday Group:</label>
+
+                        <select id="holidayGroup" name="holidayGroup" class="select2 form-select form-select-lg" data-allow-clear="true">
+                            <option selected value="">Please select</option>
+                                @foreach (config('optionsData.holiday_group') as $key => $value)
+                                    <option value="{{ $key }}">{{ $value ?? 'N/A' }}</option>
+                                @endforeach
+                        </select>
+
+                    </div>
                     <div class="col-md-4 mb-3">
                       <label for="status" class="form-label">Status:<span class="mandatory">*</span></label>
                         <select id="status" name="status" class="select2 form-select form-select-lg" data-allow-clear="true">

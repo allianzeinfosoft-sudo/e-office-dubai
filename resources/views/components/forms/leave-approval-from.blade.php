@@ -40,12 +40,12 @@
                     </select>
 
                 </div>
-                <div class="col-sm-12">
+                {{-- <div class="col-sm-12">
                   <label class="form-label" for="approval count">Approval Count</label>
                   <div class="input-group input-group-merge">
                     <input type="text" id="approve-count" class="form-control dt-approver" name="approve_count" />
                   </div>
-                </div>
+                </div> --}}
 
                 <div class="col-sm-12">
                   <button type="submit" class="btn btn-primary data-submit me-sm-3 me-1">Submit</button>
