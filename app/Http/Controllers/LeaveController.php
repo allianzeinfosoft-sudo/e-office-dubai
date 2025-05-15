@@ -6,6 +6,8 @@ use App\Mail\LeaveApplication;
 use App\Models\Employee;
 use App\Models\Leave;
 use App\Models\LeaveAllocation;
+use App\Models\LeaveApprovalLevel;
+use App\Models\LeaveApprover;
 use App\Models\User;
 use App\Notifications\LeaveNotification;
 use App\Traits\DateFormatter;
@@ -107,6 +109,44 @@ class LeaveController extends Controller
         ];
 
         $leave = Leave::create($leaveData);
+        $user_info = User::find($user_id);
+        $user_department = $user_info->employee->department_id;
+        // store approver
+         $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+         $current_leave_days = Leave::getTotalLeavesTakenInCurrentMonth();
+
+         $total_leave_days = $leave_days +  $current_leave_days;
+         $leaveId = $leave->id;
+
+         if($total_leave_days <= 1)
+         {
+            $approver = $user_info->employee->reporting_to;
+             LeaveApprover::create([
+                'leave_id' => $leaveId,
+                'approver_id' => $approver
+            ]);
+
+         }
+         elseif($total_leave_days <= 3)
+         {
+            $approver = LeaveApprovalLevel::where('department',$user_department)->where('approval_level',1)->value('approver');
+            LeaveApprover::create([
+                'leave_id' => $leaveId,
+                'approver_id' => $approver
+            ]);
+         }
+         else
+         {
+            $approver = LeaveApprovalLevel::where('department', $user_department)
+                ->where('approval_level', 2)
+                ->value('approver');
+
+            LeaveApprover::create([
+                'leave_id' => $leaveId,
+                'approver_id' => $approver
+            ]);
+        }
+
         $user_details = Employee::select('full_name', 'employeeID','reporting_to')
                             ->where('user_id', $request->user_id)
                             ->first();
@@ -212,7 +252,7 @@ class LeaveController extends Controller
                             });
 
 
-            $leaves = Leave::with('employee','user')
+            $leaves = Leave::with('employee','user','leaveApprover')
             ->where('status','=',1)
             ->get()
             ->map(function ($leaves) use ($thisMonthLeaveCount) {
@@ -231,6 +271,9 @@ class LeaveController extends Controller
                     'leave_count' => $this->getDaysBetween($leaves->leave_from, $leaves->leave_to) ?? '',
                     'status' => $leaves->status ?? '',
                     'this_month_leave_count' => $thisMonthLeaveCount,
+                    'leave_approver' => optional($leaves->leaveApprover)->approver_id,
+                    'login_user' => Auth::user()->id,
+                    'login_user_group' => Auth::user()->employee->group,
                 ];
             });
 
@@ -259,6 +302,7 @@ class LeaveController extends Controller
             $leave = Leave::find($id);
             if ($leave) {
                 $leave->status = 2;
+                $leave->comment = $request['comment'];
                 $leave->approved_cancel_date = date('Y-m-d H:i:s');
                 if($leave->save())
                 {
@@ -292,6 +336,7 @@ class LeaveController extends Controller
             $leave = Leave::find($id);
             if ($leave) {
                 $leave->status = 3;
+                $leave->comment = $request['comment'];
                 $leave->approved_cancel_date = date('Y-m-d H:i:s');
                 $leave->save();
 
@@ -453,7 +498,45 @@ class LeaveController extends Controller
         return response()->json(['success' => true, 'message' => 'Leave deleted successfully']);
     }
 
+    public function leave_approver(Request $request)
+    {
+          /* ajax request */
 
+        if ($request->ajax()) {
+
+            $leaveApprover = LeaveApprovalLevel::get()
+            ->map(function ($leaveApprover) {
+                return [
+                    'id' => $leaveApprover->id,
+                    'department' => $leaveApprover->department ? $leaveApprover->dept->department : '',
+                    'approver' => $leaveApprover->approver ? $leaveApprover->employee->full_name : '',
+                    'level' => $leaveApprover->approval_level ? $leaveApprover->approval_level : '',
+                    'count' => $leaveApprover->approve_count ? $leaveApprover->approve_count : '',
+                ];
+            });
+
+            return response()->json([
+                'data' => $leaveApprover
+            ]);
+
+        }
+
+        //
+        $data['meta_title'] = 'Leave Approvers';
+        return view('settings.leave_approval_level', $data);
+    }
+
+    public function leave_approval_store(Request $request)
+    {
+        $banner = LeaveApprovalLevel::create([
+                'department'   => $request->department,
+                'approver'    => $request->approver,
+                'approval_level'  => $request->approval_level,
+                'approve_count'  => $request->approve_count
+            ]);
+
+        return redirect()->back()->with('success', 'Leave approver created successfully!');
+    }
 
 
 }

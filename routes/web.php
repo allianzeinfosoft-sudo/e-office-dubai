@@ -121,6 +121,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
     Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
     Route::get('/birthday_view', [UserController::class, 'users_birthday'])->name('birthday_view');
+    Route::post('/check-employee-id', [UserController::class, 'checkEmployeeId']);
 
     /* department */
     Route::resource('departments',DepartmentController::class);
@@ -153,7 +154,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/update-leave-allocation',[LeaveController::class, 'updateLeaveAllocation'])->name('leave.update_leave_allocation');
     Route::delete('/leaves/{id}', [LeaveController::class, 'destroy'])->name('leaves.destroy');
     Route::get('/custom_leave',[LeaveController::class,'custom_leave'])->name('custom.leave');
-
+    Route::get('/leave_approver/list',[LeaveController::class, 'leave_approver'])->name('leave.approver');
+    Route::post('/leave_approval_store',[LeaveController::class, 'leave_approval_store'])->name('leave_approval_store');
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
