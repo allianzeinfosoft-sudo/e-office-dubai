@@ -23,7 +23,7 @@ class RecruitmentController extends Controller
     public function index(Request $request){
         /* ajax request */
         if ($request->ajax()) {
-            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where(['draft_status' => 0])->orderBy('id', 'desc')->get();
+            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where(['draft_status' => 0, 'approval_status' => 1])->orderBy('id', 'desc')->get();
     
             return response()->json([
                 'success' => true,
