@@ -61,15 +61,15 @@
                 <div class="text-center mb-4">
                     <h3 class="mb-2">Enter Reason for Rejection</h3>
                 </div>
-                <form id="enableOTPForm" class="row g-2 fv-plugins-bootstrap5 fv-plugins-framework" onsubmit="return false" novalidate="novalidate">
+                <form id="rejectedForm" class="row g-2 fv-plugins-bootstrap5 fv-plugins-framework" onsubmit="return false" novalidate="novalidate">
                     <div class="col-12">
                         <textarea class="form-control" id="rejectedReason" rows="3" placeholder="Reason for Rejection"></textarea>
                     </div>
                     <div class="col-12">
+                        <input type="hidden" name="rrfId" id="rrfId" />
                         <button type="submit" class="btn btn-primary me-sm-3 me-1 waves-effect waves-light">Submit</button>
                         <button type="reset" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                     </div>
-                    <input type="hidden" name="rrfId" id="rrfId" />
                 </form>
             </div>
         </div>
@@ -127,7 +127,7 @@
                         title: 'Actions',
                         render: function (data, type, row) {
                             return `
-                                <a href="javascript:void(0)" class="btn btn-sm btn-info">Approve</a>
+                                <a href="/recruitments/rrf-approve/${row.id}" onclick="return confirm('Are you sure?')" class="btn btn-sm btn-info">Approve</a>
                                 <a href="javascript:void(0)" onclick ="rejectModal(${row.id})" class="btn btn-sm btn-primary edit-project">Reject</a>
                             `;
                         }
@@ -137,12 +137,61 @@
         }
     });
 
-
     function rejectModal(id) {
         const apporvalModal = new bootstrap.Modal(document.getElementById('apporvalModal'));
         apporvalModal.show();
         $('#rrfId').val(id);
     }
+
+    document.getElementById('rejectedForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+            const rrfId = $('#rrfId').val().trim();
+            const reason = $('#rejectedReason').val().trim();
+
+            if (!reason) {
+                alert('Please enter a rejection reason.');
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('recruitments.reject') }}",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    rrf_id: rrfId,
+                    reason: reason
+                }),
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) {
+                    if (data.success) {
+                        alert("Rejection submitted successfully.");
+
+                         $('#rrfId').val('');
+                         $('#rejectedReason').val('');
+
+                        // Close modal
+                        const modalEl = document.getElementById('approvalModal');
+                        const approvalModal = bootstrap.Modal.getInstance(modalEl);
+                        approvalModal.hide();
+
+                        // Reload DataTable
+                        $('.datatables-rrf-approvals').DataTable().ajax.reload();
+                    } else {
+                        alert(data.message || "Something went wrong.");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                    alert("An error occurred while submitting the rejection.");
+                }
+            });
+    });
+
+
+    
 
     
 </script>

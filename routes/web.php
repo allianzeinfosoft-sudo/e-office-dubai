@@ -235,6 +235,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
     Route::post('/recruitments/update-status', [RecruitmentController::class, 'updateStatus'])->name('recruitments.update-status');
     Route::get('/recruitments/rrf_approvals', [RecruitmentController::class, 'rrf_approvals'])->name('recruitments.rrf-approvals');
+    Route::get('/recruitments/rrf-approve/{rrfTd}', [RecruitmentController::class, 'rrf_approve'])->name('recruitments.rrf-approve');
+    Route::post('/recruitments/reject', [RecruitmentController::class, 'reject'])->name('recruitments.reject');
 
     /*feeds*/
     Route::get('/feeds',[FeedsController::class, 'show_feeds'])->name('show.feeds');

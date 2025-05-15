@@ -445,6 +445,7 @@ class RecruitmentController extends Controller
         if ($request->ajax()) {
             $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])
                 ->where('draft_status', 0)
+                ->where('draft_status', 0)
                 ->orderByDesc('id')
                 ->get();
 
@@ -481,5 +482,28 @@ class RecruitmentController extends Controller
 
         $data['meta_title'] = 'RRF Approvals';
         return view('recruitments.rrf_approvals', $data);
+    }
+
+    public function rrf_approve($rrfTd){
+        $recruitment = Recruitment::find($rrfTd);
+        $recruitment->approval_status = 1;
+        $recruitment->approval_reason = "Approved by " . Auth::user()->full_name . ' on '. date('d-m-Y');
+        $recruitment->save();
+        return redirect()->route('recruitments.rrf-approvals')->with('success', 'RRF Approved Successfully');
+    }
+
+    public function reject(Request $request){
+
+        $request->validate([
+            'rrf_id' => 'required',
+            'reason' => 'required',
+        ]);
+
+        $recruitment = Recruitment::find($request->rrf_id);
+        $recruitment->approval_status = 2;
+        $recruitment->approval_reason = $request->reason;
+        $recruitment->save();
+
+        return response()->json(['success' => true]);
     }
 }
