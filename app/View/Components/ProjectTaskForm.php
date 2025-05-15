@@ -32,7 +32,7 @@ class ProjectTaskForm extends Component{
         $this->method       = $method;
         $this->projectTask  = $projectTask;
         $reportingToIds     = Employee::whereNotNull('reporting_to') ->distinct()->pluck('reporting_to');
-        $this->reportingTo  = Employee::whereIn('id', $reportingToIds)->get();
+        $this->reportingTo  = Employee::whereIn('user_id', $reportingToIds)->get();
         $this->departments  = Department::all();
         $this->projects     = Project::all();
         $this->tasks        = Tasks::all();
