@@ -168,17 +168,7 @@
                 success: function(data) {
                     if (data.success) {
                         alert("Rejection submitted successfully.");
-
-                         $('#rrfId').val('');
-                         $('#rejectedReason').val('');
-
-                        // Close modal
-                        const modalEl = document.getElementById('approvalModal');
-                        const approvalModal = bootstrap.Modal.getInstance(modalEl);
-                        approvalModal.hide();
-
-                        // Reload DataTable
-                        $('.datatables-rrf-approvals').DataTable().ajax.reload();
+                        window.location.reload();
                     } else {
                         alert(data.message || "Something went wrong.");
                     }

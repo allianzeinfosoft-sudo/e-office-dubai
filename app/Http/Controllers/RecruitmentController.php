@@ -444,8 +444,7 @@ class RecruitmentController extends Controller
 
         if ($request->ajax()) {
             $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])
-                ->where('draft_status', 0)
-                ->where('draft_status', 0)
+                ->where('approval_status', 0)
                 ->orderByDesc('id')
                 ->get();
 

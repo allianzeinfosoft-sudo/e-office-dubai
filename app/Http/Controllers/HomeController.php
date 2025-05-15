@@ -27,7 +27,7 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index(Request $request){
-        $selected_user =  auth()->id();
+        $selected_user =  Auth::user()->id();
         $selected_year =  date('Y');
 
         $data['employee'] = Employee::with('department', 'designation', 'workshift', 'reportingToEmployee')->where('user_id', $selected_user)->first();
