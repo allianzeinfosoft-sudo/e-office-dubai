@@ -273,7 +273,7 @@ class LeaveController extends Controller
                     'this_month_leave_count' => $thisMonthLeaveCount,
                     'leave_approver' => optional($leaves->leaveApprover)->approver_id,
                     'login_user' => Auth::user()->id,
-                    'login_user_group' => Auth::user()->employee->group,
+                    'login_user_group' => Auth::user()->employee?->group,
                 ];
             });
 
