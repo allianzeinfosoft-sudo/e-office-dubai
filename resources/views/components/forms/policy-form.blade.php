@@ -6,15 +6,15 @@
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="policyTitle">Policy Title</label>
-                <input type="text" name="policyTitle" id="policyTitle" class="form-control" placeholder="Policy Title" />
+                <label for="policyTitle">Policy Title <span class="text-danger">*</span></label>
+                <input type="text" name="policyTitle" id="policyTitle" class="form-control" placeholder="Policy Title" required />
             </div>
         </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="policyStartDate">Policy Start Date</label>
-                <input type="text" name="policyStartDate" id="policyStartDate" class="form-control flatpickr-input" placeholder="Policy Start Date" />
+                <label for="policyStartDate">Policy Start Date <span class="text-danger">*</span></label>
+                <input type="text" name="policyStartDate" id="policyStartDate" class="form-control flatpickr-input" placeholder="Policy Start Date" required />
             </div>
         </div>
 
@@ -27,8 +27,8 @@
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="department_id">Department</label>
-                <select name="department_id" id="department_id" class="form-control select2">
+                <label for="department_id">Department <span class="text-danger">*</span></label>
+                <select name="department_id" id="department_id" class="form-control select2" required>
                     <option value="">Select Department</option>
                     @foreach($departments as $department)
                         <option value="{{ $department->id }}">{{ $department->department }}</option>
@@ -39,8 +39,8 @@
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="role_id">Group</label>
-                <select name="role_id" id="role_id" class="form-control select2">
+                <label for="role_id">Group <span class="text-danger">*</span></label>
+                <select name="role_id" id="role_id" class="form-control select2" required>
                     <option value="">Select Group</option>
                     @foreach($roles as $role)
                         <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -59,8 +59,8 @@
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="attachments">Attachments</label>
-                <input type="file" name="attachments" id="attachments" class="form-control" />
+                <label for="attachments">Attachments <span class="text-danger">*</span></label>
+                <input type="file" name="attachments" id="attachments" class="form-control" required />
             </div>
         </div>
 

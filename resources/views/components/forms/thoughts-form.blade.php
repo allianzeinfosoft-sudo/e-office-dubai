@@ -14,15 +14,15 @@
     <div class="row">
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="thoughts_title">Thought Title</label>
-                <input type="text" name="thoughts_title" id="thoughts_title" class="form-control" placeholder="Thought Title" />
+                <label for="thoughts_title">Thought Title <span class="text-danger">*</span></label>
+                <input type="text" name="thoughts_title" id="thoughts_title" class="form-control" placeholder="Thought Title" require />
             </div>
         </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="display_date">Display Date</label>
-                <input type="date" name="display_date" id="display_date" class="form-control" placeholder="Display Date" />
+                <label for="display_date">Display Date <span class="text-danger">*</span></label>
+                <input type="date" name="display_date" id="display_date" class="form-control" placeholder="Display Date" require />
             </div>
         </div>
 

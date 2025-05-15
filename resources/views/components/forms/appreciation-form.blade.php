@@ -14,8 +14,8 @@
     <div class="row">
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="appreciant">Name of Appreciants</label>
-                <select name="appreciant[]" id="appreciant" class="form-control select2" multiple>
+                <label for="appreciant">Name of Appreciants <span class="text-danger">*</span></label>
+                <select name="appreciant[]" id="appreciant" class="form-control select2" multiple required>
                     @foreach ($users as $user)
                         <option value="{{ $user->id }}" {{ (old('appreciant') == $user->id ) ? 'selected' : '' }}>{{ $user->employee->full_name ?? 'N/A' }}</option>
                     @endforeach
@@ -27,8 +27,8 @@
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="display_date">Display Date</label>
-                <input type="date" name="display_date" id="display_date" class="form-control" placeholder="Display Date" />
+                <label for="display_date">Display Date <span class="text-danger">*</span></label>
+                <input type="date" name="display_date" id="display_date" class="form-control" placeholder="Display Date" required />
             </div>
         </div>
 
@@ -47,7 +47,7 @@
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="appreciation_details">Appreciation Details</label>
+                <label for="appreciation_details">Appreciation Details <span class="text-danger">*</span></label>
                 <div id="appreciation-editor"></div>
                 <input type="hidden" name="appreciation_details" value="{{ strip_tags(old('appreciation_details')) }}" id="appreciation_details">
             </div>

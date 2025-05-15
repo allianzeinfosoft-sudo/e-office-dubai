@@ -107,11 +107,22 @@
     });
 
     $(function(){
-        $('.flatpickr-input').flatpickr({
-            monthSelectorType: 'static',
+        
+
+        const endPicker = $("#pollicyEndDate").flatpickr({
             altInput: true,
             altFormat: 'd-m-Y',
             dateFormat: 'd-m-Y'
+        })
+
+        $("#policyStartDate").flatpickr({
+            altInput: true,
+            altFormat: 'd-m-Y',
+            dateFormat: 'd-m-Y',
+            onChange: function(selectedDates, dateStr, instance) {
+            // Set minDate of end date based on start date
+                $("#pollicyEndDate")[0]._flatpickr.set('minDate', dateStr);
+            }
         });
 
         var policyTable = $('.datatables-policy');
