@@ -123,8 +123,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/check-email', [UserController::class, 'checkEmail']);
     Route::post('/check-employee-id', [UserController::class, 'checkEmployeeId']);
     Route::post('/check-username', [UserController::class, 'checkUsename']);
-
-
+    Route::post('/check-aadhar', [UserController::class, 'checkAadhar']);
 
     /* department */
     Route::resource('departments',DepartmentController::class);

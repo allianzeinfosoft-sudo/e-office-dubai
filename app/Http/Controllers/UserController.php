@@ -139,7 +139,7 @@ class UserController extends Controller
                 'designation_id' => !empty($request->designation_id) ? $request->designation_id : null,
                 'join_date' => !empty($request->join_date) ? $request->join_date : null,
                 'shift_id' => !empty($request->shift_id) ? $request->shift_id : null,
-                'role' => !empty($request->role) ? $request->role : null,
+                'role' => !empty($request->group) ? $request->group : null,
                 'status' => !empty($request->status) ? $request->status : null,
                 'login_limited_time' => !empty($request->login_limited_time) ? $request->login_limited_time : null,
                 'appointment_status' => !empty($request->appointment_status) ? $request->appointment_status : null,
@@ -278,7 +278,7 @@ class UserController extends Controller
             'designation_id' => !empty($request->designation_id) ? $request->designation_id : null,
             'join_date' => !empty($request->join_date) ?  $request->join_date : null,
             'shift_id' => !empty($request->shift_id) ? $request->shift_id : null,
-            'role' => !empty($request->role) ? $request->role : null,
+            'role' => !empty($request->group) ? $request->group : null,
             'status' => !empty($request->status) ? $request->status : null,
             'login_limited_time' => !empty($request->login_limited_time) ? $request->login_limited_time : null,
             'appointment_status' => !empty($request->appointment_status) ? $request->appointment_status : null,
@@ -460,7 +460,7 @@ public function storeOrUpdate(Request $request, $id = null)
                 'designation_id' => $request->designation_id,
                 'join_date' => $request->join_date,
                 'shift_id' => $request->shift_id,
-                'role' => $request->role,
+                'role' => $request->group,
                 'status' => $request->status,
                 'login_limited_time' => $request->login_limited_time,
                 'appointment_status' => $request->appointment_status,
@@ -614,32 +614,92 @@ public function users_birthday()
 
 public function checkEmployeeId(Request $request)
 {
-    $exists = Employee::where('employeeID', $request->employeeID)->exists();
+    // $exists = Employee::where('employeeID', $request->employeeID)->exists();
 
+    // return response()->json([
+    //     'valid' => !$exists
+    // ]);
+
+    $employeeID = $request->employeeID;
+    $user_id = $request->user_id;
+
+    $query = Employee::where('employeeID', $employeeID);
+    if (!empty($user_id)) {
+        $query->where('user_id', '!=', $user_id);
+    }
+    $exists = $query->exists();
     return response()->json([
-        'valid' => !$exists // FormValidation expects `valid: true` if value is allowed
+        'valid' => !$exists
     ]);
 }
 
 public function checkUsename(Request $request)
 {
-    $exists = User::where('username', $request->username)->exists();
+    // $exists = User::where('username', $request->username)->exists();
+    // return response()->json([
+    //     'valid' => !$exists
+    // ]);
 
+    $username = $request->username;
+    $userId = $request->user_id;
+
+    $query = User::where('username', $username);
+    if (!empty($userId)) {
+        $query->where('id', '!=', $userId);
+    }
+
+    $exists = $query->exists();
     return response()->json([
-        'valid' => !$exists // FormValidation expects `valid: true` if value is allowed
+        'valid' => !$exists
     ]);
+
+
 }
 
 public function checkEmail(Request $request)
 {
 
-    $exists = User::where('email', $request->email)->exists();
+    // $exists = User::where('email', $request->email)->exists();
+
+    // return response()->json([
+    //     'valid' => !$exists // FormValidation expects `valid: true` if value is allowed
+    // ]);
+
+    $email = $request->email;
+    $userId = $request->user_id;
+
+    $query = User::where('email', $email);
+    if (!empty($userId)) {
+        $query->where('id', '!=', $userId);
+    }
+
+    $exists = $query->exists();
 
     return response()->json([
-        'valid' => !$exists // FormValidation expects `valid: true` if value is allowed
+        'valid' => !$exists
     ]);
 
 }
+
+public function checkAadhar(Request $request)
+{
+
+    $aadhar = $request->aadhar;
+    $userId = $request->user_id;
+
+    $query = Employee::where('aadhaar', $aadhar);
+    if (!empty($userId)) {
+        $query->where('user_id', '!=', $userId);
+    }
+
+    $exists = $query->exists();
+
+    return response()->json([
+        'valid' => !$exists
+    ]);
+
+}
+
 
 
 }

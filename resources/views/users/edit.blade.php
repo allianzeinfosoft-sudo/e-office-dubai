@@ -74,7 +74,7 @@
                             @endforeach
                         </select>
                     </div>
-                    
+
                     <div class="col-md-4 mb-3">
                       <label for="personal_email" class="form-label">Personal Email:</label>
                       <div class="input-group input-group-merge">
@@ -152,7 +152,7 @@
                       <select id="group" name="group" class="select2 form-select form-select-lg" data-allow-clear="true">
                         <option value="">Select Group</option>
                         @foreach ($roles as $role)
-                            <option value="{{ $role->name }}" 
+                            <option value="{{ $role->name }}"
                                 {{ old('group', $user->employee?->group) == $role->name ? 'selected' : '' }}>
                                 {{ $role->name }}
                             </option>
@@ -272,7 +272,7 @@
                         </div>
                       </div>
 
-                    <div class="col-md-4 mb-3">
+                    {{-- <div class="col-md-4 mb-3">
                       <label for="role" class="form-label">Role:</label>
                         <select id="role" name="role" class="select2 form-select form-select-lg" data-allow-clear="true">
                             <option selected value="">Please select</option>
@@ -280,7 +280,7 @@
                                 <option value="{{ $role->name }}" {{ old('role', $user->employee?->role) == $role->name ? 'selected' : '' }} > {{ $role->name ?? '' }} </option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> --}}
                     <div class="col-md-4 mb-3">
                       <label for="status" class="form-label">Status:</label>
                         <select id="status" name="status" class="select2 form-select form-select-lg" data-allow-clear="true">
