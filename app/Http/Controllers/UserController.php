@@ -202,6 +202,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+
         $employee = $user->employee;
         $request->validate([
             'username'  => ['required','string','max:255',
@@ -699,6 +700,103 @@ public function checkAadhar(Request $request)
     ]);
 
 }
+
+public function checkEsi(Request $request)
+{
+
+    $esi_no = $request->esi_no;
+    $userId = $request->user_id;
+
+    $query = Employee::where('esi_no', $esi_no);
+    if (!empty($userId)) {
+        $query->where('user_id', '!=', $userId);
+    }
+
+    $exists = $query->exists();
+
+    return response()->json([
+        'valid' => !$exists
+    ]);
+
+}
+
+public function checkPf(Request $request)
+{
+
+    $pf_no = $request->pf_no;
+    $userId = $request->user_id;
+
+    $query = Employee::where('pf_no', $pf_no);
+    if (!empty($userId)) {
+        $query->where('user_id', '!=', $userId);
+    }
+
+    $exists = $query->exists();
+
+    return response()->json([
+        'valid' => !$exists
+    ]);
+
+}
+
+public function checkElectoral(Request $request)
+{
+
+    $electoral_id = $request->electoral_id;
+    $userId = $request->user_id;
+
+    $query = Employee::where('electoral_id', $electoral_id);
+    if (!empty($userId)) {
+        $query->where('user_id', '!=', $userId);
+    }
+
+    $exists = $query->exists();
+
+    return response()->json([
+        'valid' => !$exists
+    ]);
+
+}
+
+public function checkPAN(Request $request)
+{
+
+    $pan = $request->pan;
+    $userId = $request->user_id;
+
+    $query = Employee::where('pan', $pan);
+    if (!empty($userId)) {
+        $query->where('user_id', '!=', $userId);
+    }
+
+    $exists = $query->exists();
+
+    return response()->json([
+        'valid' => !$exists
+    ]);
+
+}
+
+public function checkAccountNumber(Request $request)
+{
+
+    $account_number = $request->account_number;
+    $userId = $request->user_id;
+
+    $query = Employee::where('account_number', $account_number);
+    if (!empty($userId)) {
+        $query->where('user_id', '!=', $userId);
+    }
+
+    $exists = $query->exists();
+
+    return response()->json([
+        'valid' => !$exists
+    ]);
+
+}
+
+
 
 
 

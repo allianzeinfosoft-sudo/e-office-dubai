@@ -134,12 +134,127 @@ document.addEventListener('DOMContentLoaded', function (e) {
         esi_no: {
           validators: {
             regexp: {
-                regexp: /^[0-9]{10}$/,
-                message: 'ESI Number must contain only numbers'
-            }
+                regexp: /^[0-9]+$/,
+                message: 'This field must contain only numbers'
+            },
+            remote: {
+                message: 'This esi no is already taken',
+                url: '/check-esi',
+                method: 'POST',
+                crossDomain: false,
+                dataType: 'json',
+                delay: 500,
+                data: function () {
+                  const esiInput = document.querySelector('[name="esi_no"]');
+                  const userId = document.querySelector('[name="user_id"]');
+
+                  return {
+                    esi_no: esiInput ? esiInput.value : '',
+                    user_id: userId ? userId.value : '',
+                    _token: document.querySelector('input[name="_token"]').value,
+
+                  };
+                }
+              }
           }
         },
 
+        pf_no: {
+            validators: {
+
+              remote: {
+                  message: 'This pf no is already taken',
+                  url: '/check-pf',
+                  method: 'POST',
+                  crossDomain: false,
+                  dataType: 'json',
+                  delay: 500,
+                  data: function () {
+                    const pfInput = document.querySelector('[name="pf_no"]');
+                    const userId = document.querySelector('[name="user_id"]');
+
+                    return {
+                      pf_no: pfInput ? pfInput.value : '',
+                      user_id: userId ? userId.value : '',
+                      _token: document.querySelector('input[name="_token"]').value,
+
+                    };
+                  }
+                }
+            }
+          },
+          electoral_id: {
+            validators: {
+
+              remote: {
+                  message: 'This electoral ID is already taken',
+                  url: '/check-electoral',
+                  method: 'POST',
+                  crossDomain: false,
+                  dataType: 'json',
+                  delay: 500,
+                  data: function () {
+                    const electoral_idInput = document.querySelector('[name="electoral_id"]');
+                    const userId = document.querySelector('[name="user_id"]');
+
+                    return {
+                       electoral_id: electoral_idInput ? electoral_idInput.value : '',
+                       user_id: userId ? userId.value : '',
+                      _token: document.querySelector('input[name="_token"]').value,
+
+                    };
+                  }
+                }
+            }
+          },
+          pan: {
+            validators: {
+
+              remote: {
+                  message: 'This PAN no is already taken',
+                  url: '/check-pan',
+                  method: 'POST',
+                  crossDomain: false,
+                  dataType: 'json',
+                  delay: 500,
+                  data: function () {
+                    const panInput = document.querySelector('[name="pan"]');
+                    const userId = document.querySelector('[name="user_id"]');
+
+                    return {
+                        pan: panInput ? panInput.value : '',
+                      user_id: userId ? userId.value : '',
+                      _token: document.querySelector('input[name="_token"]').value,
+
+                    };
+                  }
+                }
+            }
+          },
+          account_number: {
+            validators: {
+
+              remote: {
+                  message: 'This Account no is already taken',
+                  url: '/check-account-number',
+                  method: 'POST',
+                  crossDomain: false,
+                  dataType: 'json',
+                  delay: 500,
+                  data: function () {
+                    const account_numberInput = document.querySelector('[name="account_number"]');
+                    const userId = document.querySelector('[name="user_id"]');
+
+                    return {
+                        account_number: account_numberInput ? account_numberInput.value : '',
+                        user_id: userId ? userId.value : '',
+                      _token: document.querySelector('input[name="_token"]').value,
+
+                    };
+                  }
+                }
+            }
+          },
         dob: {
             validators: {
               notEmpty: {

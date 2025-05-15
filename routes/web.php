@@ -124,6 +124,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/check-employee-id', [UserController::class, 'checkEmployeeId']);
     Route::post('/check-username', [UserController::class, 'checkUsename']);
     Route::post('/check-aadhar', [UserController::class, 'checkAadhar']);
+    Route::post('/check-esi', [UserController::class, 'checkEsi']);
+    Route::post('/check-pf', [UserController::class, 'checkPf']);
+    Route::post('/check-electoral', [UserController::class, 'checkElectoral']);
+    Route::post('/check-pan', [UserController::class, 'checkPAN']);
+    Route::post('/check-account-number', [UserController::class, 'checkAccountNumber']);
 
     /* department */
     Route::resource('departments',DepartmentController::class);
