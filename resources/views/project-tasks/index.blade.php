@@ -89,7 +89,7 @@
     </div>
     <div class="offcanvas-body">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-12 h-100">
                 <x-project-task-form action="{{ route('tasks-project.store') }}" />
             </div>
         </div>
