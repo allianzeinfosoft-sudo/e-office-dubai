@@ -201,7 +201,7 @@
                 offcanvasElement.find('input[name="project_name"]').val(response.project.project_name);
                 offcanvasElement.find('select[name="project_add_person"]').val(response.project.project_add_person).trigger('change');
                 offcanvasElement.find('select[name="department_id"]').val(response.project.department_id).trigger('change');
-                offcanvasElement.find('input[name="start_date"]').val(response.project.start_date);
+                // offcanvasElement.find('input[name="start_date"]').val(response.project.start_date);
                 offcanvasElement.find('#start_date').flatpickr({ 
                     monthSelectorType: 'static',
                     altInput: true,
