@@ -47,7 +47,7 @@
                         <option value=""></option>
                         @if($reportingTo->isNotEmpty()) 
                             @foreach($reportingTo as $user) 
-                                <option value="{{ $user->id }}">{{ $user->full_name }} ( {{ $user->employeeID }} )</option>
+                                <option value="{{ $user->user_id }}">{{ $user->full_name }} ( {{ $user->employeeID }} )</option>
                             @endforeach
                         @endif
                      </select>
