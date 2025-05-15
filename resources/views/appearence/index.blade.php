@@ -216,9 +216,9 @@ function renderImages(images) {
         const selectBtnClass = isActive ? 'btn-primary selected-btn' : 'btn-success';
         const selectBtnText = isActive ? '<i class="ti ti-check"></i>' : 'Select';
 
-        const imageHtml = `<div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 mb-5">
+        const imageHtml = `<div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 mb-5" id="bg-${image.id}">
             <div class="parent shadow">
-                <img src="/storage/${image.image}" alt="Image" class="img-fluid w-100 galery-cover">
+                <img src="/storage/${image.image}" alt="Image" class="img-fluid w-100 galery-cover" >
             </div>
             <div class="d-flex justify-content-between shadow br-lb10 br-rb10 bg-white p-3">
                 <button class="btn btn-danger waves-effect waves-light delete-background-image delete-image-${image.id}" data-id="${image.id}" data-bg_type="${cat}">
@@ -279,7 +279,7 @@ function renderImages(images) {
                         success: function(response) {
 
                             Swal.fire("Deleted!", "Background Image has been deleted.", "success").then(() => {
-                                $('#datatables-background').DataTable().ajax.reload(); // Reload table
+                                $(`#bg-${backgroundId}`).remove();
                             });
 
                         },

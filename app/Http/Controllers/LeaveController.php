@@ -511,7 +511,7 @@ class LeaveController extends Controller
                     'department' => $leaveApprover->department ? $leaveApprover->dept->department : '',
                     'approver' => $leaveApprover->approver ? $leaveApprover->employee->full_name : '',
                     'level' => $leaveApprover->approval_level ? $leaveApprover->approval_level : '',
-                    'count' => $leaveApprover->approve_count ? $leaveApprover->approve_count : '',
+                    // 'count' => $leaveApprover->approve_count ? $leaveApprover->approve_count : '',
                 ];
             });
 
@@ -532,7 +532,7 @@ class LeaveController extends Controller
                 'department'   => $request->department,
                 'approver'    => $request->approver,
                 'approval_level'  => $request->approval_level,
-                'approve_count'  => $request->approve_count
+                // 'approve_count'  => $request->approve_count
             ]);
 
         return redirect()->back()->with('success', 'Leave approver created successfully!');

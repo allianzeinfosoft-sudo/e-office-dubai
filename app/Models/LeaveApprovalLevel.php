@@ -9,7 +9,7 @@ class LeaveApprovalLevel extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['department','approver','approval_level','approve_count'];
+    protected $fillable = ['department','approver','approval_level'];
 
    public function employee()
     {

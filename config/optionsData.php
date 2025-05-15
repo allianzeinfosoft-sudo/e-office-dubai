@@ -143,6 +143,6 @@ return [
         '2' => 'Finance',
         '3' => 'DIP',
         '4' => 'Engineering',
-    ]
+    ],
 
 ];
