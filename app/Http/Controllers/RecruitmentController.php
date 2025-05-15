@@ -13,6 +13,7 @@ use App\Models\Skills;
 use App\Models\KeyworsRrf;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RecruitmentController extends Controller
 {
@@ -68,8 +69,6 @@ class RecruitmentController extends Controller
                         'createdAt' => $result->created_at->format('d-m-Y'),
                         'priority' => $result->priority ? '<span class="badge bg-'.$priority_colors[$result->priority].'">' . config('optionsData.priority')[$result->priority] . '</span>' : '',
                         'interviewer' => $result->interViewer->full_name ?? '',
-                        'skills' => $skills,
-                        'keywords' => $keywordsRrf,
                         'status' => $result->status ?? '',
                     ];
                 }),
@@ -439,5 +438,41 @@ class RecruitmentController extends Controller
             'message' => 'Status updated successfully!',
             'status' => $recruitment->status
         ]);
+    }
+
+    public function rrf_approvals(Request $request){
+
+        if($request->ajax()){
+
+            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where(['seekApproval' => Auth::user()->id, 'approval_status' => 0])->orderBy('id', 'desc')->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Recruitments fetched successfully',
+                'data' => $recruitments->map(function ($result, $index) {
+                    $priority_colors = [
+                        '0' => 'dark',
+                        '1' => 'danger', 
+                        '2' => 'info', 
+                        '3' => 'primary', 
+                    ];
+
+                    return [
+                        'row' => $index + 1, 
+                        'id' => $result->id,
+                        'rrfDate' => date('d-m-Y', strtotime($result->rrfDate)),
+                        'jobTitle' => $result->jobTitle ?? '',
+                        'projectName' => optional($result->project)->project_name ?? '',
+                        'designation' => $result->designation->designation ?? '',
+                        'priority' => $result->priority ? '<span class="badge bg-'.$priority_colors[$result->priority].'">' . config('optionsData.priority')[$result->priority] . '</span>' : '',
+                        'interviewer' => $result->interViewer->full_name ?? '',
+                        'status' => $result->status ?? '',
+                    ];
+                }),
+            ]);
+        }
+
+        $data['meta_title'] = 'RRF Approvals';
+        return view('recruitments.rrf_approvals', $data);
     }
 }

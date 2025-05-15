@@ -87,8 +87,8 @@
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-users fs-4"></i>
                         </span>
-                        <a href="app-user-list.html" class="stretched-link">User App</a>
-                        <small class="text-muted mb-0">Manage Users</small>
+                        <a href="{{ route('recruitments.rrf-approvals') }}" class="stretched-link">RRF Appoval</a>
+                        <small class="text-muted mb-0">Recuritment Approvel</small>
                       </div>
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">

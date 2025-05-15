@@ -33,16 +33,16 @@
                     <h4 class="fw-bold py-3 mb-4 text-muted"><span class="text-muted fw-light"> Project /</span> {{ $meta_title }}</h4>
 
                     <div class="row">
-                    <div class="col-sm-12 d-flex justify-content-end mb-3">
-                        <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="addProject()">
-                            <!-- {{ route('project.create') }} -->
-                            <span>
-                                <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                <span class="d-none d-sm-inline-block"> New</span>
-                            </span>
-                        </a>
+                        <div class="col-sm-12 d-flex justify-content-end mb-3">
+                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="addProject()">
+                                <!-- {{ route('project.create') }} -->
+                                <span>
+                                    <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
+                                    <span class="d-none d-sm-inline-block"> New</span>
+                                </span>
+                            </a>
+                        </div>
                     </div>
-                </div>
 
                 <div class="card">
                     <div class="card-datatable table-responsive">
