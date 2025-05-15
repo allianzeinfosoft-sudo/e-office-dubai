@@ -122,10 +122,10 @@ const CustomHelper = {
             end.setDate(end.getDate() + 1);
         }
 
-        let diff = (end - start) / (1000 * 60 * 60); // Difference in hours
-        diff -= parseFloat(breakTime) || 0; // Subtract break time
+        let diff = (end - start) / (1000 * 60 * 60); // in hours
+        diff -= parseFloat(breakTime) || 0;
 
-        return diff > 0 ? diff.toFixed(2) : 0;
+        return diff > 0 ? parseFloat(diff.toFixed(2)) : 0;
     },
     convertHoursToTimeFormat: function(hours) {
         let h = Math.floor(hours);
@@ -145,13 +145,14 @@ const CustomHelper = {
 
         $('.select2').select2();
 
-        $('#signout_time').on('change', function() {
+        $('#signout_time').on('change', function () {
             var startTime = $('#signin_time').val();
             var endTime = $(this).val();
             var breakTime = $('#break_time').val();
-            var workingHours = CustomHelper.calculateWorkingHours(startTime, endTime, breakTime);
+            
+            if (!startTime || !endTime) return;
 
-            // If input is type="time", use convertHoursToTimeFormat
+            var workingHours = CustomHelper.calculateWorkingHours(startTime, endTime, breakTime);
             $('#working_hours').val(CustomHelper.convertHoursToTimeFormat(workingHours));
         });
         

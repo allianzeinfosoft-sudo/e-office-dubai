@@ -19,6 +19,8 @@ class ProjectTaskController extends Controller
         if ($request->ajax()) {
             // Handle the AJAX request here
             $projectTasks = ProjectTask::with('project', 'employee')->get();
+            $reportingTo = Employee::select('reporting_to')->distinct()->pluck('reporting_to');
+
             return response()->json([
                 'success' => true,
                 'message' => 'Attendance marked successfully',
@@ -38,7 +40,7 @@ class ProjectTaskController extends Controller
                         'task_name' => $task->tasks->name ?? '', 
                         'project_name' => optional($task->project)->project_name,
                         'created_at' => date('d-m-Y', strtotime($task->created_at)),
-                        'reporting_to' => $task->employee ?? '',
+                        'reporting_to' => $reportingTo ?? '',
                         'members' => $members,
                     ];
                 }),
