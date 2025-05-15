@@ -442,31 +442,38 @@ class RecruitmentController extends Controller
 
     public function rrf_approvals(Request $request){
 
-        if($request->ajax()){
+        if ($request->ajax()) {
+            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])
+                ->where('draft_status', 0)
+                ->orderByDesc('id')
+                ->get();
 
-            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where(['seekApproval' => Auth::user()->id, 'approval_status' => 0])->orderBy('id', 'desc')->get();
+            $priorityColors = [
+                '0' => 'dark',
+                '1' => 'danger',
+                '2' => 'info',
+                '3' => 'primary',
+            ];
 
             return response()->json([
                 'success' => true,
                 'message' => 'Recruitments fetched successfully',
-                'data' => $recruitments->map(function ($result, $index) {
-                    $priority_colors = [
-                        '0' => 'dark',
-                        '1' => 'danger', 
-                        '2' => 'info', 
-                        '3' => 'primary', 
-                    ];
-
+                'data' => $recruitments->map(function ($result, $index) use ($priorityColors) {
                     return [
-                        'row' => $index + 1, 
-                        'id' => $result->id,
-                        'rrfDate' => date('d-m-Y', strtotime($result->rrfDate)),
-                        'jobTitle' => $result->jobTitle ?? '',
-                        'projectName' => optional($result->project)->project_name ?? '',
-                        'designation' => $result->designation->designation ?? '',
-                        'priority' => $result->priority ? '<span class="badge bg-'.$priority_colors[$result->priority].'">' . config('optionsData.priority')[$result->priority] . '</span>' : '',
-                        'interviewer' => $result->interViewer->full_name ?? '',
-                        'status' => $result->status ?? '',
+                        'row'           => $index + 1,
+                        'id'            => $result->id,
+                        'rrfDate'       => optional($result->rrfDate) ? date('d-m-Y', strtotime($result->rrfDate)) : '',
+                        'jobTitle'      => $result->jobTitle ?? '',
+                        'projectName'   => optional($result->project)->project_name ?? '',
+                        'designation'   => optional($result->designation)->designation ?? '',
+                        'createdAt'     => optional($result->created_at)->format('d-m-Y'),
+                        'priority'      => isset($result->priority)
+                            ? '<span class="badge bg-' . ($priorityColors[$result->priority] ?? 'secondary') . '">' .
+                                (config('optionsData.priority')[$result->priority] ?? 'Unknown') .
+                            '</span>'
+                            : '',
+                        'interviewer'   => optional($result->interViewer)->full_name ?? '',
+                        'status'        => $result->status ?? '',
                     ];
                 }),
             ]);
