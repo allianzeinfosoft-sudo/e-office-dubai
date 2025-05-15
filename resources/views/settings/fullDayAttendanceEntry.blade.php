@@ -114,25 +114,37 @@ const CustomHelper = {
     calculateWorkingHours: function(startTime, endTime, breakTime) {
         if (!startTime || !endTime) return 0;
 
-        let start = new Date('1970-01-01T' + startTime + ':00');
-        let end = new Date('1970-01-01T' + endTime + ':00');
+        // Add seconds if missing (e.g., '09:00' → '09:00:00')
+        if (startTime.length === 5) startTime += ':00';
+        if (endTime.length === 5) endTime += ':00';
 
-        // Handle overnight shifts (e.g., 10 PM to 6 AM)
-        if (end < start) {
-            end.setDate(end.getDate() + 1);
-        }
+        let start = new Date('1970-01-01T' + startTime);
+        let end = new Date('1970-01-01T' + endTime);
+
+        if (end < start) end.setDate(end.getDate() + 1); // Overnight shift
 
         let diff = (end - start) / (1000 * 60 * 60); // in hours
-        diff -= parseFloat(breakTime) || 0;
+        let breakHours = CustomHelper.convertTimeToDecimal(breakTime);
+        diff -= breakHours;
 
-        return diff > 0 ? parseFloat(diff.toFixed(2)) : 0;
+        return diff > 0 ? diff.toFixed(2) : 0;
     },
+
+    convertTimeToDecimal: function(timeStr) {
+        if (!timeStr) return 0;
+        let parts = timeStr.split(':').map(Number);
+        let h = parts[0] || 0, m = parts[1] || 0, s = parts[2] || 0;
+        return h + (m / 60) + (s / 3600);
+    },
+
     convertHoursToTimeFormat: function(hours) {
         let h = Math.floor(hours);
         let m = Math.round((hours - h) * 60);
-        return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
     }
 };
+
+
 
     $(function(){
 
@@ -146,14 +158,13 @@ const CustomHelper = {
         $('.select2').select2();
 
         $('#signout_time').on('change', function () {
-            var startTime = $('#signin_time').val();
-            var endTime = $(this).val();
-            var breakTime = $('#break_time').val();
-            
-            if (!startTime || !endTime) return;
+            var startTime = $('#signin_time').val();       // '09:00:00'
+            var endTime = $(this).val();                   // '18:00:00'
+            var breakTime = $('#break_time').val();        // '01:00:00' or '01:00'
 
             var workingHours = CustomHelper.calculateWorkingHours(startTime, endTime, breakTime);
-            $('#working_hours').val(CustomHelper.convertHoursToTimeFormat(workingHours));
+            var formattedHours = CustomHelper.convertHoursToTimeFormat(workingHours);
+            $('#working_hours').val(formattedHours + ':00');       // '08:00'
         });
         
     });
@@ -217,6 +228,8 @@ const CustomHelper = {
             }
         });
     }
+
+    
 
 </script>
 @endpush
