@@ -173,7 +173,8 @@
             altFormat: 'd-m-Y',
             dateFormat: 'd-m-Y'
         });
-
+        
+        $('#recuritment-form').find('button[type="submit"]').text('Save as RRF');
 
         $('#recuritment-form').on('submit', function (e) {
             e.preventDefault(); // Prevent default form submission
@@ -223,7 +224,7 @@
                     alert(message);
                 },
                 complete: function () {
-                    form.find('button[type="submit"]').prop('disabled', false).text('Save');
+                    form.find('button[type="submit"]').prop('disabled', false).text('Save as RRF');
                 }
             });
         });
