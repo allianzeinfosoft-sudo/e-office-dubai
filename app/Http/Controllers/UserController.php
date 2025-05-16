@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\LeaveAllocation;
+use App\Models\Position;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Workshift;
@@ -44,6 +45,7 @@ class UserController extends Controller
         $lastEmployee = Employee::latest('id')->first();
         $departments = Department::all();
         $employees = Employee::all();
+        $positions = Position::all();
         $lastEmployeeId = Employee::orderBy('id', 'desc')->value('employeeID');
 
         if ($lastEmployeeId) {
@@ -66,7 +68,7 @@ class UserController extends Controller
 
         return view('users.create', compact('nextEmployeeId',
         'employees','departments',
-        'user_statuses','work_shifts','roles'));
+        'user_statuses','work_shifts','roles','positions'));
     }
 
     /**
@@ -140,7 +142,7 @@ class UserController extends Controller
                 'join_date' => !empty($request->join_date) ? $request->join_date : null,
                 'shift_id' => !empty($request->shift_id) ? $request->shift_id : null,
                 'holidayGroup' => !empty($request->holidayGroup) ? $request->holidayGroup : null,
-                'role' => !empty($request->group) ? $request->group : null,
+                'role' => !empty($request->role) ? $request->role : null,
                 'status' => !empty($request->status) ? $request->status : null,
                 'login_limited_time' => !empty($request->login_limited_time) ? $request->login_limited_time : null,
                 'appointment_status' => !empty($request->appointment_status) ? $request->appointment_status : null,
@@ -195,9 +197,10 @@ class UserController extends Controller
         $employees = Employee::all();
         $departments = Department::all();
         $work_shifts = Workshift::all();
+        $positions = Position::all();
         $roles = Role::all();
         $user_statuses = UserStatus::all();
-        return view('users.edit', compact('user','employees','departments','work_shifts','roles','user_statuses','designations'));
+        return view('users.edit', compact('user','employees','departments','work_shifts','roles','user_statuses','designations','positions'));
     }
 
 
@@ -281,7 +284,7 @@ class UserController extends Controller
             'join_date' => !empty($request->join_date) ?  $request->join_date : null,
             'shift_id' => !empty($request->shift_id) ? $request->shift_id : null,
             'holidayGroup' => !empty($request->holidayGroup) ? $request->holidayGroup : null,
-            'role' => !empty($request->group) ? $request->group : null,
+            'role' => !empty($request->role) ? $request->role : null,
             'status' => !empty($request->status) ? $request->status : null,
             'login_limited_time' => !empty($request->login_limited_time) ? $request->login_limited_time : null,
             'appointment_status' => !empty($request->appointment_status) ? $request->appointment_status : null,
@@ -375,7 +378,7 @@ class UserController extends Controller
         $data['employees'] = Employee::all();
         $data['departments'] = Department::all();
         $data['work_shifts'] = Workshift::all();
-        $data['roles'] = Role::all();
+        $data['roles'] = Position::all();
         $data['user_statuses'] = UserStatus::all();
         $data['designations'] = [];
 
@@ -463,7 +466,7 @@ public function storeOrUpdate(Request $request, $id = null)
                 'designation_id' => $request->designation_id,
                 'join_date' => $request->join_date,
                 'shift_id' => $request->shift_id,
-                'role' => $request->group,
+                'role' => $request->role,
                 'status' => $request->status,
                 'login_limited_time' => $request->login_limited_time,
                 'appointment_status' => $request->appointment_status,

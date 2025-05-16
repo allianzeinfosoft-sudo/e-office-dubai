@@ -272,15 +272,16 @@
                         </div>
                       </div>
 
-                    {{-- <div class="col-md-4 mb-3">
+                    <div class="col-md-4 mb-3">
                       <label for="role" class="form-label">Role:</label>
                         <select id="role" name="role" class="select2 form-select form-select-lg" data-allow-clear="true">
-                            <option selected value="">Please select</option>
-                            @foreach ($roles as $role)
-                                <option value="{{ $role->name }}" {{ old('role', $user->employee?->role) == $role->name ? 'selected' : '' }} > {{ $role->name ?? '' }} </option>
+                            <option value="">Please select</option>
+                            @foreach ($positions as $position)
+                                <option value="{{ $position->position_name }}" {{ old('role', $user->employee?->role) == $position->position_name ? 'selected' : '' }} > {{ $position->position_name ?? '' }} </option>
                             @endforeach
                         </select>
-                    </div> --}}
+                    </div>
+
                     <div class="col-md-4 mb-3">
                         <label for="role" class="form-label">Holiday Group:</label>
 
