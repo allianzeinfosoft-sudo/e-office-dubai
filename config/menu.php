@@ -492,7 +492,7 @@ return [
         'title' => 'Settings',
         'icon' => 'ti ti-switch-3',
         'route' => 'javascript:void(0);',
-        'permission' => ['change appearence','view department','assign open work' ,'manage roles', 'view holiday', 'view shift time', 'change shift time', 'custom markout', 'custom attendance', 'full day entry', 'custom work report entry', 'edit attendance'],
+        'permission' => ['change appearence','view department','assign open work' ,'manage roles', 'view holiday', 'view shift time', 'change shift time', 'custom markout', 'custom attendance', 'full day entry', 'custom work report entry', 'edit attendance', 'leave approvals'],
         'submenu' => [
             [
                 'title' => 'Change appearence',
@@ -562,7 +562,7 @@ return [
             [
                 'title' => 'Leave Approvals',
                 'route' => '/leave_approver/list',
-                'permission' => [],
+                'permission' => ['leave approvals'],
             ]
         ]
     ]
