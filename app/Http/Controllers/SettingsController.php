@@ -195,8 +195,8 @@ class SettingsController extends Controller
             'signin_date'    => 'required',
             'signin_time'    => 'required',
             'break_time'     => 'nullable',
-            'signout_time'   => 'required',
-            'working_hours'  => 'required',
+            'signout_time'   => 'nullable',
+            'working_hours'  => 'nullable',
         ]);
 
         try {
