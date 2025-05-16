@@ -22,21 +22,21 @@ class LoginController extends Controller
     /**
      * Run after successful authentication.
      */
-   /* protected function authenticated(Request $request, $user)
+   /*  protected function authenticated(Request $request, $user)
     {
         if (!$request->hasSession()) {
             \Log::error('Session not available on login.');
             return redirect('/')->withErrors('Session not started. Please refresh and try again.');
         }
 
-        $request->session()->regenerate();
+        session()->regenerate();
         session(['debug_session_test' => true]);
 
         \Log::info('Authenticated. Session ID: ' . session()->getId());
         \Log::info('Session Data: ', session()->all());
 
         return redirect()->intended($this->redirectPath());
-    } */
+    }  */
     
 }
 
