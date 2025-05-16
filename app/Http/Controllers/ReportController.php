@@ -224,7 +224,7 @@ class ReportController extends Controller
                 'index'         => $index + 1,
                 'name'          => $name,
                 'image'         => $image,
-                'signin_time'   => ($attendance->signin_time) ? $attendance->signin_time . '<br /> <span class="badge badge-success">' . $attendance->punchin_type . '</span>' : '-',
+                'signin_time'   => ($attendance->signin_time) ? $attendance->signin_time . '<br /> <span class="badge bg-label-warning">' . $attendance->punchin_type . '</span>' : '-',
                 'signout_time'  => $attendance->signout_time ?? '-',
                 'break_time'    => $attendance->break_time ?? '-',
                 'working_hours' => $attendance->working_hours ?? '-',

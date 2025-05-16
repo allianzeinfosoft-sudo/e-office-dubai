@@ -433,6 +433,8 @@ class AttendanceController extends Controller{
         $userId = Auth::user()->id;
         $signinDate = date('Y-m-d', strtotime($request->signin_date));
 
+        $employee = Employee::where('user_id', $userId)->first();       
+        
         $existingAttendance = Attendance::where('emp_id', $userId)
         ->where('signin_date', $signinDate)
         ->first();
@@ -463,16 +465,37 @@ class AttendanceController extends Controller{
     
             $message = 'Your custom Mark In request has been updated and sent for re-approval.';
         } else {
-            // Create new custom attendance request
-            CustomAttendance::create([
-                'username'    => Auth::user()->username,
-                'emp_id'      => $userId,
-                'picktime'    => $request->signin_time,
-                'reason'      => $request->signin_late_note ?? 'custom Mark In',
-                'signin_date' => $signinDate,
-                'status'      => 0,
-                'approved_by' => null
-            ]);
+
+            $currentMonth = Carbon::now()->month;
+            $currentYear = Carbon::now()->year;
+
+            $monthlyCustomMarkings = CustomAttendance::where('emp_id', $userId) ->whereMonth('signin_date', $currentMonth)->whereYear('signin_date', $currentYear)->count();
+            
+            if ($monthlyCustomMarkings > 5) {
+                
+                CustomAttendance::create([
+                    'username'    => Auth::user()->username,
+                    'emp_id'      => $userId,
+                    'picktime'    => $request->signin_time,
+                    'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                    'signin_date' => $signinDate,
+                    'status'      => 0,
+                    'approved_by' => null,
+                    'approver'    => $employee['reporting_to']
+                ]);
+
+            }else{
+
+                CustomAttendance::create([
+                    'username'    => Auth::user()->username,
+                    'emp_id'      => $userId,
+                    'picktime'    => $request->signin_time,
+                    'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                    'signin_date' => $signinDate,
+                    'status'      => 0,
+                    'approved_by' => null,
+                ]);
+            }
     
             $message = 'Your custom Mark In has been sent for approval.';
         }
