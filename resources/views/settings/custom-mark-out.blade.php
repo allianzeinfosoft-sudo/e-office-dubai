@@ -183,7 +183,7 @@
         
     });
 
-   /*  function customMarkOut(id) {
+     function customMarkOut(id) {
         var url = "{{ route('attendance.emplyee-markin', ':id') }}".replace(':id', id);
         var offcanvasElement = document.getElementById('custom_markout_offcanvas');
         var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
@@ -196,7 +196,7 @@
             success: function (response) {
                 if (response.success) {
                     var data = response.data;
-                    var storagePath = "/storage/" + data.employee.profile_image;
+                    var storagePath = data.employee.profile_image ? "/storage/" + data.employee.profile_image : '/assets/img/avatars/1.png';
 
                     // Fill user profile image
                     $('#profileImage').attr('src', storagePath);
@@ -222,7 +222,7 @@
             }
         });
     }
- */
+ 
 function updateCustomMarkout() {
     var attendanceId = $('#attendance_id').val();
     var url = "{{ route('attendance.custom-mark-out', ':id') }}".replace(':id', attendanceId);
