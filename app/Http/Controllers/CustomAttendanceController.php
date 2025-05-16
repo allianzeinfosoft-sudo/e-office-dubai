@@ -14,7 +14,9 @@ class CustomAttendanceController extends Controller
     public function index(Request $request)
     {
         if($request->ajax()) {
+            
             $custom_attendances = CustomAttendance::with('employee')->where('status', '0')->orderBy('id', 'DESC')->get();
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Attendance marked successfully',

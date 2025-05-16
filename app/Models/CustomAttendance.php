@@ -17,6 +17,7 @@ class CustomAttendance extends Model
         'signin_date',
         'status',
         'approved_by',
+        'approver',
     ];
 
     public function employee(){
