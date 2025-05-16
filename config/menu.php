@@ -283,7 +283,7 @@ return [
             ],
             [
                 'title' => 'Holidays',
-                'route' =>  '#',
+                'route' =>  '/view-holidays',
                 'permission' => ['view holiday'],
             ],
             [

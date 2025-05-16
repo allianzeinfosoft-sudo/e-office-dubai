@@ -208,6 +208,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('holidays',HolidayController::class);
     Route::get('/holiday/list', [HolidayController::class, 'getHolidayList'])->name('holiday.list');
     Route::delete('/holiday-delete/{holidayId}', [HolidayController::class, 'destroy'])->name('holiday.destroy');
+    Route::get('/view-holidays',[HolidayController::class, 'show_holiday'])->name('view.holiday');
 
     /* Notification */
     // Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
