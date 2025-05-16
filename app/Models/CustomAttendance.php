@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CustomAttendance extends Model
 {
     use HasFactory;
+    
     protected $fillable = [
         'username',
         'emp_id',

@@ -191,7 +191,7 @@
                         </li>
                         <li class="d-flex align-items-center justify-content-between mb-3">
                           <span class="fw-bold"><i class="ti ti-mail mt-n1"></i>IFSC Code: &nbsp;</span>
-                          <span>UTIB0001161</span>
+                          <span>{{ $user->employee->ifsc ?? 'N/A' }}</span>
                         </li>
                       </ul>
                     </div>
