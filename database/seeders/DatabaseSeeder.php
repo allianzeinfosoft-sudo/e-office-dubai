@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(PermissionSeeder::class);
         $this->call(RolePermissionSeeder::class);
-
+        $this->call(PositionSeeder::class);
         // Create admin user
         User::updateOrCreate(
             ['email' => 'admin@mail.com'],

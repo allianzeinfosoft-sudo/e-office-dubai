@@ -268,28 +268,26 @@
                         </div>
                       </div>
 
-                    {{-- <div class="col-md-4 mb-3">
+                    <div class="col-md-4 mb-3">
                       <label for="role" class="form-label">Role:</label>
-
                         <select id="role" name="role" class="select2 form-select form-select-lg" data-allow-clear="true">
-                            <option selected value="">Please select</option>
-                            @foreach ($roles as $role)
-                                <option selected value="{{ $role->name }}" {{ (old('role') == $role->name) ? 'selected' : '' }}>{{ $role->name ?? '' }}</option>
-                            @endforeach
+                            <option value="">Select</option>
+                                @foreach ($positions as $position)
+                                    <option  value="{{ $position->position_name }}" {{ (old('role') == $position->position_name) ? 'selected' : '' }}>{{ $position->position_name ?? '' }}</option>
+                                @endforeach
                         </select>
+                    </div>
 
-                    </div> --}}
                     <div class="col-md-4 mb-3">
                       <label for="role" class="form-label">Holiday Group:</label>
-
                         <select id="holidayGroup" name="holidayGroup" class="select2 form-select form-select-lg" data-allow-clear="true">
                             <option selected value="">Please select</option>
                                 @foreach (config('optionsData.holiday_group') as $key => $value)
                                     <option value="{{ $key }}">{{ $value ?? 'N/A' }}</option>
                                 @endforeach
                         </select>
-
                     </div>
+
                     <div class="col-md-4 mb-3">
                       <label for="status" class="form-label">Status:<span class="mandatory">*</span></label>
                         <select id="status" name="status" class="select2 form-select form-select-lg" data-allow-clear="true">
