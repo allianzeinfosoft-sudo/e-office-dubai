@@ -55,7 +55,7 @@ class Employee extends Model
 
     public function holidays()
     {
-        return $this->hasMany(Holiday::class, 'holidayGroup', 'holiday_group');
+        return $this->hasMany(Holiday::class, 'holiday_group', 'holidayGroup');
     }
 
 }

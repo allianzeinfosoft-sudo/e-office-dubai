@@ -287,7 +287,7 @@
                           <select id="holidayGroup" name="holidayGroup" class="select2 form-select form-select-lg" data-allow-clear="true">
                               <option selected value="">Please select</option>
                                   @foreach (config('optionsData.holiday_group') as $key => $value)
-                                      <option value="{{ $key }}">{{ $value ?? 'N/A' }}</option>
+                                      <option value="{{ $key }}" {{ old('holidayGroup', $user->employee?->holidayGroup) == $key ? 'selected' : '' }}>{{ $value ?? 'N/A' }}</option>
                                   @endforeach
                           </select>
 
