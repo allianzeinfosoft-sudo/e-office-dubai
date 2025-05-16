@@ -42,7 +42,7 @@
                                                         <option value=""></option>
                                                         @if($employees->isNotEmpty())
                                                             @foreach($employees as $employee)
-                                                            <option value="{{ $employee->id }}">{{ $employee->full_name }}</option>
+                                                            <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
