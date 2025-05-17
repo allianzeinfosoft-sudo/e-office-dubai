@@ -199,8 +199,9 @@ class WorkReportController extends Controller
 
     public function customWorkstore(Request $request){
         // Validate the incoming request
+        
         $request->validate([
-            'emp_id'            => 'required|exists:employees,user_id', // Ensure emp_id exists in the employee table
+            'emp_id'            => 'required', // Ensure emp_id exists in the employee table
             'report_date'       => 'required|date',
             'project_name'      => 'required|string',
             'type_of_work'      => 'required|string',

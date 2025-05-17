@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CustomAttendance extends Model
 {
     use HasFactory;
+    
     protected $fillable = [
         'username',
         'emp_id',
@@ -16,6 +17,7 @@ class CustomAttendance extends Model
         'signin_date',
         'status',
         'approved_by',
+        'approver',
     ];
 
     public function employee(){

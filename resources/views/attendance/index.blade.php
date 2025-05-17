@@ -48,6 +48,7 @@
                 <!-- Statistics -->
                 <div class="col-12 col-xl-12 col-lg-12">
                   <div class="row g-4 mb-4 justify-content-center">
+
                     <div class="col-sm-6 col-xl-4">
                       <div class="card card-bg">
                         <div class="card-body">
@@ -100,7 +101,8 @@
                           </div>
                         </div>
                       </div>
-                    </div>                    
+                    </div>
+
                   </div>
                 </div>
                 <!--/ Statistics -->                
@@ -185,11 +187,15 @@
                                     $isWeekOffToday = in_array($todayName, $allWeekOffs);
                                   @endphp
 
-                                  @if ($isLate)
-                                  <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                    <strong>Mark-in time expired for today.</strong>
-                                  </div>
-                                  @elseif ($isWeekOffToday)
+
+                                  @if($disableCustomMarkIn)
+                                      <div class="badge bg-label-warning p-3 w-100 mb-3">
+                                          You can mark in only between {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A') : '' }}
+                                          and {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->addMinutes(15)->format('h:i A') : '' }}.
+                                      </div>
+                                  @endif
+
+                                  @if($isWeekOffToday)
                                     <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
                                       <strong>Today ({{ $todayName }}) is your week off.</strong>
                                     </div>

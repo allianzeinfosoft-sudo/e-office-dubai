@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\CustomHelper;
 use Illuminate\Support\Facades\Log;
+
+use Carbon\Carbon;
+
 class AttendanceController extends Controller{
 
     public function __construct()
@@ -26,8 +29,7 @@ class AttendanceController extends Controller{
      */
     public function index() {
         $data['meta_title'] = 'Attendance';
-      //  $data['background_class'] = 'bg-eoffice';
-
+        
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
@@ -35,21 +37,36 @@ class AttendanceController extends Controller{
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6 
 
         $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+        $data['employee'] = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
         if($user->employee?->join_date == $today){
-
             return view('attendance.index', $data);
         }
 
         /* cutofftime */
-        $cutoffTime = $user->employee->login_limited_time ?? '09:15:00';
+        /* $cutoffTime = $user->employee->login_limited_time ?? '09:15:00';
         $isLate = now()->format('H:i:s') > $cutoffTime;
-        $data['disableCustomMarkIn'] = $isLate;
+        $data['disableCustomMarkIn'] = $isLate; */
 
+        $shiftStartTime = $data['employee']?->workshift?->shift_start_time;
+
+        if ($shiftStartTime) {
+            // Convert shift start time to Carbon
+            $shiftTime = Carbon::createFromFormat('H:i:s', $shiftStartTime);
+
+            // Define allowed window
+            $earliestMarkIn = $shiftTime->copy()->subMinutes(30);
+            $latestMarkIn   = $shiftTime->copy()->addMinutes(15);
+            $now            = now();
+
+            // Disable mark-in outside allowed window
+            $data['disableCustomMarkIn'] = !($now->between($earliestMarkIn, $latestMarkIn));
+        } else {
+            // Fallback: Disable mark-in if no shift time is defined
+            $data['disableCustomMarkIn'] = true;
+        }
         
-
-
         // Fetch all holidays in the current month
         $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
 
@@ -73,8 +90,12 @@ class AttendanceController extends Controller{
                 
                 if (!$leaveExists) {
                     // User missed work on a working day without leave
-                    return redirect()->route('leaves.create', ['date' => $date])
-                        ->with('error', "You missed work on $date without leave. Please apply for leave.");
+                    $data['date'] = $date;
+                    $data['error'] = "You missed work on ". date('d-m-Y', strtotime($date))  ." without apply leave. Please click here to  
+                    <a class='btn btn-xs btn-primary' href='" . route('leaves.create', ['date' => $date]) . "'> Apply Leave </a>";
+                    return view('attendance.no_action_from', $data);
+                    /* return redirect()->route('leaves.create', ['date' => $date])
+                        ->with('error', "You missed work on $date without leave. Please apply for leave."); */
                 }
             }
         }
@@ -143,7 +164,11 @@ class AttendanceController extends Controller{
             // If there's a missing mark-out, don't allow marking in
             $data['meta_title'] = 'Mark Out First';
             $data['missingMarkOut'] = $missingMarkOut; // Pass the missing mark-out date to the view
-            return view('attendance.markOut', $data); // Show a page telling the user to mark out first
+
+            $data['error'] = "You missed to Mark-out on ". date('d-m-Y', strtotime($missingMarkOut->signin_date)) ;
+            return view('attendance.no_action_from', $data);
+
+            //return view('attendance.markOut', $data); // Show a page telling the user to mark out first
         }
 
 
@@ -408,6 +433,8 @@ class AttendanceController extends Controller{
         $userId = Auth::user()->id;
         $signinDate = date('Y-m-d', strtotime($request->signin_date));
 
+        $employee = Employee::where('user_id', $userId)->first();       
+        
         $existingAttendance = Attendance::where('emp_id', $userId)
         ->where('signin_date', $signinDate)
         ->first();
@@ -423,7 +450,6 @@ class AttendanceController extends Controller{
         }
 
         // Store data in `custom_attendances` table
-
         $customAttendance = CustomAttendance::where('emp_id', $userId)
         ->where('signin_date', $signinDate)
         ->first();
@@ -439,16 +465,37 @@ class AttendanceController extends Controller{
     
             $message = 'Your custom Mark In request has been updated and sent for re-approval.';
         } else {
-            // Create new custom attendance request
-            CustomAttendance::create([
-                'username'    => Auth::user()->username,
-                'emp_id'      => $userId,
-                'picktime'    => $request->signin_time,
-                'reason'      => $request->signin_late_note ?? 'custom Mark In',
-                'signin_date' => $signinDate,
-                'status'      => 0,
-                'approved_by' => null
-            ]);
+
+            $currentMonth = Carbon::now()->month;
+            $currentYear = Carbon::now()->year;
+
+            $monthlyCustomMarkings = CustomAttendance::where('emp_id', $userId) ->whereMonth('signin_date', $currentMonth)->whereYear('signin_date', $currentYear)->count();
+            
+            if ($monthlyCustomMarkings > 5) {
+                
+                CustomAttendance::create([
+                    'username'    => Auth::user()->username,
+                    'emp_id'      => $userId,
+                    'picktime'    => $request->signin_time,
+                    'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                    'signin_date' => $signinDate,
+                    'status'      => 0,
+                    'approved_by' => null,
+                    'approver'    => $employee['reporting_to']
+                ]);
+
+            }else{
+
+                CustomAttendance::create([
+                    'username'    => Auth::user()->username,
+                    'emp_id'      => $userId,
+                    'picktime'    => $request->signin_time,
+                    'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                    'signin_date' => $signinDate,
+                    'status'      => 0,
+                    'approved_by' => null,
+                ]);
+            }
     
             $message = 'Your custom Mark In has been sent for approval.';
         }
