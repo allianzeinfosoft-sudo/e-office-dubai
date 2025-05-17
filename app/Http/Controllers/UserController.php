@@ -558,7 +558,7 @@ public function assign_open_work(Request $request)
                 'picture' => $users->employee ? $users->employee->profile_image : '',
                 'full_name' => $users->employee ? $users->employee->full_name : 'N/A',
                 'open_work_status' => $users->employee ? $users->employee->open_work_status : 0,
-                'updated_date' => $users->employee ? date('d-m-Y', strtotime($users->employee->open_work_setdate)) : 'N/A'
+                'updated_date' => $users->employee?->open_work_setdate ? date('d-m-Y', strtotime($users->employee->open_work_setdate)) : 'N/A'
             ];
         });
 
