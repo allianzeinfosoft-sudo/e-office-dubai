@@ -362,8 +362,30 @@ class UserController extends Controller
     }
 
     public function userProfile($userid){
-        $user = User::with('employee')->find($userid);
-        return view('users.profile', compact('user'));
+
+        $user = User::with('employee','leave_allocation','user_leaves')->find($userid);
+        $user_leaves = $user->user_leaves;
+
+        $pending_leave = $user_leaves->where('status', 1)->sum('leave_day_count');
+        $approved_leave = $user_leaves->where('status', 2)->sum('leave_day_count');
+
+        // This month's leave (based on from_date in current month)
+        $this_month_leave = $user_leaves->filter(function ($leave) {
+            return \Carbon\Carbon::parse($leave->leave_from)->format('Y-m') === now()->format('Y-m');
+        })->sum('leave_day_count');
+
+        $leave_alloted = $user->leave_allocation?->total_leaves;
+
+        $leave_info = (object) [
+
+            'pending_leaves' => $pending_leave,
+            'approved_leaves' => $approved_leave,
+            'this_month_leave' => $this_month_leave,
+            'leave_alloted' => $leave_alloted
+        ];
+
+        return view('users.profile', compact('user','leave_info'));
+
     }
 
 
