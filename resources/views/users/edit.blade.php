@@ -273,7 +273,7 @@
                       </div>
 
                     <div class="col-md-4 mb-3">
-                      <label for="role" class="form-label">Role:</label>
+                      <label for="role" class="form-label">Role:<span class="mandatory">*</span></label>
                         <select id="role" name="role" class="select2 form-select form-select-lg" data-allow-clear="true">
                             <option value="">Please select</option>
                             @foreach ($positions as $position)

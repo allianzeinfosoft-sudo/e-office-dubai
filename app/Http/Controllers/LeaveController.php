@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Helpers\CustomHelper;
 use App\Http\Requests\LeaveRequest;
 use App\Mail\LeaveApplication;
 use App\Models\Employee;
@@ -34,8 +36,26 @@ class LeaveController extends Controller
     }
     public function leave_list()
     {
-        $leaves = Leave::with('employee','user')
-                ->get()
+        $user_id = Auth::user()->id;
+        $leaves = Leave::with('employee', 'user')
+                    ->when(auth()->user()->hasRole('G5'), function ($query) use ($user_id) {
+                        $query->where('user_id', $user_id);
+                    })
+                    ->when(auth()->user()->hasAnyRole(['G4', 'G3']), function ($query) use ($user_id) {
+                        // Subquery to get user_ids of employees who report to current user
+                        $reportingUserIds = Employee::where('reporting_to', $user_id)
+                        ->pluck('user_id')
+                        ->toArray();
+                        $userIds = collect($reportingUserIds)
+                        ->push($user_id)
+                        ->map(fn($id) => (int) $id)
+                        ->unique()
+                        ->values()
+                        ->toArray();
+
+                        $query->whereIn('user_id', $userIds);
+                    })
+                    ->get()
                 ->map(function ($leaves) {
                     return [
                         'id' => $leaves->id,
@@ -67,7 +87,7 @@ class LeaveController extends Controller
 
     public function custom_leave()
     {
-        $users = User::with('employee')->get();
+        $users = User::with('employee')->where('username','!=','administrator')->get();
         return view('leave.custom_leave_apply',compact('users'));
     }
 
@@ -184,6 +204,27 @@ class LeaveController extends Controller
             'recipients' => $recipients,
             'message' => $message,
         ]);
+
+        // email notification
+        $data['details'] = [
+            'start_date' => $request->leave_from,
+            'end_date' => $request->leave_to,
+            'leave_reason' => strip_tags($request->reason),
+            'employee_name' =>  $user_details->full_name,
+            'employeeID' => $user_details->employeeID,
+            'leave_type' => $request->leave_type,
+            'days_count' => $leave_days,
+
+        ];
+        // Send notification email
+        $htmlBody = view('emails.leave_application_template', $data)->render();
+        $email = User::find($approver)?->email;
+        CustomHelper::sendNotificationMail(
+            $email,
+            'New Leave Application',
+            $htmlBody,
+        );
+
 
         // $recipient_info = User::where('id', $user_details->reporting_to)->get();
         // Notification::send($recipient_info, new LeaveNotification($leave, $user_details, $type, $recipient_info));
@@ -539,6 +580,26 @@ class LeaveController extends Controller
             ]);
 
         return redirect()->back()->with('success', 'Leave approver created successfully!');
+    }
+
+    public function checkOverlap(Request $request)
+    {
+        $userId = $request->user_id;
+        $from = $request->leave_from;
+        $to = $request->leave_to;
+
+        $overlap = Leave::where('user_id', $userId)
+            ->where(function($q) use ($from, $to) {
+                $q->whereBetween('leave_from', [$from, $to])
+                ->orWhereBetween('leave_to', [$from, $to])
+                ->orWhere(function ($query) use ($from, $to) {
+                    $query->where('leave_from', '<=', $from)
+                            ->where('leave_to', '>=', $to);
+                });
+            })
+            ->exists();
+
+        return response()->json(['overlap' => $overlap]);
     }
 
 

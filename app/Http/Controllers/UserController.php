@@ -341,7 +341,8 @@ class UserController extends Controller
                     return [
                         'id' => $users->id,
                         'full_name' => $users->full_name,
-                        'role' => $users->role,
+                        'group' => $users->role,
+                        'role' => $users->employee->role,
                         'username' => $users->username,
                         'employeeID' => $users->employeeID,
                         'phonenumber' => $users->phonenumber,
@@ -376,12 +377,26 @@ class UserController extends Controller
 
         $leave_alloted = $user->leave_allocation?->total_leaves;
 
+        // Past year leave count
+        $now = now();
+        $pastYear = $now->subYear()->format('Y');
+        $pastyear_leave_count = $user_leaves->filter(function ($leave) use ($pastYear) {
+            return \Carbon\Carbon::parse($leave->leave_from)->format('Y') === $pastYear;
+        })->sum('leave_day_count');
+
+        $off_day_leavecount = $user_leaves->where('leave_type', 'off_day')->where('status',2)->sum('leave_day_count');
+        $full_day_leavescount = $user_leaves->where('leave_type','full_day')->where('status',2)->sum('leave_day_count');
+        $half_day_leavescount = $user_leaves->where('leave_type','half_day')->where('status',2)->sum('leave_day_count');
         $leave_info = (object) [
 
             'pending_leaves' => $pending_leave,
             'approved_leaves' => $approved_leave,
             'this_month_leave' => $this_month_leave,
-            'leave_alloted' => $leave_alloted
+            'leave_alloted' => $leave_alloted,
+            'past_year_leavecount' => $pastyear_leave_count,
+            'off_day_leavecount' => $off_day_leavecount,
+            'full_day_leavecount' => $full_day_leavescount,
+            'half_day_leavecount' => $half_day_leavescount,
         ];
 
         return view('users.profile', compact('user','leave_info'));

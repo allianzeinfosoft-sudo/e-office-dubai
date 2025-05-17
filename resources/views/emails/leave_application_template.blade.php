@@ -5,7 +5,7 @@
     <title>Leave Application Request</title>
 </head>
 <body>
-    <p>Dear {{ $details['manager_name'] }},</p>
+    <p>Dear,</p>
 
     <p>I hope this email finds you well.</p>
 
@@ -24,7 +24,6 @@
     <p>Looking forward to your approval.</p>
 
     <p>Best Regards,<br>
-    {{ $details['employee_name'] }}<br>
-    {{ $details['employee_email'] }}</p>
+    {{ $details['employee_name'] }}</p>
 </body>
 </html>

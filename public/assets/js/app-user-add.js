@@ -98,6 +98,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 }
             }
         },
+        role: {
+            validators: {
+                notEmpty: {
+                message: 'Role field is required'
+                }
+            }
+        },
         aadhaar: {
           validators: {
               stringLength: {

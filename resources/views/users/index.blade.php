@@ -53,6 +53,7 @@
                       <th>Username</th>
                       <th>Contact Number</th>
                       <th>Role</th>
+                      <th>Group</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>

@@ -57,8 +57,9 @@ $(function () {
         { data: 'employeeID' },
         { data: 'email' },
         { data: 'phonenumber' },
+        { data: 'role' },
+        { data: 'group', title: 'Group'},
         { data: 'status' },
-        { data: 'role' }
       ],
       columnDefs: [
         {
@@ -126,7 +127,7 @@ $(function () {
 
         {
           // User Status
-          targets: 6,
+          targets: 7,
           render: function (data, type, full, meta) {
             var $status = full['status'];
             var status = statusObj[$status];
@@ -142,7 +143,7 @@ $(function () {
         },
         {
           // Actions
-          targets: 7,
+          targets: 8,
           title: 'Actions',
           searchable: false,
           orderable: false,

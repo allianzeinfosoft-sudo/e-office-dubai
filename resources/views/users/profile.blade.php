@@ -40,8 +40,6 @@
                             src="../../assets/img/avatars/bg3.jpg"
                             alt="user image"
                             class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img" /> --}}
-
-
                         </div>
                         <div class="flex-grow-1 mt-3 mt-sm-5">
                           <div class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
@@ -203,7 +201,7 @@
                   <!-- Activity Timeline -->
                   <div class="col-xl-7 col-lg-7 mb-3 card card-bg1">
                     <div class="card-header align-items-center">
-                      <h5 class="card-action-title mb-0">Activity Timeline</h5>
+                      <h5 class="card-action-title mb-0">Leave Summary</h5>
                     </div>
                     <div class="card-body row pb-0">
                       <div class="col-lg-6 col-sm-6 mb-4">
@@ -240,7 +238,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">1</h5>
+                              <h5 class="mb-0 me-2">{{ $leave_info->off_day_leavecount ?? 0 }}</h5>
                               <small>Off Days</small>
                             </div>
                             <div class="card-icon">
@@ -285,7 +283,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-1">10</h5>
+                              <h5 class="mb-1">{{ $leave_info->past_year_leavecount ?? 0 }}</h5>
                               <small>Past Year Leave(s)</small>
                             </div>
                             <div class="card-icon">
@@ -301,9 +299,9 @@
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
                               <div>
-                                <span class="badge bg-label-warning me-2">Full: 1</span>
-                                <span class="badge bg-label-primary me-2">Half: 1</span>
-                                <span class="badge bg-label-success">Off Days: 1</span>
+                                <span class="badge bg-label-warning me-2">Full: {{ $leave_info->full_day_leavecount ?? 0 }}</span>
+                                <span class="badge bg-label-primary me-2">Half: {{ $leave_info->half_day_leavecount ?? 0 }}</span>
+                                <span class="badge bg-label-success">Off Days: {{ $leave_info->off_day_leavecount ?? 0 }}</span>
                               </div>
                               <small>Leave(s) Category Wise</small>
                             </div>
