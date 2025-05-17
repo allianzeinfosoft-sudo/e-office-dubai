@@ -293,11 +293,6 @@ return [
                 'badge' => "New",
             ],
             [
-                'title' => 'Events',
-                'route' =>  '/others/events',
-                'permission' => ['view event'],
-            ],
-            [
                 'title' => 'Holidays',
                 'route' =>  '/view-holidays',
                 'permission' => ['view holiday'],
