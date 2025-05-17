@@ -80,18 +80,18 @@ class MailBoxController extends Controller
         $mail->subject = $request->subject;
         $mail->message = $request->message;
         $mail->status = $request->status ?? 0;
-    
-        
+
+
         // Assign folder name based on status
         if ($mail->status >= 0 && $mail->status <= 7) {
             $folders = MailBox::folders();
             $mail->folder = $folders[$mail->status] ?? 'inbox';  // Fallback to inbox
         }
-        
+
         // Handling multiple attachments
         if ($request->hasFile('attachments')) {
             $files = [];
-            
+
             foreach ($request->file('attachments') as $file) {
                 $fileName = $file->hashName(); // Get unique file name
                 $file->storeAs('mail_attachments', $fileName, 'public'); // Store using custom name
@@ -100,7 +100,7 @@ class MailBoxController extends Controller
 
             $mail->attachments = json_encode($files); // Save as JSON array
         }
-        $mail->save(); 
+        $mail->save();
 
         $toUserIds = json_decode($request->to_user_ids, true); // ensure this is an array
 
@@ -109,13 +109,13 @@ class MailBoxController extends Controller
         } else {
             $emails = [];
         }
-        
+
         // Send notification email
         $htmlBody = view('emails.notification', [
             'name' => 'Team',
             'message' => 'You are receiving a new email',
         ])->render();
-        
+
         CustomHelper::sendNotificationMail(
             $emails,
             $mail->subject,
@@ -246,7 +246,7 @@ class MailBoxController extends Controller
         }
 
         $mails = $query->orderBy('created_at', 'desc')->get();
-        
+
         return response()->json([
             'status' => true,
             'folder' => $folder,
@@ -270,13 +270,13 @@ class MailBoxController extends Controller
         $request->validate([
             'mailId' => 'required|integer|exists:mail_boxes,id',
         ]);
-    
+
         $mail = MailBox::find($request->mailId);
-    
+
         // Toggle is_starred value
         $mail->is_starred = $mail->is_starred ? 0 : 1;
         $mail->save();
-    
+
         return response()->json([
             'status' => 'success',
             'message' => 'Mail star status updated.',
@@ -312,13 +312,13 @@ class MailBoxController extends Controller
         $request->validate([
             'mailId' => 'required|integer|exists:mail_boxes,id',
         ]);
-    
+
         $mail = MailBox::find($request->mailId);
-    
+
         // Toggle is_starred value
         $mail->mark_as_read = $mail->mark_as_read ? 0 : 1;
         $mail->save();
-    
+
         return response()->json([
             'status' => 'success',
             'message' => 'Mail mark as read updated.',

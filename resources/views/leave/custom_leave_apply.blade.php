@@ -56,6 +56,7 @@
                             <label class="form-label" for="leave_from">User Name</label>
 
                                 <select class="select2 form-select form-select-lg" name="user_id" id="user_id">
+                                    <option value=""></option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>{{ $user->employee->full_name ?? 'N/A' }}</option>
                                     @endforeach
@@ -80,7 +81,7 @@
 
                         <div class="col-md-12">
                             <label class="form-label" for="multicol-username">Leave Reason</label>
-                            <div id="leave-editor"></div>
+                            <div id="leave-editor-custom"></div>
                             <input type="hidden" name="reason" value="{{ strip_tags(old('reason')) }}" id="reason">
                         </div>
 
@@ -146,7 +147,7 @@
 
 @push('js')
     <script>
-         var quillLeaveEditor = new Quill('#leave-editor',
+         var quillLeaveEditor = new Quill('#leave-editor-custom',
                 { theme: 'snow',
                     placeholder: 'Type your reason here...',
                         modules: {
@@ -159,5 +160,82 @@
                             ]
                         }
                 });
+
+// leave form validation and submit
+
+document.addEventListener("DOMContentLoaded", function () {
+    const Leaveform = document.getElementById('leaveForm');
+    Leaveform.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const userId = document.getElementById('user_id').value.trim();
+        const leaveFrom = document.getElementById('leave-from').value.trim();
+        const leaveTo = document.getElementById('leave-to').value.trim();
+        const reason = quillLeaveEditor.root.innerText.trim();
+        const hiddenReason = document.getElementById('reason');
+        hiddenReason.value = quillLeaveEditor.root.innerHTML.trim();
+
+        const leaveTypeSelected = document.querySelector('input[name="leave_type"]:checked');
+
+        let errors = [];
+
+        // === Basic Validations ===
+        if (!userId) errors.push("User is required.");
+        if (!leaveFrom || isNaN(Date.parse(leaveFrom))) errors.push("Valid Leave From date is required.");
+        if (!leaveTo || isNaN(Date.parse(leaveTo))) errors.push("Valid Leave To date is required.");
+        if (!reason) errors.push("Leave reason is required.");
+        if (reason.length > 255) errors.push("Leave reason must not exceed 255 characters.");
+        if (!leaveTypeSelected) errors.push("Please select a leave type.");
+
+        if (!isNaN(Date.parse(leaveFrom)) && !isNaN(Date.parse(leaveTo))) {
+            const fromDate = new Date(leaveFrom);
+            const toDate = new Date(leaveTo);
+            if (fromDate > toDate) {
+                errors.push("Leave From must be before or equal to Leave To.");
+            }
+        }
+
+        // === Display Errors (if any) ===
+        let errorBox = document.getElementById('formErrors');
+        if (!errorBox) {
+            errorBox = document.createElement('div');
+            errorBox.id = 'formErrors';
+            errorBox.className = 'alert alert-danger mt-3';
+            Leaveform.prepend(errorBox);
+        }
+
+        if (errors.length > 0) {
+            errorBox.innerHTML = '<ul class="mb-0">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
+            return;
+        }
+
+        // === Check Overlapping Leave Dates via AJAX ===
+        fetch('/check-leave-overlap', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                leave_from: leaveFrom,
+                leave_to: leaveTo
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.overlap) {
+                errorBox.innerHTML = '<ul class="mb-0"><li>Leave already applied for the selected date range.</li></ul>';
+            } else {
+                errorBox.innerHTML = '';
+                Leaveform.submit(); // Safe to submit now
+            }
+        })
+        .catch(error => {
+            console.error("Error checking leave overlap:", error);
+            errorBox.innerHTML = '<ul class="mb-0"><li>Server error while checking leave overlap.</li></ul>';
+        });
+    });
+});
     </script>
 @endpush

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -23,12 +24,24 @@ class DatabaseSeeder extends Seeder
         $this->call(RolePermissionSeeder::class);
         $this->call(PositionSeeder::class);
         // Create admin user
-        User::updateOrCreate(
+        $user = User::updateOrCreate(
             ['email' => 'admin@mail.com'],
             [
                 'username' => 'administrator',
                 'role' => 'Developer',
                 'password' => Hash::make('password')
+            ]
+        );
+
+
+        Employee::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'full_name' => 'Administrator',
+                'employeeID' => 'AIS000',
+                'phonenumber' => '0000000000',
+                'role' => 'Super Admin',
+                'status' => '2',
             ]
         );
 
