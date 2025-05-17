@@ -7,16 +7,16 @@
     <div class="row">
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="project_name">Project Name</label>
+                <label for="project_name">Project Name <span class="text-danger">*</span></label>
                 <input type="text" name="project_name" id="project_name" class="form-control" placeholder="Project Name"
-                    value="{{ old('project_name', $project->project_name ?? '') }}" />
+                    value="{{ old('project_name', $project->project_name ?? '') }}" required />
             </div>
         </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="project_add_person">Add By</label>
-                <select class="form-control select2" name="project_add_person" id="project_add_person" data-placeholder="Select Project">
+                <label for="project_add_person">Add By <span class="text-danger">*</span></label>
+                <select class="form-control select2" name="project_add_person" id="project_add_person" data-placeholder="Select Project" required>
                     <option value=""></option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}" {{ old('project_add_person', $project->project_add_person ?? '') == $user->id ? 'selected' : '' }} >
@@ -29,8 +29,8 @@
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="department_id">Department</label>
-                <select class="form-control select2" name="department_id" id="department_id" data-placeholder="Select Department">
+                <label for="department_id">Department <span class="text-danger">*</span></label>
+                <select class="form-control select2" name="department_id" id="department_id" data-placeholder="Select Department" require>
                     <option value=""></option>
                     @foreach($departments as $department)
                         <option value="{{ $department->id }}" {{ old('department_id', $project->department_id ?? '') == $department->id ? 'selected' : '' }} >

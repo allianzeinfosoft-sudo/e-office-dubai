@@ -311,12 +311,12 @@ return [
         'isActive' => ['others*'],
         'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banners','view event', 'view MOM'],
         'submenu' => [
-            [
+            /* [
                 'title' => 'Seen status report',
                 'route' =>  '#',
                 'isActive' => [],
                 'permission' => ['seen status report']
-            ],
+            ], */
             [
                 'title' => 'Thoughts',
                 'route' =>  'thoughts',
@@ -373,7 +373,7 @@ return [
             ],
         ]
     ],
-    [
+    /* [
         'title' => 'Conference Hall',
         'icon' => 'ti ti-podium',
         'route' => 'javascript:void(0);',
@@ -395,7 +395,7 @@ return [
                 'permission' => ['assigned booking'],
             ],
         ]
-    ],
+    ], */
     [
         'title' => 'Projects',
         'icon' => 'ti ti-briefcase',

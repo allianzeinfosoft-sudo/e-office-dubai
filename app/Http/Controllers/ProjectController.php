@@ -52,11 +52,11 @@ class ProjectController extends Controller
      */
     public function store(Request $request){
         $request->validate([
-            'project_name'      => 'required|string|max:255',
-            'project_add_person'=> 'required|exists:users,id',
-            'department_id'     => 'required|exists:departments,id',
-            'start_date'        => 'required|date',
-            'end_date'          => 'required|date|after_or_equal:start_date',
+            'project_name'      => 'required',
+            'project_add_person'=> 'required',
+            'department_id'     => 'required',
+            'start_date'        => 'nullable',
+            'end_date'          => 'nullable',
             'total_hours'       => 'nullable',
             'total_day'         => 'nullable',
         ]);
@@ -68,8 +68,8 @@ class ProjectController extends Controller
             'department_id'     => $request->department_id,
             'start_date'        => Carbon::parse($request->start_date)->setTimeFrom(Carbon::now()),
             'end_date'          => Carbon::parse($request->end_date)->setTimeFrom(Carbon::now()),
-            'total_hours'       => $request->total_hours,
-            'total_day'         => $request->total_day,
+            'total_hours' => is_numeric($request->total_hours) ? $request->total_hours : 0,
+            'total_day'   => is_numeric($request->total_day) ? $request->total_day : 0,
         ]);
 
         return redirect()->route('projects.index')->with('success', 'Project created successfully');
@@ -99,11 +99,11 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id){
         $request->validate([
-            'project_name'      => 'required|string|max:255',
+            'project_name'      => 'required',
             'project_add_person'=> 'required',
             'department_id'     => 'required',
-            'start_date'        => 'required|date',
-            'end_date'          => 'required|date|after_or_equal:start_date',
+            'start_date'        => 'nullable',
+            'end_date'          => 'nullable',
             'total_hours'       => 'nullable',
             'total_day'         => 'nullable',
         ]);
