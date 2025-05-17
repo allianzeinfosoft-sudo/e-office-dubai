@@ -14,6 +14,9 @@ use App\Helpers\CustomHelper;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 
 class ReportController extends Controller
 {
@@ -71,6 +74,56 @@ class ReportController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /* My overview */
+    public function my_overview(Request $request) {
+        $selected_user = $request->input('user') ?? auth()->id();
+        $selected_year = $request->input('year'); // optional, pass to helpers
+    
+        // Monthly hours
+        $monthlyData = CustomHelper::getMonthlyTotalHours($selected_user, $selected_year);
+        $data['labels']        = $monthlyData['months'];
+        $data['average_hours'] = $monthlyData['total_hours'];
+    
+        // Reports
+        $data['work_analysis']  = CustomHelper::getWorkRatingAnalysis($selected_user, $selected_year);
+        $data['monthly_report'] = CustomHelper::getMonthlyWorkReport($selected_user, $selected_year);
+    
+        // Attendance + Leave
+        $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
+        $data['leave_stats']          = CustomHelper::getEmployeeLeaveStats($selected_user, $selected_year);
+    
+        // Other info
+        $data['current_user'] = Employee::where('user_id', $selected_user)->first();
+        $data['employees']    = Employee::all();
+        $data['meta_title']   = 'User Overview';
+    
+        return view('reports.my-over-view', $data);
+    }
+
+    /* My Attendnce Report */
+
+     public function myAttendanceReport(Request $request){
+        $data['meta_title'] = 'My Attendance Report';
+        $data['current_user'] = Employee::where('user_id', auth()->user()->id)->first();
+        $data['month']        = $request->input('month') ?? date('m');
+        $data['year']         = $request->input('year') ?? date('Y');
+
+        // Correct emp_id to match the employee id, not the user id
+        $employee = $data['current_user'];
+        
+        $startDate = Carbon::createFromDate($data['year'], $data['month'], 1)->startOfMonth()->toDateString();
+        $endDate   = Carbon::createFromDate($data['year'], $data['month'], 1)->endOfMonth()->toDateString();
+
+        $query = Attendance::with(['employee', 'employee.user'])
+            ->where('emp_id', $employee->user_id)
+            ->whereBetween('signin_date', [$startDate, $endDate]);
+
+        $data['attendances'] = $query->get();
+
+        return view('reports.my-attendance-report', $data);
+       
     }
 
     /* user overview */

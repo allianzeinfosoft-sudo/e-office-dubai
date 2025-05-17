@@ -342,6 +342,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/custom-attendance/reject-custom-mark-in/{id}', [CustomAttendanceController::class, 'rejectCustomMarkIn'])->name('custom-attendance.reject-custom-mark-in');
 
     /* Reports  */
+    Route::get('/reports/my-overview', [ReportController::class, 'my_overview'])->name('reports.my-overview');
+    Route::get('/reports/my-attendance-report', [ReportController::class, 'myAttendanceReport'])->name('reports.my-attendance-report');
+
     Route::get('/reports/user-overview', [ReportController::class, 'user_overview'])->name('reports.user-overview');
     Route::get('/reports/user-monthly-overview', [ReportController::class, 'monthlyOverview'])->name('reports.user-monthly-overview');
     Route::get('/reports/user-monthly-overview-data', [ReportController::class, 'monthlyOverviewReport'])->name('reports.user-monthly-overview-data');

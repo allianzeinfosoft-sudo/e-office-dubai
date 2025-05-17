@@ -88,9 +88,20 @@ return [
         'route' => 'javascript:void(0);',
         'submenu' => [
             [
+                'title' => 'My Overview',
+                'route' => 'reports/my-overview',
+                'permission' => ['view my overview'],
+            ],
+            [
+                'title' => 'My Attendance Report',
+                'route' => '/reports/my-attendance-report',
+                'permission' => [],
+            ],
+
+            [
                 'title' => 'User Overview',
                 'route' => 'reports/user-overview',
-                'permission' => ['view my overview'],
+                'permission' => ['view user overview'],
             ],
             [
                 'title' => 'User Monthly Overview',
