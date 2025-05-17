@@ -11,11 +11,11 @@
             <div class="col-sm-12 mb-3">
                 <div class="form-group">
                     <div class="d-flex align-items-center justify-content-between">
-                        <label for="task_name">Task Name</label>
+                        <label for="task_name">Task Name <span class="text-danger">*</span></label>
                         <a href="javascript:void(0);" class="text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Add Task" onclick="addTask()"><i class="fa fa-plus"></i> Add</a>
                     </div>
                     <!-- <input type="text" name="task_name" id="task_name" class="form-control" placeholder="Task Name" /> -->
-                    <select class="form-control select2" name="task_name" id="task_name" data-placeholder="Select Project">
+                    <select class="form-control select2" name="task_name" id="task_name" data-placeholder="Select Project" required>
                         <option value=""></option>
                         @if($tasks->isNotEmpty()) 
                             @foreach($tasks as $task) 
@@ -28,8 +28,8 @@
     
             <div class="col-sm-12 mb-3">
                 <div class="form-group">
-                    <label for="project_id">Projects</label>
-                    <select class="form-control select2" name="project_id" id="project_id" data-placeholder="Select Project">
+                    <label for="project_id">Projects <span class="text-danger">*</span></label>
+                    <select class="form-control select2" name="project_id" id="project_id" data-placeholder="Select Project" required>
                         <option value=""></option>
                         @if($projects->isNotEmpty()) 
                             @foreach($projects as $project) 
@@ -42,8 +42,8 @@
     
             <div class="col-sm-6 mb-3">
                 <div class="form-group">
-                    <label for="reporting_to">Reporting To</label>
-                    <select class="form-control select2" name="reporting_to" id="reporting_to" data-placeholder="Select Reporting To" onchange="getMembers(this.value)">
+                    <label for="reporting_to">Reporting To <span class="text-danger">*</span></label>
+                    <select class="form-control select2" name="reporting_to" id="reporting_to" data-placeholder="Select Reporting To" onchange="getMembers(this.value)" required>
                         <option value=""></option>
                         @if($reportingTo->isNotEmpty()) 
                             @foreach($reportingTo as $user) 
