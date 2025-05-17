@@ -156,7 +156,18 @@
                     { data: 'working_hours', title: 'Working Hours' },
                     { data: 'signin_note', title: 'Signin Note' },
                     { data: 'signout_note', title: 'Signout Note' },
-                    { data: 'status', title: 'Status' }
+                    { data: null, title: 'Status',
+                         render: function (data, type, row) {
+                            if (row.status === 'Mark-out') {
+                                return '<span class="badge bg-label-success mt-1">Completed</span>';
+                            } else if (row.status === 'Mark-in') {
+                                return '<span class="badge bg-label-warning mt-1">Incomplete</span>';
+                            } else {
+                                return '<span class="badge bg-label-danger mt-1">Leave</span>';
+                            }
+                        } 
+                        
+                    }
                 ]
             });
         }

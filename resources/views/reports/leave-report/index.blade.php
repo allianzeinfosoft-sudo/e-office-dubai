@@ -44,6 +44,7 @@
                                                     <th>Leave Reason</th>
                                                     <th>Apply Date</th>
                                                     <th>Status</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
     
@@ -156,6 +157,12 @@
                 { data: 'reason', title: 'Leave Reason' },
                 { data: 'apply_date', title: 'Apply Date' },
                 { data: 'status', title: 'Status' },
+                { data: null, title: 'Action',
+                    render: function (data, type, row) {
+                        //return '<a href="/leaves/' + row.id + '/edit" class="btn btn-sm btn-primary"><i class="ti ti-edit"></i></a>'; 
+                        return '<a href="/leaves" class="btn btn-sm btn-primary"><i class="ti ti-edit"></i></a>'; 
+                    }
+                },
             ]
         });
 

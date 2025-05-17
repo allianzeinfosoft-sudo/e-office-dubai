@@ -42,6 +42,15 @@
                         <tbody>
                             @if($attendances->count() > 0)
                                 @foreach($attendances as $index => $attendance)
+                                @php
+                                    if ($attendance->status == 'mark-out') {
+                                        $statusText = 'Completed';
+                                    } elseif ($attendance->status == 'mark-in_array') {
+                                        $statusText = 'Incomplete';
+                                    } else {
+                                        $statusText = 'Leave';
+                                    }
+                                @endphp
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $attendance->signin_date ?? 'N/A' }}</td>
@@ -51,7 +60,7 @@
                                         <td>{{ $attendance->working_hours ?? 'N/A' }}</td>
                                         <td>{{ $attendance->signin_note ?? 'N/A' }}</td>
                                         <td>{{ $attendance->signout_note ?? 'N/A' }}</td>
-                                        <td>{{ $attendance->status ?? 'N/A' }}</td>
+                                        <td><span class="badge bg-label-{{ $attendance->status == 'mark-out' ? 'success' : ($attendance->status == 'mark-in' ? 'warning' : 'danger') }} mt-1">{{ $statusText }}</span></td>
                                     </tr>
                                 @endforeach
                             @endif
