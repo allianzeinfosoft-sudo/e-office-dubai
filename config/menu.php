@@ -97,6 +97,11 @@ return [
                 'route' => '/reports/my-attendance-report',
                 'permission' => [],
             ],
+            [
+                'title' => 'My work Report',
+                'route' => '/reports/my-work-report',
+                'permission' => [],
+            ],
 
             [
                 'title' => 'User Overview',

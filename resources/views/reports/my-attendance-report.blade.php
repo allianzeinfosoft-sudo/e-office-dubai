@@ -103,25 +103,31 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="row mt-3">
+                             <div class="row mt-3">
                                 <div class="col-12">
                                     <div class="card card-bg">
                                         <div class="card-header">
                                             <h5 class="card-title"> <i class="ti ti-filter ti-sm"></i> Avarage working hours</h5>
                                         </div>
                                         <div class="card-body">
-                                            <x-charts.apex-bar-chart
-                                                element-id="barChart"
+                                            <x-charts.apex-bar-chart 
+                                                elementId="barChart"
                                                 :series="[
-                                                    ['name' => 'Apple', 'data' => [90, 120, 55, 100, 80, 125, 175, 70, 88, 180]],
-                                                    ['name' => 'Samsung', 'data' => [85, 100, 30, 40, 95, 90, 30, 110, 62, 20]]
+                                                    [
+                                                    'name' => 'Working Hours', 
+                                                    'data' => $barChartData['working_hours'] ?? [],
+                                                    ],
+                                                    [
+                                                    'name' => 'Beak Hours',
+                                                    'data' => $barChartData['break_hours'] ?? [],
+                                                    ],
                                                 ]"
-                                                :categories="['7/12', '8/12', '9/12', '10/12', '11/12', '12/12', '13/12', '14/12', '15/12', '16/12']"
-                                            />
+                                                :categories="$barChartData['dates'] ?? []"
+                                                height="300" />
                                         </div>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div> 
 
                         </div>
 

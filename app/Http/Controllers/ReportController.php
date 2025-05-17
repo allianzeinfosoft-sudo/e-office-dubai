@@ -121,9 +121,51 @@ class ReportController extends Controller
             ->whereBetween('signin_date', [$startDate, $endDate]);
 
         $data['attendances'] = $query->get();
+        $data['barChartData'] = CustomHelper::getMonthlyWorkBreakDataForBarChart(auth()->user()->id);
 
         return view('reports.my-attendance-report', $data);
        
+    }
+
+    /* My work Report */
+      public function myWorkReport(){
+        $data['meta_title'] = 'My Work Report';
+        $data['employees'] = Employee::Where('user_id', auth()->user()->id)->get();
+        $tasks = ProjectTask::whereRaw("FIND_IN_SET(?, members)", [auth()->user()->id])->with('project')->get();
+        // Optional: return only project IDs or names
+        $data['projects'] = $tasks->pluck('project')->filter()->unique('id')->values();
+        return view('reports.all-work-report.my-work-report', $data);
+    }
+
+    public function myWorkReportsData(Request $request){
+        $query = WorkReport::with(['project', 'projectTask', 'tasks'])
+            ->where('emergency', 0);
+
+        if ($request->filled('employee_id')) {
+            $query->where('emp_id', $request->employee_id);
+        }
+
+        if ($request->filled('project_id')) {
+            $query->where('project_name', $request->project_id); // Confirm if 'project_name' is correct
+        }
+
+        if ($request->filled('task_id')) {
+            $query->where('type_of_work', $request->task_id); // Confirm if 'type_of_work' is correct
+        }
+
+        if ($request->filled('day')) {
+            $query->whereDay('report_date', $request->day);
+        }
+
+        if ($request->filled('month')) {
+            $query->whereMonth('report_date', $request->month);
+        }
+
+        if ($request->filled('year')) {
+            $query->whereYear('report_date', $request->year);
+        }
+
+        return response()->json($query->get());
     }
 
     /* user overview */
