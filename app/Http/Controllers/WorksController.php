@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Project;
 use App\Models\workReport;
+use App\Models\Employee;
 use App\Models\CustomAttendance;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -185,6 +186,7 @@ class WorksController extends Controller
     public function entryOpen(){
         $data['meta_title'] = 'Entry Open';
         $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+        $data['employee'] = Employee::where('user_id', Auth::id())->first();
         return view('works.entry_open', $data);
     }
 }

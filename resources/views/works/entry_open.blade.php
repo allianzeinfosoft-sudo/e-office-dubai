@@ -28,8 +28,8 @@
             <div class="row">
 
               <div class="col-lg-7 mb-4">
-
                 <!-- Attendance Marking Card -->
+                 @if($employee["open_work_status"] == 1)
                 <div class="card mb-4">
                     <div class="card-header">
                         <div class="d-flex justify-content-between">
@@ -67,6 +67,16 @@
                       </div>
                     </div>
                 </div>
+                @else
+                  <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="card-title mb-1"> <i class="ti ti-clock ti-sm"></i> Sorry! You are not allowed to open Mark-in </h4>
+                    </div>
+                    <div class="card-body">
+                      <p class="text-center"> You are not allowed to open Mark-in. If you want to open Mark-in, please contact your supervisor.</p>
+                    </div>
+                </div>
+                @endif
 
               </div>
 

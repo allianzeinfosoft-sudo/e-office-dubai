@@ -551,7 +551,7 @@ public function assign_open_work(Request $request)
 
      if ($request->ajax()) {
 
-        $users = Employee::with('user')->orderBy('open_work_status', 'desc')->get()
+        $users = Employee::with('user')->orderBy('id', 'desc')->get()
         ->map(function ($users) {
             return [
                 'id' => $users->user_id,
