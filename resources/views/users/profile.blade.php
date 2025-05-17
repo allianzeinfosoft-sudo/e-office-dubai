@@ -76,7 +76,7 @@
                           <span class="fw-bold"><i class="ti ti-eye mt-n2"></i>Age: &nbsp;</span><span>{{ $user->employee->age ?? 'N/A' }}</span>
                         </li>
                         <li class="d-flex align-items-center justify-content-between mb-3">
-                          <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Date of Birth: &nbsp;</span><span>{{ $user->employee->dob ?? 'N/A' }}</span>
+                          <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Date of Birth: &nbsp;</span><span>{{ $user->employee->dob ? \Carbon\Carbon::parse($user->employee->dob)->format('d-m-Y') : 'N/A' }}</span>
                         </li>
                         <li class="d-flex align-items-center justify-content-between mb-3">
                           <span class="fw-bold"><i class="ti ti-user mt-n2"></i>Gender: &nbsp;</span><span>{{ isset($user->employee->gender) ? ucfirst(\Illuminate\Support\Str::camel($user->employee->gender)) : 'N/A' }}</span>
@@ -89,7 +89,7 @@
                           <span>{{ $user->employee->phonenumber ?? 'N/A' }}</span>
                         </li>
                         <li class="d-flex align-items-center justify-content-between mb-3">
-                          <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Join Date: &nbsp;</span><span>{{ $user->employee->join_date ?? 'N/A' }}</span>
+                          <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Join Date: &nbsp;</span><span>{{ $user->employee->dob ? \Carbon\Carbon::parse($user->employee->join_date)->format('d-m-Y') : 'N/A' }}</span>
                         </li>
                         <hr>
                         <li class="d-flex align-items-center mb-3">
@@ -154,10 +154,10 @@
                           <span class="fw-bold"><i class="ti ti-brand-mastercard mt-n1"></i>Aadhaar (UID): &nbsp;</span>
                           <span>{{ $user->employee->aadhaar ?? 'N/A' }}</span>
                         </li>
-                        <li class="d-flex align-items-center justify-content-between mb-3">
+                        {{-- <li class="d-flex align-items-center justify-content-between mb-3">
                           <span class="fw-bold"><i class="ti ti-cardboards mt-n1"></i>Electroal ID: &nbsp;</span>
                           <span>{{ $user->employee->electoral_id ?? 'N/A' }}</span>
-                        </li>
+                        </li> --}}
                         <li class="mb-3">
                           <div class="d-flex justify-content-between align-items-start">
                             <div class="">
@@ -210,7 +210,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">0</h5>
+                              <h5 class="mb-0 me-2">{{ $leave_info->this_month_leave ?? 0  }}</h5>
                               <small>This Month Leave(s)</small>
                             </div>
                             <div class="card-icon">
@@ -225,7 +225,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">1.5</h5>
+                              <h5 class="mb-0 me-2">{{ $leave_info->approved_leaves ?? 0 }}</h5>
                               <small>Total Leave(s) Taken</small>
                             </div>
                             <div class="card-icon">
@@ -255,7 +255,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">12.5</h5>
+                              <h5 class="mb-0 me-2">{{ $leave_info->pending_leaves ?? 0 }}</h5>
                               <small>Pending Leave(s)</small>
                             </div>
                             <div class="card-icon">
@@ -270,7 +270,7 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">15</h5>
+                              <h5 class="mb-0 me-2">{{ $leave_info->leave_alloted ?? 0 }}</h5>
                               <small>Total Leave(s) Alloted</small>
                             </div>
                             <div class="card-icon">

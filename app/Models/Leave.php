@@ -11,7 +11,7 @@ class Leave extends Model
     use HasFactory;
 
     protected $table = 'leaves';
-    protected $fillable = ['leave_from','leave_to','user_id','leave_type','reason'];
+    protected $fillable = ['leave_from','leave_to','user_id','leave_type','leave_day_count','reason'];
 
     public function user()
     {

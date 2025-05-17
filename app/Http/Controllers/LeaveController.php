@@ -99,12 +99,15 @@ class LeaveController extends Controller
 
 
         $user_id = $request['user_id'];
+        $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+
         $leaveData = [
             'user_id'        => $request->user_id,
             'leave_from'     => $request->leave_from,
             'leave_to'       => $request->leave_to,
             'reason'         => $request->reason,
             'leave_type'     => $request->leave_type,
+            'leave_day_count' => $leave_days,
             'leave_category' => $request->leave_category,
         ];
 
@@ -112,7 +115,7 @@ class LeaveController extends Controller
         $user_info = User::find($user_id);
         $user_department = $user_info->employee->department_id;
         // store approver
-         $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+
          $current_leave_days = Leave::getTotalLeavesTakenInCurrentMonth();
 
          $total_leave_days = $leave_days +  $current_leave_days;
