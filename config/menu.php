@@ -430,7 +430,7 @@ return [
     //     'permission' => ['view myProjects'],
     // ],
 
-    [
+    /* [
         'title' => 'Tools',
         'icon' => 'ti ti-tools',
         'route' => 'javascript:void(0);',
@@ -451,7 +451,7 @@ return [
                 'route' =>  '#',
             ],
         ]
-    ],
+    ], */
     [
         'title' => 'Recruitments',
         'icon' => 'ti ti-target',
@@ -468,7 +468,7 @@ return [
             ],
         ]
     ],
-    [
+    /* [
         'title' => 'Jobs',
         'icon' => 'ti ti-briefcase',
         'route' => 'javascript:void(0);',
@@ -489,7 +489,7 @@ return [
             ],
 
         ]
-    ],
+    ], */
     [
         'title' => 'Email',
         'icon' => 'ti ti-mail-forward',
