@@ -551,14 +551,14 @@ public function assign_open_work(Request $request)
 
      if ($request->ajax()) {
 
-        $users = User::with('employee')->get()
+        $users = Employee::with('user')->orderBy('open_work_status', 'desc')->get()
         ->map(function ($users) {
             return [
-                'id' => $users->id,
-                'picture' => $users->employee ? $users->employee->profile_image : '',
-                'full_name' => $users->employee ? $users->employee->full_name : 'N/A',
-                'open_work_status' => $users->employee ? $users->employee->open_work_status : 0,
-                'updated_date' => $users->employee?->open_work_setdate ? date('d-m-Y', strtotime($users->employee->open_work_setdate)) : 'N/A'
+                'id' => $users->user_id,
+                'picture' => $users->profile_image ? $users->profile_image : '',
+                'full_name' => $users->full_name ? $users->full_name : 'N/A',
+                'open_work_status' => $users->open_work_status ? $users->open_work_status : 0,
+                'updated_date' => $users->open_work_setdate ? date('d-m-Y', strtotime($users->open_work_setdate)) : 'N/A'
             ];
         });
 
