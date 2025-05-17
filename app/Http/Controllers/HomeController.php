@@ -8,6 +8,8 @@ use App\helpers\CustomHelper;
 use App\Models\Employee;
 use App\Models\Attendance;
 use App\Models\Leave;
+use App\Models\Holiday;
+
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -32,6 +34,7 @@ class HomeController extends Controller
 
         $data['employee'] = Employee::with('department', 'designation', 'workshift', 'reportingToEmployee')->where('user_id', $selected_user)->first();
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
+        $data['holidays'] = Holiday::where('holiday_group', $data['employee']->holidayGroup)->get();
 
         $user = Auth::user();
         $fromDate = Carbon::now()->startOfMonth();

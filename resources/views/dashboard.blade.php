@@ -373,19 +373,10 @@
                   <div class="card card-bg">
                     <div class="card-header d-flex justify-content-between align-items-md-center align-items-start">
                       <h5 class="card-title mb-0">Holiday List</h5>
-                      <div class="dropdown">
-                        <button
-                          type="button"
-                          class="btn dropdown-toggle p-0"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false">
-                          <i class="ti ti-calendar"></i>
-                        </button>
-                      </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-datatable">
                       <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-hover table-highlight table-checkable" data-provide="datatable" data-display-rows="25" data-info="true" data-search="true" data-length-change="true" data-paginate="true">
+                        <table class="table table-striped table-hover table-highlight table-checkable table-holiday" data-provide="datatable" data-display-rows="25" data-info="true" data-search="true" data-length-change="true" data-paginate="true">
                             <thead>
                               <tr>
                                 <th data-sortable="true" data-direction="asc">SL</th>
@@ -394,13 +385,17 @@
                               </tr>
                             </thead>
                             <tbody>
-                              
-                              <tr class="158">
-                                <td>1</td>
-                                <td>Republic Day</td>
-                                <td>26-January-2025</td>                               
-                              </tr>
-                              <tr class="162">
+                              @if($holidays->count() > 0) 
+                                @foreach($holidays as $key => $holiday)
+                                  <tr class="{{ $key + 1 }}">
+                                    <td>{{ $key + 1 }}</td>
+                                    <td> {{ $holiday->name ?? '' }}</td>
+                                    <td> {{ date('d F Y', strtotime($holiday->date)) ??  '' }}</td>                               
+                                  </tr>
+                                @endforeach
+                              @endif
+
+                              <!-- <tr class="162">
                                 <td>2</td>
                                 <td>Sivarathri</td>
                                 <td>26-February-2025</td>                               
@@ -459,7 +454,7 @@
                                 <td>13</td>
                                 <td>Christmas</td>
                                 <td>25-December-2025</td>                               
-                              </tr>                              
+                              </tr>      -->                         
                             </tbody>
                           </table>
                         </div>
@@ -531,6 +526,10 @@
 @push('js')
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script>
+  $(function () {
+    $('.table-holiday').DataTable();  
+  });
+
   updateLeaveSummary('current_month');
   
   $(document).on('click', '.filter-range', function () {
