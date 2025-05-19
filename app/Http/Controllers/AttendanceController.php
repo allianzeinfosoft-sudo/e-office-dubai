@@ -670,10 +670,14 @@ class AttendanceController extends Controller{
             ->orderBy('signin_time')
             ->get();
 
+        $image = $markInList->employee && $markInList->employee->profile_image
+                ? asset('storage/' . $markInList->employee->profile_image)
+                : asset('assets/img/avatars/1.png');
+
         $data = $markedInListData->map(function ($markInList) {
             return [
                 'id' => $markInList->id,
-                'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. (($markInList->employee->profile_image) ? asset('storage/'. $markInList->employee->profile_image) : asset('assets/img/avatars/1.png') ) . '" alt="Avatar" class="rounded-circle"></div></div>',
+                'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. $image . '" alt="Avatar" class="rounded-circle"></div></div>',
                 'name' => $markInList->employee->full_name,
                 'username' => $markInList->username,
                 'markin_date' => $markInList->signin_date,
