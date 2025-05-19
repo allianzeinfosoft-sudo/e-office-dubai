@@ -529,8 +529,13 @@ public function lockProfile($id)
     $user = User::find($id);
 
     Auth::logout();
-        session()->invalidate();
-        session()->regenerateToken();
+        if (session()->isStarted()) {
+            session()->invalidate();
+            session()->regenerateToken();
+        } else {
+            \Log::warning("Session not started when trying to invalidate.");
+        }
+
 
     return view('auth.lock',compact('user'));
 }

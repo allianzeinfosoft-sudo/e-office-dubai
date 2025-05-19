@@ -19,24 +19,5 @@ class LoginController extends Controller
        // $this->middleware('auth')->only('logout');
     }
 
-    /**
-     * Run after successful authentication.
-     */
-   /*  protected function authenticated(Request $request, $user)
-    {
-        if (!$request->hasSession()) {
-            \Log::error('Session not available on login.');
-            return redirect('/')->withErrors('Session not started. Please refresh and try again.');
-        }
-
-        session()->regenerate();
-        session(['debug_session_test' => true]);
-
-        \Log::info('Authenticated. Session ID: ' . session()->getId());
-        \Log::info('Session Data: ', session()->all());
-
-        return redirect()->intended($this->redirectPath());
-    }  */
-    
 }
 
