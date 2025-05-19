@@ -24,9 +24,8 @@
                 <div class="col-sm-12">
                     <label class="form-label" for="approval_level">Approval Level</label>
                     <select name="approval_level" id="approval-level" class="form-control">
-                       <option value="1">1</option>
-                       <option value="2">2</option>
-                       <option value="3">3</option>
+                       <option value="2">2nd Level</option>
+                       <option value="3">Final</option>
                     </select>
 
 

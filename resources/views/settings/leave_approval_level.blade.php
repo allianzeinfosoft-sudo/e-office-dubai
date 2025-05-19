@@ -49,7 +49,7 @@
                     <th>Approval Level</th>
                     <th>Approver</th>
                     {{-- <th>Approval Count</th> --}}
-                    <th></th>
+                    {{-- <th></th> --}}
                   </tr>
                 </thead>
               </table>
@@ -152,17 +152,26 @@ if (dtLeaveApproverTable.length) {
                 }
             },
             { data: 'department', title: 'Department' },
-            { data: 'level', title: 'Approval Level' },
-            { data: 'approver', title: 'Approver'},
-            // { data: 'count', title: 'Approval Count'},
+            // { data: 'level', title: 'Approval Level' },
             {
-                targets: null,
-                render: function(data, type, full, meta){
-                    let approver_id = full['id'];
-                    $buttons = `<a href="javascript:;" class="text-body delete-approver" data-id="${approver_id}"><i class="ti ti-trash ti-sm mx-2"></i></a>`;
-                    return $buttons;
+                data: 'level',
+                title: 'Approval Level',
+                render: function (data, type, row) {
+                    if (row['level'] == 2) return '2nd Level';
+                    if (row['level'] == 3) return 'Final Approver';
+                    return data; // fallback for other values
                 }
             },
+            { data: 'approver', title: 'Approver'},
+            // { data: 'count', title: 'Approval Count'},
+            // {
+            //     targets: null,
+            //     render: function(data, type, full, meta){
+            //         let approver_id = full['id'];
+            //         $buttons = `<a href="javascript:;" class="text-body delete-approver" data-id="${approver_id}"><i class="ti ti-trash ti-sm mx-2"></i></a>`;
+            //         return $buttons;
+            //     }
+            // },
 
             ],
 
