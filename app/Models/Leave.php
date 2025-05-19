@@ -45,14 +45,24 @@ class Leave extends Model
         $totalLeaveDays = 0;
 
         foreach ($leaves as $leave) {
-            // Adjust start and end to be within the current month range
-            $leaveStart = Carbon::parse($leave->start_date)->greaterThan($startOfMonth) ? Carbon::parse($leave->start_date) : $startOfMonth;
-            $leaveEnd = Carbon::parse($leave->end_date)->lessThan($endOfMonth) ? Carbon::parse($leave->end_date) : $endOfMonth;
 
-            // Calculate number of days including both ends
-            $totalLeaveDays += $leaveStart->diffInDaysFiltered(function ($date) {
-                return true; // or return !$date->isWeekend(); if you want to exclude weekends
-            }, $leaveEnd->copy()->addDay());
+             // Half-day leave counts as 0.5
+            if ($leave->leave_type === 'half_day') {
+                $totalLeaveDays += 0.5;
+                continue;
+            }
+                // Adjust start and end to be within the current month range
+                $leaveStart = Carbon::parse($leave->leave_from)->greaterThan($startOfMonth)
+                ? Carbon::parse($leave->leave_from)
+                : $startOfMonth;
+
+                $leaveEnd = Carbon::parse($leave->leave_to)->lessThan($endOfMonth)
+                ? Carbon::parse($leave->leave_to)
+                : $endOfMonth;
+
+                // Calculate number of days (inclusive)
+                $totalLeaveDays += $leaveStart->diffInDays($leaveEnd) + 1;
+
         }
 
         return $totalLeaveDays;
