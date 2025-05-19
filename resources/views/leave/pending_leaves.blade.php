@@ -210,13 +210,14 @@
             render: function(data, type, full, meta){
                 let leaveType = full['leave_type'];
                 let displayType = 'N/A';
-                if(leaveType === 'half_day')
-                {
-                    displayType = `<button class="btn btn-sm btn-warning">Half</button>`;
+
+                if(leaveType === 'half_day'){
+                    displayType = `<button class="btn btn-sm btn-sucess">Half</button>`;
                 }
-                else if(leaveType === 'full_day')
-                {
-                    displayType = `<button class="btn btn-sm btn-info">Full</button>`;
+                else if(leaveType === 'full_day'){
+                    displayType = `<button class="btn btn-sm btn-danger">Full</button>`;
+                }else if(leaveType === 'off_day'){
+                    displayType = `<button class="btn btn-sm btn-info">OFF</button>`;
                 }
 
                 return displayType;
