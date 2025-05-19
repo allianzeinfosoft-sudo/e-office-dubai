@@ -30,7 +30,12 @@ class SalaryController extends Controller
 
     public function fetch_salary_slip()
     {
-        $salary_slip = Salary::with('employee')->get()->map(function ($salary_slip) {
+        $user = Auth::user();
+        if ($user->hasRole('HR')) {
+            $salary_slip = Salary::with('employee')->get()->map(function ($salary_slip) {
+        }else{
+            $salary_slip = Salary::with('employee')->where('user_id',$user->id)->get()->map(function ($salary_slip) {
+        }
             return [
                 'id' => $salary_slip->id,
                 'user_id' => $salary_slip->user_id,

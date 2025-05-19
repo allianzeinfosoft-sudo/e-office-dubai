@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\HelperNotification;
+
 class LeaveController extends Controller
 {
     use DateFormatter, HasLeaveRecipients;
