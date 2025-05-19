@@ -61,15 +61,20 @@
                 <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
                 <div class="row g-3">
                     <div class="row mt-3">
-                        <div class="col-md-4 mb-3">
-                            <label for="select2Basic" class="form-label">Select Username:</label>
-                            <select id="username" name="username" class="select2 form-select form-select-lg" data-allow-clear="true">
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id ?? '' }}" {{ (old('username') == $user->id) ? 'selected' : '' }}>{{ $user->employee->full_name ?? ''}}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
+                    @role('HR')
+                    <div class="col-md-4 mb-3">
+                        <label for="select2Basic" class="form-label">Select Username:</label>
+                        <select id="username" name="username" class="select2 form-select form-select-lg" data-allow-clear="true">
+                            @foreach ($users as $user)
+                                <option value="">select</option>
+                                <option value="{{ $user->id }}">
+                                    {{ $user->employee->full_name ?? '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endrole
                         <div class="col-md-4 mb-3">
                             @php
                                 use App\Helpers\CustomHelper;
@@ -79,8 +84,9 @@
 
                             <select id="select2Month" name="select2Month" class="select2 form-select form-select-lg" data-allow-clear="true">
                                 @for ($month = 1; $month <= 12; $month++)
-                                    <option value="{{ $month }}" {{ old('select2Month') == $month ? 'selected' : '' }}>
-                                        {{  $helper->getMonthNames($month) }}  {{-- Ensure the function name is correct --}}
+                                    <option value="{{ $month }}"
+                                        {{ old('select2Month', now()->month) == $month ? 'selected' : '' }}>
+                                        {{ $helper->getMonthNames($month) }}
                                     </option>
                                 @endfor
                             </select>
@@ -89,9 +95,11 @@
                         <div class="col-md-4 mb-3">
                             <label for="select2Basic" class="form-label">Select Year:</label>
                             <select id="select2Year" name="select2Year" class="select2 form-select form-select-lg" data-allow-clear="true">
-                            @for ($year = 2000 ; $year <= 2050 ; $year++)
-                                <option value="{{ $year }}" {{ (old('select2Year') == $year) ? 'selected' : '' }}>{{ $year ?? '' }}</option>
-                            @endfor
+                                @for ($year = 2000; $year <= 2050; $year++)
+                                    <option value="{{ $year }}" {{ old('select2Year', now()->year) == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endfor
                             </select>
                         </div>
                     </div>
@@ -202,68 +210,89 @@
 @section('js')
 <script>
 $(function () {
+  // Check if current user has HR role (from Blade)
+  window.isHR = @json(Auth::user()->hasRole('HR'));
+
+  // Define salary slip table buttons
+  let salarySlipButtons = [];
+
+  if (window.isHR) {
+    salarySlipButtons.push({
+      text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add Salary Slip</span>',
+      className: 'create-new btn btn-primary',
+      attr: {
+        'data-bs-toggle': 'offcanvas',
+        'data-bs-target': '#upload-salary'
+      }
+    });
+  }
 
   var dataTableSalarySlip = $('.salary-slip-table'),
-    dt_permission;
-  // Users List datatable
+      dt_salary_slip;
+
   if (dataTableSalarySlip.length) {
     dt_salary_slip = dataTableSalarySlip.DataTable({
-    // ajax: assetsPath + 'json/permissions-list.json', // JSON file to add data
-
-    ajax: {
-          url: "/fetch/salarySlip",
-          type: "GET",
-          dataType: "json",
-          dataSrc: "data"
+      ajax: {
+        url: "/fetch/salarySlip",
+        type: "GET",
+        dataType: "json",
+        cache: false,
+        data: function (d) {
+          d.username = $('#username').val();
+          d.select2Month = $('#select2Month').val();
+          d.select2Year = $('#select2Year').val();
+        },
+        dataSrc: "data"
       },
       columns: [
-        // columns according to JSON
         {
-             data: null, title: 'S.No',
-                render: function (data, type, row, meta){
-                    return meta.row+1;
-            }
-
+          data: null,
+          title: 'S.No',
+          render: function (data, type, row, meta) {
+            return meta.row + 1;
+          }
         },
-        { data: 'full_name', title: 'EmployeeName' },
+        { data: 'full_name', title: 'Employee Name' },
         { data: 'department', title: 'Department' },
-        { data: 'pf_no', title: 'PF No'},
-        { data: 'created_date', title: 'Created Date'},
+        { data: 'pf_no', title: 'PF No' },
+        { data: 'created_date', title: 'Created Date' },
         { data: 'salary_slip_month', title: 'Salary Month' },
         {
-
-            data: 'salary_slip',
-            title: 'Download Slip',
-            render: function (data, type, row) {
-                if (data) {
-                    return `<a href="/storage/uploads/${data}" target="_blank" class="btn btn-sm btn-primary">View</a>`;
-                }
-                return "N/A";
+          data: 'salary_slip',
+          title: 'Download Slip',
+          render: function (data, type, row) {
+            if (data) {
+              return `<a href="/storage/uploads/${data}" target="_blank" class="btn btn-sm btn-primary">View</a>`;
             }
-
-        }
-      ],
-
-      dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
-      displayLength: 7,
-      lengthMenu: [7, 10, 25, 50, 75, 100],
-      buttons: [
-        {
-          text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add Salary Slip</span>',
-          className: 'create-new btn btn-primary',
-          attr: {
-            'data-bs-toggle': 'offcanvas',
-            'data-bs-target': '#upload-salary'
+            return "N/A";
           }
         }
-      ]
-
+      ],
+      dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>>' +
+           '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>' +
+           't<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+      displayLength: 7,
+      lengthMenu: [7, 10, 25, 50, 75, 100],
+      buttons: salarySlipButtons
     });
 
+    // Header title
     $('div.head-label').html('<h5 class="card-title mb-0">Salary Slip List</h5>');
   }
 
+  // Reload datatable on filter form submit
+  $('#SalaryForm').on('submit', function (e) {
+    e.preventDefault();
+    dt_salary_slip.ajax.reload();
+  });
+
+  // Optional: Auto-submit when filters change
+  // $('#username, #select2Month, #select2Year').on('change', function () {
+  //   $('#SalaryForm').submit();
+  // });
+
 });
+
 
 
 
