@@ -29,15 +29,30 @@ class SalaryController extends Controller
         return view('salary.view_salary_slip',compact('users'));
     }
 
-    public function fetch_salary_slip()
+    public function fetch_salary_slip(Request $request)
     {
 
         $user = Auth::user();
         $query = Salary::with('employee');
 
-        if (!$user->hasRole('HR')) {
-            $query->where('user_id', $user->id);
-        }
+        // Only HR can filter by username
+            if ($user->hasRole('HR')) {
+                $query->where('user_id', $request->username);
+            } elseif($user->hasRole('HR') && $request->filled('username'))
+            {
+                $query->where('user_id', $request->username);
+            }elseif (!$user->hasRole('HR')) {
+                $query->where('user_id', $user->id);
+            }
+
+
+            if ($request->filled('select2Month')) {
+                $query->where('salary_slip_month', $request->select2Month);
+            }
+
+            if ($request->filled('select2Year')) {
+                $query->where('salary_slip_year', $request->select2Year);
+            }
         $salary_slips = $query->get()->map(function ($salary_slip) {
             return [
                 'id' => $salary_slip->id,
