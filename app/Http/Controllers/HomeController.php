@@ -20,7 +20,7 @@ class HomeController extends Controller
      * @return void
      */
     public function __construct(){
-        
+
     }
 
     /**
@@ -192,21 +192,26 @@ public function getLeaveSummary(Request $request)
         // Calculate the number of days for each leave
         $days = Carbon::parse($leave->leave_from)->diffInDays(Carbon::parse($leave->leave_to)) + 1;
 
-        $leaveThisMonth += $days;
 
-        if ($leave->status === 'Approved') {
+
+        if ($leave->status == 2) {
+
             $totalLeavesTaken += $days;
-        } elseif ($leave->status === 'Pending') {
+            $leaveThisMonth += $days;
+
+            if ($leave->leave_type === 'full_day') {
+                $fullLeaves += $days;
+            } elseif ($leave->leave_type === 'haf_day') {
+                $halfLeaves += $days;
+            } elseif ($leave->leave_type === 'off_day') {
+                $offDays += $days;
+            }
+
+        } elseif ($leave->status == 1) {
             $pendingLeaves += $days;
         }
 
-        if ($leave->leave_type === 'Full') {
-            $fullLeaves += $days;
-        } elseif ($leave->leave_type === 'Half') {
-            $halfLeaves += $days;
-        } elseif ($leave->leave_type === 'Off') {
-            $offDays += $days;
-        }
+
     }
 
     // Calculate past year leaves
