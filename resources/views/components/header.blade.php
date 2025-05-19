@@ -55,18 +55,12 @@
                   <div class="dropdown-menu-header border-bottom">
                     <div class="dropdown-header d-flex align-items-center py-3">
                       <h5 class="text-body mb-0 me-auto">Shortcuts</h5>
-                      <a
-                        href="javascript:void(0)"
-                        class="dropdown-shortcuts-add text-body"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                        title="Add shortcuts"
-                        ><i class="ti ti-sm ti-apps"></i
-                      ></a>
+                      <a href="javascript:void(0)" class="dropdown-shortcuts-add text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Add shortcuts"><i class="ti ti-sm ti-apps"></i></a>
                     </div>
                   </div>
                   <div class="dropdown-shortcuts-list scrollable-container">
                     <div class="row row-bordered overflow-visible g-0">
+                      
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-clock fs-4"></i>
@@ -74,6 +68,7 @@
                         <a href="{{ route('custom-attendance.index') }}" class="stretched-link">Approvel</a>
                         <small class="text-muted mb-0">Custom Attendance</small>
                       </div>
+
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-unlink fs-4"></i>
@@ -83,6 +78,7 @@
                       </div>
                     </div>
                     <div class="row row-bordered overflow-visible g-0">
+
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-users fs-4"></i>
@@ -90,6 +86,7 @@
                         <a href="{{ route('recruitments.rrf-approvals') }}" class="stretched-link">RRF Appoval</a>
                         <small class="text-muted mb-0">Recuritment Approvel</small>
                       </div>
+
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-lock fs-4"></i>
@@ -97,6 +94,7 @@
                         <a href="app-access-roles.html" class="stretched-link">Role Management</a>
                         <small class="text-muted mb-0">Permission</small>
                       </div>
+
                     </div>
                     <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
