@@ -354,13 +354,20 @@ class ReportController extends Controller
         }
 
         $leaves = $query->get()->map(function ($leave) {
+            $leaveBadge = match ($leave->leave_type) {
+                'full_day' => '<span class="badge bg-label-danger">Full Day</span>',
+                'half_day' => '<span class="badge bg-label-success">Half Day</span>',
+                'off_day'  => '<span class="badge bg-label-info">Off Day</span>',
+                default    => '<span class="badge bg-label-secondary">Unknown</span>',
+            };
+
             return [
                 'id'            => $leave->id,
                 'username'      => $leave->Employee->full_name ?? '-',
                 'leave_from'    => Carbon::parse($leave->leave_from)->format('d-m-Y'), 
                 'leave_to'      => Carbon::parse($leave->leave_to)->format('d-m-Y'), 
                 'leave_count'   => Carbon::parse($leave->leave_from)->diffInDays($leave->leave_to) + 1,
-                'leave_type'    => ucfirst($leave->leave_type),
+                'leave_type'    => $leaveBadge,
                 'reason'        => $leave->reason,
                 'apply_date'    => $leave->created_at->format('d-m-Y'),
                 'status'        => ($leave->status == 3) ? 'Rejected' : (($leave->status == 2) ? 'Approved' : 'Pending'),
