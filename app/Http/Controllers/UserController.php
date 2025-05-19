@@ -11,6 +11,8 @@ use App\Models\Position;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Workshift;
+use App\Models\UserEntryBlockList;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -847,8 +849,12 @@ public function checkAccountNumber(Request $request)
 
 }
 
+    /* Bolcked users list */
 
-
-
+    public function blockedUsers(){
+        $data['meta_title'] = 'Blocked Users';
+        $data['employees'] = UserEntryBlockList::where('status', 1)->get();
+        return view('black-list-users.index', $data);
+    }
 
 }

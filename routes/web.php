@@ -130,6 +130,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/check-pan', [UserController::class, 'checkPAN']);
     Route::post('/check-account-number', [UserController::class, 'checkAccountNumber']);
 
+    Route::get('/blacklist-users', [UserController::class, 'blockedUsers'])->name('blacklist-users.index');
+
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');

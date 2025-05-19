@@ -620,6 +620,12 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
         return "{$diff->y} years, {$diff->m} months, {$diff->d} days";
     }
+
+    /* Total count of blocked user */
+    public static function getBlockedUsersCount()
+    {
+        return UserEntryBlockList::where('status', 1)->count();
+    }
     
    
 }
