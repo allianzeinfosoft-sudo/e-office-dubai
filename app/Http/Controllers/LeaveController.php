@@ -156,7 +156,7 @@ class LeaveController extends Controller
          }
          elseif($total_leave_days <= 3)
          {
-            $approver = LeaveApprovalLevel::where('department',$user_department)->where('approval_level',1)->value('approver');
+            $approver = LeaveApprovalLevel::where('department',$user_department)->where('approval_level',2)->value('approver');
             if($approver){
                 LeaveApprover::create([
                     'leave_id' => $leaveId,
@@ -168,7 +168,7 @@ class LeaveController extends Controller
          else
          {
             $approver = LeaveApprovalLevel::where('department', $user_department)
-                ->where('approval_level', 2)
+                ->where('approval_level', 3)
                 ->value('approver');
 
             if($approver)
