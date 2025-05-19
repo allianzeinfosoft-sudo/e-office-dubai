@@ -83,7 +83,8 @@
                       
                     </div>
                     <div class="row row-bordered overflow-visible g-0">
-
+                      
+                      @can('recruitment approval')
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-users fs-4"></i>
@@ -91,14 +92,17 @@
                         <a href="{{ route('recruitments.rrf-approvals') }}" class="stretched-link">RRF Appoval</a>
                         <small class="text-muted mb-0">Recuritment Approvel</small>
                       </div>
-
+                      @endcan
+                      
+                      @can('view permissions')
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-lock fs-4"></i>
                         </span>
-                        <a href="app-access-roles.html" class="stretched-link">Role Management</a>
+                        <a href="{{ route('permissions.index') }}" class="stretched-link">Role Management</a>
                         <small class="text-muted mb-0">Permission</small>
                       </div>
+                      @endcan
 
                     </div>
                     <div class="row row-bordered overflow-visible g-0">
@@ -106,14 +110,14 @@
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-chart-bar fs-4"></i>
                         </span>
-                        <a href="index.html" class="stretched-link">Dashboard</a>
+                        <a href="{{ route('home') }}" class="stretched-link">Dashboard</a>
                         <small class="text-muted mb-0">User Profile</small>
                       </div>
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-settings fs-4"></i>
                         </span>
-                        <a href="pages-account-settings-account.html" class="stretched-link">Setting</a>
+                        <a href="{{ route('appearences.index') }}" class="stretched-link">Setting</a>
                         <small class="text-muted mb-0">Account Settings</small>
                       </div>
                     </div>
