@@ -3,16 +3,10 @@
 use App\Models\HelperNotification;
 use App\Models\User;
 
+
+
 if (!function_exists('createNotification')) {
-    /**
-     * Create a new notification.
-     *
-     * @param string $type Notification type (leave, birthday, announcement, etc.)
-     * @param array $recipients Array of user IDs who should receive this
-     * @param string $message Notification message
-     *
-     * @return HelperNotification
-     */
+
     function createNotification(array $data): ?HelperNotification
     {
 
