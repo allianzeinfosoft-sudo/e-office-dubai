@@ -40,6 +40,7 @@ use App\Models\Designation;
 use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Session\Middleware\StartSession;
 use App\Helpers\CustomHelper;
 
