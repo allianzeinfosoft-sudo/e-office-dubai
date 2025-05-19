@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class UserEntryBlockList extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'block_date',
+        'user_id',
+        'username',
+        'full_name',
+        'status',
+    ];
 }

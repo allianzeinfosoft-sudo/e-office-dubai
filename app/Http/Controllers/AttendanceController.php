@@ -410,6 +410,18 @@ class AttendanceController extends Controller{
         );
     
         $isIncomplete = strtotime($workingTime['total_working_time']) < strtotime('08:00:00') ? 1 : 0;
+
+        /* send to block list */
+        if($isIncomplete){
+
+            CustomHelper::addToBlockList([
+                'user_id'    => $attendance->emp_id,
+                'block_date' => date('Y-m-d'),
+                'username' => $attendance->username,
+                'full_name' => Employee::where('user_id', $attendance->emp_id)->first()->full_name
+            ]);
+
+        }
     
         $attendance->update([
             'signout_time' => now()->format('H:i:s'),
@@ -521,8 +533,22 @@ class AttendanceController extends Controller{
             $request->signout_time,
             $markOut->break_time
         );
+
     
         $totalWorkingTime = $workingTime['total_working_time'] ?? '00:00:00';
+
+        
+        if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
+            $markOut->is_incomplete = 1;
+
+            CustomHelper::addToBlockList([
+                'user_id'    => $markOut->emp_id,
+                'block_date' => date('Y-m-d'),
+                'username' => $markOut->username,
+                'full_name' => Employee::where('user_id', $markOut->emp_id)->first()->full_name
+            ]);
+
+        }
     
         $markOut->signout_time      = $request->signout_time;
         $markOut->signout_date      = $request->signout_date;
@@ -531,9 +557,7 @@ class AttendanceController extends Controller{
         $markOut->punchout_type     = 'custom';
         $markOut->working_hours     = $totalWorkingTime;
     
-        if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
-            $markOut->is_incomplete = 1;
-        }
+        
     
         $markOut->save();
     

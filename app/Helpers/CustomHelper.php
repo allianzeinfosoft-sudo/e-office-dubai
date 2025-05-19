@@ -590,6 +590,24 @@ public static function getWorkRatingAnalysisMonthly($empId)
             return false;
         }
     }
+
+    /* Create blocked user */
+    public static function addToBlockList($data)
+    {
+        return UserEntryBlockList::updateOrCreate(
+            // Conditions to check for existing user
+            [
+                'user_id'    => $data['user_id'],
+                'block_date' => $data['block_date'] ?? Carbon::now()->toDateString(),
+            ],
+            // Values to insert or update
+            [
+                'username'   => $data['username'],
+                'full_name'  => $data['full_name'] ?? null,
+                'status'     => $data['status'] ?? 1,
+            ]
+        );
+    }
     
    
 }
