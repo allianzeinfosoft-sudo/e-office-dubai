@@ -60,7 +60,8 @@
                   </div>
                   <div class="dropdown-shortcuts-list scrollable-container">
                     <div class="row row-bordered overflow-visible g-0">
-                      
+
+                      @can('custom attendance approval')
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-clock fs-4"></i>
@@ -68,7 +69,9 @@
                         <a href="{{ route('custom-attendance.index') }}" class="stretched-link">Approvel</a>
                         <small class="text-muted mb-0">Custom Attendance</small>
                       </div>
-
+                      @endcan
+                      
+                      @can('incomplete working hour approval')
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-unlink fs-4"></i>
@@ -76,6 +79,8 @@
                         <a href="{{ route('attendance.incomplete-working-hours') }}" class="stretched-link">Incomplete</a>
                         <small class="text-muted mb-0">Working Hours</small>
                       </div>
+                      @endcan
+                      
                     </div>
                     <div class="row row-bordered overflow-visible g-0">
 
