@@ -100,7 +100,7 @@ return [
             [
                 'title' => 'My work Report',
                 'route' => '/reports/my-work-report',
-                'permission' => ['view my attendance reportview my attendance report'],
+                'permission' => ['view my work report'],
             ],
 
             [
