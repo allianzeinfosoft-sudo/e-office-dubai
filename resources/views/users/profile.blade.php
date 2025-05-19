@@ -31,8 +31,11 @@
                     <div class="card mb-4 card-bg1">
                       <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
                         <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
+                          @php
+                            $image = ($user->employee?->profile_image) ? '/storage/' . $user->employee?->profile_image : '/assets/img/avatars/1.png';
+                          @endphp 
                           <img
-                            src="{{ asset('storage/' . $user->employee->profile_image ?? '' ) }}"
+                            src="{{ $image }}"
                             alt="user image"
                             class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img" />
 
@@ -347,7 +350,7 @@
                 </div>
 
                 <!-- Projects table -->
-                <div class="row justify-content-around px-3 ">
+                <!-- <div class="row justify-content-around px-3 ">
                   <div class="card">
                       <div class="card-datatable table-responsive">
                         <table class="datatables-projects table border-top">
@@ -362,7 +365,7 @@
                         </table>
                       </div>
                   </div>
-                </div>
+                </div> -->
                 <!--/ Projects table -->
 
                 <!--/ User Profile Content -->
