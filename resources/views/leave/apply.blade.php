@@ -182,6 +182,10 @@
             }
         }
 
+        if (leaveTypeSelected && leaveTypeSelected.value === 'half_day' && leaveFrom !== leaveTo) {
+            errors.push("For Half Day leave, 'Leave From' and 'Leave To' must be the same date.");
+        }
+
         // === Display Errors (if any) ===
         let errorBox = document.getElementById('formErrors');
         if (!errorBox) {

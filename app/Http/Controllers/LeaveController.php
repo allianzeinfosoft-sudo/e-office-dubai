@@ -121,7 +121,15 @@ class LeaveController extends Controller
 
 
         $user_id = $request['user_id'];
-        $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+
+        if($request->leave_type === 'full_day')
+        {
+            $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+        }
+        else
+        {
+            $leave_days = 0.5;
+        }
 
         $leaveData = [
             'user_id'        => $request->user_id,
@@ -137,9 +145,7 @@ class LeaveController extends Controller
         $user_info = User::find($user_id);
         $user_department = $user_info->employee->department_id;
         // store approver
-
-         $current_leave_days = Leave::getTotalLeavesTakenInCurrentMonth();
-
+        $current_leave_days = Leave::getTotalLeavesTakenInCurrentMonth();
          $total_leave_days = $leave_days +  $current_leave_days;
          $leaveId = $leave->id;
 
@@ -327,7 +333,7 @@ class LeaveController extends Controller
                     'leave_reason' => strip_tags($leaves->reason ?? ''),
                     'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
                     'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
-                    'leave_count' => $this->getDaysBetween($leaves->leave_from, $leaves->leave_to) ?? '',
+                    'leave_count' => $leaves->leave_day_count ?? '0',
                     'status' => $leaves->status ?? '',
                     'this_month_leave_count' => $thisMonthLeaveCount,
                     'leave_approver' => optional($leaves->leaveApprover)->approver_id,
