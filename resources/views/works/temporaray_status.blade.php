@@ -207,7 +207,7 @@
                         if (response.success) {
                             let options = '<option value="">Select a task</option>';
                             response.data.forEach(task => {
-                                options += `<option value="${task.id}">${task.task_name}</option>`;
+                                options += `<option value="${task.tasks.id}">${task.tasks.name}</option>`;
                             });
                             $('#type_of_work').html(options);
                         }else{
