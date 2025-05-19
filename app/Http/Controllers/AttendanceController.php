@@ -673,19 +673,20 @@ class AttendanceController extends Controller{
             
             $data = $markedInListData->map(function ($markInList) {
                 
-            $image = $markInList->employee && $markInList->employee->profile_image
-                    ? asset('storage/' . $markInList->employee->profile_image)
+            $employee = optional($markInList->employee);
+                $image = $employee->profile_image
+                    ? asset('storage/' . $employee->profile_image)
                     : asset('assets/img/avatars/1.png');
-                    
-            return [
-                'id' => $markInList->id,
-                'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. $image . '" alt="Avatar" class="rounded-circle"></div></div>',
-                'name' => $markInList->employee->full_name ?? '',
-                'username' => $markInList->username ?? '',
-                'markin_date' => $markInList->signin_date ?? '' ,
-                'markin_time' => $markInList->signin_time ?? '',
-            ];
-        });
+
+                return [
+                    'id' => $markInList->id,
+                    'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. $image . '" alt="Avatar" class="rounded-circle"></div></div>',
+                    'name' => $employee->full_name ?? '',
+                    'username' => $markInList->username ?? '',
+                    'markin_date' => $markInList->signin_date ?? '' ,
+                    'markin_time' => $markInList->signin_time ?? '',
+                ];
+            });
 
         return response()->json(['success' => true, 'data' => $data]);
     }
