@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException as ValidationValidationException;
 use Illuminate\Support\Facades\Log;
 
+use App\Helpers\CustomHelper;
+
 class UserController extends Controller
 {
     /**
@@ -398,8 +400,10 @@ class UserController extends Controller
             'full_day_leavecount' => $full_day_leavescount,
             'half_day_leavecount' => $half_day_leavescount,
         ];
+        $attendance_analytics = CustomHelper::currentAttendanceAnalytics($userid);
+        $experiance = CustomHelper::getExperience($user->employee->join_date);
 
-        return view('users.profile', compact('user','leave_info'));
+        return view('users.profile', compact('user','leave_info', 'attendance_analytics', 'experiance'));
 
     }
 

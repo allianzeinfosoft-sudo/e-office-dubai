@@ -7,6 +7,7 @@ use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\workReport;
 use App\Models\LeaveAllocation;
+use App\Models\UserEntryBlockList;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;  
@@ -607,6 +608,17 @@ public static function getWorkRatingAnalysisMonthly($empId)
                 'status'     => $data['status'] ?? 1,
             ]
         );
+    }
+    
+    /* Total Experience */
+    public static function getExperience($joinDate)
+    {
+        $join = Carbon::parse($joinDate);
+        $now = Carbon::now();
+
+        $diff = $join->diff($now);
+
+        return "{$diff->y} years, {$diff->m} months, {$diff->d} days";
     }
     
    
