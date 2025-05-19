@@ -144,19 +144,24 @@ class LeaveController extends Controller
          if($total_leave_days <= 1)
          {
             $approver = $user_info->employee->reporting_to;
-             LeaveApprover::create([
-                'leave_id' => $leaveId,
-                'approver_id' => $approver
-            ]);
-
+            if($approver)
+            {
+                LeaveApprover::create([
+                    'leave_id' => $leaveId,
+                    'approver_id' => $approver
+                ]);
+            }
          }
          elseif($total_leave_days <= 3)
          {
             $approver = LeaveApprovalLevel::where('department',$user_department)->where('approval_level',1)->value('approver');
-            LeaveApprover::create([
-                'leave_id' => $leaveId,
-                'approver_id' => $approver
-            ]);
+            if($approver){
+                LeaveApprover::create([
+                    'leave_id' => $leaveId,
+                    'approver_id' => $approver
+                ]);
+            }
+
          }
          else
          {
@@ -164,10 +169,14 @@ class LeaveController extends Controller
                 ->where('approval_level', 2)
                 ->value('approver');
 
-            LeaveApprover::create([
-                'leave_id' => $leaveId,
-                'approver_id' => $approver
-            ]);
+            if($approver)
+            {
+                LeaveApprover::create([
+                    'leave_id' => $leaveId,
+                    'approver_id' => $approver
+                ]);
+            }
+
         }
 
         $user_details = Employee::select('full_name', 'employeeID','reporting_to')
