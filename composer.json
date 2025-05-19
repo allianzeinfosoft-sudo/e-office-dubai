@@ -33,7 +33,7 @@
         },
         "files": [
             "app/Helpers/CustomHelper.php",
-            "app/Helpers/HelperNotification.php"
+            "app/Helpers/NotificationHelpers.php"
         ]
     },
     "autoload-dev": {
