@@ -1,15 +1,15 @@
 <?php
-
+namespace App\Helpers;
 use App\Models\HelperNotification;
 use App\Models\User;
 
 
 
-class HelperNotifications
+class NotificationHelpers
 {
 
 
-     public static function createNotification(array $data): ?HelperNotification
+     public static function createNotification(array $data)
     {
 
         $type = $data['type'] ?? null;
