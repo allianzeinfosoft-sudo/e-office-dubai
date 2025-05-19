@@ -157,7 +157,7 @@
                           <div class="row g-4">
                             <div class="col-lg-12">
                                 <div class="badge bg-label-danger p-3 w-100" id="last-punch-time" role="alert">
-                                    <strong>{!! $error !!}</strong> <br /> Please contact your supervisor.
+                                    <strong>{!! $error ?? '' !!}</strong> <br /> Please contact your supervisor.
                                 </div>
                             </div>
   
