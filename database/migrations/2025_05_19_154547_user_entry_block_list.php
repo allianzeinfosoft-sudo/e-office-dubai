@@ -12,7 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         //
-        
+        Schema::create('user_entry_block_list', function (Blueprint $table) {
+            $table->id();
+            $table->date('block_date');
+            $table->integer('user_id');  //User::id
+            $table->string('username')->nullable();  //User::username
+            $table->string('full_name', 255)->nullable();
+            $table->integer('status')->default(1)->nullable()->comment('0 = Weightlist, 1 = blcoklist');
+            $table->timestamps();
+        });
+
     }
 
     /**
@@ -21,5 +30,6 @@ return new class extends Migration
     public function down(): void
     {
         //
+        Schema::dropIfExists('user_entry_block_list');
     }
 };
