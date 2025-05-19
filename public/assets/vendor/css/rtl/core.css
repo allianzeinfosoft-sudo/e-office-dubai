@@ -6254,8 +6254,8 @@ select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus,
 input:-internal-autofill-selected {
-  background-clip: text !important;
-  -webkit-background-clip: text !important;
+  background-clip: inherit !important;
+  /* -webkit-background-clip: text !important; */
 }
 
 [dir=rtl] .list-inline,
