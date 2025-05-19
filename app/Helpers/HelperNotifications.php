@@ -5,9 +5,11 @@ use App\Models\User;
 
 
 
-if (!function_exists('createNotification')) {
+class HelperNotifications
+{
 
-    function createNotification(array $data): ?HelperNotification
+
+     public static function createNotification(array $data): ?HelperNotification
     {
 
         $type = $data['type'] ?? null;
@@ -61,6 +63,6 @@ if (!function_exists('createNotification')) {
             'readers_ids' => [],
         ]);
     }
-}
 
+}
 

@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
-use App\Helpers\HelperNotification;
+use App\Helpers\HelperNotifications;
 
 class LeaveController extends Controller
 {
@@ -210,7 +210,7 @@ class LeaveController extends Controller
 
         $recipients = $this->getLeaveRecipients($user_details)->toArray();
         $message = 'New leave application received from'.$user_details->full_name;
-        createNotification([
+        HelperNotifications::createNotification([
             'type' => 'leave',
             'recipients' => $recipients,
             'message' => $message,
@@ -373,7 +373,7 @@ class LeaveController extends Controller
 
                     $recipients = [(string) $leave->user_id];
                     $message = 'Leave application approved';
-                    createNotification([
+                    HelperNotifications::createNotification([
                         'type' => 'leave',
                         'recipients' => $recipients,
                         'message' => $message,
@@ -397,7 +397,7 @@ class LeaveController extends Controller
 
                 $recipients = [(string) $leave->user_id];
                 $message = 'Leave application rejected';
-                createNotification([
+                HelperNotifications::createNotification([
                     'type' => 'leave',
                     'recipients' => $recipients,
                     'message' => $message,
