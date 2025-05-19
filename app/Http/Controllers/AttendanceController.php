@@ -680,10 +680,10 @@ class AttendanceController extends Controller{
             return [
                 'id' => $markInList->id,
                 'profile_image' => '<div class="avatar-wrapper"><div class="avatar avatar-sm me-3"><img src="'. $image . '" alt="Avatar" class="rounded-circle"></div></div>',
-                'name' => $markInList->employee->full_name,
-                'username' => $markInList->username,
-                'markin_date' => $markInList->signin_date,
-                'markin_time' => $markInList->signin_time,
+                'name' => $markInList->employee->full_name ?? '',
+                'username' => $markInList->username ?? '',
+                'markin_date' => $markInList->signin_date ?? '' ,
+                'markin_time' => $markInList->signin_time ?? '',
             ];
         });
 
