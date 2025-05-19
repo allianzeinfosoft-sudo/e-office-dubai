@@ -18098,7 +18098,7 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
   padding: 0.2rem 0.4rem;
 }
 .layout-navbar .navbar-dropdown .dropdown-menu {
-  min-width: 22rem;
+  min-width: 30rem;
   overflow: hidden;
 }
 .layout-navbar .navbar-dropdown .dropdown-menu .last-login {

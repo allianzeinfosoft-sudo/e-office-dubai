@@ -30,7 +30,6 @@
                             <tr>
                               <th>S.No</th>
                               <th>Name</th>
-                              <th>This Month Leave</th>
                               <th>Leave From</th>
                               <th>Leave To</th>
                               <th>Leave Count</th>
@@ -186,7 +185,6 @@
                 return $row_output;
             }
           },
-          { data: 'this_month_leave_count', title: 'This Month Leave' },
           { data: 'leave_from', title: 'Leave From' },
           { data: 'leave_to', title: 'Leave To' },
           {

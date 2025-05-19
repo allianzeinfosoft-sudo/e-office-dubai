@@ -211,7 +211,7 @@
                     html += '<li class="list-group-item list-group-item-action dropdown-notifications-item" data-id="'+ notif.id +'">'+ notif.message +'</li>';
                 });
 
-                notifContainer.innerHTML = html;
+                // notifContainer.innerHTML = html;
             });
     }
 

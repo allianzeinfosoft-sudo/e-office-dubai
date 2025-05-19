@@ -9,7 +9,7 @@ use App\Models\Employee;
 use App\Models\Attendance;
 use App\Models\Leave;
 use App\Models\Holiday;
-
+use App\Models\LeaveAllocation;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -180,6 +180,7 @@ public function getLeaveSummary(Request $request)
         ->whereBetween('leave_from', [$from, $to])
         ->get();
 
+    $leave_allocated = LeaveAllocation::where('user_id',$user->id)->first();
     // Initialize counters
     $leaveThisMonth = 0;
     $totalLeavesTaken = 0;
@@ -224,7 +225,7 @@ public function getLeaveSummary(Request $request)
         }, 0);
 
     // Define total leaves allotted (can be made dynamic)
-    $totalLeavesAllotted = 15;
+    $totalLeavesAllotted = $leave_allocated ? $leave_allocated->total_leaves : 0;
 
     return response()->json([
         'leaveThisMonth' => $leaveThisMonth,
