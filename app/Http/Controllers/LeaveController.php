@@ -230,11 +230,15 @@ class LeaveController extends Controller
         // Send notification email
         $htmlBody = view('emails.leave_application_template', $data)->render();
         $email = User::find($approver)?->email;
-        CustomHelper::sendNotificationMail(
-            $email,
-            'New Leave Application',
-            $htmlBody,
-        );
+        if($email)
+        {
+            CustomHelper::sendNotificationMail(
+                $email,
+                'New Leave Application',
+                $htmlBody,
+            );
+        }
+
 
 
         // $recipient_info = User::where('id', $user_details->reporting_to)->get();
