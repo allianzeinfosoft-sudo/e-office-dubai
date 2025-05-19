@@ -95,12 +95,12 @@ return [
             [
                 'title' => 'My Attendance Report',
                 'route' => '/reports/my-attendance-report',
-                'permission' => [],
+                'permission' => ['view my attendance report'],
             ],
             [
                 'title' => 'My work Report',
                 'route' => '/reports/my-work-report',
-                'permission' => [],
+                'permission' => ['view my work report'],
             ],
 
             [
