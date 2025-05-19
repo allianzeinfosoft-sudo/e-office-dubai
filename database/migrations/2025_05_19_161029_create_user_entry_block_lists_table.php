@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
-        Schema::create('user_entry_block_list', function (Blueprint $table) {
+        Schema::create('user_entry_block_lists', function (Blueprint $table) {
             $table->id();
-            $table->date('block_date');
-            $table->integer('user_id');  //User::id
-            $table->string('username')->nullable();  //User::username
+            $table->date('block_date')->nullable();
+            $table->integer('user_id');
+            $table->string('username', 255);
             $table->string('full_name', 255)->nullable();
-            $table->integer('status')->default(1)->nullable()->comment('0 = Weightlist, 1 = blcoklist');
+            $table->integer('status')->nullable()->default(1)->comment('0 = Weight List, 1 = Block List');
             $table->timestamps();
         });
-
     }
 
     /**
@@ -29,7 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
-        Schema::dropIfExists('user_entry_block_list');
+        Schema::dropIfExists('user_entry_block_lists');
     }
 };
