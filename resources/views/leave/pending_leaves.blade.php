@@ -103,6 +103,10 @@
                 <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
             </div>
 
+            <div class="mb-3" id="approving info_div">
+                <p id="initial_approving_msg"></p>
+            </div>
+
             <div class="mb-3">
                 <span>Are you sure you want to <span id="function_name"></span> this leave request? </span>
             </div>
@@ -234,11 +238,14 @@
                 let leaveReason = full['leave_reason'];
                 let login_user = full['login_user'];
                 let approver = full['leave_approver'];
+                let approver_name = full['initial_approver_name'];
                 let login_user_group = full['login_user_group'];
-                if(login_user == approver || login_user_group == 'HR')
+                let ini_apr_status = full['init_appr_status'];
+
+                if((login_user == approver && ini_apr_status == 0) || login_user_group === 'HR')
                 {
-                    $buttons = `<button class="btn btn-sm btn-success me-2 open-modal" data-function="1" data-usergroup="${login_user_group}"  data-id="${leave_id}" data-name="${userName}" data-leave-from="${leaveFrom}" data-leave-to="${leaveTo}" data-reason="${leaveReason}" data-bs-toggle="modal" data-bs-target="#addNewCCModal"><i class="fa fa-check-circle"></i></button>`+
-                           `<button class="btn btn-sm btn-danger open-modal" data-function="2" data-usergroup="${login_user_group}" data-id="${leave_id}" data-name="${userName}" data-leave-from="${leaveFrom}" data-leave-to="${leaveTo}" data-reason="${leaveReason}" data-bs-toggle="modal" data-bs-target="#addNewCCModal"><i class="fa fa-times-circle"></i></button>`;
+                    $buttons = `<button class="btn btn-sm btn-success me-2 open-modal" data-function="1" data-initial_approver_name="${approver_name}" data-initial_approve_status="${ini_apr_status}" data-usergroup="${login_user_group}"  data-id="${leave_id}" data-name="${userName}" data-leave-from="${leaveFrom}" data-leave-to="${leaveTo}" data-reason="${leaveReason}" data-bs-toggle="modal" data-bs-target="#addNewCCModal"><i class="fa fa-check-circle"></i></button>`+
+                           `<button class="btn btn-sm btn-danger open-modal" data-function="2" data-initial_approver_name="${approver_name}" data-initial_approve_status="${ini_apr_status}" data-usergroup="${login_user_group}" data-id="${leave_id}" data-name="${userName}" data-leave-from="${leaveFrom}" data-leave-to="${leaveTo}" data-reason="${leaveReason}" data-bs-toggle="modal" data-bs-target="#addNewCCModal"><i class="fa fa-times-circle"></i></button>`;
 
 
                 }
@@ -270,6 +277,8 @@
     let leaveTo = $(this).data("leave-to");
     let leaveReason = $(this).data("reason");
     let userGroup = $(this).data("usergroup");
+    let initial_approve_status = $(this).data("initial_approve_status");
+    let initial_approver_name = $(this).data("initial_approver_name");
 
     // Pass values to the modal inputs or elements
     $("#modalLeaveId").val(leaveId);
@@ -279,11 +288,20 @@
     $("#modalLeaveTo").text(leaveTo);
     $("#modalLeaveReason").text(leaveReason);
 
-    if (userGroup === "HR") {
-        $("#commentBox").show();
-    } else {
-        $("#commentBox").hide();
-    }
+        if (userGroup === "HR" && initial_approve_status == 0) {
+            $("#commentBox").empty().show();
+            $("#approving_info_div").hide();
+
+
+        } else {
+            $("#commentBox").hide();
+            $("#approving_info_div").empty().show();
+
+            let actionVerb = functionType == 1 ? "approved" : "rejected";
+            const msg = "Leave " + actionVerb + " by " + initial_approver_name;
+            document.getElementById("initial_approving_msg").innerText = msg;
+
+        }
 
 
     // Change modal title based on function type

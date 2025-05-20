@@ -119,7 +119,6 @@ class LeaveController extends Controller
         }
 
 
-
         $user_id = $request['user_id'];
 
         if($request->leave_type === 'full_day')
@@ -131,6 +130,27 @@ class LeaveController extends Controller
             $leave_days = 0.5;
         }
 
+        $user_info = User::find($user_id);
+        $user_department = $user_info->employee->department_id;
+        $current_leave_days = Leave::getTotalLeavesTakenInCurrentMonth();
+
+        $total_leave_days = $leave_days +  $current_leave_days;
+
+
+        if($total_leave_days <= 1)
+         {
+            $approver = $user_info->employee->reporting_to;
+         }
+         elseif($total_leave_days <= 3)
+         {
+            $approver = LeaveApprovalLevel::where('department',$user_department)->where('approval_level',2)->value('approver');
+
+         }
+         else
+         {
+            $approver = User::where('email', 'binojn@mail.allianzegroup.com')->first()?->id;
+         }
+
         $leaveData = [
             'user_id'        => $request->user_id,
             'leave_from'     => $request->leave_from,
@@ -139,54 +159,13 @@ class LeaveController extends Controller
             'leave_type'     => $request->leave_type,
             'leave_day_count' => $leave_days,
             'leave_category' => $request->leave_category,
+            'initial_approver_id' => $approver,
         ];
 
         $leave = Leave::create($leaveData);
-        $user_info = User::find($user_id);
-        $user_department = $user_info->employee->department_id;
+        $leaveId = $leave->id;
+
         // store approver
-        $current_leave_days = Leave::getTotalLeavesTakenInCurrentMonth();
-         $total_leave_days = $leave_days +  $current_leave_days;
-         $leaveId = $leave->id;
-
-         if($total_leave_days <= 1)
-         {
-            $approver = $user_info->employee->reporting_to;
-            if($approver)
-            {
-                LeaveApprover::create([
-                    'leave_id' => $leaveId,
-                    'approver_id' => $approver
-                ]);
-            }
-         }
-         elseif($total_leave_days <= 3)
-         {
-            $approver = LeaveApprovalLevel::where('department',$user_department)->where('approval_level',2)->value('approver');
-            if($approver){
-                LeaveApprover::create([
-                    'leave_id' => $leaveId,
-                    'approver_id' => $approver
-                ]);
-            }
-
-         }
-         else
-         {
-            $approver = LeaveApprovalLevel::where('department', $user_department)
-                ->where('approval_level', 3)
-                ->value('approver');
-
-            if($approver)
-            {
-                LeaveApprover::create([
-                    'leave_id' => $leaveId,
-                    'approver_id' => $approver
-                ]);
-            }
-
-        }
-
         $user_details = Employee::select('full_name', 'employeeID','reporting_to')
                             ->where('user_id', $request->user_id)
                             ->first();
@@ -206,7 +185,7 @@ class LeaveController extends Controller
         $leaveDetails = [
               // Optional: Get dynamically
             'employee'   => $user_details,
-            'leave_details'      => $leave,
+            'leave_details'   => $leave,
             'days_count'      => $totalLeaveDays,
             'employee_email'  => Auth::user()->email ?? 'no-email@example.com',
         ];
@@ -214,13 +193,13 @@ class LeaveController extends Controller
         $type = 'leave_apply';
         // Mail::to('allianzeinfosoftsdu@gmail.com')->send(new LeaveApplication($leaveDetails));
 
-        $recipients = $this->getLeaveRecipients($user_details)->toArray();
-        $message = 'New leave application received from'.$user_details->full_name;
-        NotificationHelpers::createNotification([
-            'type' => 'leave',
-            'recipients' => $recipients,
-            'message' => $message,
-        ]);
+        // $recipients = $this->getLeaveRecipients($user_details)->toArray();
+        // $message = 'New leave application received from'.$user_details->full_name;
+        // NotificationHelpers::createNotification([
+        //     'type' => 'leave',
+        //     'recipients' => $recipients,
+        //     'message' => $message,
+        // ]);
 
         // email notification
         $data['details'] = [
@@ -244,8 +223,6 @@ class LeaveController extends Controller
                 $htmlBody,
             );
         }
-
-
 
         // $recipient_info = User::where('id', $user_details->reporting_to)->get();
         // Notification::send($recipient_info, new LeaveNotification($leave, $user_details, $type, $recipient_info));
@@ -296,6 +273,7 @@ class LeaveController extends Controller
     {
         $currentMonthStart = Carbon::now()->startOfMonth();
         $currentMonthEnd = Carbon::now()->endOfMonth();
+        $user_id = Auth::user()->id;
         // Get count of leaves for this month
         $thisMonthLeaveCount = Leave::where('status', 1)
                             ->get()
@@ -317,7 +295,26 @@ class LeaveController extends Controller
                             });
 
 
-            $leaves = Leave::with('employee','user','leaveApprover')
+            $leaves = Leave::with('employee','user','initialApprover')
+
+                    ->when(auth()->user()->hasRole('G5'), function ($query) use ($user_id) {
+                        $query->where('user_id', $user_id);
+                    })
+                    ->when(auth()->user()->hasAnyRole(['G4', 'G3']), function ($query) use ($user_id) {
+                        // Subquery to get user_ids of employees who report to current user
+                        $reportingUserIds = Employee::where('reporting_to', $user_id)
+                        ->pluck('user_id')
+                        ->toArray();
+                        $userIds = collect($reportingUserIds)
+                        ->push($user_id)
+                        ->map(fn($id) => (int) $id)
+                        ->unique()
+                        ->values()
+                        ->toArray();
+
+                        $query->whereIn('user_id', $userIds);
+                    })
+
             ->where('status','=',1)
             ->get()
             ->map(function ($leaves) use ($thisMonthLeaveCount) {
@@ -336,7 +333,9 @@ class LeaveController extends Controller
                     'leave_count' => $leaves->leave_day_count ?? '0',
                     'status' => $leaves->status ?? '',
                     'this_month_leave_count' => $thisMonthLeaveCount,
-                    'leave_approver' => optional($leaves->leaveApprover)->approver_id,
+                    'leave_approver' => $leaves->initial_approver_id,
+                    'initial_approver_name' => $leaves->initialApprover->full_name,
+                    'init_appr_status' => $leaves->initial_approve_status,
                     'login_user' => Auth::user()->id,
                     'login_user_group' => Auth::user()->employee?->group,
                 ];
@@ -357,15 +356,26 @@ class LeaveController extends Controller
             'modalLeaveId' => 'required',
             'modalFunctionType' => 'required'
         ]);
-
+        $approver = Auth::user();
         $id = $request['modalLeaveId'];
         $action = $request['modalFunctionType'];
 
         if($action == 1)
         {
-
             $leave = Leave::find($id);
             if ($leave) {
+
+                if($approver->role != 'HR')
+                {
+                    $leave->initial_approve_status = 1;
+                    $leave->initial_approver_id = $approver->id;
+                    $leave->initial_approved_date = date('Y-m-d');
+                    if($leave->save())
+                    {
+                        return redirect()->back()->with('success', 'Leave Approved successfully!');
+                    }
+
+                }
                 $leave->status = 2;
                 $leave->comment = $request['comment'];
                 $leave->approved_cancel_date = date('Y-m-d H:i:s');
@@ -381,13 +391,36 @@ class LeaveController extends Controller
                     LeaveAllocation::where('user_id', $leave->user_id)
                     ->increment('used_leaves', $leaveDays);
 
-                    $recipients = [(string) $leave->user_id];
-                    $message = 'Leave application approved';
-                    NotificationHelpers::createNotification([
-                        'type' => 'leave',
-                        'recipients' => $recipients,
-                        'message' => $message,
-                    ]);
+                    // $recipients = [(string) $leave->user_id];
+                    // $message = 'Leave application approved';
+
+                    // NotificationHelpers::createNotification([
+                    //     'type' => 'leave',
+                    //     'recipients' => $recipients,
+                    //     'message' => $message,
+                    // ]);
+
+                    $data['details'] = [
+                        'start_date' => $leave->leave_from,
+                        'end_date' => $leave->leave_to,
+                        'leave_reason' => strip_tags($leave->reason),
+                        'employee_name' =>  $leave->employee->full_name,
+                        'employeeID' => $leave->employee->employeeID,
+                        'leave_type' => $request->leave_type,
+                        'days_count' => $leave->leave_day_count,
+
+                    ];
+                    // Send notification email
+                    $htmlBody = view('emails.leave_approve_template', $data)->render();
+                    $email = $leave->user->email ?? '';
+                    if($email)
+                    {
+                        CustomHelper::sendNotificationMail(
+                            $email,
+                            'Your Leave Application Is Approved',
+                            $htmlBody,
+                        );
+                    }
 
                     return redirect()->back()->with('success', 'Leave Approved successfully!');
                 }
@@ -400,18 +433,58 @@ class LeaveController extends Controller
         {
             $leave = Leave::find($id);
             if ($leave) {
+
+                if($approver->role != 'HR')
+                {
+                    $leave->initial_approve_status = 1;
+                    $leave->initial_approver_id = $approver->id;
+                    $leave->initial_approver_id = $approver->id;
+                    $leave->initial_approved_date = date('Y-m-d');
+                    $leave->approved_cancel_date = date('Y-m-d');
+                    $leave->status = 3;
+                    if($leave->save())
+                    {
+                        return redirect()->back()->with('success', 'Leave Rejected successfully!');
+                    }
+
+                }
+
                 $leave->status = 3;
                 $leave->comment = $request['comment'];
                 $leave->approved_cancel_date = date('Y-m-d H:i:s');
                 $leave->save();
 
-                $recipients = [(string) $leave->user_id];
-                $message = 'Leave application rejected';
-                NotificationHelpers::createNotification([
-                    'type' => 'leave',
-                    'recipients' => $recipients,
-                    'message' => $message,
-                ]);
+                // $recipients = [(string) $leave->user_id];
+                // $message = 'Leave application rejected';
+                // NotificationHelpers::createNotification([
+                //     'type' => 'leave',
+                //     'recipients' => $recipients,
+                //     'message' => $message,
+                // ]);
+
+                $data['details'] = [
+                    'start_date' => $leave->leave_from,
+                    'end_date' => $leave->leave_to,
+                    'leave_reason' => strip_tags($leave->reason),
+                    'employee_name' =>  $leave->employee->full_name,
+                    'employeeID' => $leave->employee->employeeID,
+                    'leave_type' => $request->leave_type,
+                    'days_count' => $leave->leave_day_count,
+
+                ];
+                // Send notification email
+                $htmlBody = view('emails.leave_reject_template', $data)->render();
+                $email = $leave->user->email ?? '';
+                if($email)
+                {
+                    CustomHelper::sendNotificationMail(
+                        $email,
+                        'Your Leave Application Is Rejected',
+                        $htmlBody,
+                    );
+                }
+
+
                 return redirect()->back()->with('success', 'Leave Rejected successfully!');
 
 
