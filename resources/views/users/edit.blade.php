@@ -162,9 +162,9 @@
                     <div class="col-md-4 mb-3">
                       <label for="group" class="form-label">Address:</label>
                       <div class="input-group input-group-merge">
-                      <textarea type="text" class="form-control" id="address" name="address" placeholder="Select Address" rows="3">
-                        {{ old('address', $user->employee?->address) ?? '' }}
-                      </textarea>
+                        <textarea type="text" class="form-control" id="address" name="address" placeholder="Select Address" rows="3">
+                            {{ old('address', $user->employee?->address) ?? '' }}
+                        </textarea>
                       </div>
                     </div>
                   </div>

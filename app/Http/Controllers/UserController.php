@@ -207,6 +207,26 @@ class UserController extends Controller
         return view('users.edit', compact('user','employees','departments','work_shifts','roles','user_statuses','designations','positions'));
     }
 
+    public function limited_edit(string $id)
+    {
+
+        $user = User::with('employee')->findOrFail($id);
+        if ($user->employee && $user->employee->department_id !== null) {
+            $departmentId = $user->employee->department_id;
+            $designations = Designation::where('department_id', $departmentId)->get();
+        } else {
+            $designations = collect(); // or [] if you prefer plain array
+        }
+        $employees = Employee::all();
+        $departments = Department::all();
+        $work_shifts = Workshift::all();
+        $positions = Position::all();
+        $roles = Role::all();
+        $user_statuses = UserStatus::all();
+
+        return view('users.limited-edit-profile', compact('user','employees','departments','work_shifts','roles','user_statuses','designations','positions'));
+    }
+
 
     public function update(Request $request, User $user)
     {
@@ -237,9 +257,6 @@ class UserController extends Controller
                             ],
             'join_date' => 'required|date',
             ]);
-
-
-
 
         // Update user details
         $user->update([
@@ -303,10 +320,24 @@ class UserController extends Controller
 
         return redirect()->route('users.edit', $user->id)->with('success', 'User details updated successfully!');
 
-
-
     }
 
+    public function limitedUpdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $user->employee()->updateOrCreate(
+            [],
+            [
+                'personal_email' => $request->personal_email,
+                'phonenumber' => $request->phonenumber,
+                'address' => trim($request->address),
+            ]
+        );
+
+
+        Cache::forget('user');
+        return redirect()->route('user.profile', $user->id)->with('success', 'User details updated successfully!');
+    }
 
     public function destroy(string $id)
     {

@@ -111,6 +111,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('users', UserController::class);
     Route::get('/user-list',[UserController::class, 'getUsers']);
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::get('/users/{id}/limited-edit', [UserController::class, 'limited_edit'])->name('users.limited.edit');
+
+    Route::post('/users/{id}/limited-update', [UserController::class,'limitedUpdate'])->name('users.limited_update');
+
     Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
     Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::get('/users/{userId}/profile-edit', [UserController::class, 'profileEdit'])->name('users.profile-edit');
@@ -167,7 +171,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/custom_leave',[LeaveController::class,'custom_leave'])->name('custom.leave');
     Route::get('/leave_approver/list',[LeaveController::class, 'leave_approver'])->name('leave.approver');
     Route::post('/leave_approval_store',[LeaveController::class, 'leave_approval_store'])->name('leave_approval_store');
-    
+
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');

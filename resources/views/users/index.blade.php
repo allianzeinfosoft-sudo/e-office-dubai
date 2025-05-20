@@ -35,14 +35,18 @@
 
 
               <div class="card-datatable table-responsive">
-                <div class=" float-end mt-15 mr-20">
-                  <a href="users/create">
-                    <button class="btn btn-secondary add-new btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button">
-                      <span><i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New User</span>
-                      </span>
-                    </button>
-                  </a>
-                </div>
+
+                @hasanyrole('HR|Developer')
+                    <div class=" float-end mt-15 mr-20">
+                        <a href="users/create">
+                        <button class="btn btn-secondary add-new btn-primary" tabindex="0" aria-controls="DataTables_Table_0" type="button">
+                            <span><i class="ti ti-plus me-0 me-sm-1 ti-xs"></i><span class="d-none d-sm-inline-block">Add New User</span>
+                            </span>
+                        </button>
+                        </a>
+                    </div>
+                @endhasanyrole
+
 
                 <table class="datatables-users table border-top">
                   <thead>
@@ -109,3 +113,9 @@
   </div>
   <!-- / Layout wrapper -->
 @endsection
+@push('js')
+<script>
+    const currentUserRoles = @json(Auth::user()->getRoleNames());
+</script>
+@endpush
+

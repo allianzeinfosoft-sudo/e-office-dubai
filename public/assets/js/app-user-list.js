@@ -6,8 +6,8 @@
 
 // Datatable (jquery)
 $(function () {
-  let borderColor, bodyBg, headingColor, userView;
 
+  let borderColor, bodyBg, headingColor, userView;
   if (isDarkStyle) {
     borderColor = config.colors_dark.borderColor;
     bodyBg = config.colors_dark.bodyBg;
@@ -143,6 +143,7 @@ $(function () {
         },
         {
           // Actions
+
           targets: 8,
           title: 'Actions',
           searchable: false,
@@ -150,12 +151,20 @@ $(function () {
           render: function (data, type, full, meta) {
             const user_id =  full['id'];
             const editUserUrlBase = "users/"+user_id+"/edit";
-            return (
-              '<div class="d-flex align-items-center">' +
-              '<a href="'+editUserUrlBase+'" class="text-body edit-user1" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
-              '<a href="javascript:void(0);" class="text-body delete-user" data-user-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
-              '</div>'
-            );
+
+            let action = '';
+            if (typeof currentUserRoles !== 'undefined') {
+                if (currentUserRoles.includes("HR") || currentUserRoles.includes("Developer")) {
+
+                  action =  '<div class="d-flex align-items-center">' +
+                    '<a href="'+editUserUrlBase+'" class="text-body edit-user1" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
+                    '<a href="javascript:void(0);" class="text-body delete-user" data-user-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
+                    '</div>';
+
+                }
+            }
+
+            return action;
           }
         }
       ],
