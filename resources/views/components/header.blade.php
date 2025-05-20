@@ -141,6 +141,9 @@
                 </div>
               </li>
               <!-- Quick links -->
+               @php
+                  use App\Helpers\CustomHelper;
+                @endphp
 
               <!-- Notification -->
               <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
@@ -153,7 +156,7 @@
                   <i class="ti ti-bell ti-md"></i>
 
                   <span class="badge bg-danger rounded-pill badge-notifications" id="notif-count">
-                        0
+                        {{ CustomHelper::customAttendanceCount() + CustomHelper::getBlockedUsersCount() + CustomHelper::pendingIncompleteWorkCount() }}
                   </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0">
@@ -201,18 +204,20 @@
                             </li>
                       @endforeach --}}
 
+                        
+
                        <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
-                            <i class="menu-icon tf-icons ti ti-hourglass"></i>
+                            <i class="menu-icon tf-icons ti ti-login"></i>
                           </div>
                           <div class="flex-grow-1">
-                            <h6 class="mb-1">Charles Franklin &nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
+                            <a href="{{ route('custom-attendance.index') }}"><h6 class="mb-1">Custom Marking Request &nbsp; &nbsp;<small class="text-muted"></small></h6></a>
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <button type="button" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
-                                100
-                              </button>
+                            <a href="{{ route('custom-attendance.index') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
+                              {{ CustomHelper::customAttendanceCount() }}
+                            </a>
                           </div>
                         </div>
                       </li>
@@ -226,9 +231,7 @@
                             <a href="{{ route('blacklist-users.index') }}"><h6 class="mb-1">Black List Users  &nbsp; &nbsp;<small class="text-muted"></small></h6></a>
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
-                            @php
-                                use App\Helpers\CustomHelper;
-                            @endphp
+                           
                             <a href="{{ route('blacklist-users.index') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
                               {{ CustomHelper::getBlockedUsersCount() }} 
                             </a>
@@ -239,15 +242,15 @@
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
-                            <i class="menu-icon tf-icons ti ti-alert-triangle"></i>
+                            <i class="menu-icon tf-icons ti ti-alert-triangle text-warning"></i>
                           </div>
                           <div class="flex-grow-1">
-                            <h6 class="mb-1">New Message ✉️ &nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
-
+                            <a href="{{ route('attendance.incomplete-working-hours') }}"><h6 class="mb-1">Pending Incomplete Working Hours ✉️ &nbsp; &nbsp;<small class="text-muted"></small></h6></a>
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read">
-                                <span class="badge badge-dot"></span></a>
+                            <a href="{{ route('attendance.incomplete-working-hours') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
+                              {{ CustomHelper::pendingIncompleteWorkCount() }} 
+                            </a>
                           </div>
                         </div>
                       </li>

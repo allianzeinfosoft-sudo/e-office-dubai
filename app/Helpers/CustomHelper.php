@@ -8,6 +8,7 @@ use App\Models\Leave;
 use App\Models\workReport;
 use App\Models\LeaveAllocation;
 use App\Models\UserEntryBlockList;
+use App\Models\CustomAttendance;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;  
@@ -626,6 +627,13 @@ public static function getWorkRatingAnalysisMonthly($empId)
     {
         return UserEntryBlockList::where('status', 1)->count();
     }
-    
-   
+    public static function pendingIncompleteWorkCount()
+    {
+        return Attendance::where(['is_incomplete' => 1, 'incomplete_approved' => 0])->count();
+    }
+
+    public static function customAttendanceCount(){
+        return CustomAttendance::where(['status' => 0])->count();
+    }
+
 }
