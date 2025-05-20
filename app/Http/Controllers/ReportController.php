@@ -167,7 +167,7 @@ class ReportController extends Controller
                 $row['signout_note']  = $att->signout_note;
                 $row['status']        = $att->signout_time ? '<span class="badge bg-label-success mt-1">Complete</span>' : '<span class="badge bg-label-warning mt-1">Incomplete</span>'; // 'Incomplete';
             } else {
-                $row['status'] = '<span class="badge bg-label-danger mt-1">Absent</span>'; // 'Absent';
+                $row['status'] = '<span class="badge bg-label-danger mt-1">Leave</span>'; // 'Absent';
             }
 
             $report[] = $row;

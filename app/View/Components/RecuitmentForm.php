@@ -49,7 +49,7 @@ class RecuitmentForm extends Component
         $this->keywords         = KeyworsRrf::all();
         $this->experiance       = @config('optionData.experience');
         $reportingToIds         = Employee::whereNotNull('reporting_to') ->distinct()->pluck('reporting_to');
-        $this->projectLeaders   = Employee::whereIn('id', $reportingToIds)->get();
+        $this->projectLeaders   = Employee::whereIn('user_id', $reportingToIds)->get();
         $this->branches         = Branch::all();
         $this->divisions        = Department::all();
         $this->noOfPersons      = @config('optionData.noOfPersons');
