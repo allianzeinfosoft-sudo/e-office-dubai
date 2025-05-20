@@ -147,5 +147,10 @@ class MomController extends Controller
         return response()->json(['message' => 'MOM deleted successfully']);
     }
 
+    public function userWiseMoms(Mom $mom){
+        $data['meta_title'] = 'MOMs View';
+        $data['moms'] = $mom->where('created_by', auth()->user()->id)->get();
+        return view('others.moms.index', $data);
+    }  
     
 }

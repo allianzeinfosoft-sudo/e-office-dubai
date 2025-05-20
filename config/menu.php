@@ -173,7 +173,7 @@ return [
     //         ],
     //     ]
     // ],
-    [
+    /* [
         'title' => 'SAR',
         'icon' => 'ti ti-replace',
         'route' => 'javascript:void(0);',
@@ -214,7 +214,7 @@ return [
             ],
 
         ]
-    ],
+    ], */
     [
         'title' => 'Leave',
         'icon' => 'ti ti-leaf',
@@ -301,6 +301,11 @@ return [
                 'title' => 'User Reminder List',
                 'route' =>  'reminder',
                 'permission' => ['view reminder'],
+            ],
+            [
+                'title' => 'View MOM',
+                'route' =>  'reminder',
+                'permission' => ['user view mom'],
             ],
         ]
     ],
