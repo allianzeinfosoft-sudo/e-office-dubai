@@ -53,16 +53,16 @@ class UserController extends Controller
         $lastEmployeeId = Employee::orderBy('id', 'desc')->value('employeeID');
 
         if ($lastEmployeeId) {
-            // Extract numeric part from last ID
-            preg_match('/^([A-Z]+)(\d+)$/', $lastEmployeeId, $matches);
-            $prefix = $matches[1] ?? 'AIS';
-            $number = isset($matches[2]) ? (int) $matches[2] + 1 : 1;
+
+            // preg_match('/^([A-Z]+)(\d+)$/', $lastEmployeeId, $matches);
+            // $prefix = $matches[1] ?? 'AIS';
+             $number = $lastEmployeeId ? (int) $lastEmployeeId + 1 : 1;
         } else {
-            $prefix = 'AIS';
+            // $prefix = 'AIS';
             $number = 1;
         }
 
-        $nextEmployeeId = $prefix . str_pad($number, 3, '0', STR_PAD_LEFT);
+        $nextEmployeeId = str_pad($number, 3, '0', STR_PAD_LEFT);
 
         $user_statuses = UserStatus::all();
         $work_shifts = Workshift::all();
@@ -379,7 +379,7 @@ class UserController extends Controller
                         'group' => $users->role,
                         'role' => $users->employee->role,
                         'username' => $users->username,
-                        'employeeID' => $users->employeeID,
+                        'employeeID' => 'AIS-'.$users->employeeID,
                         'phonenumber' => $users->phonenumber,
                         'email' => $users->email,
                         'current_plan' => 'Enterprise',
