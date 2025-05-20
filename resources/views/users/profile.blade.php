@@ -31,8 +31,11 @@
                     <div class="card mb-4 card-bg1">
                       <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
                         <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
+                          @php
+                            $image = ($user->employee?->profile_image) ? '/storage/' . $user->employee?->profile_image : '/assets/img/avatars/1.png';
+                          @endphp 
                           <img
-                            src="{{ asset('storage/' . $user->employee->profile_image ?? '' ) }}"
+                            src="{{ $image }}"
                             alt="user image"
                             class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img" />
 
@@ -107,7 +110,7 @@
                               <i class="ti ti-calendar mt-n2"></i><span class="fw-bold">Experiencee:</span>
                             </div>
                             <div class="mx-1 mt-2">
-                              <span class="btn btn-label-success">8 years, 1 months, 14 days</span>
+                              <span class="btn btn-label-success">{{ $experiance ?? 'N/A' }} </span>
                             </div>
                           </div>
                         </li>
@@ -322,51 +325,32 @@
                   <div class="col-xl-4 col-lg-4 card card-bg1 mb-3">
                     <div class="card-header d-flex align-items-center justify-content-between">
                       <div>
-                        <h5 class="card-title mb-0">Expense Ratio</h5>
-                        <small class="text-muted">Spending on various categories</small>
+                        <h5 class="card-title mb-0">Current Attendance Analytics</h5>
                       </div>
-                      <div class="dropdown d-none d-sm-flex">
-                        <button
-                          type="button"
-                          class="btn dropdown-toggle px-0"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false">
-                          <i class="ti ti-calendar"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a>
-                          </li>
-                          <li>
-                            <hr class="dropdown-divider" />
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a>
-                          </li>
-                          <li>
-                            <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a>
-                          </li>
-                        </ul>
-                      </div>
+                      
                     </div>
                     <div class="card-body ">
-                      <div id="donutChart"></div>
+                      <x-charts.attendance-donut-chart
+                          id="dashboaddAttendanceDonut"
+                          :labels="['Completed', 'Half Days', 'Off', 'Custom', 'Holidays', 'Leaves']"
+                          :donutsData="[
+                              $attendance_analytics['completed_days'] ?? 0,
+                              $attendance_analytics['incomplete_or_half_days'] ?? 0,
+                              $attendance_analytics['off_days'] ?? 0,
+                              $attendance_analytics['custom_days'] ?? 0,
+                              $attendance_analytics['total_holidays'] ?? 0,
+                              $attendance_analytics['total_leaves'] ?? 0
+                          ]"
+                          :backgroundColors="['#fee802', '#3fd0bd', '#826bf8', '#2b9bf4', '#f86624', '#ea5455']"
+                          height="360px"
+                      />
                     </div>
                   </div>
                   <!-- /Donut Chart -->
                 </div>
 
                 <!-- Projects table -->
-                <div class="row justify-content-around px-3 ">
+                <!-- <div class="row justify-content-around px-3 ">
                   <div class="card">
                       <div class="card-datatable table-responsive">
                         <table class="datatables-projects table border-top">
@@ -381,7 +365,7 @@
                         </table>
                       </div>
                   </div>
-                </div>
+                </div> -->
                 <!--/ Projects table -->
 
                 <!--/ User Profile Content -->

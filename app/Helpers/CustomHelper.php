@@ -7,6 +7,7 @@ use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\workReport;
 use App\Models\LeaveAllocation;
+use App\Models\UserEntryBlockList;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;  
@@ -589,6 +590,41 @@ public static function getWorkRatingAnalysisMonthly($empId)
             Log::error('Mail sending failed: ' . $e->getMessage());
             return false;
         }
+    }
+
+    /* Create blocked user */
+    public static function addToBlockList($data)
+    {
+        return UserEntryBlockList::updateOrCreate(
+            // Conditions to check for existing user
+            [
+                'user_id'    => $data['user_id'],
+                'block_date' => $data['block_date'] ?? Carbon::now()->toDateString(),
+            ],
+            // Values to insert or update
+            [
+                'username'   => $data['username'],
+                'full_name'  => $data['full_name'] ?? null,
+                'status'     => $data['status'] ?? 1,
+            ]
+        );
+    }
+    
+    /* Total Experience */
+    public static function getExperience($joinDate)
+    {
+        $join = Carbon::parse($joinDate);
+        $now = Carbon::now();
+
+        $diff = $join->diff($now);
+
+        return "{$diff->y} years, {$diff->m} months, {$diff->d} days";
+    }
+
+    /* Total count of blocked user */
+    public static function getBlockedUsersCount()
+    {
+        return UserEntryBlockList::where('status', 1)->count();
     }
     
    

@@ -131,15 +131,15 @@
 
                                                         @if($attendance)
                                                         <tr>
-                                                            <td><strong>Break</strong></td>
+                                                            <td><strong>Break time</strong></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
-                                                            <td><strong>{{ $attendance->break_time }}</strong></td>
+                                                            <td><input class="form-control" type="text" name="break_time" id="break_time" value="{{ ($attendance->break_time) ?? $user_shift->max_break_time }}"></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td>Auto Break</td>
-                                                            <td><button type="button" class="btn btn-sm btn-icon btn-warning waves-effect"><i class="ti ti-edit"></i></button></td>
+                                                            <td><button type="button" class="btn btn-sm btn-icon btn-warning waves-effect" onclick="update_brake_time({{ $attendance->id }})"><i class="fa fa-save"></i></button></td>
                                                         </tr>
                                                         @endif
 
@@ -207,7 +207,7 @@
                         if (response.success) {
                             let options = '<option value="">Select a task</option>';
                             response.data.forEach(task => {
-                                options += `<option value="${task.id}">${task.task_name}</option>`;
+                                options += `<option value="${task.tasks.id}">${task.tasks.name}</option>`;
                             });
                             $('#type_of_work').html(options);
                         }else{
@@ -221,39 +221,38 @@
             }
         });
 
-        $('#submitForm').on('click', function(e){
+        $('#submitForm').on('click', function(e) {
             e.preventDefault(); // Prevent default form submission
-            let form = $('#workReportForm');
-            let formData = form.serialize(); // Serialize form data
-            let actionUrl = form.attr('action'); // Get dynamic form action (Store or Update)
-            let method = $('#formMethod').val(); // POST for Create, PUT for Update
-            // let formData = $('#workReportForm').serialize(); // Serialize form data
+
+            let form = $('#workReportForm')[0]; // Get raw DOM form element
+            let formData = new FormData(form);  // Load existing form inputs
+
+            let actionUrl = $(form).attr('action'); // Use jQuery to get the form action
+            let method = $('#formMethod').val(); // POST or PUT
+
             $.ajax({
                 type: method === "PUT" ? "PUT" : "POST",
-                url: actionUrl, 
+                url: actionUrl,
                 data: formData,
+                contentType: false, // Required for FormData
+                processData: false, // Required for FormData
                 success: function(response) {
                     if (response.success) {
-                        
                         alert('Work report ' + (method === "PUT" ? 'updated' : 'added') + ' successfully!');
-                        
                         $('#workReportForm')[0].reset(); 
-                        let workReport = response.data;
-                        updateTableRow(workReport);
-                       // getReportData(response.data);
+                        updateTableRow(response.data);
 
-                       if (response.balance_working_hours === "00:00:00") {
+                        if (response.balance_working_hours === "00:00:00") {
                             $("#workReportFormContainer").hide();
-                        }else{
+                        } else {
                             $("#total_time").val(response.balance_working_hours);
-                        }                        
-
+                        }
                     } else {
                         alert('Something went wrong. Please try again.');
                     }
                 },
                 error: function(xhr) {
-                    alert('Error: ' + xhr.responseJSON.message);
+                    alert('Error: ' + (xhr.responseJSON?.message || 'Unknown error'));
                 }
             });
         });
@@ -384,6 +383,25 @@
             },
             error: function(xhr) {
                 alert('Error deleting report.');
+            }
+        });
+    }
+
+    function update_brake_time(attendance_id) {
+        let break_time = $('#break_time').val();
+        let url = `{{ route('update-brake-time', ':id') }}`.replace(':id', attendance_id);
+        $.ajax({
+            type: "get",
+            url: url,
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                break_time: break_time
+            },
+            dataType: "json",
+            success: function (response) {
+                if (response.status === 'success') {
+                    alert(response.message);
+                }
             }
         });
     }

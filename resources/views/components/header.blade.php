@@ -216,21 +216,26 @@
                           </div>
                         </div>
                       </li>
+
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
-                            <i class="menu-icon tf-icons ti ti-alert-triangle"></i>
+                            <i class="menu-icon tf-icons ti ti-ban text-danger"></i>
                           </div>
                           <div class="flex-grow-1">
-                            <h6 class="mb-1">Send connection request &nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
-
+                            <a href="{{ route('blacklist-users.index') }}"><h6 class="mb-1">Black List Users  &nbsp; &nbsp;<small class="text-muted"></small></h6></a>
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read">
-                                <span class="badge badge-dot"></span></a>
+                            @php
+                                use App\Helpers\CustomHelper;
+                            @endphp
+                            <a href="{{ route('blacklist-users.index') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
+                              {{ CustomHelper::getBlockedUsersCount() }} 
+                            </a>
                           </div>
                         </div>
                       </li>
+
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">

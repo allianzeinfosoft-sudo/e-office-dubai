@@ -6,6 +6,8 @@ use App\Models\workReport;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Project;
+use App\Models\ProductivityTarget;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -273,6 +275,33 @@ class WorkReportController extends Controller
                 ->where('emergency', 1)
                 ->get();
         return view('attendance.emergency_work_report', $data);
+    }
+
+    public function getProductivityTarget(Request $request){
+        // Validate required inputs
+        $request->validate([
+            'project_id' => 'required|integer',
+            'task_id' => 'required|integer',
+        ]);
+
+        // Retrieve productivity target
+        $productivityTarget = ProductivityTarget::where([
+            ['project_id', $request->project_id],
+            ['project_task_id', $request->task_id],
+        ])->first();
+
+        // Return response with appropriate structure
+        if ($productivityTarget) {
+            return response()->json([
+                'success' => true,
+                'data' => $productivityTarget,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Productivity target not found for the specified project and task.',
+            ]);
+        }
     }
     
 }

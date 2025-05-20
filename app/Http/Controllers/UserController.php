@@ -11,6 +11,8 @@ use App\Models\Position;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Workshift;
+use App\Models\UserEntryBlockList;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -21,6 +23,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException as ValidationValidationException;
 use Illuminate\Support\Facades\Log;
+
+use App\Helpers\CustomHelper;
 
 class UserController extends Controller
 {
@@ -398,8 +402,10 @@ class UserController extends Controller
             'full_day_leavecount' => $full_day_leavescount,
             'half_day_leavecount' => $half_day_leavescount,
         ];
+        $attendance_analytics = CustomHelper::currentAttendanceAnalytics($userid);
+        $experiance = CustomHelper::getExperience($user->employee->join_date);
 
-        return view('users.profile', compact('user','leave_info'));
+        return view('users.profile', compact('user','leave_info', 'attendance_analytics', 'experiance'));
 
     }
 
@@ -843,8 +849,19 @@ public function checkAccountNumber(Request $request)
 
 }
 
+    /* Bolcked users list */
 
+    public function blockedUsers(){
+        $data['meta_title'] = 'Blocked Users';
+        $data['employees'] = UserEntryBlockList::where('status', 1)->get();
+        return view('black-list-users.index', $data);
+    }
 
-
+    public function unblockUser($id){
+        $user = UserEntryBlockList::where('id', $id)->first();
+        $user->status = 0;
+        $user->save();
+        return redirect()->back()->with('success', 'User unblocked successfully');
+    }
 
 }

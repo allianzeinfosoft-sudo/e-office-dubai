@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\workReport;
 use App\Models\CustomAttendance;
 use App\Models\Employee;
+use App\Models\Workshift;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +38,7 @@ class AttendanceController extends Controller{
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6 
 
         $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
-        $data['employee'] = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
+        $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
         if($user->employee?->join_date == $today){
@@ -252,7 +253,7 @@ class AttendanceController extends Controller{
                 ->whereColumn('work_reports.username', 'attendances.username');
         })->first();  */
 
-        $missingReport = Attendance::where('attendances.emp_id', Auth::user()->id)
+        $missingReport = Attendance::with('employee')->where('attendances.emp_id', Auth::user()->id)
         ->leftJoin('work_reports', function ($join) {
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
                 ->on('work_reports.username', '=', 'attendances.username');
@@ -323,7 +324,7 @@ class AttendanceController extends Controller{
                 ->where('username', Auth::user()->username)
                 ->where('report_date', $missingReport->signin_date)
                 ->get();
-            
+            $data['user_shift'] = Workshift::where('id', $missingReport->employee->shift_id)->first(); 
             return view('attendance.work_report', $data);
         } else {
 
@@ -410,6 +411,18 @@ class AttendanceController extends Controller{
         );
     
         $isIncomplete = strtotime($workingTime['total_working_time']) < strtotime('08:00:00') ? 1 : 0;
+
+        /* send to block list */
+        if($isIncomplete){
+
+            CustomHelper::addToBlockList([
+                'user_id'    => $attendance->emp_id,
+                'block_date' => date('Y-m-d'),
+                'username' => $attendance->username,
+                'full_name' => Employee::where('user_id', $attendance->emp_id)->first()->full_name
+            ]);
+
+        }
     
         $attendance->update([
             'signout_time' => now()->format('H:i:s'),
@@ -521,8 +534,22 @@ class AttendanceController extends Controller{
             $request->signout_time,
             $markOut->break_time
         );
+
     
         $totalWorkingTime = $workingTime['total_working_time'] ?? '00:00:00';
+
+        
+        if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
+            $markOut->is_incomplete = 1;
+
+            CustomHelper::addToBlockList([
+                'user_id'    => $markOut->emp_id,
+                'block_date' => date('Y-m-d'),
+                'username' => $markOut->username,
+                'full_name' => Employee::where('user_id', $markOut->emp_id)->first()->full_name
+            ]);
+
+        }
     
         $markOut->signout_time      = $request->signout_time;
         $markOut->signout_date      = $request->signout_date;
@@ -531,9 +558,7 @@ class AttendanceController extends Controller{
         $markOut->punchout_type     = 'custom';
         $markOut->working_hours     = $totalWorkingTime;
     
-        if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
-            $markOut->is_incomplete = 1;
-        }
+        
     
         $markOut->save();
     
@@ -866,4 +891,17 @@ class AttendanceController extends Controller{
 
         return redirect()->back()->with('error', 'Invalid or already approved record.');
     }
+
+    public function update_brake_time(Request $request, $id)
+    {
+        $attendance = Attendance::find($id);
+        if ($attendance) {
+            $attendance->break_time = $request->input('break_time');
+            $attendance->save();
+            return response()->json(['status' => 'success', 'message' => 'Break time updated successfully.']);
+        } else {
+            return response()->json(['status' => 'error', 'message' => 'Attendance record not found.']);
+        }
+    }
+
 }
