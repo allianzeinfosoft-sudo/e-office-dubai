@@ -146,4 +146,6 @@ class MomController extends Controller
         $mom->delete();
         return response()->json(['message' => 'MOM deleted successfully']);
     }
+
+    
 }
