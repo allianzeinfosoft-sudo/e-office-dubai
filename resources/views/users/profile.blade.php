@@ -33,7 +33,7 @@
                         <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
                           @php
                             $image = ($user->employee?->profile_image) ? '/storage/' . $user->employee?->profile_image : '/assets/img/avatars/1.png';
-                          @endphp 
+                          @endphp
                           <img
                             src="{{ $image }}"
                             alt="user image"
@@ -56,7 +56,7 @@
                               </ul>
                             </div>
                             <span class="btn btn-primary">
-                              <li class="list-inline-item"><i class="ti ti-user mt-n2"></i>{{ $user->employee->employeeID ?? 'N/A' }}</li>
+                              <li class="list-inline-item"><i class="ti ti-user mt-n2"></i>AIS-{{ $user->employee->employeeID ?? 'N/A' }}</li>
                             </span>
                           </div>
                         </div>
@@ -327,7 +327,7 @@
                       <div>
                         <h5 class="card-title mb-0">Current Attendance Analytics</h5>
                       </div>
-                      
+
                     </div>
                     <div class="card-body ">
                       <x-charts.attendance-donut-chart
