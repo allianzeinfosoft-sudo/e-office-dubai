@@ -146,14 +146,7 @@ class AttendanceController extends Controller{
         $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
-        /* incomplete working hours */
-        $nonApprovedIncompleteWorkingHours = Attendance::where('username', $user->username)->where('is_incomplete', 1)->where('incomplete_approved', 0)->count();
-
-        if ($nonApprovedIncompleteWorkingHours > 0) {
-            return view('attendance.no_action_from', $data);
-        }
         
-
 
         /* Mission Mark Out First */
         $missingMarkOut = Attendance::where('username', Auth::user()->username)
@@ -326,11 +319,16 @@ class AttendanceController extends Controller{
                 ->get();
             $data['user_shift'] = Workshift::where('id', $missingReport->employee->shift_id)->first(); 
             return view('attendance.work_report', $data);
-        } else {
+        } 
 
-            return view('attendance.index', $data);
-    
+        /* incomplete working hours */
+        $nonApprovedIncompleteWorkingHours = Attendance::where('username', $user->username)->where('is_incomplete', 1)->where('incomplete_approved', 0)->count();
+
+        if ($nonApprovedIncompleteWorkingHours > 0) {
+            return view('attendance.no_action_from', $data);
         }
+
+        return view('attendance.index', $data);
     }
 
 
