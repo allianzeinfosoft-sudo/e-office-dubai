@@ -131,6 +131,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/check-account-number', [UserController::class, 'checkAccountNumber']);
 
     Route::get('/blacklist-users', [UserController::class, 'blockedUsers'])->name('blacklist-users.index');
+    Route::get('/unblock-users/{id}', [UserController::class, 'unblockUser'])->name('unblock-users.index');
 
     /* department */
     Route::resource('departments',DepartmentController::class);

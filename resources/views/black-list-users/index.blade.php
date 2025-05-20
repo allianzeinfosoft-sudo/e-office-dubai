@@ -26,7 +26,7 @@
                             <table class="datatables-basic datatables-custom-attendance table border-top table-stripedc table-hover table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Sl. No.</th>
+                                        <th width="8%">Sl. No.</th>
                                         <th><i class="ti ti-users"></i></th>
                                         <th>Fullname</th>
                                         <th>Username</th>
@@ -58,7 +58,7 @@
                                                 </td>
                                                 <td>{{ $employee->created_at->format('d-m-Y') }}</td>
                                                 <td>
-                                                    <a class="btn btn-sm btn-primary" href="#"><i class="bx bx-show me-1"></i> Weight List</a>
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('unblock-users.index', $employee->id) }}"><i class="bx bx-show me-1"></i> Weight List</a>
                                                 </td>
                                             </tr>
                                         @endforeach 

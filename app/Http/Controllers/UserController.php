@@ -857,4 +857,11 @@ public function checkAccountNumber(Request $request)
         return view('black-list-users.index', $data);
     }
 
+    public function unblockUser($id){
+        $user = UserEntryBlockList::where('id', $id)->first();
+        $user->status = 0;
+        $user->save();
+        return redirect()->back()->with('success', 'User unblocked successfully');
+    }
+
 }
