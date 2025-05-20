@@ -104,27 +104,80 @@ class ReportController extends Controller
 
     /* My Attendnce Report */
 
-     public function myAttendanceReport(Request $request){
+    public function myAttendanceReport(Request $request){
+
         $data['meta_title'] = 'My Attendance Report';
         $data['current_user'] = Employee::where('user_id', auth()->user()->id)->first();
-        $data['month']        = $request->input('month') ?? date('m');
-        $data['year']         = $request->input('year') ?? date('Y');
+        $data['month'] = $request->input('month') ?? date('m');
+        $data['year']  = $request->input('year') ?? date('Y');
 
-        // Correct emp_id to match the employee id, not the user id
         $employee = $data['current_user'];
-        
-        $startDate = Carbon::createFromDate($data['year'], $data['month'], 1)->startOfMonth()->toDateString();
-        $endDate   = Carbon::createFromDate($data['year'], $data['month'], 1)->endOfMonth()->toDateString();
 
-        $query = Attendance::with(['employee', 'employee.user'])
-            ->where('emp_id', $employee->user_id)
-            ->whereBetween('signin_date', [$startDate, $endDate]);
+        $startDate = Carbon::createFromDate($data['year'], $data['month'], 1)->startOfMonth();
+        $endDate   = Carbon::createFromDate($data['year'], $data['month'], 1)->endOfMonth();
 
-        $data['attendances'] = $query->get();
+        // Attendance data keyed by signin_date
+        $attendances = Attendance::where('emp_id', $employee->user_id)
+            ->whereBetween('signin_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get()
+            ->keyBy(function ($item) {
+                return Carbon::parse($item->signin_date)->format('Y-m-d');
+            });
+
+        // Holidays in the month
+        $holidays = DB::table('holidays')
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->pluck('date')
+            ->toArray();
+
+        // Final report rows
+        $report = [];
+        $currentDate = $startDate->copy();
+        $serial = 1;
+
+        while ($currentDate->lte($endDate)) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $dayName = $currentDate->format('l'); // Sunday, Monday, etc.
+
+            $row = [
+                '#' => $serial++,
+                'signin_date'   => date('d-m-Y', strtotime($dateStr)), // $dateStr,
+                'signin_time'   => '',
+                'signout_time'  => '',
+                'break_time'    => '',
+                'working_hours' => '',
+                'signin_note'   => '',
+                'signout_note'  => '',
+                'status'        => '',
+            ];
+
+            if (in_array($dateStr, $holidays)) {
+                $row['status'] = '<span class="badge bg-label-info mt-1">Holiday</span>'; // 'Holiday';
+            } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                $row['status'] = '<span class="badge bg-label-warning mt-1">'.$dayName.'</span>'; // 'Weekend';
+            } elseif (isset($attendances[$dateStr])) {
+                $att = $attendances[$dateStr];
+
+                $row['signin_date']   = date('d-m-Y', strtotime($att->signin_date));
+                $row['signin_time']   = $att->signin_time;
+                $row['signout_time']  = $att->signout_time;
+                $row['break_time']    = $att->break_time;
+                $row['working_hours'] = $att->working_hours;
+                $row['signin_note']   = $att->signin_note;
+                $row['signout_note']  = $att->signout_note;
+                $row['status']        = $att->signout_time ? '<span class="badge bg-label-success mt-1">Complete</span>' : '<span class="badge bg-label-warning mt-1">Incomplete</span>'; // 'Incomplete';
+            } else {
+                $row['status'] = '<span class="badge bg-label-danger mt-1">Absent</span>'; // 'Absent';
+            }
+
+            $report[] = $row;
+            $currentDate->addDay();
+        }
+
+        $data['attendance_report'] = $report;
         $data['barChartData'] = CustomHelper::getMonthlyWorkBreakDataForBarChart(auth()->user()->id);
 
         return view('reports.my-attendance-report', $data);
-       
     }
 
     /* My work Report */

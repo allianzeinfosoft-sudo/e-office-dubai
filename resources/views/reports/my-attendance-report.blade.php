@@ -58,11 +58,11 @@
                                                     <div class="card card-bg">
                                                         <div class="card-datatable">
                                                             <div class="table-responsive">
-                                                                <table class="datatables-basic datatables-all-attendance-report table border-top table-stripedc table-hover table-striped">
+                                                                <table class="datatables-basic datatables-all-attendance-report table border-top table-stripedc table-hover table-striped" style="font-size: 12px">
                                                                     <thead>
                                                                         <tr>
                                                                             <th>#</th>
-                                                                            <th>Signin Date</th>
+                                                                            <th width="15%">Signin Date</th>
                                                                             <th>Signin Time</th>
                                                                             <th>Signout Time</th>
                                                                             <th>Break Time</th>
@@ -73,18 +73,18 @@
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        @if($attendances->count() > 0)
-                                                                            @foreach($attendances as $index => $attendance)
+                                                                        @if ($attendance_report)
+                                                                            @foreach ($attendance_report as $row)
                                                                                 <tr>
-                                                                                    <td>{{ $index + 1 }}</td>
-                                                                                    <td>{{ $attendance->signin_date ?? 'N/A' }}</td>
-                                                                                    <td>{{ $attendance->signin_time ?? 'N/A' }}</td>
-                                                                                    <td>{{ $attendance->signout_time ?? 'N/A' }}</td>
-                                                                                    <td>{{ $attendance->break_time ?? 'N/A' }}</td>
-                                                                                    <td>{{ $attendance->working_hours ?? 'N/A' }}</td>
-                                                                                    <td>{{ $attendance->signin_note ?? 'N/A' }}</td>
-                                                                                    <td>{{ $attendance->signout_note ?? 'N/A' }}</td>
-                                                                                    <td>{{ $attendance->status ?? 'N/A' }}</td>
+                                                                                    <td>{{ $row['#'] }}</td>
+                                                                                    <td>{{ $row['signin_date'] }}</td>
+                                                                                    <td>{{ $row['signin_time'] }}</td>
+                                                                                    <td>{{ $row['signout_time'] }}</td>
+                                                                                    <td>{{ $row['break_time'] }}</td>
+                                                                                    <td>{{ $row['working_hours'] }}</td>
+                                                                                    <td>{{ $row['signin_note'] }}</td>
+                                                                                    <td>{{ $row['signout_note'] }}</td>
+                                                                                    <td>{!! $row['status'] !!}</td>
                                                                                 </tr>
                                                                             @endforeach
                                                                         @else
@@ -208,6 +208,7 @@
 
         $('.datatables-all-attendance-report').DataTable({
             dom: 'Bfrtip',
+            pageLength: 50,
             buttons: [
                 { extend: 'excelHtml5', title: 'All Attendance Report'},
                 { extend: 'pdfHtml5', title: 'All Attendance Report', orientation: 'landscape', pageSize: 'A4'},
