@@ -230,7 +230,7 @@
                                 use App\Helpers\CustomHelper;
                             @endphp
                             <a href="{{ route('blacklist-users.index') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
-                              {{ CustomHelper::getBlockedUsersCount() }} 
+                              {{ CustomHelper::getBlockedUsersCount() }}
                             </a>
                           </div>
                         </div>
@@ -342,7 +342,12 @@
                     <div class="dropdown-divider"></div>
                   </li>
                   <li><a class="dropdown-item" href="{{ route('user.profile', Auth::user()->id); }}"><i class="ti ti-user-check me-2 ti-sm"></i><span class="align-middle">My Profile </span></a></li>
-                  <li><a class="dropdown-item" href="{{ route('users.edit', Auth::user()->id); }}"> <i class="ti ti-edit me-2 ti-sm"></i> <span class="align-middle">Edit Profile</span></a></li>
+                  @if(auth()->user()->hasAnyRole(['HR', 'Developer']))
+                    <li><a class="dropdown-item" href="{{ route('users.edit', Auth::user()->id); }}"> <i class="ti ti-edit me-2 ti-sm"></i> <span class="align-middle">Edit Profile</span></a></li>
+                   @else
+                   <li><a class="dropdown-item" href="{{ route('users.limited.edit', Auth::user()->id); }}"> <i class="ti ti-edit me-2 ti-sm"></i> <span class="align-middle">Edit Profile</span></a></li>
+                   @endif
+
 
                   <li><a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#changePasswordModal" > <i class="ti ti-lock me-2 ti-sm"></i> <span class="align-middle">Change Password</span></a></li>
 
