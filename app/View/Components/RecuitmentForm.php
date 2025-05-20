@@ -54,8 +54,8 @@ class RecuitmentForm extends Component
         $this->divisions        = Department::all();
         $this->noOfPersons      = @config('optionData.noOfPersons');
         $this->shifts           = Workshift::all();
-        $this->interViewer      = Employee::whereIn('id', $reportingToIds)->get();
-        $this->seekApprover      = Employee::whereIn('id', $reportingToIds)->get();
+        $this->interViewer      = Employee::whereIn('user_id', $reportingToIds)->get();
+        $this->seekApprover      = Employee::whereIn('user_id', $reportingToIds)->get();
     }
 
     /**
