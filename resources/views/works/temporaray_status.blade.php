@@ -70,7 +70,7 @@
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="productivity_hour" class="form-label">Productivity Per Hour</label>
-                                                    <input type="text" name="productivity_hour" id="productivity_hour" placeholder="Productivity per hour" class="form-control" />
+                                                    <input type="text" name="productivity_hour" id="productivity_hour" placeholder="Productivity per hour" class="form-control" readonly />
                                                 </div>
                                             </div>    
 
@@ -255,6 +255,35 @@
                     alert('Error: ' + (xhr.responseJSON?.message || 'Unknown error'));
                 }
             });
+        });
+
+        $('#type_of_work').on('change', function() {
+            let task_id = $(this).val();
+            let project_id = $('#project_name').val();
+
+            if (task_id) {
+                let url = `{{ route('work-report.get-productivity-target') }}`;
+
+                $.ajax({
+                    type: "post",
+                    url: url, 
+                    data :{
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        task_id: task_id,
+                        project_id: project_id
+                    },
+                    success: function (response) {
+                        if(response.success){
+                            $('#productivity_hour').val((response.data.rph) ? response.data.rph : 0);
+                        }else{
+                            $('#productivity_hour').val('0');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
         });
 
     });
