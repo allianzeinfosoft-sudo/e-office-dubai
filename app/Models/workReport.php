@@ -20,6 +20,7 @@ class workReport extends Model
         'total_records',
         'productivity_hour',
         'emergency',
+        'break_time'
     ];
 
     // Relationship with Employee

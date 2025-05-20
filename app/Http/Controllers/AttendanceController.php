@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\workReport;
 use App\Models\CustomAttendance;
 use App\Models\Employee;
+use App\Models\Workshift;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +38,7 @@ class AttendanceController extends Controller{
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6 
 
         $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
-        $data['employee'] = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
+        $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
         if($user->employee?->join_date == $today){
@@ -252,7 +253,7 @@ class AttendanceController extends Controller{
                 ->whereColumn('work_reports.username', 'attendances.username');
         })->first();  */
 
-        $missingReport = Attendance::where('attendances.emp_id', Auth::user()->id)
+        $missingReport = Attendance::with('employee')->where('attendances.emp_id', Auth::user()->id)
         ->leftJoin('work_reports', function ($join) {
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
                 ->on('work_reports.username', '=', 'attendances.username');
@@ -323,7 +324,7 @@ class AttendanceController extends Controller{
                 ->where('username', Auth::user()->username)
                 ->where('report_date', $missingReport->signin_date)
                 ->get();
-            
+            $data['user_shift'] = Workshift::where('id', $missingReport->employee->shift_id)->first(); 
             return view('attendance.work_report', $data);
         } else {
 
@@ -890,4 +891,17 @@ class AttendanceController extends Controller{
 
         return redirect()->back()->with('error', 'Invalid or already approved record.');
     }
+
+    public function update_brake_time(Request $request, $id)
+    {
+        $attendance = Attendance::find($id);
+        if ($attendance) {
+            $attendance->break_time = $request->input('break_time');
+            $attendance->save();
+            return response()->json(['status' => 'success', 'message' => 'Break time updated successfully.']);
+        } else {
+            return response()->json(['status' => 'error', 'message' => 'Attendance record not found.']);
+        }
+    }
+
 }

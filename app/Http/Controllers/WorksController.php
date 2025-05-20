@@ -7,6 +7,9 @@ use App\Models\Project;
 use App\Models\workReport;
 use App\Models\Employee;
 use App\Models\CustomAttendance;
+use App\Models\Workshift;
+use App\Models\ProductivityTarget;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\CustomHelper;
@@ -89,7 +92,7 @@ class WorksController extends Controller
     public function temporaryStatus(){
         $data['meta_title'] = 'Temporary Status';
 
-        $attendance = Attendance::where('emp_id', Auth::user()->id)
+        $attendance = Attendance::with('employee')->where('emp_id', Auth::user()->id)
         ->where('signin_date', now()->format('Y-m-d'))
         ->first();
 
@@ -140,8 +143,8 @@ class WorksController extends Controller
             $seconds = 0;
         
             if (!empty($attendance->signin_date) && !empty($attendance->signin_time)) {
-                $signout_date = $attendance->signout_date ?? now()->toDateString(); // Use current date if not signed out
-                $signout_time = $attendance->signout_time ?? now()->toTimeString(); // Use current time if not signed out
+                $signout_date = $attendance->signout_date ?? now()->toDateString(); 
+                $signout_time = $attendance->signout_time ?? now()->toTimeString(); 
         
                 $calculatedTime = CustomHelper::calculateTotalWorkingTime(
                     $attendance->signin_date,
@@ -150,7 +153,7 @@ class WorksController extends Controller
                     $signout_time,
                     $attendance->break_time ?? null
                 );
-        
+
                 // Ensure calculated time is a string before processing
                 if (is_string($calculatedTime) && strpos($calculatedTime, ':') !== false) {
                     $timeParts = explode(":", $calculatedTime);
@@ -179,6 +182,8 @@ class WorksController extends Controller
 
             $data['projects'] = Project::all();
             //return view('attendance.work_report', $data);
+            $data['user_shift'] = Workshift::where('id', $attendance->employee->shift_id)->first(); 
+
         return view('works.temporaray_status', $data);
     
     }

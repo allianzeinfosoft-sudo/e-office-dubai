@@ -70,7 +70,7 @@
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="productivity_hour" class="form-label">Productivity Per Hour</label>
-                                                    <input type="text" name="productivity_hour" id="productivity_hour" placeholder="Productivity per hour" class="form-control" />
+                                                    <input type="text" name="productivity_hour" id="productivity_hour" placeholder="Productivity per hour" class="form-control" readonly />
                                                 </div>
                                             </div>    
 
@@ -131,15 +131,15 @@
 
                                                         @if($missingReport)
                                                         <tr>
-                                                            <td><strong>Break</strong></td>
+                                                            <td><strong>Break Time</strong></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
-                                                            <td><strong>{{ $missingReport->break_time }}</strong></td>
+                                                            <td><input class="form-control" type="text" name="break_time" id="break_time" value="{{ ($missingReport->break_time) ?? $user_shift->max_break_time }}"></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td>Auto Break</td>
-                                                            <td><button type="button" class="btn btn-sm btn-icon btn-warning waves-effect"><i class="ti ti-edit"></i></button></td>
+                                                            <td><button type="button" class="btn btn-sm btn-icon btn-success waves-effect" onclick="update_brake_time({{ $missingReport->id }})"><i class="fa fa-save"></i></button></td>
                                                         </tr>
                                                         @endif
 
@@ -257,6 +257,35 @@
                 }
             });
         });
+
+        $('#type_of_work').on('change', function() {
+            let task_id = $(this).val();
+            let project_id = $('#project_name').val();
+
+            if (task_id) {
+                let url = `{{ route('work-report.get-productivity-target') }}`;
+
+                $.ajax({
+                    type: "post",
+                    url: url, 
+                    data :{
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        task_id: task_id,
+                        project_id: project_id
+                    },
+                    success: function (response) {
+                        if(response.success){
+                            $('#productivity_hour').val((response.data.rph) ? response.data.rph : 0);
+                        }else{
+                            $('#productivity_hour').val('0');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
+        })
 
     });
 
@@ -384,6 +413,25 @@
             },
             error: function(xhr) {
                 alert('Error deleting report.');
+            }
+        });
+    }
+
+    function update_brake_time(attendance_id) {
+        let break_time = $('#break_time').val();
+        let url = `{{ route('update-brake-time', ':id') }}`.replace(':id', attendance_id);
+        $.ajax({
+            type: "get",
+            url: url,
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                break_time: break_time
+            },
+            dataType: "json",
+            success: function (response) {
+                if (response.status === 'success') {
+                    alert(response.message);
+                }
             }
         });
     }
