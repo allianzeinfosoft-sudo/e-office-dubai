@@ -156,7 +156,7 @@
                   <i class="ti ti-bell ti-md"></i>
 
                   <span class="badge bg-danger rounded-pill badge-notifications" id="notif-count">
-                        {{ CustomHelper::customAttendanceCount() + CustomHelper::getBlockedUsersCount() + CustomHelper::pendingIncompleteWorkCount() }}
+                        {{ CustomHelper::customAttendanceCount() + CustomHelper::getBlockedUsersCount() + CustomHelper::pendingIncompleteWorkCount() + CustomHelper::customPendingLeaveCount()}}
                   </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0">
@@ -204,8 +204,22 @@
                             </li>
                       @endforeach --}}
 
-                        
 
+                      <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                        <div class="d-flex">
+                          <div class="flex-shrink-0 me-3">
+                            <i class="menu-icon tf-icons ti ti-login"></i>
+                          </div>
+                          <div class="flex-grow-1">
+                            <a href="{{ route('leaves.pending.show') }}"> <h6 class="mb-1">Pending Leave Requests &nbsp; &nbsp;<small class="text-muted"></small></h6></a>
+
+                          </div>
+                          <div class="flex-shrink-0 dropdown-notifications-actions">
+                            <a href="{{ route('leaves.pending.show') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
+                                {{ CustomHelper::customPendingLeaveCount() }}</a>
+                          </div>
+                        </div>
+                      </li>
                        <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
@@ -231,7 +245,7 @@
                             <a href="{{ route('blacklist-users.index') }}"><h6 class="mb-1">Black List Users  &nbsp; &nbsp;<small class="text-muted"></small></h6></a>
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
-                           
+
                             <a href="{{ route('blacklist-users.index') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
                               {{ CustomHelper::getBlockedUsersCount() }}
                             </a>
@@ -249,34 +263,20 @@
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
                             <a href="{{ route('attendance.incomplete-working-hours') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
-                              {{ CustomHelper::pendingIncompleteWorkCount() }} 
+                              {{ CustomHelper::pendingIncompleteWorkCount() }}
                             </a>
                           </div>
                         </div>
                       </li>
 
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                        <div class="d-flex">
-                          <div class="flex-shrink-0 me-3">
-                            <i class="menu-icon tf-icons ti ti-login"></i>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="mb-1">Whoo! You have new order 🛒 &nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
 
-                          </div>
-                          <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read">
-                                <span class="badge badge-dot"></span></a>
-                          </div>
-                        </div>
-                      </li>
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <i class="menu-icon tf-icons ti ti-users"></i>
                           </div>
                           <div class="flex-grow-1">
-                            <h6 class="mb-1">Application has been approved 🚀 &nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
+                            <h6 class="mb-1">List of Latecomer Employees 🚀 &nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
 
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
@@ -292,7 +292,7 @@
                             <i class="menu-icon tf-icons ti ti-users"></i>
                           </div>
                           <div class="flex-grow-1">
-                            <h6 class="mb-1">Monthly report is generated&nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
+                            <h6 class="mb-1">List of Incomplete Employees&nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
                             <a href="javascript:void(0)" class="dropdown-notifications-read">

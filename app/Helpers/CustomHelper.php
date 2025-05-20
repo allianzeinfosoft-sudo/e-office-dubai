@@ -11,7 +11,7 @@ use App\Models\UserEntryBlockList;
 use App\Models\CustomAttendance;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;  
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 use Carbon\Carbon;
@@ -86,12 +86,12 @@ class CustomHelper
 
     }
 
-    
+
     /* get monthly avarage working hours */
     public static function getMonthlyAverageHours($empId, $year = null)
     {
         $year = $year ?? Carbon::now()->year;
-    
+
         $monthlyData = Attendance::select(
                 DB::raw('MONTH(signin_date) as month'),
                 DB::raw('AVG(working_hours) as avg_hours')
@@ -104,14 +104,14 @@ class CustomHelper
             ->mapWithKeys(function ($item) {
                 return [intval($item->month) => round($item->avg_hours, 2)];
             });
-    
+
         // Fill in months with 0 if no data
         $currentMonth = Carbon::now()->month;
 
         $allMonths = collect(range(1, $currentMonth))->mapWithKeys(function ($month) use ($monthlyData) {
             return [$month => $monthlyData[$month] ?? 0];
         });
-    
+
         return [
             'months' => $allMonths->keys()->map(fn($m) => date("F", mktime(0, 0, 0, $m, 1)))->toArray(),
             'average_hours' => $allMonths->values()->toArray()
@@ -231,13 +231,13 @@ class CustomHelper
     public static function currentAttendanceAnalytics($empId, $month = null) {
         $month = $month ?? Carbon::now()->month; // Default to current month if not provided
         $year = Carbon::now()->year; // Always use the current year
-    
+
         // Fetch the attendance data for the specified month and current year
         $attendances = Attendance::where('emp_id', $empId)
             ->whereYear('signin_date', $year)
             ->whereMonth('signin_date', $month)
             ->get();
-    
+
         if ($attendances->isEmpty()) {
             return [
                 'emp_id' => $empId,
@@ -246,31 +246,31 @@ class CustomHelper
                 'message' => 'No attendance data found for this employee and month.',
             ];
         }
-    
+
         $username = $attendances->first()->username;
-    
+
         $completedDays = $attendances->filter(fn($e) =>
             $e->signin_time && $e->signout_time && !$e->is_incomplete
         )->count();
-    
+
         $incompleteOrHalfDays = $attendances->filter(fn($e) =>
             $e->is_incomplete || !$e->signout_time
         )->count();
-    
+
         $offDays = $attendances->where('status', 'Off')->count();
-    
+
         $customDays = $attendances->whereNotNull('custom_status')->count();
-    
+
         $totalHolidays = Holiday::whereYear('date', $year)
             ->whereMonth('date', $month)
             ->count();
-    
+
         $totalLeaves = Leave::where('user_id', $empId)
             ->where('status', 'Approved')
             ->whereYear('leave_from', $year)
             ->whereMonth('leave_from', $month)
             ->count();
-    
+
         return [
             'emp_id'            => $empId,
             'username'          => $username,
@@ -574,9 +574,9 @@ public static function getWorkRatingAnalysisMonthly($empId)
     public static function sendNotificationMail($to, string $subject, string $htmlBody, array $cc = [], array $bcc = []): bool{
         try {
             Mail::send([], [], function ($message) use ($to, $subject, $htmlBody, $cc, $bcc) {
-                
+
                 $message->to($to)->subject($subject)->html($htmlBody); // ✅ Replaced setBody with html()
-                
+
                 if (!empty($cc)) {
                     $message->cc($cc);
                 }
@@ -610,7 +610,7 @@ public static function getWorkRatingAnalysisMonthly($empId)
             ]
         );
     }
-    
+
     /* Total Experience */
     public static function getExperience($joinDate)
     {
@@ -634,6 +634,10 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
     public static function customAttendanceCount(){
         return CustomAttendance::where(['status' => 0])->count();
+    }
+
+    public static function customPendingLeaveCount(){
+        return Leave::where(['status' => 1])->count();
     }
 
 }
