@@ -25,7 +25,7 @@
                                     <td colspan="4"> {!! $mom->mom_details !!} </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="4"> {!! $mom->attachments ? ' <a href="' . asset('public/moms/' . $mom->attachments) . '" target="_blank"><i class="ti ti-file"></i> </a>' : '' !!} </td>
+                                    <td colspan="4"> {!! $mom->attachments ? ' <a href="' . asset('storage/moms/' . $mom->attachments) . '" target="_blank"><i class="ti ti-file"></i> </a>' : '' !!} </td>
                                 </tr>
                             </tbody>
                         </table>

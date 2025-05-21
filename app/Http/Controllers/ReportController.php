@@ -507,12 +507,12 @@ class ReportController extends Controller
             if (isset($attendances[$dateStr])) {
                 $att = $attendances[$dateStr];
                 $row->signin_date = date('d-m-Y', strtotime($att->signin_date));
-                $row->signin_time = $att->signin_time ?? 'N/A';
-                $row->signout_time = $att->signout_time ?? 'N/A';
-                $row->break_time = $att->break_time ?? 'N/A';
-                $row->working_hours = $att->working_hours ?? 'N/A';
-                $row->signin_note = $att->signin_note ?? 'N/A';
-                $row->signout_note = $att->signout_note ?? 'N/A';
+                $row->signin_time = $att->signin_time ?? '';
+                $row->signout_time = $att->signout_time ?? '';
+                $row->break_time = $att->break_time ?? '';
+                $row->working_hours = $att->working_hours ?? '';
+                $row->signin_note = $att->signin_note ?? '';
+                $row->signout_note = $att->signout_note ?? '';
 
                 if (in_array($dateStr, $holidays)) {
                     $row->status = 'holiday';
