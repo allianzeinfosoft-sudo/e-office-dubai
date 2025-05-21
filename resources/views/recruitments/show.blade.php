@@ -104,10 +104,10 @@
                                             <h5 class="text-center">Interviewer</h5>
                                             <div class="user-avatar-section">
                                                 <div class="d-flex align-items-center flex-column">
-                                                    <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $recruitment->interViewer->profile_image ? asset('storage/' . $recruitment->interViewer->profile_image) : asset('assets/img/avatars/1.png') }}" height="150" width="150" alt="User avatar">
+                                                    <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $recruitment->interViewer?->profile_image ? asset('storage/' . $recruitment->interViewer->profile_image) : asset('assets/img/avatars/1.png') }}" height="150" width="150" alt="User avatar">
                                                     <div class="user-info text-center">
-                                                        <h4 class="mb-2">{{ $recruitment->interViewer->full_name }}</h4>
-                                                        <span class="badge bg-label-secondary mt-1">{{ $recruitment->interViewer->roles }}</span>
+                                                        <h4 class="mb-2">{{ $recruitment->interViewer?->full_name ?? '' }}</h4>
+                                                        <span class="badge bg-label-secondary mt-1">{{ $recruitment->interViewer?->roles ?? '' }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -117,10 +117,10 @@
                                             <h5 class="text-center">Seek Approval</h5>
                                             <div class="user-avatar-section">
                                                 <div class="d-flex align-items-center flex-column">
-                                                    <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $recruitment->seekApprover->profile_image ? asset('storage/' . $recruitment->seekApprover->profile_image) : asset('assets/img/avatars/1.png') }}" height="150" width="150" alt="User avatar">
+                                                    <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $recruitment->seekApprover?->profile_image ? asset('storage/' . $recruitment->seekApprover->profile_image) : asset('assets/img/avatars/1.png') }}" height="150" width="150" alt="User avatar">
                                                     <div class="user-info text-center">
-                                                        <h4 class="mb-2">{{ $recruitment->seekApprover->full_name }}</h4>
-                                                        <span class="badge bg-label-secondary mt-1">{{ $recruitment->seekApprover->roles }}</span>
+                                                        <h4 class="mb-2">{{ $recruitment->seekApprover?->full_name }}</h4>
+                                                        <span class="badge bg-label-secondary mt-1">{{ $recruitment->seekApprover?->roles }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -139,9 +139,9 @@
                                                         <th>Minimum Qualification</th>
                                                     </tr>
                                                     <tr>
-                                                        <td><span class="badge bg-label-primary"> {{ $recruitment->workShift->shift_start_time }} - {{ $recruitment->workShift->shift_end_time }} </span></td>
-                                                        <td><span class="badge bg-label-danger">{{ $recruitment->project->project_name }} </span></td>
-                                                        <td><span class="badge bg-label-success">{{ $recruitment->minimumQualifications->name }} </span></td>
+                                                        <td><span class="badge bg-label-primary"> {{ $recruitment->workShift?->shift_start_time }} - {{ $recruitment->workShift?->shift_end_time }} </span></td>
+                                                        <td><span class="badge bg-label-danger">{{ $recruitment->project?->project_name }} </span></td>
+                                                        <td><span class="badge bg-label-success">{{ $recruitment->minimumQualifications?->name }} </span></td>
                                                     </tr>
                                                     <tr>
                                                         <th>Skill required</th>
@@ -159,7 +159,7 @@
                                                         <th>Interview Place</th>
                                                     </tr>
                                                     <tr>
-                                                        <td><span class="badge bg-label-primary"> {{ $recruitment->graduationMedium->graduation }} </span></td>
+                                                        <td><span class="badge bg-label-primary"> {{ $recruitment->graduationMedium?->graduation }} </span></td>
                                                         <td><span class="badge bg-label-danger"> {{ config('optionsData.ageGroups')[$recruitment->ageGroup] ?? '' }} </span></td>
                                                         <td><span class="badge bg-label-success"> {{ config('optionsData.interviewPlaces')[$recruitment->interviewPlace] ?? '' }} </span></td>
                                                     </tr>
