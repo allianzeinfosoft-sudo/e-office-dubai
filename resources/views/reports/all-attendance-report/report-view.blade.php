@@ -25,7 +25,7 @@
         <div class="card card-bg">
             <div class="card-datatable">
                 <div class="table-responsive">
-                    <table class="datatables-basic datatables-all-attendance-report table border-top table-stripedc table-hover table-striped">
+                    <table class="datatables-basic datatables-all-attendance-report table border-top table-stripedc table-hover table-striped" style="font-size: 11px">
                         <thead>
                             <tr>
                                 <th>#</th>
