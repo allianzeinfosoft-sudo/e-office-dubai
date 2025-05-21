@@ -29,7 +29,7 @@
                 <a id="mon" style="font-size: 20px;">January</a>
                 <a id="d" style="font-size: 20px;">1</a>,
                 <a id="y" style="font-size: 20px;">0</a>
-                
+
               </div>
           <h3 class="mb-1 text-primary fw-bold">{{ __('en.welcome') }} </h3>
           <!-- <p class="mb-4">{{ __('en.slogan') }}</p>  -->
@@ -62,7 +62,7 @@
                         <strong>{{ $message }}</strong>
                     </span>
                 @enderror
-                <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                <span class="input-group-text cursor-pointer" id="togglePassword"><i class="ti ti-eye-off" id="eyeIcon"></i></span>
               </div>
             </div>
             <div class="mb-3">
@@ -108,7 +108,7 @@ function updateClock() {
 
   var months = ["January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"];
-  
+
   // Add pad function to Number prototype if not already present
   Number.prototype.pad = function(size) {
     var s = String(this);
@@ -129,6 +129,23 @@ function initClock() {
   updateClock();
   setInterval(updateClock, 1000); // Use function reference, not string
 }
-  
+
+
+//   show password
+
+  const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    togglePassword.addEventListener('click', function () {
+        const isPasswordVisible = passwordInput.type === 'text';
+        passwordInput.type = isPasswordVisible ? 'password' : 'text';
+
+        // Toggle icon class
+        eyeIcon.classList.toggle('ti-eye');
+        eyeIcon.classList.toggle('ti-eye-off');
+    });
+
+
 </script>
 @endpush
