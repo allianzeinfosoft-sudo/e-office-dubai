@@ -349,8 +349,12 @@ class ReportController extends Controller
         foreach ($attendances as $index => $attendance) {
             $user = $attendance->employee;
             $name = $user->full_name ?? 'NA';
-            $initials = collect(explode(' ', $name))->map(fn($w) => strtoupper($w[0]))->join('');
-            $initials = substr($initials, 0, 2);
+            $initials = collect(explode(' ', trim($name)))
+                ->filter(fn($w) => !empty($w))  // Remove empty parts
+                ->map(fn($w) => strtoupper($w[0])) // Safe now
+                ->join('');
+
+            $initials = substr($initials, 0, 2); // Limit to 2 characters
 
             if ($user && $user->profile_image) {
                 $image = '<img src="'.asset('storage/'.$user->profile_image).'" width="40" height="40" class="rounded-circle" />';

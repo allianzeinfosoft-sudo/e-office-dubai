@@ -49,39 +49,42 @@
               <form class="add-new-record pt-0 row g-2" method="post" action="{{ route('store.workshift') }}" id="form-add-new-shift" onsubmit="return false">
                     @csrf
                     <input type="hidden" name="id" id="target_id">
-                <div class="col-sm-12">
+                  <div class="col-sm-12">
                     <label class="form-label" for="shift_id">Shitf ID</label>
                     <div class="input-group input-group-merge">
                       <span id="basicFullname2" class="input-group-text"><i class="ti ti-id"></i></span>
                       <input type="text" id="shift_id" class="form-control dt-shift_id" name="shift_id"/>
                     </div>
                   </div>
-                <div class="col-sm-12">
-                  <label class="form-label" for="shift_start_time">Shitf Start Time</label>
-                  <div class="input-group input-group-merge">
-                    <span id="basicFullname2" class="input-group-text"><i class="ti ti-clock"></i></span>
-                    <input type="time" id="shift_start_time" class="form-control dt-shift-start" name="shift_start_time"/>
+
+                  <div class="col-sm-12">
+                    <label class="form-label" for="shift_start_time">Shitf Start Time</label>
+                    <div class="input-group input-group-merge">
+                      <span id="basicFullname2" class="input-group-text"><i class="ti ti-clock"></i></span>
+                      <input type="text" id="shift_start_time" class="form-control dt-shift-start" name="shift_start_time"/>
+                    </div>
                   </div>
-                </div>
-                <div class="col-sm-12">
-                  <label class="form-label" for="shift_end_time">Shift End Time</label>
-                  <div class="input-group input-group-merge">
-                    <span id="basicPost2" class="input-group-text"><i class="ti ti-clock"></i></span>
-                    <input type="time" id="shift_end_time" name="shift_end_time" class="form-control dt-shift-end" />
+
+                  <div class="col-sm-12">
+                    <label class="form-label" for="shift_end_time">Shift End Time</label>
+                    <div class="input-group input-group-merge">
+                      <span id="basicPost2" class="input-group-text"><i class="ti ti-clock"></i></span>
+                      <input type="text" id="shift_end_time" name="shift_end_time" class="form-control dt-shift-end"  />
+                    </div>
                   </div>
-                </div>
+
                 <div class="col-sm-12">
                   <label class="form-label" for="mini_break_time">Mini Break Time</label>
                   <div class="input-group input-group-merge">
                     <span  class="input-group-text"><i class="ti ti-clock"></i></span>
-                    <input type="time" id="mini_break_time" name="mini_break_time" class="form-control dt-min-break" />
+                    <input type="text" id="mini_break_time" name="mini_break_time" class="form-control dt-min-break" />
                   </div>
                 </div>
                 <div class="col-sm-12">
                   <label class="form-label" for="max_break_time">Max Break Time</label>
                   <div class="input-group input-group-merge">
                     <span id="basicDate2" class="input-group-text"><i class="ti ti-clock"></i></span>
-                    <input type="time" class="form-control dt-max-break" id="max_break_time" name="max_break_time" />
+                    <input type="text" class="form-control dt-max-break" id="max_break_time" name="max_break_time" />
                   </div>
                 </div>
 
@@ -119,19 +122,29 @@
 
 @push('js')
 <script>
-    flatpickr("#mini_break_time", {
+
+  $('#shift_start_time, #shift_end_time, #mini_break_time, #max_break_time').flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i:S',
+            time_24hr: true,
+            enableSeconds: true
+        });
+
+   /*  flatpickr("#mini_break_time", {
       enableTime: true,
       noCalendar: true,
-      dateFormat: "h:i", // 12-hour format
+      dateFormat: "H:i:S", // 12-hour format
       time_24hr: false // true = 24-hour format; false = 12-hour with AM/PM
     });
 
     flatpickr("#max_break_time", {
       enableTime: true,
       noCalendar: true,
-      dateFormat: "h:i", // 12-hour format
+      dateFormat: "H:i:S", // 12-hour format
       time_24hr: false // true = 24-hour format; false = 12-hour with AM/PM
-    });
+    }); */
+
   </script>
 @endpush
 

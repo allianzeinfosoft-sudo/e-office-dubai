@@ -96,7 +96,7 @@
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_time" class="form-label">No. of Hours</label>
-                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" step="2" value="" class="form-control" required />
+                                                    <input type="text" name="total_time" id="total_time" placeholder="No. of Hours" step="2" value="" class="form-control" required />
                                                 </div>
                                             </div>    
 
@@ -147,6 +147,14 @@
             altInput: true,
             altFormat: 'd-m-Y',
             dateFormat: 'd-m-Y'
+        });
+
+        $('#total_time').flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i:S',
+            time_24hr: true,
+            enableSeconds: true
         });
 
         $('#project_name').on('change', function () {
@@ -220,6 +228,35 @@
                     }
                 }
             });
+        });
+
+        $('#type_of_work').on('change', function() {
+            let task_id = $(this).val();
+            let project_id = $('#project_name').val();
+
+            if (task_id) {
+                let url = `{{ route('work-report.get-productivity-target') }}`;
+
+                $.ajax({
+                    type: "post",
+                    url: url, 
+                    data :{
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        task_id: task_id,
+                        project_id: project_id
+                    },
+                    success: function (response) {
+                        if(response.success){
+                            $('#productivity_hour').val((response.data.rph) ? response.data.rph : 0);
+                        }else{
+                            $('#productivity_hour').val('0');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
         });
         
     });

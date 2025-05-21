@@ -334,7 +334,7 @@ class LeaveController extends Controller
                     'status' => $leaves->status ?? '',
                     'this_month_leave_count' => $thisMonthLeaveCount,
                     'leave_approver' => $leaves->initial_approver_id,
-                    'initial_approver_name' => $leaves->initialApprover->full_name,
+                    'initial_approver_name' => $leaves->initialApprover?->full_name,
                     'init_appr_status' => $leaves->initial_approve_status,
                     'login_user' => Auth::user()->id,
                     'login_user_group' => Auth::user()->employee?->group,
