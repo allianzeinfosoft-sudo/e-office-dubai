@@ -105,7 +105,6 @@ class ReportController extends Controller
     /* My Attendnce Report */
 
     public function myAttendanceReport(Request $request){
-
         $data['meta_title'] = 'My Attendance Report';
         $data['current_user'] = Employee::where('user_id', auth()->user()->id)->first();
         $data['month'] = $request->input('month') ?? date('m');
@@ -141,7 +140,7 @@ class ReportController extends Controller
 
             $row = [
                 '#' => $serial++,
-                'signin_date'   => date('d-m-Y', strtotime($dateStr)), // $dateStr,
+                'signin_date'   => date('d-m-Y', strtotime($dateStr)),
                 'signin_time'   => '',
                 'signout_time'  => '',
                 'break_time'    => '',
@@ -151,11 +150,7 @@ class ReportController extends Controller
                 'status'        => '',
             ];
 
-            if (in_array($dateStr, $holidays)) {
-                $row['status'] = '<span class="badge bg-label-info mt-1">Holiday</span>'; // 'Holiday';
-            } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
-                $row['status'] = '<span class="badge bg-label-warning mt-1">'.$dayName.'</span>'; // 'Weekend';
-            } elseif (isset($attendances[$dateStr])) {
+            if (isset($attendances[$dateStr])) {
                 $att = $attendances[$dateStr];
 
                 $row['signin_date']   = date('d-m-Y', strtotime($att->signin_date));
@@ -165,9 +160,22 @@ class ReportController extends Controller
                 $row['working_hours'] = $att->working_hours;
                 $row['signin_note']   = $att->signin_note;
                 $row['signout_note']  = $att->signout_note;
-                $row['status']        = $att->signout_time ? '<span class="badge bg-label-success mt-1">Complete</span>' : '<span class="badge bg-label-warning mt-1">Incomplete</span>'; // 'Incomplete';
+
+                if (in_array($dateStr, $holidays)) {
+                    $row['status'] = '<span class="badge bg-label-info mt-1">Holiday Worked</span>';
+                } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                    $row['status'] = '<span class="badge bg-label-primary mt-1">' . $dayName . ' Worked</span>';
+                } else {
+                    $row['status'] = $att->signout_time 
+                        ? '<span class="badge bg-label-success mt-1">Complete</span>' 
+                        : '<span class="badge bg-label-warning mt-1">Incomplete</span>';
+                }
+            } elseif (in_array($dateStr, $holidays)) {
+                $row['status'] = '<span class="badge bg-label-info mt-1">Holiday</span>';
+            } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                $row['status'] = '<span class="badge bg-label-warning mt-1">' . $dayName . '</span>';
             } else {
-                $row['status'] = '<span class="badge bg-label-danger mt-1">Leave</span>'; // 'Absent';
+                $row['status'] = '<span class="badge bg-label-danger mt-1">Leave</span>';
             }
 
             $report[] = $row;
