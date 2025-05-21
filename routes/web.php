@@ -297,6 +297,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/others/moms/{mom}/destroy', [MomController::class, 'destroy'])->name('others.moms.destroy');
     Route::get('/others/moms/{mom}/show', [MomController::class, 'show'])->name('others.moms.show');
     Route::post('/others/moms/{mom}/mark-as-read', [MomController::class, 'markAsRead'])->name('others.moms.mark-as-read');
+    
+    Route::get('/view/moms', [MomController::class, 'userWiseMoms'])->name('view.moms');
+    
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);
