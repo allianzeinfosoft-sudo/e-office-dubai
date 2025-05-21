@@ -561,7 +561,7 @@ class ReportController extends Controller
                         'comments' => $report->comments,
                         'grade' => $grade,
                         'performance' => $this->getPerformanceCategory($grade),
-                        'report_date' => $report->report_date,
+                        'report_date' => $report->report_date ->format('d-m-Y'),
                     ];
                 }),
             ];
