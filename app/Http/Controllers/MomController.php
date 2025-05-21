@@ -150,10 +150,8 @@ class MomController extends Controller
     public function userWiseMoms(Mom $mom){
         $data['meta_title'] = 'MOMs';
         $currentUser = auth()->user()->id;
-
         // Using MySQL FIND_IN_SET to check if current user ID exists in assigned_to
         $data['moms'] = $mom->whereRaw("FIND_IN_SET(?, assigned_to)", [$currentUser])->orderBy('created_at', 'desc')->get();
-
         return view('views.view-mom', $data);
     } 
     
