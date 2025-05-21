@@ -48,7 +48,7 @@
                                     
                                             <div class="col-6 mb-3">
                                                 <label for="signin_time" class="form-label">Time</label>
-                                                <input type="time" id="signin_time" name="signin_time" step="1" class="form-control" value=""  placeholder="Time" />
+                                                <input type="text" id="signin_time" name="signin_time" step="1" class="form-control" value=""  placeholder="Time" />
                                             </div>
                                             
                                             <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
@@ -91,6 +91,14 @@
             altInput: true,
             altFormat: 'd-m-Y',
             dateFormat: 'd-m-Y'
+        });
+        
+        $('#signin_time').flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i:S',
+            time_24hr: true,
+            enableSeconds: true
         });
         
     });
