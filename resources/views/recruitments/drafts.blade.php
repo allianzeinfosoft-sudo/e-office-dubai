@@ -374,7 +374,8 @@
                 alert(message);
             },
             complete: function () {
-                $(form).find('button[type="submit"], button[onclick="saveAsDraft()"]').prop('disabled', false).text('Save');
+                $(form).find('button[type="submit"]').prop('disabled', false).text('Save');
+                $(form).find('button[onclick="saveAsDraft()"]').prop('disabled', false).text('Save as Draft');
             }
         });
     }
