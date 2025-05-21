@@ -218,7 +218,12 @@ class ReportController extends Controller
             $query->whereYear('report_date', $request->year);
         }
 
-        return response()->json($query->get());
+         $reports = $query->get()->map(function ($report) {
+            $report->report_date = \Carbon\Carbon::parse($report->report_date)->format('d-m-Y');
+            return $report;
+         });
+
+        return response()->json($reports);
     }
 
     /* user overview */
