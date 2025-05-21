@@ -102,6 +102,17 @@
 @push('js')
 <script>
 
+    $(function(){
+        
+        $('#total_time').flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i:S',
+            time_24hr: true,
+            enableSeconds: true
+        });
+    })
+
 const CustomHelper = {
     calculateWorkingHours: function(startTime, endTime, breakTime) {
         if (!startTime || !endTime) return 0;
