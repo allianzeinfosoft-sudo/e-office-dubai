@@ -58,7 +58,7 @@
                                                 </td>
                                                 <td>{{ $employee->created_at->format('d-m-Y') }}</td>
                                                 <td>
-                                                    <a class="btn btn-sm btn-primary" href="{{ route('unblock-users.index', $employee->id) }}"><i class="bx bx-show me-1"></i> Weight List</a>
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('unblock-users.index', $employee->id) }}"><i class="bx bx-show me-1"></i> Whitelist</a>
                                                 </td>
                                             </tr>
                                         @endforeach 
