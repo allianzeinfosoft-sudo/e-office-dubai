@@ -305,7 +305,7 @@ return [
             [
                 'title' => 'View MOM',
                 'route' =>  '/view/moms',
-                'permission' => ['user view mom'],
+                'permission' => ['user view moms'],
             ],
         ]
     ],
