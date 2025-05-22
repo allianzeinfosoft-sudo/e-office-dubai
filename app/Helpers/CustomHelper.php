@@ -20,6 +20,7 @@ use DateTime;
 class CustomHelper
 {
     public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null) {
+        $timezone = 'Asia/Kolkata';
         try {
             // Validate inputs
             if (empty($signin_date) || empty($signin_time) || empty($signout_date) || empty($signout_time)) {
@@ -27,8 +28,8 @@ class CustomHelper
             }
 
             // Convert to Carbon objects
-            $signIn = Carbon::parse("$signin_date $signin_time");
-            $signOut = Carbon::parse("$signout_date $signout_time");
+            $signIn = Carbon::parse("$signin_date $signin_time", $timezone);
+            $signOut = Carbon::parse("$signout_date $signout_time", $timezone);
 
             // Ensure sign-out is after sign-in
             if ($signOut->lessThanOrEqualTo($signIn)) {
@@ -43,7 +44,15 @@ class CustomHelper
             $totalSeconds = $signOut->diffInSeconds($signIn);
 
             // Ensure break time is numeric and convert to seconds
-            $breakSeconds = (is_numeric($break_time) && $break_time >= 0) ? ($break_time * 60) : 3600; // Default: 1 hour (3600 seconds)
+            $breakSeconds = 3600; // Default 1 hour
+            if (!empty($break_time)) {
+                if (strpos($break_time, ':') !== false) {
+                    [$h, $m, $s] = array_pad(explode(':', $break_time), 3, 0);
+                    $breakSeconds = ($h * 3600) + ($m * 60) + $s;
+                } elseif (is_numeric($break_time)) {
+                    $breakSeconds = max(0, $break_time * 60);
+                }
+            }
 
             // Calculate actual working seconds
             $actualWorkSeconds = max($totalSeconds - $breakSeconds, 0);
@@ -98,6 +107,7 @@ class CustomHelper
             )
             ->whereYear('signin_date', $year)
             ->where('emp_id', $empId)
+            ->where('status', 'mark-out')
             ->groupBy(DB::raw('MONTH(signin_date)'))
             ->orderBy(DB::raw('MONTH(signin_date)'))
             ->get()
@@ -129,6 +139,7 @@ class CustomHelper
             $attendance = Attendance::where('emp_id', $empId)
                 ->whereYear('signin_date', $year)
                 ->whereMonth('signin_date', $month)
+                ->where('status', 'mark-out')
                 ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
                 ->first();
 
@@ -165,6 +176,7 @@ class CustomHelper
             )
             ->whereYear('signin_date', $year)
             ->where('emp_id', $empId)
+            ->where('status', 'mark-out')
             ->groupBy(DB::raw('MONTH(signin_date)'))
             ->orderBy(DB::raw('MONTH(signin_date)'))
             ->get()
@@ -236,6 +248,7 @@ class CustomHelper
         $attendances = Attendance::where('emp_id', $empId)
             ->whereYear('signin_date', $year)
             ->whereMonth('signin_date', $month)
+            ->where('status', 'mark-out')
             ->get();
 
         if ($attendances->isEmpty()) {
@@ -354,7 +367,7 @@ class CustomHelper
     $endOfMonth = $today->copy()->endOfDay(); // current day till now
 
     // Attendance records for current month up to today
-    $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth]);
+    $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth])->where('status', 'mark-out');
 
     if ($userId) {
         $query->where('emp_id', $userId);
@@ -644,4 +657,43 @@ public static function getWorkRatingAnalysisMonthly($empId)
         return Carbon::createFromFormat(strlen($time) === 5 ? 'H:i' : 'H:i:s', $time)->format('H:i:s');
     }
 
+    public static function getCurrentWorkingTime($userId)
+    {
+        $timezone = 'Asia/Kolkata';
+
+        $attendance = Attendance::where('emp_id', $userId)
+            ->whereDate('signin_date', Carbon::now($timezone)->toDateString())
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if (!$attendance) {
+            return '00:00:00';
+        }
+
+        // Parse signin and signout with timezone
+        $signin = Carbon::parse($attendance->signin_date . ' ' . $attendance->signin_time, $timezone);
+
+        $signout = ($attendance->status === 'mark-out' && $attendance->signout_time)
+            ? Carbon::parse($attendance->signout_date . ' ' . $attendance->signout_time, $timezone)
+            : Carbon::now($timezone);
+
+        // Convert break_time from H:i:s to seconds
+        $breakTime = $attendance->break_time ?? '00:00:00';
+
+        $breakParts = explode(':', $breakTime);
+        $hours   = isset($breakParts[0]) ? (int) $breakParts[0] : 0;
+        $minutes = isset($breakParts[1]) ? (int) $breakParts[1] : 0;
+        $seconds = isset($breakParts[2]) ? (int) $breakParts[2] : 0;
+
+        $breakSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+
+        $totalSeconds = $signout->diffInSeconds($signin) - $breakSeconds;
+        if ($totalSeconds < 0) {
+            $totalSeconds = 0;
+        }
+
+        return gmdate('H:i:s', $totalSeconds);
+    }
 }
+
+

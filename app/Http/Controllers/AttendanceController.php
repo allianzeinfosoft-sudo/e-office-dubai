@@ -143,7 +143,7 @@ class AttendanceController extends Controller{
 
         $todayHours                      = intdiv($todayMinutes, 60);
         $todayMins                       = $todayMinutes % 60;
-        $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
+        $data['todayWorkedHours']        = CustomHelper::getCurrentWorkingTime(Auth::user()->id);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
 
