@@ -36,15 +36,14 @@ class SalaryController extends Controller
         $query = Salary::with('employee');
 
         // Only HR can filter by username
-            if ($user->hasRole('HR')) {
-                $query->where('user_id', $request->username);
-            } elseif($user->hasRole('HR') && $request->filled('username'))
+            if($request->filled('username'))
             {
                 $query->where('user_id', $request->username);
-            }elseif (!$user->hasRole('HR')) {
+
+            }
+            if (!$user->hasRole('HR')) {
                 $query->where('user_id', $user->id);
             }
-
 
             if ($request->filled('select2Month')) {
                 $query->where('salary_slip_month', $request->select2Month);

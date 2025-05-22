@@ -158,7 +158,7 @@ $(function () {
 
                   action =  '<div class="d-flex align-items-center">' +
                     '<a href="'+editUserUrlBase+'" class="text-body edit-user1" data-edit-user-id="' + user_id + '"><i class="ti ti-edit ti-sm me-2"></i></a>' +
-                    '<a href="javascript:void(0);" class="text-body delete-user" data-user-id="' + user_id + '"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
+                    '<a href="javascript:void(0);" class="text-body" onclick="deleteUser(' + user_id + ')"><i class="ti ti-trash ti-sm mx-2"></i></a>' +
                     '</div>';
 
                 }
@@ -179,53 +179,14 @@ $(function () {
         dt_user.row($(this).parents('tr')).remove().draw();
   });
 
-  window.onload = function () {
-    console.log("Window is fully loaded!");
-};
+
 
 
    // destroy user
-   window.onload = function () {
 
-    document.querySelectorAll(".delete-user").forEach((element) => {
-        element.addEventListener("click", function () {
-            let userId = this.getAttribute("data-user-id"); // Corrected
 
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`/user-delete/${userId}`, {
-                        method: "DELETE",
-                        headers: {
-                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-                            "Content-Type": "application/json"
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire("Deleted!", "User has been deleted.", "success").then(() => {
-                                location.reload(); // Reload page after deletion
-                            });
-                        } else {
-                            Swal.fire("Error!", "Something went wrong.", "error");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        Swal.fire("Error!", "Could not delete user.", "error");
-                    });
-                }
-            });
-        });
-    });
+
+window.onload = function () {
 
     document.querySelectorAll(".edit-user").forEach((element) => {
         element.addEventListener("click", function () {
