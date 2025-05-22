@@ -105,6 +105,8 @@
 @section('js')
 <script>
 
+    
+
     var recruitmentTable = $('.datatables-recruitments'),
     select2 = $('.select2');
 

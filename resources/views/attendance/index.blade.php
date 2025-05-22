@@ -188,7 +188,7 @@
                                   @endphp
 
 
-                                  @if($disableCustomMarkIn)
+                                  @if(!empty($disableCustomMarkIn))
                                       <div class="badge bg-label-warning p-3 w-100 mb-3">
                                           You can mark in only between {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A') : '' }}
                                           and {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->addMinutes(15)->format('h:i A') : '' }}.
@@ -316,7 +316,7 @@
   
             <div class="col-12 mb-3">
               <label for="signin_time" class="form-label">Time</label>
-              <input type="time" id="signin_time" name="signin_time" step="1" class="form-control" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
+              <input type="text" id="signin_time" name="signin_time" step="1" class="form-control" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
               <input type="hidden" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
             </div>
   
@@ -356,7 +356,7 @@
   
             <div class="col-12 mb-3">
               <label for="time_in_out" class="form-label">Time</label>
-              <input type="time" id="time_in_out" name="time_in_out" class="form-control" step="1" value="{{ date('H:i:s') }}" placeholder="Time" />
+              <input type="text" id="time_in_out" name="time_in_out" class="form-control" step="1" value="{{ date('H:i:s') }}" placeholder="Time" />
             </div>
           </form>
         </div>
@@ -377,6 +377,15 @@
 <script>
   
   $(function(){
+
+    $('#signin_time, #time_in_out').flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i:S',
+            time_24hr: true,
+            enableSeconds: true
+        });
+
 
     /* Mark in function */
     $('#mark-in-btn').on('click', function() {

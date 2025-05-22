@@ -105,7 +105,6 @@ class ReportController extends Controller
     /* My Attendnce Report */
 
     public function myAttendanceReport(Request $request){
-
         $data['meta_title'] = 'My Attendance Report';
         $data['current_user'] = Employee::where('user_id', auth()->user()->id)->first();
         $data['month'] = $request->input('month') ?? date('m');
@@ -141,7 +140,7 @@ class ReportController extends Controller
 
             $row = [
                 '#' => $serial++,
-                'signin_date'   => date('d-m-Y', strtotime($dateStr)), // $dateStr,
+                'signin_date'   => date('d-m-Y', strtotime($dateStr)),
                 'signin_time'   => '',
                 'signout_time'  => '',
                 'break_time'    => '',
@@ -151,11 +150,7 @@ class ReportController extends Controller
                 'status'        => '',
             ];
 
-            if (in_array($dateStr, $holidays)) {
-                $row['status'] = '<span class="badge bg-label-info mt-1">Holiday</span>'; // 'Holiday';
-            } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
-                $row['status'] = '<span class="badge bg-label-warning mt-1">'.$dayName.'</span>'; // 'Weekend';
-            } elseif (isset($attendances[$dateStr])) {
+            if (isset($attendances[$dateStr])) {
                 $att = $attendances[$dateStr];
 
                 $row['signin_date']   = date('d-m-Y', strtotime($att->signin_date));
@@ -165,9 +160,22 @@ class ReportController extends Controller
                 $row['working_hours'] = $att->working_hours;
                 $row['signin_note']   = $att->signin_note;
                 $row['signout_note']  = $att->signout_note;
-                $row['status']        = $att->signout_time ? '<span class="badge bg-label-success mt-1">Complete</span>' : '<span class="badge bg-label-warning mt-1">Incomplete</span>'; // 'Incomplete';
+
+                if (in_array($dateStr, $holidays)) {
+                    $row['status'] = '<span class="badge bg-label-info mt-1">Holiday Worked</span>';
+                } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                    $row['status'] = '<span class="badge bg-label-primary mt-1">' . $dayName . ' Worked</span>';
+                } else {
+                    $row['status'] = $att->signout_time 
+                        ? '<span class="badge bg-label-success mt-1">Complete</span>' 
+                        : '<span class="badge bg-label-warning mt-1">Incomplete</span>';
+                }
+            } elseif (in_array($dateStr, $holidays)) {
+                $row['status'] = '<span class="badge bg-label-info mt-1">Holiday</span>';
+            } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                $row['status'] = '<span class="badge bg-label-warning mt-1">' . $dayName . '</span>';
             } else {
-                $row['status'] = '<span class="badge bg-label-danger mt-1">Leave</span>'; // 'Absent';
+                $row['status'] = '<span class="badge bg-label-danger mt-1">Leave</span>';
             }
 
             $report[] = $row;
@@ -218,7 +226,12 @@ class ReportController extends Controller
             $query->whereYear('report_date', $request->year);
         }
 
-        return response()->json($query->get());
+        $reports = $query->orderBy('report_date', 'desc')->get()->map(function ($report) {
+            $report->report_date = Carbon::parse($report->report_date)->format('d-m-Y');
+            return $report;
+        });
+
+        return response()->json($reports);
     }
 
     /* user overview */
@@ -349,8 +362,12 @@ class ReportController extends Controller
         foreach ($attendances as $index => $attendance) {
             $user = $attendance->employee;
             $name = $user->full_name ?? 'NA';
-            $initials = collect(explode(' ', $name))->map(fn($w) => strtoupper($w[0]))->join('');
-            $initials = substr($initials, 0, 2);
+            $initials = collect(explode(' ', trim($name)))
+                ->filter(fn($w) => !empty($w))  // Remove empty parts
+                ->map(fn($w) => strtoupper($w[0])) // Safe now
+                ->join('');
+
+            $initials = substr($initials, 0, 2); // Limit to 2 characters
 
             if ($user && $user->profile_image) {
                 $image = '<img src="'.asset('storage/'.$user->profile_image).'" width="40" height="40" class="rounded-circle" />';
@@ -438,29 +455,91 @@ class ReportController extends Controller
     }
 
     public function allAttendanceData(Request $request){
-        $data['current_user']   = Employee::where('user_id', $request->employee_id)->first();
-        $data['day']            = $request->day;
-        $data['month']          = $request->month;
-        $data['year']           = $request->year;
+        $data['current_user'] = Employee::where('user_id', $request->employee_id)->first();
+        $data['day'] = $request->day;
+        $data['month'] = $request->month;
+        $data['year'] = $request->year;
 
-        $query = Attendance::with('employee', 'employee.user')->where('emp_id', $request->employee_id);
+        $employeeId = $request->employee_id;
+
+        $report = [];
 
         if ($request->filled('day')) {
-            // Specific date
-            $date = Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d');
-            $query->whereDate('signin_date', $date);
+            $startDate = Carbon::createFromDate($request->year, $request->month, $request->day);
+            $endDate = $startDate;
         } else {
-            // Entire month
-            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth()->format('Y-m-d');
-            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth()->format('Y-m-d');
-            $query->whereBetween('signin_date', [$startDate, $endDate]);
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
         }
-        $data['attendances'] = $query->get();
-        $html = view('reports.all-attendance-report.report-view',  $data)->render();
 
-        return response()->json([
-            'html' => $html
-        ]);
+        $attendances = Attendance::with('employee', 'employee.user')
+            ->where('emp_id', $employeeId)
+            ->whereBetween('signin_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get()
+            ->keyBy(function ($item) {
+                return Carbon::parse($item->signin_date)->format('Y-m-d');
+            });
+
+        $holidays = DB::table('holidays')
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->pluck('date')
+            ->toArray();
+
+        $serial = 1;
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $dayName = $currentDate->format('l');
+
+            $row = (object)[
+                'index' => $serial++,
+                'signin_date' => $currentDate->format('d-m-Y'),
+                'signin_time' => 'N/A',
+                'signout_time' => 'N/A',
+                'break_time' => 'N/A',
+                'working_hours' => 'N/A',
+                'signin_note' => 'N/A',
+                'signout_note' => 'N/A',
+                'status' => 'leave',
+                'statusText' => 'Leave'
+            ];
+
+            if (isset($attendances[$dateStr])) {
+                $att = $attendances[$dateStr];
+                $row->signin_date = date('d-m-Y', strtotime($att->signin_date));
+                $row->signin_time = $att->signin_time ?? '';
+                $row->signout_time = $att->signout_time ?? '';
+                $row->break_time = $att->break_time ?? '';
+                $row->working_hours = $att->working_hours ?? '';
+                $row->signin_note = $att->signin_note ?? '';
+                $row->signout_note = $att->signout_note ?? '';
+
+                if (in_array($dateStr, $holidays)) {
+                    $row->status = 'holiday';
+                    $row->statusText = 'Holiday Worked';
+                } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                    $row->status = 'weekend';
+                    $row->statusText = $dayName . ' Worked';
+                } else {
+                    $row->status = $att->signout_time ? 'mark-out' : 'mark-in';
+                    $row->statusText = $att->signout_time ? 'Completed' : 'Incomplete';
+                }
+            } elseif (in_array($dateStr, $holidays)) {
+                $row->status = 'holiday';
+                $row->statusText = 'Holiday';
+            } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                $row->status = 'weekend';
+                $row->statusText = $dayName;
+            }
+
+            $report[] = $row;
+            $currentDate->addDay();
+        }
+
+        $data['attendances'] = collect($report);
+        $html = view('reports.all-attendance-report.report-view', $data)->render();
+
+        return response()->json(['html' => $html]);
     }
 
     public function allWorkReport(){
@@ -557,7 +636,7 @@ class ReportController extends Controller
                         'comments' => $report->comments,
                         'grade' => $grade,
                         'performance' => $this->getPerformanceCategory($grade),
-                        'report_date' => $report->report_date,
+                        'report_date' => $report->report_date ->format('d-m-Y'),
                     ];
                 }),
             ];

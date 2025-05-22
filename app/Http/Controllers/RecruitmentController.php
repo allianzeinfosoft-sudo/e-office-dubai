@@ -92,85 +92,69 @@ class RecruitmentController extends Controller
      */
     public function store(Request $request){
         $validated = $request->validate([
-            'id' => 'nullable|integer', // Optional ID for updateOrCreate
-            'empId' => 'required|integer',
+            'id' => 'nullable',
+            'empId' => 'required',
             'rrfDate' => 'required|date',
-            'branchId' => 'required|integer',
-            'departmentId' => 'required|integer',
-            'positionId' => 'required|integer',
-            'projectId' => 'nullable|integer',
-            'shiftId' => 'nullable|integer',
-            'salaryRange' => 'nullable|string',
-            'jobType' => 'nullable|string',
-            'interviewer' => 'nullable|string',
-            'sittingArragement' => 'nullable|string',
-            'minimumQualification' => 'nullable|string',
-            'skillRequired' => 'nullable|array',
-            'experience' => 'nullable|string',
-            'schoolingMedium' => 'nullable|string',
-            'graduation' => 'nullable|string',
-            'ageGroup' => 'nullable|string',
-            'location' => 'nullable|string',
-            'interviewPlace' => 'nullable|string',
-            'priority' => 'nullable|string',
-            'referralIncentive' => 'nullable|string',
-            'requireToAndFroCharge' => 'nullable|string',
-            'keyword' => 'nullable|array',
-            'seekApproval' => 'nullable|integer',
-            'jobTitle' => 'nullable|string',
-            'jobDescription' => 'nullable|string',
-            'remarks' => 'nullable|string',
-            'noOfPersons' => 'required|integer',
+            'branchId' => 'required',
+            'departmentId' => 'required',
+            'positionId' => 'required',
+            'projectId' => 'nullable',
+            'shiftId' => 'nullable',
+            'salaryRange' => 'nullable',
+            'jobType' => 'nullable',
+            'interviewer' => 'nullable',
+            'sittingArragement' => 'nullable',
+            'minimumQualification' => 'nullable',
+            'skillRequired' => 'nullable',
+            'experience' => 'nullable',
+            'schoolingMedium' => 'nullable',
+            'graduation' => 'nullable',
+            'ageGroup' => 'nullable',
+            'location' => 'nullable',
+            'interviewPlace' => 'nullable',
+            'priority' => 'nullable',
+            'referralIncentive' => 'nullable',
+            'requireToAndFroCharge' => 'nullable',
+            'keyword' => 'nullable',
+            'seekApproval' => 'nullable',
+            'jobTitle' => 'nullable',
+            'jobDescription' => 'nullable',
+            'remarks' => 'nullable',
+            'noOfPersons' => 'required',
         ]);
 
-        // Clone validated data for modification
-        $validatedData = $validated;
-
         // Format the rrfDate
-        $validatedData['rrfDate'] = Carbon::parse($validated['rrfDate'])->format('Y-m-d');
+        $validated['rrfDate'] = Carbon::parse($validated['rrfDate'])->format('Y-m-d');
 
-        // Implode array fields
-        $validatedData['skillRequired'] = isset($validated['skillRequired']) && is_array($validated['skillRequired']) 
-            ? implode(',', $validated['skillRequired']) 
-            : null;
+        // Implode arrays
+        $validated['skillRequired'] = isset($validated['skillRequired']) ? implode(',', $validated['skillRequired']) : null;
+        $validated['keyword'] = isset($validated['keyword']) ? implode(',', $validated['keyword']) : null;
 
-        $validatedData['keyword'] = isset($validated['keyword']) && is_array($validated['keyword']) 
-            ? implode(',', $validated['keyword']) 
-            : null;
+        // Convert empty string fields to null (especially integer ones)
+        $nullableToNull = [
+            'projectId', 
+            'shiftId', 
+            'seekApproval',
+            'jobType',
+            'interviewer',
+            'sittingArragement',
+            'minimumQualification',
+            'seekApproval',
+            'priority',
+            'referralIncentive',
+            'requireToAndFroCharge', // ← Add this line
+        ];
+        foreach ($nullableToNull as $field) {
+            if (array_key_exists($field, $validated) && $validated[$field] === '') {
+                $validated[$field] = null;
+            }
+        }
 
         $recruitment = Recruitment::updateOrCreate(
-            ['id' => $validatedData['id'] ?? null],
-            [
-                'empId' => $validatedData['empId'] ?? '',
-                'rrfDate' => $validatedData['rrfDate']?? '',
-                'branchId' => $validatedData['branchId']?? '',
-                'departmentId' => $validatedData['departmentId']?? '',
-                'positionId' => $validatedData['positionId']?? '',
-                'projectId' => $validatedData['projectId']?? '',
-                'shiftId' => $validatedData['shiftId']?? 0,
-                'salaryRange' => $validatedData['salaryRange']?? '',
-                'jobType' => $validatedData['jobType']?? '',
-                'interviewer' => $validatedData['interviewer']?? '',
-                'sittingArragement' => $validatedData['sittingArragement']?? '',
-                'minimumQualification' => $validatedData['minimumQualification']?? '',
-                'skillRequired' => $validatedData['skillRequired']?? '',
-                'experience' => $validatedData['experience']?? '',
-                'schoolingMedium' => $validatedData['schoolingMedium']?? '',
-                'graduation' => $validatedData['graduation']?? '',
-                'ageGroup' => $validatedData['ageGroup']?? '',
-                'location' => $validatedData['location']?? '',
-                'interviewPlace' => $validatedData['interviewPlace']?? '',
-                'priority' => $validatedData['priority']?? '',
-                'referralIncentive' => $validatedData['referralIncentive']?? '',
-                'requireToAndFroCharge' => $validatedData['requireToAndFroCharge']?? '',
-                'keyword' => $validatedData['keyword']?? '',
-                'seekApproval' => $validatedData['seekApproval']?? '',
-                'jobTitle' => $validatedData['jobTitle']?? '',
-                'jobDescription' => $validatedData['jobDescription']?? '',
-                'remarks' => $validatedData['remarks']?? '',
-                'noOfPersons' => $validatedData['noOfPersons']?? '',
+            ['id' => $validated['id'] ?? null],
+            array_merge($validated, [
                 'draft_status' => $request->draft_status ?? 0,
-            ]
+            ])
         );
 
         return response()->json([

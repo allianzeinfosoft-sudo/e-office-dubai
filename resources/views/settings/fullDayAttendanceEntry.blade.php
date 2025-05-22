@@ -53,22 +53,22 @@
 
                                             <div class="col-3 mb-3">
                                                 <label for="signin_time" class="form-label">Mark In Time</label>
-                                                <input type="time" id="signin_time" name="signin_time" step="1" class="form-control" value=""  placeholder="Time" />
+                                                <input type="text" id="signin_time" name="signin_time" step="1" class="form-control" value=""  placeholder="Time" />
                                             </div>
 
                                             <div class="col-3 mb-3">
                                                 <label for="break_time" class="form-label">Brake Time</label>
-                                                <input type="time" id="break_time" name="break_time" step="1" class="form-control" value="{{ date('H:i:s', strtotime('1:00')) }}"  placeholder="Time" />
+                                                <input type="text" id="break_time" name="break_time" step="1" class="form-control" value="{{ date('H:i:s', strtotime('1:00')) }}"  placeholder="Time" />
                                             </div>
 
                                             <div class="col-3 mb-3">
                                                 <label for="signout_time" class="form-label">Mark Out Time</label>
-                                                <input type="time" id="signout_time" name="signout_time" step="1" class="form-control" value=""  placeholder="Time" />
+                                                <input type="text" id="signout_time" name="signout_time" step="1" class="form-control" value=""  placeholder="Time" />
                                             </div>
 
                                             <div class="col-3 mb-3">
                                                 <label for="working_hours" class="form-label">Working Hours</label>
-                                                <input type="time" id="working_hours" name="working_hours" step="1" class="form-control" value=""  placeholder="Time" />
+                                                <input type="text" id="working_hours" name="working_hours" step="1" class="form-control" value=""  placeholder="Time" />
                                             </div>
 
                                             <div class="col-12 mb-3">
@@ -109,6 +109,16 @@
 
 @push('js')
 <script>
+
+    $(function(){
+        $('#signin_time, #signout_time, #break_time, #working_hours').flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i:S',
+            time_24hr: true,
+            enableSeconds: true
+        });
+    });
 
 const CustomHelper = {
     calculateWorkingHours: function(startTime, endTime, breakTime) {
