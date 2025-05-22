@@ -129,6 +129,10 @@ if (dtLeaveTable.length) {
                 {
                     displayType = `<button class="btn btn-sm btn-info">Full</button>`;
                 }
+                else if(leaveType === 'off_day')
+                {
+                    displayType = `<button class="btn btn-sm btn-primary">Off</button>`
+                }
 
                 return displayType;
             }

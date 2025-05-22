@@ -121,13 +121,14 @@ class LeaveController extends Controller
 
         $user_id = $request['user_id'];
 
-        if($request->leave_type === 'full_day')
+        if($request->leave_type === 'half_day')
         {
-            $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+            $leave_days = 0.5;
         }
         else
         {
-            $leave_days = 0.5;
+            $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+
         }
 
         $user_info = User::find($user_id);
