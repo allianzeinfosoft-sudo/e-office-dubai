@@ -781,52 +781,55 @@ class AttendanceController extends Controller{
 
     public function storeFullDayEntry(Request $request){
         $validated = $request->validate([
-            'emp_id'           => 'required|exists:employees,user_id', // Ensure employee exists in the system
-            'signin_date'      => 'required|date_format:d-m-Y',
-            'signout_date'     => 'required|date_format:d-m-Y',
+            'emp_id'           => 'required|exists:employees,user_id',
+            'signin_date'      => 'required',
+            'signout_date'     => 'required',
             'signin_time'      => 'required',
             'break_time'       => 'nullable',
             'signout_time'     => 'required',
             'working_hours'    => 'required',
-            'signin_late_note' => 'nullable|string|max:500',
+            'signin_late_note' => 'nullable',
         ]);
 
-        $employeeId = $request->emp_id;
+        $employeeId = $validated['emp_id'];
         $user = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
 
         try {
             $attendanceData = [
                 'username'         => $user->user->username,
-                'emp_id'           => $validated['emp_id'],
-                'signin_date'      => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'),
-                'signout_date'     => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signout_date'])->format('Y-m-d'),
-                'signin_time'      => Carbon::createFromFormat('H:i', $validated['signin_time'])->format('H:i:s'),
-                'break_time'       => Carbon::createFromFormat('H:i', $validated['break_time'])->format('H:i:s') ?? '00:00:00',  // Default to '00:00' if break_time is null
-                'signout_time'     => Carbon::createFromFormat('H:i', $validated['signout_time'])->format('H:i:s'),
-                'working_hours'    => Carbon::createFromFormat('H:i', $validated['working_hours'])->format('H:i:s'),
-                'signin_late_note' => $validated['signin_late_note'] ?? null, // Null if not provided
-                'signout_late_note'=> $validated['signin_late_note'] ?? null, // Same logic for signout_late_note
+                'emp_id'           => $employeeId,
+                'signin_date'      => Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'),
+                'signout_date'     => Carbon::createFromFormat('d-m-Y', $validated['signout_date'])->format('Y-m-d'),
+                'signin_time'      => CustomHelper::formatTimeToSeconds($validated['signin_time']),
+                'break_time'       => CustomHelper::formatTimeToSeconds($validated['break_time']),
+                'signout_time'     => CustomHelper::formatTimeToSeconds($validated['signout_time']),
+                'working_hours'    => CustomHelper::formatTimeToSeconds($validated['working_hours']),
+                'signin_late_note' => $validated['signin_late_note'] ?? null,
+                'signout_late_note'=> $validated['signin_late_note'] ?? null, // Use a separate input if needed
                 'status'           => 'mark-out',
                 'punchin_type'     => 'custom',
                 'punchout_type'    => 'custom',
                 'custom_status'    => '1',
-                'ipaddress'        => $request->ip()
+                'ipaddress'        => $request->ip(),
             ];
 
-            // Check if an attendance record for this employee already exists for the given signin_date
+            // Insert or update attendance record
             Attendance::updateOrCreate(
                 [
-                    'emp_id'      => $validated['emp_id'],
-                    'signin_date' => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'), // Make sure to format dates as Y-m-d
+                    'emp_id'      => $employeeId,
+                    'signin_date' => $attendanceData['signin_date'],
                 ],
-                $attendanceData // If it exists, it will be updated; if not, it will be created
+                $attendanceData
             );
 
             return response()->json(['status' => 'success', 'message' => 'Full day attendance entry saved successfully.']);
         } catch (\Exception $e) {
-            // Log the error message for debugging
             \Log::error('Error in storing full day entry: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again later.']);
+            return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),  // show actual error
+                    'trace'   => $e->getTrace()[0]  // optional: include trace for debug
+                ]);
         }
     }
 

@@ -54,7 +54,7 @@
 
                                             <div class="col-3 mb-3">
                                                 <label for="break_time" class="form-label">Brake Time</label>
-                                                <input type="time" id="break_time" name="break_time" class="form-control" value="{{ date('H:i', strtotime('1:00')) }}"  placeholder="Time" />
+                                                <input type="time" id="break_time" name="break_time" class="form-control" value="{{ date('H:i', strtotime('1:00:00')) }}"  placeholder="Time" />
                                             </div>
 
                                             <div class="col-3 mb-3">
