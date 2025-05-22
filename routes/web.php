@@ -177,6 +177,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/leave_approver/list',[LeaveController::class, 'leave_approver'])->name('leave.approver');
     Route::post('/leave_approval_store',[LeaveController::class, 'leave_approval_store'])->name('leave_approval_store');
 
+    Route::post('/leave_summary_filter', [LeaveController::class, 'myWorkReportsData'])->name('reports.my-work-report-data');
+
+
     /* Prjects */
     Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
@@ -302,9 +305,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/others/moms/{mom}/destroy', [MomController::class, 'destroy'])->name('others.moms.destroy');
     Route::get('/others/moms/{mom}/show', [MomController::class, 'show'])->name('others.moms.show');
     Route::post('/others/moms/{mom}/mark-as-read', [MomController::class, 'markAsRead'])->name('others.moms.mark-as-read');
-    
+
     Route::get('/view/moms', [MomController::class, 'userWiseMoms'])->name('view.moms');
-    
+
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);
@@ -382,7 +385,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
     Route::post('/check-leave-overlap', [LeaveController::class, 'checkOverlap'])->name('check.leave.overlap');
 
-
+    Route::post('/leave_summary_filter', [LeaveController::class, 'leave_summary_filter'])->name('leave_summary_filter');
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
     Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('gallery.upload.image');

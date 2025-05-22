@@ -24,11 +24,50 @@
             <!-- Role cards -->
             <div class="row g-4">
                 @include('components.leave.leave_summary_head');
+
+                    <div class="col-sm-12">
+                            <div class="card card-bg mb-4">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0"> <i class="ti ti-filter ti-sm"></i> Filter</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="filter-form" method="POST" onsubmit="return false;">
+                                        @csrf
+                                        <div class="row">
+
+                                            <div class="col-sm-3">
+                                                <div class="form-group mb-3">
+                                                    <label for="year">Year</label>
+                                                   <input type="date" name="filter_from_date" id="filter_from_date" class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-3">
+                                                <div class="form-group mb-3">
+                                                    <label for="year">Year</label>
+                                                   <input type="date" name="filter_to_date" id="filter_to_date" class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-3 my-auto">
+                                                <div class="form-group mb-3 mt-3">
+                                                    <button type="submit" class="btn btn-primary">Find</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
                 <div class="col-12">
                     <!-- Role Table -->
                     <div class="card">
                       <div class="card-datatable table-responsive">
-                        <table class="datatables-leave-summary table border-top">
+                        <table id="summaryTable" class="datatables-leave-summary table border-top">
                           <thead>
                             <tr>
                               <th>S.No</th>
@@ -43,6 +82,15 @@
                               <th>Status</th>
                             </tr>
                           </thead>
+                          <tbody id="reportContainer">
+                                <tr>
+                                    <td class="text-center" colspan="10">
+                                        <div class="alert alert-warning mt-3">
+                                                        Loading...
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                       </div>
                     </div>
@@ -129,6 +177,10 @@ if (dtLeaveTable.length) {
                 {
                     displayType = `<button class="btn btn-sm btn-info">Full</button>`;
                 }
+                else if(leaveType === 'off_day')
+                {
+                    displayType = `<button class="btn btn-sm btn-primary">Off</button>`
+                }
 
                 return displayType;
             }
@@ -169,9 +221,91 @@ if (dtLeaveTable.length) {
             return $status_show;
         }
       }
-    ]
+    ],
+
   });
 }
+
+// filter
+$(document).ready(function () {
+    let table = $('#leaveSummaryTable').DataTable({
+        processing: true,
+        serverSide: false,
+        searching: false,
+        paging: true,
+        ordering: false,
+        ajax: {
+            url: '/leave_summary_filter',
+            type: 'POST',
+            data: function () {
+                return $('#filter-form').serialize(); // send form data
+            },
+            dataSrc: 'data', // Laravel should return { data: [...] }
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF for Laravel
+            },
+            error: function (xhr) {
+                console.error("AJAX Error:", xhr.responseText);
+            }
+        },
+        columns: [
+            {
+                data: null,
+                title: 'S.No',
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            { data: 'full_name', title: 'Name' },
+            { data: 'leave_from', title: 'Leave From' },
+            { data: 'leave_to', title: 'Leave To' },
+            {
+                data: 'leave_count',
+                title: 'Leave Count',
+                render: function (data) {
+                    const label = data > 1 ? 'days' : 'day';
+                    const btnClass = data > 1 ? 'btn-primary' : 'btn-secondary';
+                    return `<button class="btn btn-sm ${btnClass}">${data}</button> ${label}`;
+                }
+            },
+            {
+                data: 'leave_type',
+                title: 'Leave Type',
+                render: function (data) {
+                    switch (data) {
+                        case 'half_day': return `<button class="btn btn-sm btn-warning">Half</button>`;
+                        case 'full_day': return `<button class="btn btn-sm btn-info">Full</button>`;
+                        case 'off_day': return `<button class="btn btn-sm btn-primary">Off</button>`;
+                        default: return 'N/A';
+                    }
+                }
+            },
+            { data: 'leave_reason', title: 'Leave Reason' },
+            { data: 'apply_date', title: 'Apply Date' },
+            { data: 'approved_cancel_date', title: 'Accepted/Rejected' },
+            {
+                data: 'status',
+                title: 'Status',
+                render: function (data) {
+                    if (data == 1) return `<button class="btn btn-sm btn-label-linkedin">Pending</button>`;
+                    if (data == 2) return `<button class="btn btn-sm btn-success">Approved</button>`;
+                    if (data == 3) return `<button class="btn btn-sm btn-danger">Rejected</button>`;
+                    if (data == 4) return `<button class="btn btn-sm btn-label-linkedin">Cancelled</button>`;
+                    return 'N/A';
+                }
+            }
+        ]
+    });
+
+    // Submit filter form => reload table
+    $('#filter-form').on('submit', function (e) {
+        e.preventDefault();
+        table.ajax.reload(); // trigger ajax with new form data
+    });
+});
+
+
+
 
 });
 </script>

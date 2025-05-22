@@ -121,13 +121,14 @@ class LeaveController extends Controller
 
         $user_id = $request['user_id'];
 
-        if($request->leave_type === 'full_day')
+        if($request->leave_type === 'half_day')
         {
-            $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+            $leave_days = 0.5;
         }
         else
         {
-            $leave_days = 0.5;
+            $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+
         }
 
         $user_info = User::find($user_id);
@@ -694,6 +695,65 @@ class LeaveController extends Controller
             ->exists();
 
         return response()->json(['overlap' => $overlap]);
+    }
+
+
+    public function leave_summary_filter( Request $request)
+    {
+          $user = auth()->user();
+         $user_id = $user->id;
+
+        $query = Leave::with(['employee', 'user']);
+
+         // Apply Role-based filters
+        if ($user->hasRole('G5')) {
+            $query->where('user_id', $user_id);
+        }
+
+        if ($user->hasAnyRole(['G4', 'G3'])) {
+            // Get IDs of users reporting to current user
+            $reportingUserIds = Employee::where('reporting_to', $user_id)
+                ->pluck('user_id')
+                ->toArray();
+
+            $userIds = collect($reportingUserIds)
+                ->push($user_id)
+                ->map(fn($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->toArray();
+
+            $query->whereIn('user_id', $userIds);
+        }
+
+
+        if ($request->filled('filter_from_date')) {
+            $query->where('leave_from', $request->filter_from_date);
+        }
+
+        if ($request->filled('filter_to_date')) {
+            $query->where('leave_to', $request->filter_to_date); // Confirm if 'project_name' is correct
+        }
+
+        $leave_summary = $query->get()->map(function ($leave) {
+
+            return [
+                'id' => $leave->id,
+                'full_name' => $leave->employee->full_name ?? '',
+                'employee_id' => $leave->employee->id ?? '',
+                'leave_from' => $leave->leave_from,
+                'leave_to' => $leave->leave_to,
+                'leave_type' => $leave->leave_type ?? '',
+                'leave_reason' => $leave->reason ?? '',
+                'apply_date' => $leave->created_at,
+                'approved_cancel_date' => $leave->approved_cancel_date,
+                'leave_count' => $this->getDaysBetween($leave->leave_from, $leave->leave_to) ?? '',
+                'status' => $leave->status ?? ''
+            ];
+
+        });
+         return response()->json(['data' => $leave_summary]);
+
     }
 
 

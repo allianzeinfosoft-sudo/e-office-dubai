@@ -80,25 +80,25 @@ class ReportController extends Controller
     public function my_overview(Request $request) {
         $selected_user = $request->input('user') ?? auth()->id();
         $selected_year = $request->input('year'); // optional, pass to helpers
-    
+
         // Monthly hours
         $monthlyData = CustomHelper::getMonthlyTotalHours($selected_user, $selected_year);
         $data['labels']        = $monthlyData['months'];
         $data['average_hours'] = $monthlyData['total_hours'];
-    
+
         // Reports
         $data['work_analysis']  = CustomHelper::getWorkRatingAnalysis($selected_user, $selected_year);
         $data['monthly_report'] = CustomHelper::getMonthlyWorkReport($selected_user, $selected_year);
-    
+
         // Attendance + Leave
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
         $data['leave_stats']          = CustomHelper::getEmployeeLeaveStats($selected_user, $selected_year);
-    
+
         // Other info
-        $data['current_user'] = Employee::where('user_id', $selected_user)->first();
+        $data['current_user'] = Employee::with('designation')->where('user_id', $selected_user)->first();
         $data['employees']    = Employee::all();
         $data['meta_title']   = 'User Overview';
-    
+
         return view('reports.my-over-view', $data);
     }
 
@@ -166,8 +166,8 @@ class ReportController extends Controller
                 } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
                     $row['status'] = '<span class="badge bg-label-primary mt-1">' . $dayName . ' Worked</span>';
                 } else {
-                    $row['status'] = $att->signout_time 
-                        ? '<span class="badge bg-label-success mt-1">Complete</span>' 
+                    $row['status'] = $att->signout_time
+                        ? '<span class="badge bg-label-success mt-1">Complete</span>'
                         : '<span class="badge bg-label-warning mt-1">Incomplete</span>';
                 }
             } elseif (in_array($dateStr, $holidays)) {
@@ -238,28 +238,28 @@ class ReportController extends Controller
     public function user_overview(Request $request) {
         $selected_user = $request->input('user') ?? auth()->id();
         $selected_year = $request->input('year'); // optional, pass to helpers
-    
+
         // Monthly hours
         $monthlyData = CustomHelper::getMonthlyTotalHours($selected_user, $selected_year);
         $data['labels']        = $monthlyData['months'];
         $data['average_hours'] = $monthlyData['total_hours'];
-    
+
         // Reports
         $data['work_analysis']  = CustomHelper::getWorkRatingAnalysis($selected_user, $selected_year);
         $data['monthly_report'] = CustomHelper::getMonthlyWorkReport($selected_user, $selected_year);
-    
+
         // Attendance + Leave
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
         $data['leave_stats']          = CustomHelper::getEmployeeLeaveStats($selected_user, $selected_year);
-    
+
         // Other info
         $data['current_user'] = Employee::where('user_id', $selected_user)->first();
         $data['employees']    = Employee::all();
         $data['meta_title']   = 'User Overview';
-    
+
         return view('reports.user-overview.index', $data);
     }
-    
+
     /* */
     public function monthlyOverview() {
         $data['meta_title'] = 'Monthly Overview';
@@ -434,8 +434,8 @@ class ReportController extends Controller
             return [
                 'id'            => $leave->id,
                 'username'      => $leave->Employee->full_name ?? '-',
-                'leave_from'    => Carbon::parse($leave->leave_from)->format('d-m-Y'), 
-                'leave_to'      => Carbon::parse($leave->leave_to)->format('d-m-Y'), 
+                'leave_from'    => Carbon::parse($leave->leave_from)->format('d-m-Y'),
+                'leave_to'      => Carbon::parse($leave->leave_to)->format('d-m-Y'),
                 'leave_count'   => Carbon::parse($leave->leave_from)->diffInDays($leave->leave_to) + 1,
                 'leave_type'    => $leaveBadge,
                 'reason'        => $leave->reason,
@@ -547,9 +547,9 @@ class ReportController extends Controller
         $data['employees'] = Employee::all();
         return view('reports.all-work-report.index', $data);
     }
-    
+
     public function allWorkReportData(Request $request){
-    
+
         $request->validate([
             'employee_id' => 'nullable|integer',
             'day' => 'nullable|string', // optional day filter
@@ -727,7 +727,7 @@ class ReportController extends Controller
             if ($request->filled('month') && $request->filled('year')) {
                 $query->whereYear('signin_date', $request->year);
             }
-            
+
         $records = $query->orderByDesc('signin_date')->get();
 
         return response()->json($records);
