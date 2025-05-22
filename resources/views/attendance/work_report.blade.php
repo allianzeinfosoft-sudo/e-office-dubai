@@ -77,7 +77,7 @@
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_time" class="form-label">No. of Hours</label>
-                                                    <input type="text" name="total_time" id="total_time" placeholder="No. of Hours" step="1" value="{{ date('H:i:s', strtotime($missingReport->balance_time)) }}" class="form-control" required />
+                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours" value="{{ date('H:i', strtotime($missingReport->balance_time)) }}" class="form-control" required />
                                                 </div>
                                             </div>    
 
@@ -194,14 +194,6 @@
 <script>
     $(function() {
 
-        
-        $('#total_time').flatpickr({
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: 'H:i:S',
-            time_24hr: true,
-            enableSeconds: true
-        });
 
         $('.select2').select2();
 
