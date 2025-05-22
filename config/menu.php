@@ -16,6 +16,13 @@ return [
 
     ],
     [
+        'title' => 'Attendance',
+        'icon' => 'ti ti-alarm',
+        'route' => 'attendance',
+        'permission' => ['view attendance'],
+        'isActive' => ['attendance*'],
+    ],
+    [
         'header' => 'Modules'
     ],
     [
@@ -50,13 +57,6 @@ return [
                 'route' =>  '/salarySlip/view',
             ],
         ]
-    ],
-    [
-        'title' => 'Attendance',
-        'icon' => 'ti ti-alarm',
-        'route' => 'attendance',
-        'permission' => ['view attendance'],
-        'isActive' => ['attendance*'],
     ],
     [
         'title' => 'Works',

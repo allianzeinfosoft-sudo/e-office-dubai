@@ -202,7 +202,7 @@
                                   @endif
 
                                 <div class="text-center">
-                                  <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($isLate || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
+                                  <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isLate || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($disableCustomMarkIn || $isLate || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
                                 </div>
 
                               @else
