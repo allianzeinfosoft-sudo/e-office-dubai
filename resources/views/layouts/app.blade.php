@@ -192,63 +192,6 @@
     <script src="{{ asset('assets/js/forms-tagify.js') }}"></script>
      <!-- Vendors JS -->
 
-     <script>
-    function loadNotifications() {
-        fetch("/notifications")
-            .then(response => response.json())
-            .then(data => {
-
-                console.log(data);
-
-                let notifContainer = document.getElementById("notification-dropdown");
-                let notifCount = document.getElementById("notif-count");
-
-                notifCount.textContent = data.count;
-
-                console.log(data.message);
-                let html = "";
-                data.notifications.forEach(notif => {
-                    html += '<li class="list-group-item list-group-item-action dropdown-notifications-item" data-id="'+ notif.id +'">'+ notif.message +'</li>';
-                });
-
-                // notifContainer.innerHTML = html;
-            });
-    }
-
-    // Load initially
-    loadNotifications();
-
-    // Refresh every 30 seconds
-    setInterval(loadNotifications, 30000);
-
-
-    // mark read
-
-    document.querySelectorAll('.dropdown-notifications-item').forEach(item => {
-    item.addEventListener('click', function () {
-        const notificationId = this.getAttribute('data-id');
-
-        fetch(`/notifications/${notificationId}/mark-read`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({})
-        })
-        .then(response => {
-            if (response.ok) {
-                this.classList.add('text-muted'); // Optional visual cue
-            }
-        });
-    });
-});
-
-
-
-    </script>
-
-
     @stack('js')
     @yield('js')
 
