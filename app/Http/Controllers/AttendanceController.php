@@ -800,10 +800,10 @@ class AttendanceController extends Controller{
                 'emp_id'           => $validated['emp_id'],
                 'signin_date'      => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'),
                 'signout_date'     => \Carbon\Carbon::createFromFormat('d-m-Y', $validated['signout_date'])->format('Y-m-d'),
-                'signin_time'      => $validated['signin_time'],
-                'break_time'       => $validated['break_time'] ?? '00:00:00',  // Default to '00:00' if break_time is null
-                'signout_time'     => $validated['signout_time'],
-                'working_hours'    => $validated['working_hours'],
+                'signin_time'      => Carbon::createFromFormat('H:i', $validated['signin_time'])->format('H:i:s'),
+                'break_time'       => Carbon::createFromFormat('H:i', $validated['break_time'])->format('H:i:s') ?? '00:00:00',  // Default to '00:00' if break_time is null
+                'signout_time'     => Carbon::createFromFormat('H:i', $validated['signout_time'])->format('H:i:s'),
+                'working_hours'    => Carbon::createFromFormat('H:i', $validated['working_hours'])->format('H:i:s'),
                 'signin_late_note' => $validated['signin_late_note'] ?? null, // Null if not provided
                 'signout_late_note'=> $validated['signin_late_note'] ?? null, // Same logic for signout_late_note
                 'status'           => 'mark-out',

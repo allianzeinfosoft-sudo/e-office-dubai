@@ -96,7 +96,7 @@
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_time" class="form-label">No. of Hours</label>
-                                                    <input type="text" name="total_time" id="total_time" placeholder="No. of Hours" step="2" value="" class="form-control" required />
+                                                    <input type="time" name="total_time" id="total_time" placeholder="No. of Hours"  value="" class="form-control" required />
                                                 </div>
                                             </div>    
 
@@ -149,14 +149,7 @@
             dateFormat: 'd-m-Y'
         });
 
-        $('#total_time').flatpickr({
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: 'H:i:S',
-            time_24hr: true,
-            enableSeconds: true
-        });
-
+       
         $('#project_name').on('change', function () {
             let project_id = $(this).val();
             if (project_id) {
