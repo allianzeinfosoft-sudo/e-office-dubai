@@ -13,7 +13,7 @@
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.6",
         "pusher/pusher-php-server": "^7.2",
-        "spatie/laravel-permission": "^6.13",
+        "spatie/laravel-permission": "^6.18",
         "yoeunes/toastr": "^2.3"
     },
     "require-dev": {
@@ -72,6 +72,4 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
-
-
 }

@@ -40,7 +40,6 @@ use App\Models\Designation;
 use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 use App\Helpers\CustomHelper;
 
 /*
@@ -53,6 +52,14 @@ use App\Helpers\CustomHelper;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+// Route::get('/', function () {
+//     return view('auth/login');
+// });
+
+// Auth::routes();
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 
 Route::middleware(['web'])->group(function () {
     Auth::routes();  // or your custom login routes
@@ -68,7 +75,6 @@ Route::middleware(['web'])->group(function () {
         return redirect('/');
     })->name('logout');
 });
-
 
 Route::middleware(['web', 'auth'])->group(function () {
     /* Home */
@@ -401,4 +407,3 @@ Route::middleware(['web', 'auth'])->group(function () {
     });
 
 });
-

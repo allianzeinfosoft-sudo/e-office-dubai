@@ -70,8 +70,7 @@ return [
     |
     */
 
-   // 'timezone' => 'UTC',
-    'timezone' => 'Asia/Kolkata',
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +168,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Illuminate\Session\SessionServiceProvider::class,
     ])->toArray(),
 
     /*
