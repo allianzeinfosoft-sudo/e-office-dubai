@@ -341,8 +341,9 @@ class UserController extends Controller
 
     public function destroy(string $id)
     {
+
         $user = User::find($id);
-        $employee = Employee::where('user_id',$id)->fist();
+        $employee = Employee::where('user_id',$id)->first();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User not found'], 404);
         }

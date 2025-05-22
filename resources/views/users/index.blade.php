@@ -116,6 +116,46 @@
 @push('js')
 <script>
     const currentUserRoles = @json(Auth::user()->getRoleNames());
+
+
+
+    function deleteUser(userId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/user-delete/${userId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                        "Content-Type": "application/json"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire("Deleted!", "User has been deleted.", "success").then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire("Error!", "Something went wrong.", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    Swal.fire("Error!", "Could not delete user.", "error");
+                });
+            }
+        });
+    }
+
+
 </script>
 @endpush
 
