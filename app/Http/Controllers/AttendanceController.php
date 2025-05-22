@@ -469,7 +469,7 @@ class AttendanceController extends Controller{
         if ($customAttendance) {
             // Update the existing custom attendance request
             $customAttendance->update([
-                'picktime'    => $request->signin_time,
+                'picktime'    => Carbon::createFromFormat('H:i', $request->signin_time)->format('H:i:s'),
                 'reason'      => $request->signin_late_note ?? 'custom Mark In',
                 'status'      => 0, // Reset to pending on update
                 'approved_by' => null
@@ -488,7 +488,7 @@ class AttendanceController extends Controller{
                 CustomAttendance::create([
                     'username'    => Auth::user()->username,
                     'emp_id'      => $userId,
-                    'picktime'    => $request->signin_time,
+                    'picktime'    => Carbon::createFromFormat('H:i', $request->signin_time)->format('H:i:s'),
                     'reason'      => $request->signin_late_note ?? 'custom Mark In',
                     'signin_date' => $signinDate,
                     'status'      => 0,
@@ -501,7 +501,7 @@ class AttendanceController extends Controller{
                 CustomAttendance::create([
                     'username'    => Auth::user()->username,
                     'emp_id'      => $userId,
-                    'picktime'    => $request->signin_time,
+                    'picktime'    => Carbon::createFromFormat('H:i', $request->signin_time)->format('H:i:s'),
                     'reason'      => $request->signin_late_note ?? 'custom Mark In',
                     'signin_date' => $signinDate,
                     'status'      => 0,
@@ -530,7 +530,7 @@ class AttendanceController extends Controller{
             $markOut->signin_date,
             $markOut->signin_time,
             $request->signout_date,
-            $request->signout_time,
+            Carbon::createFromFormat('H:i', $request->signout_time)->format('H:i:s'),
             $markOut->break_time
         );
 
@@ -550,7 +550,7 @@ class AttendanceController extends Controller{
 
         }
     
-        $markOut->signout_time      = $request->signout_time;
+        $markOut->signout_time      = Carbon::createFromFormat('H:i', $request->signout_time)->format('H:i:s');
         $markOut->signout_date      = $request->signout_date;
         $markOut->signout_late_note = $request->signout_late_note;
         $markOut->status            = 'mark-out';
@@ -570,7 +570,7 @@ class AttendanceController extends Controller{
         $username = Auth::user()->username;
         $userId = Auth::user()->id;
         $signinDate = date('Y-m-d', strtotime($request->signin_date));
-        $time = $request->time_in_out;
+        $time = Carbon::createFromFormat('H:i', $request->time_in_out)->format('H:i:s');
         $lateNote = $request->signin_late_note;
         
         if ($request->type === 'mark-in') {

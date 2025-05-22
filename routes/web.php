@@ -54,12 +54,13 @@ use App\Helpers\CustomHelper;
 |
 */
 
+
 Route::middleware(['web'])->group(function () {
     Auth::routes();  // or your custom login routes
 
     Route::get('/', function () {
-        return view('auth/login');
-    });
+        return view('auth.login'); // Just shows login form
+    })->name('login');
 
     Route::post('/logout', function () {
         Auth::logout();
@@ -67,12 +68,14 @@ Route::middleware(['web'])->group(function () {
         session()->regenerateToken();
         return redirect('/');
     })->name('logout');
+
+    Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
 });
 
 
 Route::middleware(['web', 'auth'])->group(function () {
     /* Home */
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    // Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/attendance-analytics', [HomeController::class, 'getAnalytics'])->name('attendance.analytics');
     Route::get('/leave-summary', [HomeController::class, 'getLeaveSummary'])->name('leave.summary');
 
@@ -92,9 +95,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
     Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
     Route::get('/update-brake-time/{id}', [AttendanceController::class, 'update_brake_time'])->name('update-brake-time');
-
-
-
 
     /* roles */
     Route::resource('roles', RoleController::class);

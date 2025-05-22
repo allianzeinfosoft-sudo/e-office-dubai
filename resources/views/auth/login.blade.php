@@ -33,7 +33,7 @@
               </div>
           <h3 class="mb-1 text-primary fw-bold">{{ __('en.welcome') }} </h3>
           <!-- <p class="mb-4">{{ __('en.slogan') }}</p>  -->
-          <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}">
+          <form id="formAuthentication" class="mb-3" method="POST" action="/login">
             @csrf
             <div class="mb-3">
               <label for="email" class="form-label">{{ __('en.email')}}</label>
