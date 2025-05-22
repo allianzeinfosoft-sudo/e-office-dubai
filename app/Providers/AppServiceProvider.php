@@ -9,9 +9,9 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register()
+    public function register(): void
     {
-        // DO NOT bind request manually!
+        //
     }
 
     /**
@@ -19,7 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Leave empty or load custom helpers if needed
-        // require_once app_path('CustomHelper.php');
+        //
     }
 }

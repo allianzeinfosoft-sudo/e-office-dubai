@@ -7,7 +7,7 @@
     </ul>
 </div>
 @endif
-<form action="{{ route('update.user.shift') }}" method="POST" id="chagne-shift-form" enctype="multipart/form-data">
+<form action="{{ route('update.user.shift') }}" method="POST" id="chagne-shift-form" enctype="multipart/form-data" style="height:500px !important;">
     @csrf
 
     <div class="row">
