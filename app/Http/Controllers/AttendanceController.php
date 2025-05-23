@@ -41,10 +41,7 @@ class AttendanceController extends Controller{
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
-        $joinDate = Carbon::parse($user->employee?->join_date);
-        $holidayGroup = $user->employee?->holidayGroup;
-
-        if($joinDate == $today){
+        if($user->employee?->join_date == $today){
             return view('attendance.index', $data);
         }
 
@@ -72,37 +69,19 @@ class AttendanceController extends Controller{
         }
 
         // Fetch all holidays in the current month
-        $holidays = DB::table('holidays')
-            ->where('holiday_group', $holidayGroup)
-            ->whereBetween('date', [
-                Carbon::parse("$currentMonth-01")->toDateString(),
-                Carbon::parse("$currentMonth-$daysInMonth")->toDateString()
-            ])
-            ->pluck('date')
-            ->toArray();
+        $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
 
         // Fetch all attendance records for the user in this month
         $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
-           
+
         for ($day = 1; $day < now()->day; $day++) {
-            $checkDate = Carbon::createFromFormat('Y-m-d', "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT));
-            
-            if($joinDate -> lt($checkDate)){
-                continue;
-            }
-            
-            
-            $date = Carbon::createFromFormat('Y-m-d', "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT))->toDateString();
+            $date           = "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
             $dayOfWeek      = date('w', strtotime($date));
             $isWeekOff      = in_array($dayOfWeek, $weekOffDays);
             $isHoliday      = in_array($date, $holidays);
             $hasAttendance  = in_array($date, $attendanceDays);
 
-            
-            
-
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
-
                 // Check if leave exists that covers this date
                 $leaveExists = DB::table('leaves')
                 ->where('user_id', $user->id)
@@ -164,7 +143,7 @@ class AttendanceController extends Controller{
 
         $todayHours                      = intdiv($todayMinutes, 60);
         $todayMins                       = $todayMinutes % 60;
-        $data['todayWorkedHours']        = CustomHelper::getCurrentWorkingTime(Auth::user()->id);
+        $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
 
@@ -350,7 +329,7 @@ class AttendanceController extends Controller{
             return view('attendance.no_action_from', $data);
         }
 
-        return view('attendance.index', $data);
+        return view('attendance.index', $data); 
     }
 
 
