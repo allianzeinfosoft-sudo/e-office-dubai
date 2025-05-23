@@ -78,16 +78,16 @@ class AttendanceController extends Controller{
         for ($day = 1; $day < now()->day; $day++) {
             $date = Carbon::createFromFormat('Y-m-d', "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT));
             
-            if ($date->lt($joinDate)) {
-                continue;
-            }
-
             $dayOfWeek      = date('w', strtotime($date));
             $isWeekOff      = in_array($dayOfWeek, $weekOffDays);
             $isHoliday      = in_array($date, $holidays);
             $hasAttendance  = in_array($date, $attendanceDays);
 
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
+
+                if ($date->lt($joinDate)) {
+                    continue;
+                }
                 // Check if leave exists that covers this date
                 $leaveExists = DB::table('leaves')
                 ->where('user_id', $user->id)
