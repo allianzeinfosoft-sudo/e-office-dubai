@@ -90,6 +90,11 @@ class AttendanceController extends Controller{
                 ->exists();
 
                 if (!$leaveExists) {
+
+                    if($user->employee?->join_date > $date){
+                        return view('attendance.index', $data);
+                    }
+
                     // User missed work on a working day without leave
                     $data['date'] = $date;
                     $data['error'] = "You missed work on ". date('d-m-Y', strtotime($date))  ." without apply leave. Please click here to
