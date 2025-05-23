@@ -85,9 +85,6 @@ class AttendanceController extends Controller{
 
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
 
-                if ($date->lt($joinDate)) {
-                    continue;
-                }
                 // Check if leave exists that covers this date
                 $leaveExists = DB::table('leaves')
                 ->where('user_id', $user->id)
@@ -96,6 +93,9 @@ class AttendanceController extends Controller{
                 ->exists();
 
                 if (!$leaveExists) {
+                    if ($date->lt($joinDate)) {
+                        continue;
+                    }
                     // User missed work on a working day without leave
                     $data['date'] = $date;
                     $data['error'] = "You missed work on ". date('d-m-Y', strtotime($date))  ." without apply leave. Please click here to
