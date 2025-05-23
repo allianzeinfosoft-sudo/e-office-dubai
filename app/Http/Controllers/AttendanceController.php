@@ -74,8 +74,15 @@ class AttendanceController extends Controller{
         // Fetch all attendance records for the user in this month
         $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
 
+        $joinDate = Carbon::parse($user->employee?->join_date);
+
         for ($day = 1; $day < now()->day; $day++) {
             $date           = "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
+
+            if ($date->lt($joinDate)) {
+                continue;
+            }
+            
             $dayOfWeek      = date('w', strtotime($date));
             $isWeekOff      = in_array($dayOfWeek, $weekOffDays);
             $isHoliday      = in_array($date, $holidays);
@@ -90,10 +97,6 @@ class AttendanceController extends Controller{
                 ->exists();
 
                 if (!$leaveExists) {
-
-                    if($user->employee?->join_date > $date){
-                        return view('attendance.index', $data);
-                    }
 
                     // User missed work on a working day without leave
                     $data['date'] = $date;
