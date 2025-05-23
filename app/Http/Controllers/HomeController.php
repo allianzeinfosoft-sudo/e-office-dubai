@@ -43,16 +43,12 @@ class HomeController extends Controller
         // Total Working Hours
         $attendances = Attendance::where('status', 'mark-out')->where('emp_id', $user->id)->whereBetween('signin_date', [$fromDate, $toDate]) ->get();
 
-        $totalWorkingSeconds = 0;
-        foreach ($attendances as $att) {
-            if ($att->working_hours) {
-                $parts = explode(':', $att->working_hours);
-                
-                $totalWorkingSeconds += ($parts[0] ?? 0) * 3600 + ($parts[1] ?? 0) * 60 + ($parts[2] ?? 0);
-            }
-        }
-        
-        $averageWorkingSeconds = $attendances->count() > 0 ? $totalWorkingSeconds / $attendances->count() : 0;
+        $totalWorkHours = Attendance::where('emp_id', $user->id)
+                ->whereYear('signin_date', $selected_year)
+                ->whereBetween('signin_date', [$fromDate, $toDate])
+                ->where('status', 'mark-out')
+                ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
+                ->first();
 
 
         // Convert seconds to H:i:s
@@ -62,8 +58,8 @@ class HomeController extends Controller
             return sprintf('%02d:%02d', $hours, $minutes);
         }
 
-        $data['totalWorkingTime']   = formatTime($totalWorkingSeconds);
-        $data['averageWorkingTime'] = formatTime($averageWorkingSeconds);
+        $data['totalWorkingTime']   = $totalWorkHours->total_hours;
+        $data['averageWorkingTime'] = $totalWorkHours->avg_hours;
         $data['workingDays']        = $attendances->count();
 
         // Leave count
@@ -85,42 +81,49 @@ class HomeController extends Controller
         return auth()->user()->notifications;
     }
 
-    public function getAnalytics(Request $request)
-{
-    $user = Auth::user();
-    $range = $request->range;
+    public function getAnalytics(Request $request){
+        $user = Auth::user();
+        $range = $request->range;
 
-    $now = Carbon::now();
-    switch ($range) {
-        case 'today':
-            $from = $now->copy()->startOfDay();
-            $to = $now->copy()->endOfDay();
-            break;
-        case 'yesterday':
-            $from = $now->copy()->subDay()->startOfDay();
-            $to = $now->copy()->subDay()->endOfDay();
-            break;
-        case 'last_7_days':
-            $from = $now->copy()->subDays(6)->startOfDay();
-            $to = $now->copy()->endOfDay();
-            break;
-        case 'last_30_days':
-            $from = $now->copy()->subDays(29)->startOfDay();
-            $to = $now->copy()->endOfDay();
-            break;
-        case 'last_month':
-            $from = $now->copy()->subMonth()->startOfMonth();
-            $to = $now->copy()->subMonth()->endOfMonth();
-            break;
-        default: // current_month
-            $from = $now->copy()->startOfMonth();
-            $to = $now->copy()->endOfMonth();
-            break;
-    }
+        $now = Carbon::now();
+        switch ($range) {
+            case 'today':
+                $from = $now->copy()->startOfDay();
+                $to = $now->copy()->endOfDay();
+                break;
+            case 'yesterday':
+                $from = $now->copy()->subDay()->startOfDay();
+                $to = $now->copy()->subDay()->endOfDay();
+                break;
+            case 'last_7_days':
+                $from = $now->copy()->subDays(6)->startOfDay();
+                $to = $now->copy()->endOfDay();
+                break;
+            case 'last_30_days':
+                $from = $now->copy()->subDays(29)->startOfDay();
+                $to = $now->copy()->endOfDay();
+                break;
+            case 'last_month':
+                $from = $now->copy()->subMonth()->startOfMonth();
+                $to = $now->copy()->subMonth()->endOfMonth();
+                break;
+            default: // current_month
+                $from = $now->copy()->startOfMonth();
+                $to = $now->copy()->endOfMonth();
+                break;
+        }
 
-    $attendances = Attendance::where('emp_id', $user->id)
-        ->whereBetween('signin_date', [$from->toDateString(), $to->toDateString()])
-        ->get();
+        $attendances = Attendance::where('emp_id', $user->id)
+            ->where('status', 'mark-out')
+            ->whereBetween('signin_date', [$from->toDateString(), $to->toDateString()])
+            ->get();
+
+        $totalWorkHours = Attendance::where('emp_id', $user->id)
+            ->whereBetween('signin_date', [$from->toDateString(), $to->toDateString()])
+            ->where('status', 'mark-out')
+            ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
+            ->first();
+
 
     $totalWorkingSeconds = 0;
     foreach ($attendances as $att) {
@@ -142,8 +145,8 @@ class HomeController extends Controller
         ->count();
 
     return response()->json([
-        'totalWorkingTime' => $formatTime($totalWorkingSeconds),
-        'averageWorkingTime' => $formatTime($averageWorkingSeconds),
+        'totalWorkingTime' => $totalWorkHours->total_hours,
+        'averageWorkingTime' => $totalWorkHours->avg_hours,
         'workingDays' => $attendances->count(),
         'leaveCount' => $leaveCount
     ]);

@@ -532,25 +532,25 @@
   updateLeaveSummary('current_month');
 
   $(document).on('click', '.filter-range', function () {
-  const range = $(this).data('range');
 
-  $.ajax({
-    url: "{{ route('attendance.analytics') }}",
-    method: 'GET',
-    data: { range: range },
-    beforeSend: function () {
-      // Optionally show loader
-    },
-    success: function (response) {
-      $('#totalWorkingTime').text(response.totalWorkingTime);
-      $('#averageWorkingTime').text(response.averageWorkingTime);
-      $('#workingDays').text(response.workingDays);
-      $('#leaveCount').text(response.leaveCount);
-    },
-    error: function () {
-      alert('Failed to fetch attendance data.');
-    }
-  });
+    const range = $(this).data('range');
+    $.ajax({
+      url: "{{ route('attendance.analytics') }}",
+      method: 'GET',
+      data: { range: range },
+      beforeSend: function () {
+        // Optionally show loader
+      },
+      success: function (response) {
+        $('#totalWorkingTime').text(response.totalWorkingTime);
+        $('#averageWorkingTime').text(response.averageWorkingTime);
+        $('#workingDays').text(response.workingDays);
+        $('#leaveCount').text(response.leaveCount);
+      },
+      error: function () {
+        alert('Failed to fetch attendance data.');
+      }
+    });
 });
 
 
