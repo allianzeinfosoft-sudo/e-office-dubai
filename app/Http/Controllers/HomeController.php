@@ -146,7 +146,7 @@ class HomeController extends Controller
 
     return response()->json([
         'totalWorkingTime' => $totalWorkHours->total_hours,
-        'averageWorkingTime' => $totalWorkHours->avg_hours,
+        'averageWorkingTime' => round($totalWorkHours->avg_hours, 2),
         'workingDays' => $attendances->count(),
         'leaveCount' => $leaveCount
     ]);
