@@ -188,6 +188,7 @@ public function getLeaveSummary(Request $request)
     $fullLeaves = 0;
     $halfLeaves = 0;
     $offDays = 0;
+    $leaveBalance = 0;
 
     foreach ($leavesInRange as $leave) {
         // Calculate the number of days for each leave
@@ -225,7 +226,8 @@ public function getLeaveSummary(Request $request)
         }, 0);
 
     // Define total leaves allotted (can be made dynamic)
-    $totalLeavesAllotted = $leave_allocated ? $leave_allocated->total_leaves : 0;
+     $totalLeavesAllotted = $leave_allocated ? $leave_allocated->total_leaves : 0;
+     $leaveBalance = $leave_allocated ? $leave_allocated->remaining_leaves : 0;
 
     return response()->json([
         'leaveThisMonth' => $leaveThisMonth,
@@ -235,7 +237,8 @@ public function getLeaveSummary(Request $request)
         'totalLeavesAllotted' => $totalLeavesAllotted,
         'fullLeaves' => $fullLeaves,
         'halfLeaves' => $halfLeaves,
-        'offDays' => $offDays
+        'offDays' => $offDays,
+        'leaveBalance' => $leaveBalance
     ]);
 }
 

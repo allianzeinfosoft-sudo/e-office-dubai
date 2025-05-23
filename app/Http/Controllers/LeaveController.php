@@ -149,7 +149,7 @@ class LeaveController extends Controller
          }
          else
          {
-            $approver = User::where('email', 'binojn@mail.allianzegroup.com')->first()?->id;
+            $approver = User::where('email', 'binojn@mail.allianzegroup11.com')->first()?->id;
          }
 
         $leaveData = [
@@ -648,7 +648,7 @@ class LeaveController extends Controller
                 return [
                     'id' => $leaveApprover->id,
                     'department' => $leaveApprover->department ? $leaveApprover->dept->department : '',
-                    'approver' => $leaveApprover->approver ? $leaveApprover->employee->full_name : '',
+                    'approver' => $leaveApprover->employee ? $leaveApprover->employee->full_name : '',
                     'level' => $leaveApprover->approval_level ? $leaveApprover->approval_level : '',
                     // 'count' => $leaveApprover->approve_count ? $leaveApprover->approve_count : '',
                 ];

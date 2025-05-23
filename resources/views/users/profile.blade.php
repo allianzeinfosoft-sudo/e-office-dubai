@@ -101,6 +101,9 @@
                         <li class="d-flex align-items-center justify-content-between mb-3">
                           <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Join Date: &nbsp;</span><span>{{ $user->employee->dob ? \Carbon\Carbon::parse($user->employee->join_date)->format('d-m-Y') : 'N/A' }}</span>
                         </li>
+                        <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-user mt-n2"></i>Reporting To: &nbsp;</span><span>{{ $user->reporting_to->full_name ?? 'N/A'  }}</span>
+                        </li>
                         <hr>
                         <li class="d-flex align-items-center mb-3">
                           <div class="timeline-event">
@@ -250,8 +253,8 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2">{{ $leave_info->off_day_leavecount ?? 0 }}</h5>
-                              <small>Off Days</small>
+                              <h5 class="mb-0 me-2">{{ $leave_info->balance_leave ?? 0 }}</h5>
+                              <small>Leave Balance</small>
                             </div>
                             <div class="card-icon">
                               <span class="badge bg-label-success rounded-pill p-2">

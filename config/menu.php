@@ -38,7 +38,7 @@ return [
                 'permission' => ['view users'],
             ],
             [
-                'title' => 'Resigned Users',
+                'title' => 'Locked Users',
                 'route' =>  '/locked-users',
                 'permission' => ['view resigned users'],
             ],

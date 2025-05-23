@@ -37,7 +37,10 @@
                     <div class="row mt-md-4">
 
 
-                        @if ($thought)
+                        @if ($thoughts)
+                        @foreach ($thoughts as $thought)
+
+
                             <div class="container-fluid">
                                 <div class="row">
                                     <!-- Thought content -->
@@ -73,7 +76,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                            @endforeach
                             @else
                                 <div class="alert alert-warning text-center">No thought available for today.</div>
                             @endif

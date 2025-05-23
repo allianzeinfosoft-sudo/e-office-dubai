@@ -114,7 +114,8 @@ return [
         'tue' => "Tue",
         'wed' => 'Wed',
         'Thu' => 'Thu',
-        'fri'   => 'Fri'
+        'fri'   => 'Fri',
+        'sat'   => 'Sat'
     ],
     'months' => [
         'jan' => 'Jan',

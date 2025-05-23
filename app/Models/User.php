@@ -50,6 +50,10 @@ class User extends Authenticatable
         return $this->hasOne(Employee::class, 'user_id', 'id');
     }
 
+    public function reporting_to(){
+        return $this->hasOne(Employee::class, 'reporting_to', 'id');
+    }
+
     public function projects(){
         return $this->hasMany(Project::class, 'project_add_person'); // Adjust if 'project_add_person' is the foreign key
     }

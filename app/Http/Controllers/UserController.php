@@ -373,10 +373,10 @@ class UserController extends Controller
         }
         if ($user->trashed()) {
             $user->restore();
-            if ($employee) {
-                $employee->status = 2; // e.g., 'active', 'inactive', 1, 0, etc.
-                $employee->save();
-            }
+            // if ($employee) {
+            //     $employee->status = 2; // e.g., 'active', 'inactive', 1, 0, etc.
+            //     $employee->save();
+            // }
             Cache::forget('users');
             return response()->json(['success' => true, 'message' => 'User restored successfully.']);
         }else{
@@ -460,7 +460,7 @@ class UserController extends Controller
         })->sum('leave_day_count');
 
         $leave_alloted = $user->leave_allocation?->total_leaves;
-
+        $balance_leave = $user->leave_allocation?->remaining_leaves;
         // Past year leave count
         $now = now();
         $pastYear = $now->subYear()->format('Y');
@@ -477,6 +477,7 @@ class UserController extends Controller
             'approved_leaves' => $approved_leave,
             'this_month_leave' => $this_month_leave,
             'leave_alloted' => $leave_alloted,
+            'balance_leave' => $balance_leave,
             'past_year_leavecount' => $pastyear_leave_count,
             'off_day_leavecount' => $off_day_leavecount,
             'full_day_leavecount' => $full_day_leavescount,
