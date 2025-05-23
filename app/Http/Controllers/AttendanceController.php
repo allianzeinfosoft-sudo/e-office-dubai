@@ -481,6 +481,7 @@ class AttendanceController extends Controller{
             $customAttendance->update([
                 'picktime'    => CustomHelper::formatTimeToSeconds($request->signin_time),
                 'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                'break_time' => '01:00:00',
                 'status'      => 0, // Reset to pending on update
                 'approved_by' => null
             ]);
@@ -500,6 +501,7 @@ class AttendanceController extends Controller{
                     'emp_id'      => $userId,
                     'picktime'    => CustomHelper::formatTimeToSeconds($request->signin_time),
                     'reason'      => $request->signin_late_note ?? 'custom Mark In',
+                    'break_time' => '01:00:00',
                     'signin_date' => $signinDate,
                     'status'      => 0,
                     'approved_by' => null,
@@ -514,6 +516,7 @@ class AttendanceController extends Controller{
                     'picktime'    => CustomHelper::formatTimeToSeconds($request->signin_time),
                     'reason'      => $request->signin_late_note ?? 'custom Mark In',
                     'signin_date' => $signinDate,
+                    'break_time' => '01:00:00',
                     'status'      => 0,
                     'approved_by' => null,
                 ]);
@@ -598,6 +601,7 @@ class AttendanceController extends Controller{
                     'signin_date' => $signinDate,
                     'signin_time' => $time,
                     'punchin_type' => 'emergency',
+                    'break_time' => '00:30:00',
                     'signin_late_note' => $lateNote,
                 ]);
 
@@ -636,7 +640,6 @@ class AttendanceController extends Controller{
                     'punchout_type' => 'emergency',
                     'signout_late_note' => $lateNote,
                     'working_hours' => $totalWorkingTime,
-                    'break_time' => '00:00:00',
                 ]);
 
                 // return redirect()->route('work-report.emerbency-work-report')->with('success', 'Marked Out successfully!');
