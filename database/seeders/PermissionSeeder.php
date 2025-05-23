@@ -16,7 +16,7 @@ class PermissionSeeder extends Seeder
         $categoriesWithPermissions = [
             'User Management' => [
                 'view users', 'create users', 'edit users', 'delete users',
-                'assign roles', 'reset user password', 'search users', 'user switching','view birthday'
+                'assign roles', 'reset user password', 'search users', 'user switching','view birthday','view resigned users'
             ],
             'Account' =>[
                 'view profile','change password', 'edit profile','lock profile'

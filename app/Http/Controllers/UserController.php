@@ -41,6 +41,11 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
+    public function locked_index()
+    {
+        return view('users.resigned-users');
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -343,48 +348,68 @@ class UserController extends Controller
     {
 
         $user = User::find($id);
-        $employee = Employee::where('user_id',$id)->first();
+        // $employee = Employee::where('user_id',$id)->first();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User not found'], 404);
         }
-        if (!$employee) {
-            return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
-        }
-        $employee->delete();
+        // if (!$employee) {
+        //     return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
+        // }
+        // $employee->delete();
         $user->delete();
         Cache::forget('users');
         return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
     }
 
 
+
+
     public function getUsers()
     {
-        $users = User::join('employees', 'users.id', '=', 'employees.user_id')
-                ->select(
-                    'users.id',
-                    'users.email',
-                    'employees.employeeID',
-                    'users.username',
-                    'employees.phonenumber',
-                    'employees.status',
-                    'users.role',
-                    'employees.full_name',
-                    'employees.profile_image'
-                )
-                ->with('roles') // Ensure roles relationship is loaded
+        $users = User::with('roles','employee')
                 ->get()
                 ->map(function ($users) {
                     return [
                         'id' => $users->id,
-                        'full_name' => $users->full_name,
+                        'full_name' => $users->employee->full_name,
                         'group' => $users->role,
                         'role' => $users->employee->role,
                         'username' => $users->username,
-                        'employeeID' => 'AIS-'.$users->employeeID,
-                        'phonenumber' => $users->phonenumber,
+                        'employeeID' => 'AIS-'.$users->employee->employeeID,
+                        'phonenumber' => $users->employee->phonenumber,
                         'email' => $users->email,
                         'current_plan' => 'Enterprise',
-                        'profile_image' => $users->profile_image,
+                        'profile_image' => $users->employee->profile_image,
+                        'status' => $users->employee->status,
+                         "avatar" => "",
+                    ];
+                });
+
+
+
+        $response = response()->json(['data' => $users]);
+
+        $json_data = json_decode($response->getContent(), true)['data'];
+        return json_encode(['data' => $json_data]);
+    }
+
+    public function lockedUsers()
+    {
+        $users = User::onlyTrashed()
+                ->with('roles','employee') // Ensure roles relationship is loaded
+                ->get()
+                ->map(function ($users) {
+                    return [
+                        'id' => $users->id,
+                        'full_name' => $users->employee->full_name,
+                        'group' => $users->role,
+                        'role' => $users->employee->role,
+                        'username' => $users->username,
+                        'employeeID' => 'AIS-'.$users->employee->employeeID,
+                        'phonenumber' => $users->employee->phonenumber,
+                        'email' => $users->email,
+                        'current_plan' => 'Enterprise',
+                        'profile_image' => $users->employee->profile_image,
                         'status' => $users->status,
                          "avatar" => "",
                     ];
@@ -395,6 +420,7 @@ class UserController extends Controller
         $response = response()->json(['data' => $users]);
 
         $json_data = json_decode($response->getContent(), true)['data'];
+        // dd($json_data);
         return json_encode(['data' => $json_data]);
     }
 

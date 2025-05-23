@@ -31,9 +31,9 @@ return [
                 'permission' => ['view users'],
             ],
             [
-                'title' => 'Add Users',
-                'route' =>  '/users/create',
-                'permission' => ['view userCreate'],
+                'title' => 'Resigned Users',
+                'route' =>  '/locked-users',
+                'permission' => ['view resigned users'],
             ],
         ]
     ],

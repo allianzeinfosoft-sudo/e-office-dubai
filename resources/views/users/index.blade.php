@@ -24,7 +24,7 @@
             <!-- Users List Table -->
             <div class="card">
               <div class="card-header border-bottom">
-                <h5 class="card-title mb-3">Search Filter</h5>
+                <h5 class="card-title mb-3">Users</h5>
                 <div class="d-flex justify-content-between align-items-center row pb-2 gap-3 gap-md-0">
                   <div class="col-md-4 user_role"></div>
                   <div class="col-md-4 user_plan"></div>
@@ -48,7 +48,7 @@
                 @endhasanyrole
 
 
-                <table class="datatables-users table border-top">
+                <table id="userTable" class="datatables-users table border-top">
                   <thead>
                     <tr>
                       <th>S.No</th>
@@ -141,7 +141,7 @@
                 .then(data => {
                     if (data.success) {
                         Swal.fire("Deleted!", "User has been deleted.", "success").then(() => {
-                            location.reload();
+                            $('#userTable').DataTable().ajax.reload();
                         });
                     } else {
                         Swal.fire("Error!", "Something went wrong.", "error");
