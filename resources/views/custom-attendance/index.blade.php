@@ -85,7 +85,7 @@
                         data: 'profile_image',
                         title: '<i class="ti ti-users"></i>',
                         render: function (data, type, row) {
-                            return `<img src="/storage/${data}" alt="User" class="rounded-circle" width="40" height="40">`;
+                            return `<img src="/storage/${row.profile_image}" alt="${row.username}" class="rounded-circle" width="40" height="40">`;
                         }
                     },
                     { data: 'username', title: 'Username' },

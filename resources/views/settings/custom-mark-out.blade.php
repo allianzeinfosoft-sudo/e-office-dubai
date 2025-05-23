@@ -113,7 +113,7 @@
 
                     <div class="col-4 mb-3">
                         <label for="signout_time" class="form-label">Mark-out Time <span class="text-danger">*</span></label>
-                        <input class="form-control" type="time" id="signout_time" name="signout_time" step="1" value=""  placeholder="Time" />
+                        <input class="form-control" type="time" id="signout_time" name="signout_time" value="{{ \Carbon\Carbon::now('Asia/Kolkata')->format('H:i') }}"  placeholder="Time" />
                         <input type="hidden" id="signout_date" name="signout_date"  value="" />
                         <input type="hidden" id="attendance_id" name="attendance_id"  value="" />
                         <input type="hidden" id="signout_late_note" name="signout_late_note"  value="Admin side logout" />

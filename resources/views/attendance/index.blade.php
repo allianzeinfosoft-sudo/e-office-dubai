@@ -316,7 +316,7 @@
   
             <div class="col-12 mb-3">
               <label for="signin_time" class="form-label">Time</label>
-              <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ date('H:i', strtotime('now')) }}"  placeholder="Time" />
+              <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ \Carbon\Carbon::now('Asia/Kolkata')->format('H:i') }}"  placeholder="Time" />
               <input type="hidden" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
             </div>
   
@@ -356,7 +356,7 @@
   
             <div class="col-12 mb-3">
               <label for="time_in_out" class="form-label">Time</label>
-              <input type="time" id="time_in_out" name="time_in_out" class="form-control" value="{{ date('H:i') }}" placeholder="Time" />
+              <input type="time" id="time_in_out" name="time_in_out" class="form-control" value="{{ \Carbon\Carbon::now('Asia/Kolkata')->format('H:i') }}" placeholder="Time" />
             </div>
           </form>
         </div>
