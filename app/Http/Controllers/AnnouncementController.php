@@ -78,12 +78,12 @@ class AnnouncementController extends Controller
 
         $recipients = Employee::whereNotNull('user_id')->pluck('user_id')->toArray();
 
-                    $message = 'New Announcement Created';
-                    createNotification([
-                        'type' => 'announcement',
-                        'recipients' => $recipients,
-                        'message' => $message,
-                    ]);
+                    // $message = 'New Announcement Created';
+                    // createNotification([
+                    //     'type' => 'announcement',
+                    //     'recipients' => $recipients,
+                    //     'message' => $message,
+                    // ]);
 
         return response()->json([
             'message' => 'Announcement saved successfully!',

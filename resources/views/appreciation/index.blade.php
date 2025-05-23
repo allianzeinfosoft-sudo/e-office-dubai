@@ -291,9 +291,9 @@
                 let appreciation = data.appreciation;
 
                 let cleanContent = appreciation.appreciation_details?.replace(/^<p>|<\/p>$/g, '') || '';
-
+                const appreciantIds = appreciation.appreciant.split(',');
                 $('#target_id').val(appreciation.id);
-                $('#appreciant').val(appreciation.appreciant);
+                $('#appreciant').val(appreciantIds).trigger('change');
                 $('#display_date').val(appreciation.display_date);
                 $('#appreciation_details').val(cleanContent);
                 $('#picture').val([appreciation.picture]);
