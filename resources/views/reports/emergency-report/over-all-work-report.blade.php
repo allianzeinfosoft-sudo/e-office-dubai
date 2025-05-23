@@ -108,7 +108,7 @@
 
                                             <div class="col-sm-12">
                                                 <div class="form-group mb-3">
-                                                    <button type="submit" class="btn btn-primary">Find</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
                                                 </div>     
                                             </div>
                                         </div>
