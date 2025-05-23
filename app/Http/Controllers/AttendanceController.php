@@ -85,9 +85,14 @@ class AttendanceController extends Controller{
         $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
            
         for ($day = 1; $day < now()->day; $day++) {
-
-            $date = Carbon::createFromFormat('Y-m-d', "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT))->toDateString();
+            $checkDate = Carbon::createFromFormat('Y-m-d', "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT));
             
+            if($joinDate -> lt($checkDate)){
+                continue;
+            }
+            
+            
+            $date = Carbon::createFromFormat('Y-m-d', "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT))->toDateString();
             $dayOfWeek      = date('w', strtotime($date));
             $isWeekOff      = in_array($dayOfWeek, $weekOffDays);
             $isHoliday      = in_array($date, $holidays);
