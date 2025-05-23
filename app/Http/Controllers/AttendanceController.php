@@ -30,7 +30,7 @@ class AttendanceController extends Controller{
      */
     public function index() {
         $data['meta_title'] = 'Attendance';
-        
+
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
@@ -41,7 +41,9 @@ class AttendanceController extends Controller{
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
-        if($user->employee?->join_date == $today){
+        $joinDate = Carbon::parse($user->employee?->join_date);
+
+        if($joinDate == $today){
             return view('attendance.index', $data);
         }
 
@@ -69,12 +71,10 @@ class AttendanceController extends Controller{
         }
 
         // Fetch all holidays in the current month
-        $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
+        $holidays = DB::table('holidays')->where('holiday_group', $user->employee?->holidayGroup)->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
 
         // Fetch all attendance records for the user in this month
         $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
-
-        $joinDate = Carbon::parse($user->employee?->join_date);
 
         for ($day = 1; $day < now()->day; $day++) {
             $date = Carbon::createFromFormat('Y-m-d', "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT));
