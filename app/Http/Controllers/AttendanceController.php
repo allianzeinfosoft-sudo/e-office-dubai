@@ -85,10 +85,6 @@ class AttendanceController extends Controller{
 
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
 
-                if($joinDate->gt($date)){
-                    continue;
-                }
-
                 // Check if leave exists that covers this date
                 $leaveExists = DB::table('leaves')
                 ->where('user_id', $user->id)
