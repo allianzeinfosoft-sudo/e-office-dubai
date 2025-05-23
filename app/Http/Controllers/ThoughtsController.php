@@ -110,9 +110,7 @@ class ThoughtsController extends Controller
     public function view_thoughts()
     {
         $today = Carbon::today()->toDateString();
-
-        $thought = Thoughts::whereDate('display_date', $today)->first();
-
-        return view('views.thought_of_day', compact('thought'));
+        $thoughts = Thoughts::whereDate('display_date', $today)->get();
+        return view('views.thought_of_day', compact('thoughts'));
     }
 }

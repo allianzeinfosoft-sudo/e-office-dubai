@@ -190,8 +190,8 @@
                         <div class="card">
                           <div class="card-body d-flex justify-content-between align-items-center">
                             <div class="card-title mb-0">
-                              <h5 class="mb-0 me-2" id="offDays">0</h5>
-                              <small>Off Days</small>
+                              <h5 class="mb-0 me-2" id="leaveBalance">0</h5>
+                              <small>Leave Balance</small>
                             </div>
                             <div class="card-icon">
                               <span class="badge bg-label-warning rounded-pill p-2">
@@ -562,7 +562,7 @@ function updateLeaveSummary(range) {
     success: function (response) {
       $('#leaveThisMonth').text(response.leaveThisMonth);
       $('#totalLeavesTaken').text(response.totalLeavesTaken);
-      $('#offDays').text(response.offDays);
+      $('#leaveBalance').text(response.leaveBalance);
       $('#pendingLeaves').text(response.pendingLeaves);
       $('#totalLeavesAllotted').text(response.totalLeavesAllotted);
       $('#pastYearLeaves').text(response.pastYearLeaves);
