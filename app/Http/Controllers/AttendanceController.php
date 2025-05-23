@@ -75,6 +75,7 @@ class AttendanceController extends Controller{
         $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
 
         $joinDate = Carbon::parse($user->employee?->join_date);
+
         for ($day = 1; $day < now()->day; $day++) {
             $date = Carbon::createFromFormat('Y-m-d', "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT));
             
@@ -93,9 +94,6 @@ class AttendanceController extends Controller{
                 ->exists();
 
                 if (!$leaveExists) {
-                    if ($date->lt($joinDate)) {
-                        continue;
-                    }
                     // User missed work on a working day without leave
                     $data['date'] = $date;
                     $data['error'] = "You missed work on ". date('d-m-Y', strtotime($date))  ." without apply leave. Please click here to
