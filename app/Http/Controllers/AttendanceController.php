@@ -370,7 +370,7 @@ class AttendanceController extends Controller{
             'username' => Auth::user()->username,
             'emp_id' => Auth::user()->id,
             'signin_date' => now()->format('Y-m-d'),
-            'signin_time' => now()->format('H:i:s'),
+            'signin_time' => CustomHelper::formatTimeToSeconds(now()->format('H:i')), 
             'punchin_type' => 'Web',
             'break_time' => '01:00:00',
             'ipaddress' => $request->ip(),
@@ -409,12 +409,13 @@ class AttendanceController extends Controller{
                 ]
             ]);
         }
-
+        $signoutTime = CustomHelper::formatTimeToSeconds(now()->format('H:i'));
+        
         $workingTime = CustomHelper::calculateTotalWorkingTime(
             $attendance->signin_date,
             $attendance->signin_time,
             now()->format('Y-m-d'),
-            now()->format('H:i:s'),
+            $signoutTime,
             $attendance->break_time
         );
 
@@ -433,7 +434,7 @@ class AttendanceController extends Controller{
         }
 
         $attendance->update([
-            'signout_time' => now()->format('H:i:s'),
+            'signout_time' => $signoutTime,
             'signout_date' => now()->format('Y-m-d'),
             'punchout_type' => 'Web',
             'status' => 'mark-out',
