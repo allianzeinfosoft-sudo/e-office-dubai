@@ -353,50 +353,89 @@ class ReportController extends Controller
     public function dailyAttendanceData(Request $request){
 
         $reportDate = Carbon::createFromFormat('d-m-Y', $request->report_date ?? now()->format('d-m-Y'))->format('Y-m-d');
-        $attendances = Attendance::with('employee')
-            ->whereDate('signin_date', $reportDate)
-            ->get();
+
+        // Get all active employees
+        $employees = Employee::with('user')->get();
+
+        // Get all attendances for the day
+        $attendances = Attendance::whereDate('signin_date', $reportDate)->get()->keyBy('emp_id');
+
+        // Get all leaves for the day
+        $leaves = Leave::whereDate('leave_from', '<=', $reportDate)
+            ->whereDate('leave_to', '>=', $reportDate)
+            ->get()
+            ->groupBy('user_id');
 
         $data = [];
 
-        foreach ($attendances as $index => $attendance) {
-            $user = $attendance->employee;
-            $name = $user->full_name ?? 'NA';
+        foreach ($employees as $index => $employee) {
+            $user = $employee->user;
+            $userId = $employee->user_id;
+            $name = $employee->full_name ?? 'NA';
+
             $initials = collect(explode(' ', trim($name)))
-                ->filter(fn($w) => !empty($w))  // Remove empty parts
-                ->map(fn($w) => strtoupper($w[0])) // Safe now
+                ->filter(fn($w) => !empty($w))
+                ->map(fn($w) => strtoupper($w[0]))
                 ->join('');
+            $initials = substr($initials, 0, 2);
 
-            $initials = substr($initials, 0, 2); // Limit to 2 characters
+            $image = $user->profile_image
+                ? '<img src="' . asset('storage/' . $user->profile_image) . '" width="40" height="40" class="rounded-circle" />'
+                : "<div class='rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center' style='width: 40px; height: 40px;'>$initials</div>";
 
-            if ($user && $user->profile_image) {
-                $image = '<img src="'.asset('storage/'.$user->profile_image).'" width="40" height="40" class="rounded-circle" />';
+            $attendance = $attendances[$userId] ?? null;
+            $leave = $leaves[$userId][0] ?? null;
+
+            if ($attendance) {
+                $status = $attendance->status;
+
+                if ($status === 'mark-out') {
+                    $finalStatus = ($attendance->working_hours < '08:00:00') ? 'Incomplete' : 'Complete';
+                } elseif ($status === 'mark-in') {
+                    $finalStatus = 'Ongoing';
+                } else {
+                    $finalStatus = ucfirst($status ?? '-');
+                }
+
+                $data[] = [
+                    'index'         => $index + 1,
+                    'name'          => $name,
+                    'image'         => $image,
+                    'signin_time'   => $attendance->signin_time ? $attendance->signin_time . '<br /> <span class="badge bg-label-warning">' . $attendance->punchin_type . '</span>' : '-',
+                    'signout_time'  => $attendance->signout_time ?? '-',
+                    'break_time'    => $attendance->break_time ?? '-',
+                    'working_hours' => $attendance->working_hours ?? '-',
+                    'signin_note'   => $attendance->signin_late_note ?? '-',
+                    'signout_note'  => $attendance->signout_late_note ?? '-',
+                    'status'        => $finalStatus
+                ];
+            } elseif ($leave) {
+                $data[] = [
+                    'index'         => $index + 1,
+                    'name'          => $name,
+                    'image'         => $image,
+                    'signin_time'   => '-',
+                    'signout_time'  => '-',
+                    'break_time'    => '-',
+                    'working_hours' => '-',
+                    'signin_note'   => '-',
+                    'signout_note'  => '-',
+                    'status'        => 'On Leave'
+                ];
             } else {
-                $image = "<div class='rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center' style='width: 40px; height: 40px;'>$initials</div>";
+                $data[] = [
+                    'index'         => $index + 1,
+                    'name'          => $name,
+                    'image'         => $image,
+                    'signin_time'   => '-',
+                    'signout_time'  => '-',
+                    'break_time'    => '-',
+                    'working_hours' => '-',
+                    'signin_note'   => '-',
+                    'signout_note'  => '-',
+                    'status'        => 'Absent'
+                ];
             }
-
-            $status = $attendance->status;
-
-            if ($status === 'markout') {
-                $finalStatus = ($attendance->working_hours < '08:00:00') ? 'Incomplete' : 'Complete';
-            } elseif ($status === 'markin') {
-                $finalStatus = 'Ongoing';
-            } else {
-                $finalStatus = ucfirst($status ?? '-');
-            }
-
-            $data[] = [
-                'index'         => $index + 1,
-                'name'          => $name,
-                'image'         => $image,
-                'signin_time'   => ($attendance->signin_time) ? $attendance->signin_time . '<br /> <span class="badge bg-label-warning">' . $attendance->punchin_type . '</span>' : '-',
-                'signout_time'  => $attendance->signout_time ?? '-',
-                'break_time'    => $attendance->break_time ?? '-',
-                'working_hours' => $attendance->working_hours ?? '-',
-                'signin_note'   => $attendance->signin_late_note ?? '-',
-                'signout_note'  => $attendance->signout_late_note ?? '-',
-                'status'        => $finalStatus
-            ];
         }
 
         return response()->json(['data' => $data]);
@@ -621,9 +660,7 @@ class ReportController extends Controller
                     $achievedHour = $totalHours > 0 ? ($records / $totalHours) : 0;
 
                     $productivity = is_numeric($report->productivity_hour) ? (float)$report->productivity_hour : 0;
-                    $grade = $productivity > 0
-                        ? number_format(($achievedHour / $productivity) * 100, 2)
-                        : 0;
+                    $grade = $productivity > 0 ? number_format(($achievedHour / $productivity) * 100, 2) : 0;
 
                     return [
                         'project_name' => $report->project->project_name ?? 'N/A',

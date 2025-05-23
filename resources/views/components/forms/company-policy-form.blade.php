@@ -6,15 +6,15 @@
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="policyTitle">Policy Title</label>
-                <input type="text" name="policyTitle" id="policyTitle" class="form-control" placeholder="Policy Title" />
+                <label for="policyTitle">Policy Title <span class="text-danger">*</span></label>
+                <input type="text" name="policyTitle" id="policyTitle" class="form-control" placeholder="Policy Title" required />
             </div>
         </div>
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="policyStartDate">Policy Start Date</label>
-                <input type="text" name="policyStartDate" id="policyStartDate" class="form-control flatpickr-input" placeholder="Policy Start Date" />
+                <label for="policyStartDate">Policy Start Date <span class="text-danger">*</span> </label>
+                <input type="text" name="policyStartDate" id="policyStartDate" class="form-control flatpickr-input" placeholder="Policy Start Date" required />
             </div>
         </div>
 

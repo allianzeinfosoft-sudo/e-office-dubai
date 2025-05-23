@@ -156,14 +156,18 @@
                     { data: 'working_hours', title: 'Working Hours' },
                     { data: 'signin_note', title: 'Signin Note' },
                     { data: 'signout_note', title: 'Signout Note' },
-                    { data: null, title: 'Status',
+                    { data: 'row.status', title: 'Status',
                          render: function (data, type, row) {
-                            if (row.status === 'Mark-out') {
-                                return '<span class="badge bg-label-success mt-1">Completed</span>';
-                            } else if (row.status === 'Mark-in') {
-                                return '<span class="badge bg-label-warning mt-1">Incomplete</span>';
+                            if (row.status === 'Incomplete') {
+                                return '<span class="badge bg-label-warning mt-1">' + row.status + '</span>';
+                            } else if (row.status === 'Complete') {
+                                return '<span class="badge bg-label-success mt-1">'+ row.status +'</span>';
+                            } else if (row.status === 'Ongoing') {
+                                return '<span class="badge bg-label-info mt-1">'+ row.status +'</span>';
+                            } else if (row.status === 'On Leave') {
+                                return '<span class="badge bg-label-primary mt-1">'+ row.status +'</span>';
                             } else {
-                                return '<span class="badge bg-label-danger mt-1">Leave</span>';
+                                return '<span class="badge bg-label-danger mt-1">'+ row.status +'</span>';
                             }
                         } 
                         

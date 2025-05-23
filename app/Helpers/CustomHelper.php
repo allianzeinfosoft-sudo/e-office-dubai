@@ -704,6 +704,10 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
         return gmdate('H:i:s', $totalSeconds);
     }
+    public static function timeToSeconds($time){
+        list($h, $m, $s) = array_pad(explode(':', $time), 3, 0);
+        return ($h * 3600) + ($m * 60) + $s;
+    }
 }
 
 
