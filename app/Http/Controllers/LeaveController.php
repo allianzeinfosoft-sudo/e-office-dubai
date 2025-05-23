@@ -69,7 +69,7 @@ class LeaveController extends Controller
                         'leave_reason' => $leaves->reason ?? '',
                         'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
                         'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
-                        'leave_count' => $this->getDaysBetween($leaves->leave_from, $leaves->leave_to) ?? '',
+                        'leave_count' => $leaves->leave_day_count ?? '0.0',
                         'status' => $leaves->status ?? ''
                     ];
                 });
@@ -384,13 +384,23 @@ class LeaveController extends Controller
                 {
                     $startDate = Carbon::parse($leave->leave_from);
                     $endDate = Carbon::parse($leave->leave_to);
-                    $leaveDays = $leaveDays = $startDate->diffInDays($endDate) + 1;
+
+
+                     if($request->leave_type === 'half_day')
+                    {
+                        $leave_days = 0.5;
+                    }
+                    else
+                    {
+                        $leaveDays = $leaveDays = $startDate->diffInDays($endDate) + 1;
+
+                    }
 
                     LeaveAllocation::where('user_id', $leave->user_id)
-                    ->decrement('remaining_leaves', $leaveDays);
-
-                    LeaveAllocation::where('user_id', $leave->user_id)
-                    ->increment('used_leaves', $leaveDays);
+                        ->update([
+                            'remaining_leaves' => DB::raw('remaining_leaves - ' . $leaveDays),
+                            'used_leaves' => DB::raw('used_leaves + ' . $leaveDays),
+                        ]);
 
                     // $recipients = [(string) $leave->user_id];
                     // $message = 'Leave application approved';
