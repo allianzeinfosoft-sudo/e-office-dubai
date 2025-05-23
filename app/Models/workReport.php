@@ -45,6 +45,8 @@ class workReport extends Model
     {
         return $this->belongsTo(Tasks::class, 'type_of_work'); // Assuming type_of_work stores an ID
     }
-    
+    public function employee()  {
+        return $this->belongsTo(Employee::class, 'emp_id', 'user_id');
+    }    
 
 }

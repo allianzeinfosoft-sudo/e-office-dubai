@@ -253,7 +253,7 @@
                     let html = ``;
                     response.forEach(row => {
                         html += `<tr>
-                                <td>${row.username}</td>
+                                <td>${row.employee.full_name}</td>
                                 <td>${row.project.project_name}</td>
                                 <td>${row.tasks.name}</td>
                                 <td>${row.time_of_work}</td>

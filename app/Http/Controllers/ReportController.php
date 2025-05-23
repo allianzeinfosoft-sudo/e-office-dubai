@@ -676,7 +676,7 @@ class ReportController extends Controller
 
     public function getFilteredReports(Request $request)
 {
-    $query = WorkReport::with(['project', 'projectTask', 'tasks'])
+    $query = WorkReport::with(['project', 'projectTask', 'tasks', 'employee'])
         ->where('emergency', 0);
 
     if ($request->filled('employee_id')) {
