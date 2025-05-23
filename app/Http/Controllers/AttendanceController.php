@@ -550,7 +550,7 @@ class AttendanceController extends Controller{
 
         }
     
-        $markOut->signout_time      = Carbon::createFromFormat('H:i', $request->signout_time)->format('H:i:s');
+        $markOut->signout_time      =  CustomHelper::formatTimeToSeconds($request->signout_time);
         $markOut->signout_date      = $request->signout_date;
         $markOut->signout_late_note = $request->signout_late_note;
         $markOut->status            = 'mark-out';
