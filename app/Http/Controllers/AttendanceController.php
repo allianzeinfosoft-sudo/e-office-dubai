@@ -30,7 +30,6 @@ class AttendanceController extends Controller{
      */
     public function index() {
         $data['meta_title'] = 'Attendance';
-
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
@@ -86,6 +85,10 @@ class AttendanceController extends Controller{
 
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
 
+                if($joinDate->lt($date)){
+                    continue;
+                }
+                
                 // Check if leave exists that covers this date
                 $leaveExists = DB::table('leaves')
                 ->where('user_id', $user->id)
