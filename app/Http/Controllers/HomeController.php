@@ -41,23 +41,30 @@ class HomeController extends Controller
         $toDate = Carbon::now()->endOfMonth();
 
         // Total Working Hours
-        $attendances = Attendance::where('emp_id', $user->id) ->whereBetween('signin_date', [$fromDate, $toDate]) ->get();
+        $attendances = Attendance::where('status', 'mark-out')->where('emp_id', $user->id)->whereBetween('signin_date', [$fromDate, $toDate]) ->get();
 
         $totalWorkingSeconds = 0;
         foreach ($attendances as $att) {
-            $totalWorkingSeconds += strtotime($att->working_hours ?? '00:00:00') - strtotime('TODAY');
+            if ($att->working_hours) {
+                $parts = explode(':', $att->working_hours);
+                
+                $totalWorkingSeconds += ($parts[0] ?? 0) * 3600 + ($parts[1] ?? 0) * 60 + ($parts[2] ?? 0);
+            }
         }
+        
+        $averageWorkingSeconds = $attendances->count() > 0 ? $totalWorkingSeconds / $attendances->count() : 0;
 
-        $averageWorkingSeconds = count($attendances) > 0 ? $totalWorkingSeconds / count($attendances) : 0;
 
         // Convert seconds to H:i:s
         function formatTime($seconds) {
-            return gmdate('H:i:s', $seconds);
+            $hours = floor($seconds / 3600);
+            $minutes = floor(($seconds % 3600) / 60);
+            return sprintf('%02d:%02d', $hours, $minutes);
         }
 
-        $data['totalWorkingTime'] = formatTime($totalWorkingSeconds);
+        $data['totalWorkingTime']   = formatTime($totalWorkingSeconds);
         $data['averageWorkingTime'] = formatTime($averageWorkingSeconds);
-        $data['workingDays'] = $attendances->count();
+        $data['workingDays']        = $attendances->count();
 
         // Leave count
         $data['leaveCount'] = Leave::where('user_id', $user->id)->where(function ($q) use ($fromDate, $toDate) {

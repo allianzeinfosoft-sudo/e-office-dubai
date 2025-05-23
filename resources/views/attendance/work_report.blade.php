@@ -26,7 +26,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between">
-                                        <small class="d-block mb-1"> You must be enter your work report</small>
+                                        <small class="d-block mb-1"> You must be enter your work report on {{ date('d-m-Y', strtotime($missingReport->signin_date)) ?? '' }} </small>
                                     </div>
                                     <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> {{ $meta_title }}</h4>
                                 </div>
