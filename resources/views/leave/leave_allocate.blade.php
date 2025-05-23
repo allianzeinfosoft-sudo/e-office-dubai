@@ -154,7 +154,7 @@
                 let userId = full['user_id'];
                 let leaveId = full['id'];
                 let startYear = 2020;
-                let endYear = 2030;
+                let endYear = 2029;
 
                 let $selectBox = $("<select  class='year' data-user-id='" + userId + "' data-leave-id='"+ leaveId +"'>").addClass("form-select");
 
@@ -175,7 +175,7 @@
             render: function(data, type, full, meta){
                 let user_id = full['user_id'];
                 let leave_id = full['id'];
-                $buttons = `<button class="btn btn-sm btn-success me-2 open-modal updateLeave" data-user-id="${user_id}"  data-leave-id="${leave_id}" data-bs-toggle="modal" data-bs-target="#addLeaves1"><i class="fa fa-check-circle"></i></button>`;
+                $buttons = `<button class="btn btn-sm btn-success me-2 open-modal updateLeave" data-user-id="${user_id}"  data-leave-id="${leave_id}" data-bs-toggle="modal" data-bs-target="#addLeaves1">Add Leave &nbsp; <i class="fa fa-check-circle"></i></button>`;
                 return $buttons;
             }
           },
@@ -231,7 +231,7 @@ $(document).on("change", ".year", function () {
                     success: function (leaveDetails) {
 
                         if (leaveDetails) {
-
+                            alert(leaveDetails.total_leaves);
                             row.find('td:nth-child(3)').html(leaveDetails.total_leaves ?? '0');
                             row.find('td:nth-child(4)').text(leaveDetails.used_leaves ?? '0'); // Leaves Taken
                             row.find('td:nth-child(5)').text(leaveDetails.remaining_leaves ?? '0'); // Leave Balance
@@ -276,7 +276,7 @@ $(document).on("click", ".updateLeave", function () {
         const userId = button.data('user-id');
         const leaveId = button.data('leave-id');
         const year = row.find('.year').val(); // Fetch the year from the dropdown
-        const leavesTaken = parseInt(row.find('td:nth-child(5)').text()) || 0; // Get Leaves Taken value
+        const leavesTaken = parseInt(row.find('td:nth-child(4)').text()) || 0; // Get Leaves Taken value
 
         // Prompt user to enter allocated leaves
         const allocatedLeaves = prompt('Enter allocated leaves:');
@@ -286,6 +286,7 @@ $(document).on("click", ".updateLeave", function () {
         }
 
         // Calculate remaining leaves
+
         const remainingLeaves = allocatedLeaves - leavesTaken;
 
         $.ajax({
@@ -303,9 +304,10 @@ $(document).on("click", ".updateLeave", function () {
                 if (response.success) {
                     // Update Allocated Leaves and Remaining Leaves in the table
                     row.find('td:nth-child(3)').text(allocatedLeaves); // Allocated Leaves
-                    row.find('td:nth-child(4)').text(remainingLeaves >= 0 ? remainingLeaves : 0); // Remaining Leaves
+                    row.find('td:nth-child(5)').text(remainingLeaves >= 0 ? remainingLeaves : 0); // Remaining Leaves
 
                     alert('Leave allocation updated successfully!');
+                    win
                 } else {
                     alert('Failed to update leave allocation.');
                 }
