@@ -115,6 +115,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     /* users */
     Route::resource('users', UserController::class);
     Route::get('/user-list',[UserController::class, 'getUsers']);
+    Route::get('/locked-users-list',[UserController::class, 'lockedUsers'])->name('locked.users.view');
+    Route::get('/locked-users',[UserController::class, 'locked_index'])->name('locked.users');
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::get('/users/{id}/limited-edit', [UserController::class, 'limited_edit'])->name('users.limited.edit');
 
