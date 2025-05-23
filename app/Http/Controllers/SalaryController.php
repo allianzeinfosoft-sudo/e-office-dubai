@@ -107,6 +107,13 @@ class SalaryController extends Controller
                             $year = date('Y');
                             $month = date('n');
 
+                            if ($month == 1) {
+                                $month = 12;
+                                $year = $year - 1;
+                            } else {
+                                $month = $month - 1;
+                            }
+
                             $existing = Salary::where('user_id', $userCheck->user_id)
                                         ->where('salary_slip_year', $year)
                                         ->where('salary_slip_month', $month)
