@@ -484,9 +484,15 @@
             }
         });
     });
-    
+
+
+    $('.card-reload').on('click', function (e) {
+      window.location.reload();
+    });  
 
   });
+
+
 
   function customModal(){
     var offcanvasElement = $('#customMarkingOffcanvas');
