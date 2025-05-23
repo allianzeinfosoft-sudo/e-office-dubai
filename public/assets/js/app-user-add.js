@@ -305,6 +305,22 @@ document.addEventListener('DOMContentLoaded', function (e) {
                 }
             }
           },
+          resigned_date: {
+            validators: {
+                callback: {
+                    message: 'Resigned date is required',
+                    callback: function(value, validator, $field) {
+                        const status = $('#status').val();
+                        // Change '4' to match your "Resigned" status ID
+                        if (status === '4') {
+                            return value !== '';
+                        }
+                        return true; // skip validation if not resigned
+                    }
+                }
+            }
+        },
+
         landline: {
           validators: {
             regexp: {

@@ -75,8 +75,18 @@
 @endsection
 @push('js')
 <script>
-
+const currentUserRoles = @json(Auth::user()->getRoleNames());
 $(function () {
+
+    statusObj = {
+      1: { title: 'New User', class: 'bg-label-warning' },
+      2: { title: 'Active', class: 'bg-label-success' },
+      3: { title: 'Inactive', class: 'bg-label-secondary' },
+      4: { title: 'Resigned', class: 'bg-label-danger'},
+      5: { title: 'Admin', class: 'bg-label-primary'}
+    };
+
+
     var lockUsersTable = $('.datatables-lock-users');
 
     if (lockUsersTable.length) {
@@ -149,22 +159,20 @@ $(function () {
                     }
                 },
                 {
+                    // User Status
                     targets: 7,
-                    render: function (data, type, full) {
-                        var status = full['status'];
-                        var statusObj = {
-                            Active: { class: 'bg-success', title: 'Active' },
-                            Inactive: { class: 'bg-danger', title: 'Inactive' },
-                            Resigned: { class: 'bg-warning', title: 'Resigned' }
-                            // Add more statuses if needed
-                        };
+                    render: function (data, type, full, meta) {
+                            var $status = full['status'];
+                            var status = statusObj[$status];
 
-                        if (!statusObj[status]) {
-                            return '<span class="badge bg-secondary">Unknown</span>';
+                            if (!status) {
+                                return '<span class="badge bg-secondary text-capitalized">Unknown</span>';
+                            }
+
+                            return (
+                                '<span class="badge ' + status.class + ' text-capitalized">' + status.title + '</span>'
+                            );
                         }
-
-                        return '<span class="badge ' + statusObj[status].class + '">' + statusObj[status].title + '</span>';
-                    }
                 },
                 {
                     targets: 8,
@@ -173,20 +181,19 @@ $(function () {
                     searchable: false,
                     render: function (data, type, full) {
                         const user_id = full['id'];
-                        const editUserUrlBase = "users/" + user_id + "/edit";
-
                         let action = '';
-                        if (typeof currentUserRoles !== 'undefined' && (currentUserRoles.includes("HR") || currentUserRoles.includes("Developer"))) {
+                       if (typeof currentUserRoles !== 'undefined') {
+                        if (currentUserRoles.includes("HR") || currentUserRoles.includes("Developer")) {
                             action = `
                                 <div class="d-flex align-items-center">
-                                    <a href="${editUserUrlBase}" class="text-body edit-user1" title="Edit User"><i class="ti ti-edit ti-sm me-2"></i></a>
-                                    <a href="javascript:void(0);" class="text-body" title="Lock User" onclick="deleteUser(${user_id})"><i class="ti-xs ti ti-lock me-1"></i></a>
+                                    <a href="javascript:void(0);" class="text-body" title="Unlock User" onclick="restore(${user_id})"><i class="ti-xs ti ti-lock me-1"></i></a>
                                 </div>
                             `;
                         }
 
                         return action;
                     }
+                }
                 }
             ],
             order: [[0, 'asc']]
@@ -195,7 +202,41 @@ $(function () {
 });
 
 
-
+ function restore(userId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, restore it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/user-restore/${userId}`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                        "Content-Type": "application/json"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire("Restored!", "User has been restored.", "success").then(() => {
+                            $('#lockUserTable').DataTable().ajax.reload();
+                        });
+                    } else {
+                        Swal.fire("Error!", "Something went wrong.", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    Swal.fire("Error!", "Could not delete user.", "error");
+                });
+            }
+        });
+    }
 </script>
 @endpush
 

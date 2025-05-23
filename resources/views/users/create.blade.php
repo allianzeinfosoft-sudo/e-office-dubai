@@ -298,6 +298,11 @@
                         </select>
                     </div>
 
+                    <div class="col-md-4 mb-3" id="resigned_date_container" style="display: none;">
+                        <label for="resigned_date" class="form-label">Resigned Date:<span class="mandatory">*</span></label>
+                        <input type="date" class="form-control" id="resigned_date" name="resigned_date" value="{{ old('resigned_date') }}" placeholder="Enter resigned date">
+                    </div>
+
                     <div class="col-md-4 mb-3">
                       <label for="leave_carry_info" class="form-label">Leave Carry Info:</label>
                       <div class="input-group input-group-merge">
@@ -419,3 +424,30 @@
    }
 }
 </script>
+
+@push('js')
+
+        <script>
+    $(document).ready(function () {
+
+        function toggleResignedDateField() {
+            const selectedStatus = $('#status').val();
+            if (selectedStatus == 4) {
+                $('#resigned_date_container').show();
+            } else {
+                $('#resigned_date_container').hide();
+                $('#resigned_date').val('');
+            }
+        }
+
+        // Initial check
+        toggleResignedDateField();
+
+        // On status change
+        $('#status').on('change', function () {
+            toggleResignedDateField();
+        });
+    });
+</script>
+
+@endpush
