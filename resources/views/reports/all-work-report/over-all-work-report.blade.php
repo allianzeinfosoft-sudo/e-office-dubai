@@ -122,7 +122,7 @@
                                 <div class="card-datatable">
                                     <div class="row p-2">
                                         <div class="col-sm-12 table-responsive">
-                                            <table id="reportTable" class="table table-bordered table-striped table-hover table-sm display nowrap" style="width:100%">
+                                            <table id="reportTable" class="table table-bordered table-striped table-hover table-sm display nowrap" style="width:100%; font-size: 12px ">
                                                 <thead>
                                                     <tr>
                                                         <th>Username</th>
