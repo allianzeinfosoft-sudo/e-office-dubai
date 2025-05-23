@@ -30,6 +30,7 @@ class AttendanceController extends Controller{
      */
     public function index() {
         $data['meta_title'] = 'Attendance';
+        
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
