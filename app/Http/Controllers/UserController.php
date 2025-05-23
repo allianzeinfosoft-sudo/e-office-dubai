@@ -153,6 +153,7 @@ class UserController extends Controller
                 'holidayGroup' => !empty($request->holidayGroup) ? $request->holidayGroup : null,
                 'role' => !empty($request->role) ? $request->role : null,
                 'status' => !empty($request->status) ? $request->status : null,
+                'resigned_date' =>!empty($request->resigned_date) ? $request->resigned_date : null,
                 'login_limited_time' => !empty($request->login_limited_time) ? $request->login_limited_time : null,
                 'appointment_status' => !empty($request->appointment_status) ? $request->appointment_status : null,
                 'team_lead' => !empty($request->team_lead) ? $request->reporting_to : null,
@@ -209,6 +210,7 @@ class UserController extends Controller
         $positions = Position::all();
         $roles = Role::all();
         $user_statuses = UserStatus::all();
+
         return view('users.edit', compact('user','employees','departments','work_shifts','roles','user_statuses','designations','positions'));
     }
 
@@ -312,6 +314,7 @@ class UserController extends Controller
             'holidayGroup' => !empty($request->holidayGroup) ? $request->holidayGroup : null,
             'role' => !empty($request->role) ? $request->role : null,
             'status' => !empty($request->status) ? $request->status : null,
+            'resigned_date' =>!empty($request->resigned_date) ? $request->resigned_date : null,
             'login_limited_time' => !empty($request->login_limited_time) ? $request->login_limited_time : null,
             'appointment_status' => !empty($request->appointment_status) ? $request->appointment_status : null,
             'team_lead' => !empty($request->team_lead) ? $request->team_lead : null,
@@ -323,7 +326,7 @@ class UserController extends Controller
         ]);
         Cache::forget('users');
 
-        return redirect()->route('users.edit', $user->id)->with('success', 'User details updated successfully!');
+        return redirect()->route('users.index', $user->id)->with('success', 'User details updated successfully!');
 
     }
 
@@ -348,17 +351,38 @@ class UserController extends Controller
     {
 
         $user = User::find($id);
-        // $employee = Employee::where('user_id',$id)->first();
+        $employee = Employee::where('user_id',$id)->first();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User not found'], 404);
         }
-        // if (!$employee) {
-        //     return response()->json(['success' => false, 'message' => 'Employee not found'], 404);
-        // }
-        // $employee->delete();
         $user->delete();
+        if ($employee) {
+            $employee->status = 4; // e.g., 'active', 'inactive', 1, 0, etc.
+            $employee->save();
+        }
         Cache::forget('users');
         return response()->json(['success' => true, 'message' => 'User deleted successfully.']);
+    }
+
+    public function restore_user(string $id)
+    {
+        $user = User::withTrashed()->find($id);
+        $employee = Employee::where('user_id',$id)->first();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found'], 404);
+        }
+        if ($user->trashed()) {
+            $user->restore();
+            if ($employee) {
+                $employee->status = 2; // e.g., 'active', 'inactive', 1, 0, etc.
+                $employee->save();
+            }
+            Cache::forget('users');
+            return response()->json(['success' => true, 'message' => 'User restored successfully.']);
+        }else{
+            return response()->json(['success' => false, 'message' => 'User is not restored.']);
+        }
+
     }
 
 
@@ -410,7 +434,7 @@ class UserController extends Controller
                         'email' => $users->email,
                         'current_plan' => 'Enterprise',
                         'profile_image' => $users->employee->profile_image,
-                        'status' => $users->status,
+                        'status' => $users->employee->status,
                          "avatar" => "",
                     ];
                 });
@@ -418,9 +442,7 @@ class UserController extends Controller
 
 
         $response = response()->json(['data' => $users]);
-
         $json_data = json_decode($response->getContent(), true)['data'];
-        // dd($json_data);
         return json_encode(['data' => $json_data]);
     }
 

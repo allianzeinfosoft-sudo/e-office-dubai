@@ -18,9 +18,6 @@
         <!-- Content wrapper -->
         <div class="content-wrapper">
           <!-- Content -->
-
-
-
           <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4">New User</h4>
             <form action="{{ route('users.update', $user->id) }}" method="POST" name="userForm" id="userFormId" enctype="multipart/form-data">
@@ -215,7 +212,7 @@
                     <div class="mb-3">
                       <label for="landline_relationship" class="form-label">Relationship:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" name="landline_relationship" id="landline_relationship" value="{{ old('landline_relationship') ?? '' }}" placeholder="Enter relationship"/>
+                        <input type="text" class="form-control" name="landline_relationship" id="landline_relationship" value="{{ old('landline_relationship', $user->employee?->landline_relationship) ?? '' }}" placeholder="Enter relationship"/>
                       </div>
                     </div>
                   </div>
@@ -270,7 +267,7 @@
                         <div class="input-group input-group-merge">
                           <input type="time" class="form-control" id="login_limited_time" step="1" name="login_limited_time" value="{{ old('login_limited_time', $user->employee?->login_limited_time) ?? '' }}" placeholder="Enter login limited time">
                         </div>
-                      </div>
+                    </div>
 
                     <div class="col-md-4 mb-3">
                       <label for="role" class="form-label">Role:<span class="mandatory">*</span></label>
@@ -284,15 +281,13 @@
 
                     <div class="col-md-4 mb-3">
                         <label for="role" class="form-label">Holiday Group:</label>
-
-                          <select id="holidayGroup" name="holidayGroup" class="select2 form-select form-select-lg" data-allow-clear="true">
-                              <option selected value="">Please select</option>
-                                  @foreach (config('optionsData.holiday_group') as $key => $value)
-                                      <option value="{{ $key }}" {{ old('holidayGroup', $user->employee?->holidayGroup) == $key ? 'selected' : '' }}>{{ $value ?? 'N/A' }}</option>
-                                  @endforeach
-                          </select>
-
-                      </div>
+                        <select id="holidayGroup" name="holidayGroup" class="select2 form-select form-select-lg" data-allow-clear="true">
+                            <option selected value="">Please select</option>
+                                @foreach (config('optionsData.holiday_group') as $key => $value)
+                                    <option value="{{ $key }}" {{ old('holidayGroup', $user->employee?->holidayGroup) == $key ? 'selected' : '' }}>{{ $value ?? 'N/A' }}</option>
+                                @endforeach
+                        </select>
+                    </div>
 
                     <div class="col-md-4 mb-3">
                       <label for="status" class="form-label">Status:</label>
@@ -303,6 +298,11 @@
                            @endforeach
                         </select>
                     </div>
+
+                     <div class="col-md-4 mb-3" id="resigned_date_container" style="display: none;">
+                        <label for="resigned_date" class="form-label">Resigned Date:<span class="mandatory">*</span></label>
+                        <input type="date" class="form-control" value="{{ old('resigned_date', $user->employee?->resigned_date) ?? '' }}" id="resigned_date" name="resigned_date" placeholder="Enter resigned date">
+                     </div>
 
                     {{-- <div class="col-md-4 mb-3">
                       <label for="leave_carry_info" class="form-label">Leave Carry Info:</label>
@@ -425,3 +425,31 @@
    }
 }
 </script>
+
+@push('js')
+    @push('js')
+
+    <script>
+        $(document).ready(function () {
+
+            function toggleResignedDateField() {
+                const selectedStatus = $('#status').val();
+                if (selectedStatus == 4) {
+                    $('#resigned_date_container').show();
+                } else {
+                    $('#resigned_date_container').hide();
+                    $('#resigned_date').val('');
+                }
+            }
+
+            // Initial check
+            toggleResignedDateField();
+
+            // On status change
+            $('#status').on('change', function () {
+                toggleResignedDateField();
+            });
+        });
+    </script>
+
+@endpush

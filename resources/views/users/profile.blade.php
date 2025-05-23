@@ -55,9 +55,18 @@
                                 <li class="list-inline-item"><a href="mailto:johnmathewallianze@mail.allianzegroup.com"><i class="ti ti-mail mt-n1"></i> {{ $user->email ?? 'N/A' }}</a></li>
                               </ul>
                             </div>
+
                             <span class="btn btn-primary">
                               <li class="list-inline-item"><i class="ti ti-user mt-n2"></i>AIS-{{ $user->employee->employeeID ?? 'N/A' }}</li>
+
                             </span>
+                            @if ($user->employee->status === 4)
+                                <span class="btn btn-primary">
+                                    <li class="list-inline-item"><i class="ti-xs ti ti-lock me-1"></i>Resigned On {{ optional($user->employee)->resigned_date ? \Carbon\Carbon::parse($user->employee->resigned_date)->format('d-m-Y') : '' }}</li>
+                                </span>
+                            @endif
+
+
                           </div>
                         </div>
                       </div>

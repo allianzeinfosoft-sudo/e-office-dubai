@@ -124,6 +124,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
     Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::post('/user-restore/{userId}', [UserController::class, 'restore_user'])->name('user.restore');
     Route::get('/users/{userId}/profile-edit', [UserController::class, 'profileEdit'])->name('users.profile-edit');
     Route::post('/users/store-or-update/{id?}', [UserController::class, 'storeOrUpdate'])->name('users.storeOrUpdate');
     Route::get('/lock-profile/{id}',[UserController::class,'lockProfile'])->name('user.lock_profile');
