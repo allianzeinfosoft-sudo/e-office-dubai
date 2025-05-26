@@ -147,7 +147,7 @@
                                                             @foreach($repots_posted as $report)
                                                             <tr data-id="{{ $report->id }}">                                                            
                                                                 <td><strong>{{ $report->project->project_name?? "-" }}</strong></td>
-                                                                <td><strong>{{ $report->task->name ?? "-"}}</strong></td>
+                                                                <td><strong>{{ $report->tasks->name ?? "-"}}</strong></td>
                                                                 <td><strong>{{ $report->total_records ?? "-" }}</strong></td>
                                                                 <td><strong>{{ $report->total_time ?? "-" }}</strong></td>
                                                                 <td><strong>{{ $report->productivity_hour ?? "-" }}</strong></td>
