@@ -98,7 +98,7 @@ class WorkReportController extends Controller
     $formattedBalanceTime = gmdate("H:i:s", $balanceTime);
 
     // ✅ Load related models
-    $workReport->load(['user', 'project', 'projectTask']);
+    $workReport->load(['user', 'project', 'projectTask', 'tasks']);
 
     return response()->json([
         'success' => true,
