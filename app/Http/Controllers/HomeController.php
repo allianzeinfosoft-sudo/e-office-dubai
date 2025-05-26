@@ -240,7 +240,7 @@ public function getLeaveSummary(Request $request)
      $leaveBalance = $leave_allocated ? $leave_allocated->remaining_leaves : 0;
 
     return response()->json([
-        'leaveThisMonth' => $leaveThisMonth,
+        'leaveThisMonth' => ($leaveThisMonth - $offDays),
         'totalLeavesTaken' => $totalLeavesTaken,
         'pendingLeaves' => $pendingLeaves,
         'pastYearLeaves' => $pastYearLeaves,
