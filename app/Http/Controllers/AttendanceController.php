@@ -322,7 +322,7 @@ class AttendanceController extends Controller{
             $data['meta_title'] = 'Add Work Report';
             $data['projects'] = Project::all();
             $data['missingReport'] = $missingReport;
-            $data['repots_posted'] = WorkReport::with(['project', 'projectTask'])
+            $data['repots_posted'] = WorkReport::with(['project', 'projectTask', 'tasks'])
                 ->where('username', Auth::user()->username)
                 ->where('report_date', $missingReport->signin_date)
                 ->get();
