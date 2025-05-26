@@ -209,7 +209,6 @@ public function getLeaveSummary(Request $request)
         if ($leave->status == 2) {
 
             $totalLeavesTaken += $days;
-            $leaveThisMonth += $days;
 
             if ($leave->leave_type === 'full_day') {
                 $fullLeaves += $days;
@@ -218,6 +217,8 @@ public function getLeaveSummary(Request $request)
             } elseif ($leave->leave_type === 'off_day') {
                 $offDays += $days;
             }
+
+             $leaveThisMonth += $fullLeaves + $halfLeaves;
 
         } elseif ($leave->status == 1) {
             $pendingLeaves += $days;
@@ -240,7 +241,7 @@ public function getLeaveSummary(Request $request)
      $leaveBalance = $leave_allocated ? $leave_allocated->remaining_leaves : 0;
 
     return response()->json([
-        'leaveThisMonth' => ((int) $leaveThisMonth - (int) $offDays),
+        'leaveThisMonth' => $leaveThisMonth,
         'totalLeavesTaken' => $totalLeavesTaken,
         'pendingLeaves' => $pendingLeaves,
         'pastYearLeaves' => $pastYearLeaves,
