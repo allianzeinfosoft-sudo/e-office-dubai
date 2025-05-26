@@ -200,6 +200,7 @@ public function getLeaveSummary(Request $request)
     $fullLeaves = 0;
     $halfLeaves = 0;
     $offDays = 0;
+    
     $leaveBalance = $leave_allocated?->remaining_leaves ?? 0;
 
     foreach ($leavesInRange as $leave) {
