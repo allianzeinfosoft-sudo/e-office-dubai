@@ -390,6 +390,13 @@ class CustomHelper
     // Holidays in current month up to today
     $holidays = Holiday::whereBetween('date', [$startOfMonth, $endOfMonth])->get();
 
+    $totalWorkHours = Attendance::where('emp_id', $userId)
+        ->whereYear('signin_date', $startOfMonth)
+        ->whereBetween('signin_date', [$startOfMonth, $endOfMonth])
+        ->where('status', 'mark-out')
+        ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
+        ->first();
+
     $totalWorkingHours = 0;
     $totalBreakTime = 0;
     $workingDays = 0;
@@ -424,8 +431,8 @@ class CustomHelper
     $monthlyData[] = [
         'month' => $startOfMonth->format('F'),
         'year' => $startOfMonth->year,
-        'avg_working_hours' => $averageWorkingHours,
-        'total_working_hours' => round($totalWorkingHours / 60, 2),
+        'avg_working_hours' => round($totalWorkHours->avg_hours ?? 0, 2),
+        'total_working_hours' => round($totalWorkHours->total_hours ?? 0, 2), 
         'working_days' => $workingDays,
         'leaves' => $leaves,
         'off_days' => $offDays,
