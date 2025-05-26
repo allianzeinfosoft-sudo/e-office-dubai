@@ -358,8 +358,7 @@ class CustomHelper
         ];
     }
 
-    public static function getMonthlyWorkBreakData($userId = null)
-{
+    public static function getMonthlyWorkBreakData($userId = null){
     $monthlyData = [];
 
     $today = Carbon::now();
