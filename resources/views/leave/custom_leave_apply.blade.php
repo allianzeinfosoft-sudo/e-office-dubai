@@ -210,31 +210,47 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // === Check Overlapping Leave Dates via AJAX ===
-        fetch('/check-leave-overlap', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        const leaveYear = new Date(leaveFrom).getFullYear();
+           $.ajax({
+            url: `/check-leave-allocation/${userId}?year=${leaveYear}`,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                // Allocation exists, now check for overlapping dates
+                fetch('/check-leave-overlap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        leave_from: leaveFrom,
+                        leave_to: leaveTo
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.overlap) {
+                        errorBox.innerHTML = '<ul class="mb-0"><li>Leave already applied for the selected date range.</li></ul>';
+                    } else {
+                        errorBox.innerHTML = '';
+                        Leaveform.submit(); // ✅ Final submit
+                    }
+                })
+                .catch(error => {
+                    console.error("Overlap check error:", error);
+                    errorBox.innerHTML = '<ul class="mb-0"><li>Server error while checking leave overlap.</li></ul>';
+                });
             },
-            body: JSON.stringify({
-                user_id: userId,
-                leave_from: leaveFrom,
-                leave_to: leaveTo
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.overlap) {
-                errorBox.innerHTML = '<ul class="mb-0"><li>Leave already applied for the selected date range.</li></ul>';
-            } else {
-                errorBox.innerHTML = '';
-                Leaveform.submit(); // Safe to submit now
+            error: function (xhr) {
+                const message = xhr.responseJSON?.error || "Leave is not allocated for this user.";
+                errorBox.innerHTML = `<ul class="mb-0"><li>${message}</li></ul>`;
             }
-        })
-        .catch(error => {
-            console.error("Error checking leave overlap:", error);
-            errorBox.innerHTML = '<ul class="mb-0"><li>Server error while checking leave overlap.</li></ul>';
         });
+
+
+
     });
 });
     </script>
