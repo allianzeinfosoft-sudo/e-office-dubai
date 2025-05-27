@@ -368,6 +368,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/my-overview', [ReportController::class, 'my_overview'])->name('reports.my-overview');
     Route::get('/reports/my-attendance-report', [ReportController::class, 'myAttendanceReport'])->name('reports.my-attendance-report');
     Route::get('/reports/my-work-report', [ReportController::class, 'myWorkReport'])->name('reports.my-work-report');
+    Route::get('/reports/user-work-report/{id}', [ReportController::class, 'userWorkReport'])->name('reports.user-work-report');
     Route::post('/reports/my-work-report-data', [ReportController::class, 'myWorkReportsData'])->name('reports.my-work-report-data');
 
     Route::get('/reports/user-overview', [ReportController::class, 'user_overview'])->name('reports.user-overview');
@@ -387,8 +388,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/emergency-reports', [ReportController::class, 'emergencyAttendanceReport']) ->name('reports.emergency-reports');
     Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
     Route::post('/check-leave-overlap', [LeaveController::class, 'checkOverlap'])->name('check.leave.overlap');
-
     Route::post('/leave_summary_filter', [LeaveController::class, 'leave_summary_filter'])->name('leave_summary_filter');
+    Route::get('/check-leave-allocation/{user}', [LeaveController::class, 'check_leave_allocated']);
+
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
     Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('gallery.upload.image');

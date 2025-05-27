@@ -396,11 +396,15 @@ class LeaveController extends Controller
 
                     }
 
-                    LeaveAllocation::where('user_id', $leave->user_id)
-                        ->update([
-                            'remaining_leaves' => DB::raw('remaining_leaves - ' . $leaveDays),
-                            'used_leaves' => DB::raw('used_leaves + ' . $leaveDays),
-                        ]);
+                    if($request->leave_type != 'off_day')
+                    {
+                        LeaveAllocation::where('user_id', $leave->user_id)
+                            ->update([
+                                'remaining_leaves' => DB::raw('remaining_leaves - ' . $leaveDays),
+                                'used_leaves' => DB::raw('used_leaves + ' . $leaveDays),
+                            ]);
+                    }
+
 
                     // $recipients = [(string) $leave->user_id];
                     // $message = 'Leave application approved';
@@ -622,7 +626,7 @@ class LeaveController extends Controller
         ]);
 
         try {
-            // Find the leave record or create a new one
+
             $leave = LeaveAllocation::updateOrCreate(
                 [
                     'user_id' => $request->user_id,
@@ -764,6 +768,20 @@ class LeaveController extends Controller
         });
          return response()->json(['data' => $leave_summary]);
 
+    }
+
+    public function check_leave_allocated($userId)
+    {
+        $year = request()->get('year', now()->year); // fallback to current year
+        $allocation = LeaveAllocation::where('user_id', $userId)
+            ->where('year', $year)
+            ->first();
+
+        if (!$allocation) {
+            return response()->json(['error' => 'Leave is not allocated for this user for year ' . $year], 404);
+        }
+
+        return response()->json(['success' => true]);
     }
 
 

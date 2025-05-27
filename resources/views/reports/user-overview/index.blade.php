@@ -2,14 +2,14 @@
 
 @section('css')
 <style>
-    
+
 </style>
 @stop
 
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -27,7 +27,7 @@
 
                             <div class="card card-bg">
                                 <div class="card-body">
-                                    <div class="row d-flex align-items-center"> 
+                                    <div class="row d-flex align-items-center">
 
                                         <div class="col-sm-6 mb-3">
                                             <div class="card bg-white">
@@ -35,19 +35,19 @@
                                                     <!-- user avatar -->
                                                     <div class="user-avatar-section">
                                                         <div class="d-flex align-items-center flex-column">
-                                                        <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image ) : '../../assets/img/avatars/15.png' }}" height="150" width="150" alt="User avatar">
+                                                        <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image ) : '../../assets/img/avatars/default-avatar.png' }}" height="150" width="150" alt="User avatar">
                                                         <div class="user-info text-center">
                                                             <h4 class="mb-2">{{ $current_user->full_name ?? '' }}</h4>
                                                             <span class="badge bg-label-secondary mt-1">{{ $current_user->role ?? '' }}</span>
                                                         </div>
                                                         </div>
                                                     </div>
-        
+
                                                     <div class="d-flex justify-content-around flex-wrap  pt-3 pb-4">
                                                         <div class="d-flex align-items-start mt-3 gap-2">
-                                                            <a href="" class="btn btn-success"> <i class="ti ti-eye me-sm-1 me-0"></i> Profile </a>
+                                                            <a href="{{ route('user.profile', $current_user->user_id); }}" class="btn btn-success"> <i class="ti ti-eye me-sm-1 me-0"></i> Profile </a>
                                                         </div>
-        
+
                                                         <div class="d-flex align-items-start pt-3 gap-2">
                                                             <a href="" class="btn btn-primary"> <i class="ti ti-eye me-sm-1 me-0"></i> Work Summary </a>
                                                         </div>
@@ -66,8 +66,8 @@
                                                     @php
                                                         $isDarkStyle = $isDarkStyle ?? false;
                                                     @endphp
-                                                    
-                                                    <x-charts.bar-chart 
+
+                                                    <x-charts.bar-chart
                                                         id="workingHoursChart"
                                                         :labels="$labels"
                                                         :data="$average_hours"
@@ -91,7 +91,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row"> 
+                                    <div class="row">
 
                                         <div class="col-sm-12 mb-3">
                                             <div class="card bg-white">
@@ -143,7 +143,7 @@
                                                         :donutsData="$donutData"
                                                         :backgroundColors="['#2b9bf4', '#826bf8', '#3fd0bd', '#fee802', '#fee802', '#ea5455']"
                                                         height="360px" />
-                                                    
+
                                                 </div>
                                             </div>
                                         </div>
@@ -230,7 +230,7 @@
                                                     </div>
                                                 </div>
 
-                                                
+
 
                                                 <div class="col-sm-4 mb-3">
                                                     <div class="card bg-white">
@@ -294,7 +294,7 @@
                                                                     <h5 class="mb-0 me-2">
                                                                         @if ($leave_stats['category_wise_leaves'])
                                                                             @foreach ($leave_stats['category_wise_leaves'] as $key => $category_wise_leave)
-                                                                               <span class="badge bg-label-info p-1 rounded">{{ $key }}: {{ $category_wise_leave }} </span> 
+                                                                               <span class="badge bg-label-info p-1 rounded">{{ $key }}: {{ $category_wise_leave }} </span>
                                                                             @endforeach
                                                                         @endif
                                                                     </h5>
@@ -319,7 +319,7 @@
                                                     <h5 class="card-title mb-0">Yearly Work Analytics - {{ date('Y') }}</h5>
                                                 </div>
                                                 <div class="card-body">
-                                                    <x-charts.bar-chart 
+                                                    <x-charts.bar-chart
                                                         id="yearlyHoursChart"
                                                         :labels="$labels"
                                                         :data="$average_hours"
@@ -354,7 +354,7 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                        <form action="{{ route('reports.user-overview') }}" method="GET"> 
+                                        <form action="{{ route('reports.user-overview') }}" method="GET">
                                         @csrf
                                         <div class="form-group mb-3">
                                             <label for="user">Select User</label>
@@ -393,9 +393,9 @@
                 </div>
 
                 <!-- Footer -->
-                <x-footer /> 
+                <x-footer />
                 <!-- / Footer -->
-                 
+
                 <div class="content-backdrop fade"></div>
 
                 <!-- Overlay -->

@@ -198,6 +198,16 @@ class ReportController extends Controller
         return view('reports.all-work-report.my-work-report', $data);
     }
 
+     public function userWorkReport(string $id){
+        $data['meta_title'] = 'My Work Report';
+        $data['employees'] = Employee::Where('user_id', auth()->user()->id)->get();
+        $tasks = ProjectTask::whereRaw("FIND_IN_SET(?, members)", [auth()->user()->id])->with('project')->get();
+        // Optional: return only project IDs or names
+        $data['projects'] = $tasks->pluck('project')->filter()->unique('id')->values();
+        return view('reports.all-work-report.my-work-report', $data);
+    }
+
+
     public function myWorkReportsData(Request $request){
         $query = WorkReport::with(['project', 'projectTask', 'tasks'])
             ->where('emergency', 0);
