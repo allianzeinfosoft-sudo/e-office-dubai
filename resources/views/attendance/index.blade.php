@@ -387,7 +387,7 @@
   </div>
   <div class="offcanvas-body">
     <div class="row">
-          
+          <x-work-from-home-attendance-report />
     </div>
   </div>
   <div class="offcanvas-footer"></div>

@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('work_from_home_reports', function (Blueprint $table) {
             $table->id();
+            $table->string('username', 100)->nullable();
+            $table->integer('emp_id')->nullable();
+            $table->string('project_name', 50)->nullable();
+            $table->string('type_of_work', 50)->nullable();
+            $table->string('time_of_work', 50)->nullable();
+            $table->string('total_time', 50)->nullable();
+            $table->longText('comments')->nullable();
+            $table->date('report_date')->nullable();
+            $table->string('total_records', 100)->nullable();
+            $table->integer('productivity_hour')->nullable();
             $table->timestamps();
         });
     }
