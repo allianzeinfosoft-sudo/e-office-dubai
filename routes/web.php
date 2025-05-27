@@ -180,7 +180,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/leave_approver/list',[LeaveController::class, 'leave_approver'])->name('leave.approver');
     Route::post('/leave_approval_store',[LeaveController::class, 'leave_approval_store'])->name('leave_approval_store');
 
-    Route::post('/leave_summary_filter', [LeaveController::class, 'myWorkReportsData'])->name('reports.my-work-report-data');
+    // Route::post('/leave_summary_filter', [LeaveController::class, 'myWorkReportsData'])->name('reports.my-work-report-data');
 
 
     /* Prjects */
@@ -389,7 +389,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
     Route::post('/check-leave-overlap', [LeaveController::class, 'checkOverlap'])->name('check.leave.overlap');
     Route::post('/leave_summary_filter', [LeaveController::class, 'leave_summary_filter'])->name('leave_summary_filter');
-    Route::get('/check-leave-allocation/{user}', [LeaveController::class, 'check_leave_allocated']);
+    Route::get('/leave-allocation/{user}', [LeaveController::class, 'check_leave_allocated']);
 
     /*Galley*/
     Route::resource('gallery', GalleryController::class);

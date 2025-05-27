@@ -714,25 +714,22 @@ class LeaveController extends Controller
 
     public function leave_summary_filter( Request $request)
     {
-          $user = auth()->user();
-         $user_id = $user->id;
 
+        $user = auth()->user();
+        $user_id = $user->id;
         $query = Leave::with(['employee', 'user']);
 
-         // Apply Role-based filters
         if ($user->hasRole('G5')) {
             $query->where('user_id', $user_id);
         }
 
         if ($user->hasAnyRole(['G4', 'G3'])) {
-            // Get IDs of users reporting to current user
             $reportingUserIds = Employee::where('reporting_to', $user_id)
                 ->pluck('user_id')
                 ->toArray();
 
             $userIds = collect($reportingUserIds)
                 ->push($user_id)
-                ->map(fn($id) => (int) $id)
                 ->unique()
                 ->values()
                 ->toArray();
@@ -740,33 +737,31 @@ class LeaveController extends Controller
             $query->whereIn('user_id', $userIds);
         }
 
-
         if ($request->filled('filter_from_date')) {
-            $query->where('leave_from', $request->filter_from_date);
-        }
+            $month = $request->input('filter_from_date'); // e.g. "2024-05"
+            $startDate = \Carbon\Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+            $endDate = \Carbon\Carbon::createFromFormat('Y-m', $month)->endOfMonth();
 
-        if ($request->filled('filter_to_date')) {
-            $query->where('leave_to', $request->filter_to_date); // Confirm if 'project_name' is correct
+            $query->whereBetween('leave_from', [$startDate, $endDate]);
         }
 
         $leave_summary = $query->get()->map(function ($leave) {
-
             return [
                 'id' => $leave->id,
                 'full_name' => $leave->employee->full_name ?? '',
                 'employee_id' => $leave->employee->id ?? '',
-                'leave_from' => $leave->leave_from,
-                'leave_to' => $leave->leave_to,
+                'leave_from' => $leave->leave_from ? $this->formatDateDayMonthYear($leave->leave_from) : '',
+                'leave_to' => $leave->leave_to ? $this->formatDateDayMonthYear($leave->leave_to) : '',
                 'leave_type' => $leave->leave_type ?? '',
                 'leave_reason' => $leave->reason ?? '',
-                'apply_date' => $leave->created_at,
-                'approved_cancel_date' => $leave->approved_cancel_date,
+                'apply_date' => $leave->created_at ? $this->formatDateDayMonthYear($leave->created_at) : '',
+                'approved_cancel_date' => $leave->approved_cancel_date ? $this->formatDateDayMonthYear($leave->approved_cancel_date) : '',
                 'leave_count' => $this->getDaysBetween($leave->leave_from, $leave->leave_to) ?? '',
                 'status' => $leave->status ?? ''
             ];
-
         });
-         return response()->json(['data' => $leave_summary]);
+
+        return response()->json(['data' => $leave_summary]);
 
     }
 
