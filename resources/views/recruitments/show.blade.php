@@ -7,7 +7,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -50,7 +50,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-md-6 col-6 mb-3">
                                             <div class="d-flex align-items-center">
                                                 <div class="badge rounded-pill bg-label-warning me-3 p-2">
@@ -82,7 +82,7 @@
                                             <h5>Job Description</h5>
                                             <blockquote class="blockquote mt-3 alert alert-success">
                                                 {!! $recruitment->jobDescription !!}
-                                            </blockquote>    
+                                            </blockquote>
                                         </div>
 
                                         <div class="col-12 mt-3">
@@ -104,7 +104,7 @@
                                             <h5 class="text-center">Interviewer</h5>
                                             <div class="user-avatar-section">
                                                 <div class="d-flex align-items-center flex-column">
-                                                    <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $recruitment->interViewer?->profile_image ? asset('storage/' . $recruitment->interViewer->profile_image) : asset('assets/img/avatars/1.png') }}" height="150" width="150" alt="User avatar">
+                                                    <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $recruitment->interViewer?->profile_image ? asset('storage/' . $recruitment->interViewer->profile_image) : asset('assets/img/avatars/default-avatar.png') }}" height="150" width="150" alt="User avatar">
                                                     <div class="user-info text-center">
                                                         <h4 class="mb-2">{{ $recruitment->interViewer?->full_name ?? '' }}</h4>
                                                         <span class="badge bg-label-secondary mt-1">{{ $recruitment->interViewer?->roles ?? '' }}</span>
@@ -117,7 +117,7 @@
                                             <h5 class="text-center">Seek Approval</h5>
                                             <div class="user-avatar-section">
                                                 <div class="d-flex align-items-center flex-column">
-                                                    <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $recruitment->seekApprover?->profile_image ? asset('storage/' . $recruitment->seekApprover->profile_image) : asset('assets/img/avatars/1.png') }}" height="150" width="150" alt="User avatar">
+                                                    <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $recruitment->seekApprover?->profile_image ? asset('storage/' . $recruitment->seekApprover->profile_image) : asset('assets/img/avatars/default-avatar.png') }}" height="150" width="150" alt="User avatar">
                                                     <div class="user-info text-center">
                                                         <h4 class="mb-2">{{ $recruitment->seekApprover?->full_name }}</h4>
                                                         <span class="badge bg-label-secondary mt-1">{{ $recruitment->seekApprover?->roles }}</span>
@@ -194,15 +194,15 @@
                                 </div>
 
                             </div>
-                            
+
                         </div>
 
                         <div class="col-4">
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="d-flex align-items-center justify-content-between">                            
+                                    <div class="d-flex align-items-center justify-content-between">
                                         <h5 class="card-title">Application Status : </h5>
-                                        @php 
+                                        @php
                                             $colors = array(0 => 'warning', 1 => 'danger', 2 => 'primary', 3 => 'info', 4 => 'success');
                                         @endphp
                                         <span class="badge bg-{{ $colors[$recruitment->status ?? 0] }} bg-glow fs-5">
@@ -246,9 +246,9 @@
                 </div>
 
                 <!-- Footer -->
-                <x-footer /> 
+                <x-footer />
                 <!-- / Footer -->
-                 
+
                 <div class="content-backdrop fade"></div>
 
                 <!-- Overlay -->

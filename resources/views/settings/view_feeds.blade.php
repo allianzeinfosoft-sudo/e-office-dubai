@@ -290,7 +290,7 @@
                         <div class="card-body ">
                           <div class="d-flex flex-wrap align-items-center justify-content-center my-3">
                             <div class="d-flex flex-column me-2 mb-2">
-                              <img src="../../assets/img/avatars/1.png" alt="Avatar" class="mx-auto rounded-circle w-px-75" />
+                              <img src="../../assets/img/avatars/default-avatar.png" alt="Avatar" class="mx-auto rounded-circle w-px-75" />
                               <span class="bday-name">nandu sreekantan </span>
                             </div>
                             <div class="d-flex flex-column me-2 mb-2">

@@ -18,7 +18,7 @@
             </div>
             <!-- /Logo -->
             <div class="user-profile-img">
-              <img class="w-50 mx-auto d-flex rounded-circle" src="../../assets/img/avatars/1.png" alt="5">
+              <img class="w-50 mx-auto d-flex rounded-circle" src="../../assets/img/avatars/default-avatar.png" alt="5">
             </div>
 
             <h4 class="mb-1 text-white text-center pt-2">User Name</h4>

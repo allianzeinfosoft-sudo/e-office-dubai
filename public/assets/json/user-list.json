@@ -31,7 +31,7 @@
       "current_plan": "Enterprise",
       "billing": "Auto Debit",
       "status": 2,
-      "avatar": "1.png"
+      "avatar": "default-avatar.png"
     },
     {
       "id": 4,
@@ -229,7 +229,7 @@
       "current_plan": "Basic",
       "billing": "Auto Debit",
       "status": 1,
-      "avatar": "1.png"
+      "avatar": "default-avatar.png"
     },
     {
       "id": 22,
@@ -339,7 +339,7 @@
       "current_plan": "Basic",
       "billing": "Manual - Cash",
       "status": 1,
-      "avatar": "1.png"
+      "avatar": "default-avatar.png"
     },
     {
       "id": 32,
@@ -416,7 +416,7 @@
       "current_plan": "Enterprise",
       "billing": "Manual - Credit Card",
       "status": 3,
-      "avatar": "1.png"
+      "avatar": "default-avatar.png"
     },
     {
       "id": 39,
@@ -515,7 +515,7 @@
       "current_plan": "Basic",
       "billing": "Manual - Paypal",
       "status": 2,
-      "avatar": "1.png"
+      "avatar": "default-avatar.png"
     },
     {
       "id": 48,

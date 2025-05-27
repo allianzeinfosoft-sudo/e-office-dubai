@@ -59,7 +59,7 @@
                 <div class="card-body d-flex flex-wrap gap-3">
 
                     @php
-                        $flowers = ['flower1.png', 'flower2.png', 'flower3.png', 'flower4.png'];
+                        $flowers = ['flowerdefault-avatar.png', 'flower2.png', 'flower3.png', 'flower4.png'];
                     @endphp
 
                     @foreach ($flowers as $flower)

@@ -1,5 +1,5 @@
-<div class="row d-flex align-items-center"> 
-    
+<div class="row d-flex align-items-center">
+
     <div class="col-sm-6 mb-3">
         <div class="card bg-white">
             <div class="card-body">
@@ -10,7 +10,7 @@
                     <div class="user-info">
                         <h4 class="mb-2">{{ $current_user->full_name ?? '' }}</h4>
                         <span class="badge bg-label-danger mt-1">{{ $current_user->employeeID ?? '' }}</span>
-                        <span class="badge bg-label-secondary mt-1">{{ $current_user->role ?? '' }}</span>
+                        <span class="badge bg-label-secondary mt-1">{{ $current_user->designation ? $current_user->designation->designation : '' }}</span>
                         <h5 class="mt-2">Attendance Report for {{ $day ? $day .' -' : '' }} {{ $month ? $month .' -' : '' }} {{ $year ?? '' }}. </h5>
                     </div>
                     </div>

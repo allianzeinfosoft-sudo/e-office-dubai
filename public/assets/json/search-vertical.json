@@ -697,7 +697,7 @@
     {
       "name": "John Doe",
       "subtitle": "Admin",
-      "src": "img/avatars/1.png",
+      "src": "img/avatars/default-avatar.png",
       "url": "app-user-view-account.html"
     },
     {

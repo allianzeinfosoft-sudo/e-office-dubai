@@ -6,7 +6,7 @@
       "project_leader": "Fred",
       "project_name": "App Design",
       "team": [
-        "1.png",
+        "default-avatar.png",
         "3.png",
         "4.png"
       ],
@@ -33,7 +33,7 @@
       "project_leader": "Owen",
       "project_name": "Social Banners",
       "team": [
-        "11.png",
+        "1default-avatar.png",
         "10.png"
       ],
       "date": "03 Jan 2021",
@@ -72,7 +72,7 @@
       "project_leader": "Genevra",
       "project_name": "Admin Template",
       "team": [
-        "11.png",
+        "1default-avatar.png",
         "13.png",
         "7.png",
         "6.png"
@@ -131,7 +131,7 @@
         "2.png",
         "8.png",
         "5.png",
-        "1.png"
+        "default-avatar.png"
       ],
       "date": "19 Apr 2021",
       "status": "56%"

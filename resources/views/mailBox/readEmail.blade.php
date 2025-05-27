@@ -50,7 +50,7 @@
     <div class="card email-card-last mx-sm-4 mx-3 mt-4">
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
         <div class="d-flex align-items-center mb-sm-0 mb-3">
-        <img src="../../assets/img/avatars/1.png" alt="user-avatar" class="flex-shrink-0 rounded-circle me-3" height="40" width="40" />
+        <img src="../../assets/img/avatars/default-avatar.png" alt="user-avatar" class="flex-shrink-0 rounded-circle me-3" height="40" width="40" />
         <div class="flex-grow-1 ms-1">
             <h6 class="m-0">{{ $mail->fromUser->full_name ?? $mail->userData->username }}</h6>
             <small class="text-muted"> < {{ $mail->userData->email ?? '' }} ></small>

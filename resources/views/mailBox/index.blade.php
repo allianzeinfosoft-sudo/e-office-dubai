@@ -70,7 +70,7 @@
                                 </a>
                                 <div class="badge bg-label-warning rounded-pill badge-center">{{ $counts['starred'] }}</div>
                             </li>
-                              
+
                             <li class="d-flex justify-content-between" data-target="spam">
                               <a href="javascript:void(0);" onclick="getMails('spam');" class="d-flex flex-wrap align-items-center">
                                 <i class="ti ti-info-circle"></i>
@@ -102,11 +102,11 @@
                             <div class="d-flex align-items-center w-100">
                               <h5 class="text-capitalize" id="emails-list-title">Inbox </h5></h5>
                             </div>
-                            
+
                           </div>
 
                           <hr class="mx-n3 emails-list-header-hr">
-                          
+
                             <!-- Email List: Actions -->
                             <div class="d-flex justify-content-between align-items-center">
                               <div class="d-flex align-items-center">
@@ -304,8 +304,8 @@
           placeholder: 'Write your message... ',
           theme: 'snow'
         });
-        
-  
+
+
   $(function(){
     getMails('inbox');
 
@@ -409,10 +409,10 @@
 
               if (response.status && response.data.length > 0) {
                   response.data.forEach(function(mail) {
-                    
+
                     const profileImage = mail && mail.fromUser && mail.fromUser.profile_image
                     ? `/storage/${mail.fromUser.profile_image}`
-                    : '../../assets/img/avatars/1.png';
+                    : '../../assets/img/avatars/default-avatar.png';
 
                     const name = mail?.from_user?.full_name || mail?.user_data?.username || 'Unknown';
 
@@ -436,8 +436,8 @@
                                   <span class="email-list-item-label badge badge-dot bg-danger d-none d-md-inline-block me-2" data-label="private"></span>
                                   <small class="email-list-item-time text-muted">${ timeAgo(mail.created_at) }</small>
                                   <ul class="list-inline email-list-item-actions text-nowrap">
-                                      <li class="list-inline-item email-read"> 
-                                        ${mail.mark_as_read 
+                                      <li class="list-inline-item email-read">
+                                        ${mail.mark_as_read
                                         ? `<i class="ti ti-mail-opened" onclick="markAsRead(${mail.id})"></i>`
                                         : `<i class="ti ti-mail" onclick="markAsRead(${mail.id})"></i>` }
                                         </li>
@@ -570,7 +570,7 @@ function moveToTrash(){
       let selectedIds = $('.email-list-item-input:checked').map(function () {
         return $(this).val();
       }).get(); // Convert jQuery object to array
-    
+
       if (selectedIds.length === 0) {
         alert('No emails selected.');
         return;
@@ -601,14 +601,14 @@ function moveToTrash(){
     let selectedIds = $('.email-list-item-input:checked').map(function () {
       return $(this).val();
     }).get(); // Convert jQuery object to array
-  
+
     if (selectedIds.length === 0) {
       alert('No emails selected.');
       return;
     }
-  
+
     let url = "{{ route('mail-boxes.move-to-folder') }}"; // You will define this route
-  
+
     $.ajax({
       type: "POST",
       url: url,
@@ -735,7 +735,7 @@ function markAsStarred(mailId){
 
 function markAsRead(mailId = null){
   var current_folder = $('#current_folder').val();
-  
+
   if(mailId){
     event.stopPropagation();
     let url = "{{ route('mail-boxes.mark-read') }}";
@@ -760,14 +760,14 @@ function markAsRead(mailId = null){
       let selectedIds = $('.email-list-item-input:checked').map(function () {
         return $(this).val();
       }).get(); // Convert jQuery object to array
-    
+
       if (selectedIds.length === 0) {
         alert('No emails selected.');
         return;
       }
-    
+
       let url = "{{ route('mail-boxes.mark-as-read') }}"; // You will define this route
-    
+
       $.ajax({
         type: "POST",
         url: url,

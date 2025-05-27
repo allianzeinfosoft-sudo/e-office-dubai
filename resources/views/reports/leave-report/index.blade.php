@@ -13,7 +13,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -35,7 +35,7 @@
                                         <table class="datatables-basic datatables-leave-report table border-top table-stripedc table-hover table-striped">
                                             <thead>
                                                 <tr>
-                                                    <th>#</th>
+                                                    <th>Sl No</th>
                                                     <th>Username</th>
                                                     <th>From Date</th>
                                                     <th>To Date</th>
@@ -47,7 +47,7 @@
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
-    
+
                                         </table>
                                     </div>
                                 </div>
@@ -62,7 +62,7 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            
+
                                         <form id="filter-form">
                                             @csrf
                                             <div class="form-group mb-3">
@@ -101,9 +101,9 @@
                 </div>
 
                 <!-- Footer -->
-                <x-footer /> 
+                <x-footer />
                 <!-- / Footer -->
-                 
+
                 <div class="content-backdrop fade"></div>
 
                 <!-- Overlay -->
@@ -148,7 +148,7 @@
             },
             processing: true,
             columns: [
-                { data: 'id', title: '#' },
+                { data: 'id', title: 'Sl No' },
                 { data: 'username', title: 'Username' },
                 { data: 'leave_from', title: 'From date' },
                 { data: 'leave_to', title: 'To date' },
@@ -159,8 +159,8 @@
                 { data: 'status', title: 'Status' },
                 { data: null, title: 'Action',
                     render: function (data, type, row) {
-                        //return '<a href="/leaves/' + row.id + '/edit" class="btn btn-sm btn-primary"><i class="ti ti-edit"></i></a>'; 
-                        return '<a href="/leaves" class="btn btn-sm btn-primary"><i class="ti ti-edit"></i></a>'; 
+                        //return '<a href="/leaves/' + row.id + '/edit" class="btn btn-sm btn-primary"><i class="ti ti-edit"></i></a>';
+                        return '<a href="/leaves" class="btn btn-sm btn-primary"><i class="ti ti-edit"></i></a>';
                     }
                 },
             ]
@@ -174,6 +174,6 @@
 
     });
 
-    
+
 </script>
 @endpush
