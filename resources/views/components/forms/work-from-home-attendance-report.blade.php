@@ -1,4 +1,4 @@
-<form action="{{ route('others.events.store') }}" method="post" id="event-form" enctype="multipart/form-data">
+<form action="{{ route('work-from-home-attendance.store') }}" method="post" id="event-form" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="id" id="target_id">
 

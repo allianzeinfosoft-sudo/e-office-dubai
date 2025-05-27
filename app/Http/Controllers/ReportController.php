@@ -283,6 +283,7 @@ class ReportController extends Controller
 
         $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
         $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth();
+        //$endDate = $endDate = Carbon::now();
 
         $users = Employee::all();
 

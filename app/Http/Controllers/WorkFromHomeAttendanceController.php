@@ -51,15 +51,17 @@ class WorkFromHomeAttendanceController extends Controller
 
 
         if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
-            $markOut->is_incomplete = 1;
+            $is_incomplete = 1;
 
             CustomHelper::addToBlockList([
-                'user_id'    => $markOut->emp_id,
+                'user_id'    => $validateedData['employee_id'],
                 'block_date' => date('Y-m-d'),
-                'username' => $markOut->username,
-                'full_name' => Employee::where('user_id', $markOut->emp_id)->first()->full_name
+                'username' => $employee->user->username,
+                'full_name' => $employee->full_name
             ]);
 
+        }else{
+            $is_incomplete = 0;
         }
 
         $attendance = WorkFromHomeAttendance::updateOrCreate(
@@ -74,25 +76,28 @@ class WorkFromHomeAttendanceController extends Controller
                 'working_hours' => CustomHelper::formatTimeToSeconds($wrokingHrs['total_working_time']),
                 'break_time'    => CustomHelper::formatTimeToSeconds($validateedData['brake_time']),
                 'status'        => 'WFH',
-                'is_incomplete' => $validateedData['signout_time'],
+                'is_incomplete' => $is_incomplete,
                 'created_by'    => Auth::user()->id,
             ]
         );
 
         // Delete old reports if updating
         if ($request->id) {
-            WorkReport::where('attendance_id', $attendance->id)->delete();
+            WorkFromHomeReport::where(['username'=>$employee->user->username, 'report_date' => date('Y-m-d', strtotime($validateedData['signin_date']))])->delete();
         }
 
         foreach ($request->input('reports', []) as $report) {
-            WorkReport::create([
-                'attendance_id'     => $attendance->id,
-                'project_id'        => $report['project_id'],
-                'type_of_work'      => $report['type_of_work'],
-                'total_records'     => $report['total_records'],
-                'productivity_hour' => $report['productivity_hour'],
-                'total_time'        => $report['total_time'],
-                'comments'          => $report['comments'],
+            WorkFromHomeReport::create([
+                'username' => $employee->user->username,
+                'emp_id' => $validateedData['employee_id'],
+                'project_name' => $report['project_id'],
+                'type_of_work' => $report['type_of_work'],
+                'time_of_work' => CustomHelper::formatTimeToSeconds($wrokingHrs['total_working_time']),
+                'total_time' => $report['total_time'],
+                'comments' => $report['comments'],
+                'report_date' => date('Y-m-d', strtotime($validateedData['signin_date'])),
+                'total_records' => $report['total_records'],
+                'productivity_hour' => $report['productivity_hour']
             ]);
         }
 

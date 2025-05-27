@@ -397,6 +397,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/gallery/{id}', [GalleryController::class, 'show'])->name('gallery.show');
     Route::delete('/gallery/{gallery}/image', [GalleryController::class, 'deleteImage'])->name('gallery.image.delete');
 
+    /* workfrom home */
+    Route::post('/work-from-home-attendance/store', [WorkFromHomeAttendanceController::class, 'store'])->name('work-from-home-attendance.store');
+
 
     /* Mail Testing Route */
     Route::get('/test-mail', function () {
