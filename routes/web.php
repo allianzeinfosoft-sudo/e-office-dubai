@@ -388,8 +388,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/emergency-reports', [ReportController::class, 'emergencyAttendanceReport']) ->name('reports.emergency-reports');
     Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
     Route::post('/check-leave-overlap', [LeaveController::class, 'checkOverlap'])->name('check.leave.overlap');
-
     Route::post('/leave_summary_filter', [LeaveController::class, 'leave_summary_filter'])->name('leave_summary_filter');
+    Route::get('/check-leave-allocation/{user}', [LeaveController::class, 'check_leave_allocated']);
+
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
     Route::post('/gallery/upload-image', [GalleryController::class, 'uploadImage'])->name('gallery.upload.image');

@@ -770,5 +770,19 @@ class LeaveController extends Controller
 
     }
 
+    public function check_leave_allocated($userId)
+    {
+        $year = request()->get('year', now()->year); // fallback to current year
+        $allocation = LeaveAllocation::where('user_id', $userId)
+            ->where('year', $year)
+            ->first();
+
+        if (!$allocation) {
+            return response()->json(['error' => 'Leave is not allocated for this user for year ' . $year], 404);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
 
 }
