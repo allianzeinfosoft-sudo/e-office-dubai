@@ -17,6 +17,7 @@
                         @endif
                     </slelect>
                 </div>
+
                 <div class="form-group mb-2 col-sm-6">
                     <label>Attendance Date</label>
                     <input type="text" id="attendance_date" name="attendance[signin_date]" class="form-control">
@@ -42,6 +43,7 @@
         {{-- Report Section --}}
         <div class="col-sm-12 mb-4">
             <h5>Work From Home Reports</h5>
+
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover table-sm">
                     <thead>
@@ -59,6 +61,7 @@
                     </tbody>
                 </table>
             </div>
+
             <button type="button" class="btn btn-sm btn-success my-2" onclick="addReportLine()">+ Add Report Line</button>
 
             <div class="divider">
@@ -84,13 +87,15 @@
 <script>
     
 function addReportLine(data = {}) {
+    const projects = {!! json_encode($projects) !!};
+    console.log(projects);
     const container = document.getElementById('report-lines');
     var wrapper = `
         <tr>
             <td>
-                <select class="form-control" data-placeholder="Select Project" name="reports[][project_id]">
-                    <option value="">Select Project</option>`+
-                    projects.map(project => `<option value="${project.id}">${project.name}</option>`).join('') : ''                
+                <select class="form-control select2" data-placeholder="Select Project" name="reports[][project_id]"/>
+                    <option value=""></option>`+
+                    projects.map(project => `<option value="${project.id}">${project.project_name}</option>`).join('')                
                 +`</select>
             </td>
             <td>
