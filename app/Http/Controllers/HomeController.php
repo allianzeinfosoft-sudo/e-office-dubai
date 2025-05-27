@@ -185,12 +185,14 @@ public function getLeaveSummary(Request $request)
             break;
     }
 
-    // Fetch leaves within the selected range
+    // Fetch leaves within selected range
     $leavesInRange = Leave::where('user_id', $user->id)
         ->whereBetween('leave_from', [$from, $to])
         ->get();
 
-    $leave_allocated = LeaveAllocation::where('user_id',$user->id)->first();
+    // Get total allocation
+    $leave_allocated = LeaveAllocation::where('user_id', $user->id)->first();
+
     // Initialize counters
     $leaveThisMonth = 0;
     $totalLeavesTaken = 0;
@@ -198,53 +200,68 @@ public function getLeaveSummary(Request $request)
     $fullLeaves = 0;
     $halfLeaves = 0;
     $offDays = 0;
-    $leaveBalance = 0;
+    
+    $leaveBalance = $leave_allocated?->remaining_leaves ?? 0;
 
     foreach ($leavesInRange as $leave) {
-        // Calculate the number of days for each leave
         $days = Carbon::parse($leave->leave_from)->diffInDays(Carbon::parse($leave->leave_to)) + 1;
 
-
-
-        if ($leave->status == 2) {
-
-            $totalLeavesTaken += $days;
-            $leaveThisMonth += $days;
-
+        if ($leave->status == 2) { // Approved
             if ($leave->leave_type === 'full_day') {
                 $fullLeaves += $days;
-            } elseif ($leave->leave_type === 'haf_day') {
+                $totalLeavesTaken += $days;
+                if ($range === 'current_month') $leaveThisMonth += $days;
+            } elseif ($leave->leave_type === 'half_day') {
                 $halfLeaves += $days;
+                $totalLeavesTaken += $days * 0.5;
+                if ($range === 'current_month') $leaveThisMonth += $days * 0.5;
             } elseif ($leave->leave_type === 'off_day') {
                 $offDays += $days;
+                // offDays typically not counted in leave totals
             }
-
-        } elseif ($leave->status == 1) {
+        } elseif ($leave->status == 1) { // Pending
             $pendingLeaves += $days;
         }
-
-
     }
 
-    // Calculate past year leaves
-    $pastYearLeaves = Leave::where('user_id', $user->id)
-        ->whereYear('leave_from', $now->copy()->subYear()->year)
+    // Calculate total leaves taken in the **current year**
+    $yearStart = $now->copy()->startOfYear();
+    $yearEnd = $now->copy()->endOfYear();
+    $currentYearLeaves = Leave::where('user_id', $user->id)
+        ->whereBetween('leave_from', [$yearStart, $yearEnd])
+        ->where('status', 2)
         ->get()
         ->reduce(function ($carry, $leave) {
             $days = Carbon::parse($leave->leave_from)->diffInDays(Carbon::parse($leave->leave_to)) + 1;
-            return $carry + $days;
+            if ($leave->leave_type === 'half_day') {
+                return $carry + ($days * 0.5);
+            } elseif ($leave->leave_type === 'full_day') {
+                return $carry + $days;
+            }
+            return $carry; // ignore off_day
         }, 0);
 
-    // Define total leaves allotted (can be made dynamic)
-     $totalLeavesAllotted = $leave_allocated ? $leave_allocated->total_leaves : 0;
-     $leaveBalance = $leave_allocated ? $leave_allocated->remaining_leaves : 0;
+    // Past year leave count
+    $pastYearLeaves = Leave::where('user_id', $user->id)
+        ->whereYear('leave_from', $now->copy()->subYear()->year)
+        ->where('status', 2)
+        ->get()
+        ->reduce(function ($carry, $leave) {
+            $days = Carbon::parse($leave->leave_from)->diffInDays(Carbon::parse($leave->leave_to)) + 1;
+            if ($leave->leave_type === 'half_day') {
+                return $carry + ($days * 0.5);
+            } elseif ($leave->leave_type === 'full_day') {
+                return $carry + $days;
+            }
+            return $carry;
+        }, 0);
 
     return response()->json([
         'leaveThisMonth' => $leaveThisMonth,
-        'totalLeavesTaken' => $totalLeavesTaken,
+        'totalLeavesTaken' => $currentYearLeaves,
         'pendingLeaves' => $pendingLeaves,
         'pastYearLeaves' => $pastYearLeaves,
-        'totalLeavesAllotted' => $totalLeavesAllotted,
+        'totalLeavesAllotted' => $leave_allocated?->total_leaves ?? 0,
         'fullLeaves' => $fullLeaves,
         'halfLeaves' => $halfLeaves,
         'offDays' => $offDays,

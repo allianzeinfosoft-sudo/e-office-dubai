@@ -395,16 +395,16 @@ class UserController extends Controller
                 ->map(function ($users) {
                     return [
                         'id' => $users->id,
-                        'full_name' => $users->employee->full_name,
+                        'full_name' => $users->employee?->full_name ?? '',
                         'group' => $users->role,
-                        'role' => $users->employee->role,
+                        'role' => $users->employee?->role ?? '',
                         'username' => $users->username,
-                        'employeeID' => 'AIS-'.$users->employee->employeeID,
-                        'phonenumber' => $users->employee->phonenumber,
+                        'employeeID' => 'AIS-'.$users->employee?->employeeID ?? '',
+                        'phonenumber' => $users->employee?->phonenumber ?? '',
                         'email' => $users->email,
                         'current_plan' => 'Enterprise',
-                        'profile_image' => $users->employee->profile_image,
-                        'status' => $users->employee->status,
+                        'profile_image' => $users->employee?->profile_image ?? '',
+                        'status' => $users->employee?->status,
                          "avatar" => "",
                     ];
                 });

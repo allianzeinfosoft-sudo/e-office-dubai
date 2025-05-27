@@ -239,6 +239,16 @@
                             <button type="button" class="btn p-3 btn-warning w-100" onclick="emergencyModal()">Emergency <i class="mx-1 ti ti-bolt ti-sm"></i></button>
                           </div>
                           <!--/ emergency -->
+                          <hr style ="margin: 1rem 0;" />
+                          <!-- work from home -->                           
+                            <div class="col-6 col-md-6 col-xl-6 col-lg-6">
+                              <button type="button" class="btn btn-primary w-100" onclick="wfh_attendance()">Work From Home</button>
+                            </div>
+                            
+                            <div class="col-6 col-md-6 col-xl-6 col-lg-6">
+                              <button type="button" class="btn btn-danger w-100" onclick="wos_attendance()">Work On Site</button>
+                            </div>
+                          <!--/ work from home --> 
 
                           <div class="col-12 col-xl-12 col-lg-12 pb-4">
                             <div class="card badge bg-label-dark w-100 pt-3 pb-3">
@@ -369,6 +379,35 @@
   <div class="offcanvas-footer"></div>
 </div>
 
+<!-- work from home -->
+ <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wfhOffcanvas" aria-labelledby="staticBackdropLabel">
+  <div class="offcanvas-header bg-primary">
+      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  WFH Attendance & Report </h5>
+      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
+          <x-work-from-home-attendance-report />
+    </div>
+  </div>
+  <div class="offcanvas-footer"></div>
+</div>
+
+
+<!-- work from site -->
+
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="wosOffcanvas" aria-labelledby="staticBackdropLabel">
+  <div class="offcanvas-header bg-primary">
+      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  Work On Site & Report </h5>
+      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
+          
+    </div>
+  </div>
+  <div class="offcanvas-footer"></div>
+</div>
 
 @endsection
 
@@ -620,6 +659,27 @@ function emergencyMark(type) {
             }
         }
     });
+}
+
+
+function wfh_attendance(){
+    var offcanvasElement = $('#wfhOffcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+    //$('#modelCustom').modal('show');
+    $('#attendance_date').flatpickr({
+        monthSelectorType: 'static',
+        altInput: true,
+        altFormat: 'd-m-Y',
+        dateFormat: 'd-m-Y'
+    });
+}
+
+function wos_attendance(){
+    var offcanvasElement = $('#wosOffcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+    //$('#modelCustom').modal('show');
 }
 
 

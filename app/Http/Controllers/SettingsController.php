@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\CustomHelper;
 
 class SettingsController extends Controller
 {
@@ -213,10 +214,10 @@ class SettingsController extends Controller
             $attendance->update([
                 'emp_id'        => $validated['emp_id'],   // Don't forget to update emp_id if needed
                 'signin_date'   => $signinDate,
-                'signin_time'   => $validated['signin_time'],
+                'signin_time'   => CustomHelper::formatTimeToSeconds($validated['signin_time']),
                 'break_time'    => $validated['break_time'] ?? '00:00',
-                'signout_time'  => $validated['signout_time'],
-                'working_hours' => $validated['working_hours'],
+                'signout_time'  => CustomHelper::formatTimeToSeconds($validated['signout_time']),
+                'working_hours' => CustomHelper::formatTimeToSeconds($validated['working_hours']),
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'Attendance updated successfully.']);
