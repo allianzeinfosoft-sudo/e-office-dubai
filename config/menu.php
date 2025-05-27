@@ -143,11 +143,11 @@ return [
                 'route' => '/reports/emergency-reports',
                 'permission' => ['view emergency attendance report'],
             ],
-            [
+            /* [
                 'title' => 'Over All Emergency Work Report',
                 'route' => '/reports/over-all-emorgency-work-report',
                 'permission' => ['view all emergency work report'],
-            ],
+            ], */
         ]
     ],
     // [

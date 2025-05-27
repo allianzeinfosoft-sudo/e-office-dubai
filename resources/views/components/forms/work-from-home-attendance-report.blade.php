@@ -64,14 +64,14 @@
 
             <button type="button" class="btn btn-sm btn-success my-2" onclick="addReportLine()">+ Add Report Line</button>
 
-            <div class="divider">
+           <!--  <div class="divider">
                 <div class="divider-text">OR</div>
             </div>
 
             <div class="form-group mt-2 col-sm-6">
                 <label for="excelUpload">Upload Excel File</label>
                 <input class="form-control" type="file" id="formFile" name="excelUpload" accept=".xlsx, .xls">
-            </div>
+            </div> -->
         </div>
 
         <div class="col-sm-12 mb-3">
@@ -100,7 +100,7 @@ function addReportLine(data = {}) {
                 +`</select>
             </td>
             <td>
-                <select class="form-control" data-placeholder="Select Project" name="reports[][type_of_work]">
+                <select class="form-control" id="type_of_work_`+containerLength+`" data-placeholder="Select Project" name="reports[][type_of_work]" onchange="getProductivity(this.value, '`+containerLength+`')">
                     <option value="">Select Project</option>
                 </select>
             </td>
@@ -108,7 +108,7 @@ function addReportLine(data = {}) {
                 <input type="text" name="reports[][total_records]" class="form-control" placeholder="Total Records" value="${data.total_records || ''}" />
             </td>
             <td>
-                <input type="text" name="reports[][productivity_hour]" class="form-control" placeholder="Productivity Hour" value="${data.productivity_hour || ''}"  readonly />
+                <input type="text" name="reports[][productivity_hour]" id="productivity_hour_`+containerLength+`" class="form-control" placeholder="Productivity Hour" value="${data.productivity_hour || ''}"  readonly />
             </td>
             <td>
                 <input type="text" name="reports[][total_time]" class="form-control" placeholder="Total Time" value="${data.total_time || ''}"  />
@@ -154,15 +154,41 @@ document.getElementById('excelUpload').addEventListener('change', function(e) {
 });
 
 function getProjectTasks(projectId, index) {
-    const project_id = projectId;
-    
+    let url = `{{ route('tasks-project.get-tasks-by-project', ':id') }}`.replace(':id', projectId);
     $.ajax({
-        type: "method",
-        url: "url",
-        data: "data",
-        dataType: "dataType",
+        type: "get",
+        url: url,
+        dataType: "json",
         success: function (response) {
-            
+            $('#type_of_work_'+index).empty();
+            var html = '<option value=""></option>';
+            response.data.forEach(projectTask => {
+                html += '<option value="'+projectTask.tasks.id+'">'+projectTask.tasks.name+'</option>';
+            });
+            $('#type_of_work_'+index).html(html);
+        }
+    });
+}
+
+function getProductivity(taskId, index) {
+    let url = `{{ route('work-report.get-productivity-target', ':id') }}`.replace(':id', taskId);
+     let task_id = taskId;
+     let project_id = $('#project_'+index).val();
+    $.ajax({
+        type: "post",
+        url: url,
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            task_id: task_id,
+            project_id: project_id
+        },
+        dataType: "json",
+        success: function (response) {
+            if(response.success){
+                $('#productivity_hour_'+index).val(response.data.rph);
+            }else{
+                $('#productivity_hour_'+index).val('0');
+            }
         }
     });
 }

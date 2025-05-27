@@ -62,4 +62,5 @@ class WorkFromHomeAttendanceController extends Controller
     {
         //
     }
+    
 }
