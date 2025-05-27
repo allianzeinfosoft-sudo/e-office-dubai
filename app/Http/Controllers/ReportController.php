@@ -503,7 +503,7 @@ class ReportController extends Controller
         return view('reports.all-attendance-report.index', $data);
     }
 
-    public function allAttendanceData(Request $request){
+    /* public function allAttendanceData(Request $request){
         $data['current_user'] = Employee::where('user_id', $request->employee_id)->first();
         $data['day'] = $request->day;
         $data['month'] = $request->month;
@@ -579,6 +579,141 @@ class ReportController extends Controller
             } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
                 $row->status = 'weekend';
                 $row->statusText = $dayName;
+            }
+
+            $report[] = $row;
+            $currentDate->addDay();
+        }
+
+        $data['attendances'] = collect($report);
+        $html = view('reports.all-attendance-report.report-view', $data)->render();
+
+        return response()->json(['html' => $html]);
+    } */
+
+    public function allAttendanceData(Request $request){
+        
+        $data['current_user'] = Employee::where('user_id', $request->employee_id)->first();
+        $data['day'] = $request->day;
+        $data['month'] = $request->month;
+        $data['year'] = $request->year;
+
+        $employeeId = $request->employee_id;
+        $report = [];
+
+        if ($request->filled('day')) {
+            $startDate = Carbon::createFromDate($request->year, $request->month, $request->day);
+            $endDate = $startDate;
+        } else {
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+        }
+
+        $attendances = Attendance::with('employee', 'employee.user')
+            ->where('emp_id', $employeeId)
+            ->whereBetween('signin_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get()
+            ->keyBy(fn($item) => Carbon::parse($item->signin_date)->format('Y-m-d'));
+
+        $leaves = Leave::where('user_id', $employeeId)
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('leave_from', [$startDate, $endDate])
+                    ->orWhereBetween('leave_to', [$startDate, $endDate])
+                    ->orWhere(function ($q) use ($startDate, $endDate) {
+                        $q->where('leave_from', '<=', $startDate)
+                            ->where('leave_to', '>=', $endDate);
+                    });
+            })
+            ->get();
+
+        $leaveDates = [];
+        foreach ($leaves as $leave) {
+            $from = Carbon::parse($leave->leave_from);
+            $to = Carbon::parse($leave->leave_to);
+            while ($from->lte($to)) {
+                $leaveDates[] = $from->format('Y-m-d');
+                $from->addDay();
+            }
+        }
+
+        $holidays = DB::table('holidays')
+            ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->pluck('date')
+            ->toArray();
+
+        $employee = Employee::with('user')->where('user_id', $employeeId)->first();
+        $user = $employee->user;
+        $name = $employee->full_name ?? 'NA';
+
+        $initials = collect(explode(' ', trim($name)))
+            ->filter()
+            ->map(fn($w) => strtoupper($w[0]))
+            ->join('');
+        $initials = substr($initials, 0, 2);
+
+        $image = $user->profile_image
+            ? '<img src="' . asset('storage/' . $user->profile_image) . '" width="40" height="40" class="rounded-circle" />'
+            : "<div class='rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center' style='width: 40px; height: 40px;'>$initials</div>";
+
+        $serial = 1;
+        $currentDate = $startDate->copy();
+
+        while ($currentDate->lte($endDate)) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $dayName = $currentDate->format('l');
+
+            $row = (object)[
+                'index'         => $serial++,
+                'name'          => $name,
+                'image'         => $image,
+                'signin_date'   => $currentDate->format('d-m-Y'),
+                'signin_time'   => 'N/A',
+                'signout_time'  => 'N/A',
+                'break_time'    => 'N/A',
+                'working_hours' => 'N/A',
+                'signin_note'   => 'N/A',
+                'signout_note'  => 'N/A',
+                'status'        => 'leave',
+                'statusText'    => 'Leave'
+            ];
+
+            if (isset($attendances[$dateStr])) {
+                $att = $attendances[$dateStr];
+                $row->signin_time = $att->signin_time ?? '-';
+                $row->signout_time = $att->signout_time ?? '-';
+                $row->break_time = $att->break_time ?? '-';
+                $row->working_hours = $att->working_hours ?? '-';
+                $row->signin_note = $att->signin_note ?? '-';
+                $row->signout_note = $att->signout_note ?? '-';
+
+                if (in_array($dateStr, $holidays)) {
+                    $row->status = 'holiday';
+                    $row->statusText = '<span class="badge bg-label-secondary mt-1">Holiday Worked</span> ';
+                } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                    $row->status = 'weekend';
+                    $row->statusText = '<span class="badge bg-label-primary mt-1">'.$dayName . ' Worked </span>';
+                } elseif (!$att->signout_time) {
+                    $row->status = 'mark-in';
+                    $row->statusText = '<span class="badge bg-label-info mt-1">On Going</span>';
+                } elseif ($att->working_hours && $att->working_hours < '08:00:00') {
+                    $row->status = 'incomplete';
+                    $row->statusText = '<span class="badge bg-label-warning mt-1"> In-complete </span>';
+                } else {
+                    $row->status = 'mark-out';
+                    $row->statusText = '<span class="badge bg-label-info mt-1">Completed</span>';
+                }
+            } elseif (in_array($dateStr, $leaveDates)) {
+                $row->status = 'leave';
+                $row->statusText = '<span class="badge bg-label-danger mt-1"> On Leave </span>';
+            } elseif (in_array($dateStr, $holidays)) {
+                $row->status = 'holiday';
+                $row->statusText = '<span class="badge bg-label-secondary mt-1">Holiday</span>';
+            } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
+                $row->status = 'weekend';
+                $row->statusText = '<span class="badge bg-label-primary mt-1">'. $dayName .'</span>';
+            } else {
+                $row->status = 'absent';
+                $row->statusText = '<span class="badge bg-label-primary mt-1"> Absent </span>';
             }
 
             $report[] = $row;
