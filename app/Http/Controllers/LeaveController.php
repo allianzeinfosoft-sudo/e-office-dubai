@@ -626,7 +626,7 @@ class LeaveController extends Controller
         ]);
 
         try {
-            // Find the leave record or create a new one
+
             $leave = LeaveAllocation::updateOrCreate(
                 [
                     'user_id' => $request->user_id,
