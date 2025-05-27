@@ -55,8 +55,8 @@
                         <div class="col-md-12">
                             <label class="form-label" for="leave_from">User Name<span class="mandatory">*</span></label>
 
-                                <select class="select2 form-select form-select-lg" name="user_id" id="user_id">
-                                    <option value="">Select User</option>
+                                <select class="select2 form-select form-select-lg" name="user_id" id="user_id" data-placeholder="Select User">
+                                   <option value=""></option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>{{ $user->employee->full_name ?? 'N/A' }}</option>
                                     @endforeach

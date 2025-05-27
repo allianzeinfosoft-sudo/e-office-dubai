@@ -15,7 +15,7 @@
                     <option value=""></option>
                     @if($projects->isNotEmpty())
                         @foreach($projects as $project)
-                            <option value="{{ $project->id }}" 
+                            <option value="{{ $project->id }}"
                                 {{ isset($productivityTarget) && $productivityTarget->project_id == $project->id ? 'selected' : '' }}>
                                 {{ $project->project_name }}
                             </option>
@@ -40,11 +40,11 @@
         <div class="col-sm-6 mb-3">
             <div class="form-group">
                 <label for="assignedBy">Assigned By</label>
-                <select class="form-control select2" name="assignedBy" id="assignedBy" data-placeholder="Select Department">
+                <select class="form-control select2" name="assignedBy" id="assignedBy" data-placeholder="Select Assigned By">
                     <option value=""></option>
                     @if($employees->isNotEmpty())
                         @foreach($employees as $employee)
-                            <option value="{{ $employee->id }}" 
+                            <option value="{{ $employee->id }}"
                                 {{ isset($productivityTarget) && $productivityTarget->assignedBy == $employee->id ? 'selected' : '' }}>
                                 {{ $employee->full_name }}
                             </option>
@@ -57,7 +57,7 @@
         <div class="col-sm-6 mb-3">
             <div class="form-group">
                 <label for="rph">Total Record Per Hour</label>
-                <input type="text" name="rph" id="rph" class="form-control" placeholder="Total Record Per Hour" 
+                <input type="text" name="rph" id="rph" class="form-control" placeholder="Total Record Per Hour"
                        value="{{ isset($productivityTarget) ? $productivityTarget->rph : '' }}" />
             </div>
         </div>
@@ -65,7 +65,7 @@
         <div class="col-sm-6 mb-3">
             <div class="form-group">
                 <label for="target_year">Target Month & Year</label>
-                <input type="month" name="target_year" id="target_year" class="form-control flatpickr-input" placeholder="Target Year" required 
+                <input type="month" name="target_year" id="target_year" class="form-control flatpickr-input" placeholder="Target Year" required
                        value="{{ isset($productivityTarget) ? date('Y-m', strtotime($productivityTarget->target_year)) : date('Y-m') }}" />
             </div>
         </div>
