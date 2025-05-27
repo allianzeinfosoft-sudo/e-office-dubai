@@ -380,7 +380,7 @@
 </div>
 
 <!-- work from home -->
- <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="wfhOffcanvas" aria-labelledby="staticBackdropLabel">
+ <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wfhOffcanvas" aria-labelledby="staticBackdropLabel">
   <div class="offcanvas-header bg-primary">
       <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  WFH Attendance & Report </h5>
       <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
@@ -667,6 +667,12 @@ function wfh_attendance(){
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
     //$('#modelCustom').modal('show');
+    $('#attendance_date').flatpickr({
+        monthSelectorType: 'static',
+        altInput: true,
+        altFormat: 'd-m-Y',
+        dateFormat: 'd-m-Y'
+    });
 }
 
 function wos_attendance(){

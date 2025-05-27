@@ -7,26 +7,32 @@
         <div class="col-sm-12 mb-4">
             <h5>Attendance Details</h5>
             <div class="row">
-                <div class="form-group mb-2 col-sm-12">
-                    <label>Username</label>
-                    <input type="text" name="attendance[username]" class="form-control" required>
+                <div class="form-group mb-2 col-sm-6">
+                    <label>Employee</label>
+                    <slelect class="form-control select2" data-placeholder="Select Employee" name="attendance[employee_id]" id="emp_id">
+                        @if($employees->count() > 0)
+                            @foreach($employees as $employee)
+                                <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
+                            @endforeach
+                        @endif
+                    </slelect>
                 </div>
                 <div class="form-group mb-2 col-sm-6">
-                    <label>Sign-in Date</label>
-                    <input type="date" name="attendance[signin_date]" class="form-control">
+                    <label>Attendance Date</label>
+                    <input type="text" id="attendance_date" name="attendance[signin_date]" class="form-control">
                 </div>
 
-                <div class="form-group mb-2 col-sm-6">
-                    <label>Sign-out Date</label>
-                    <input type="date" name="attendance[signout_date]" class="form-control">
-                </div>
-
-                <div class="form-group mb-2 col-sm-6">
+                <div class="form-group mb-2 col-sm-4">
                     <label>Sign-in Time</label>
                     <input type="time" name="attendance[signin_time]" class="form-control">
                 </div>
 
-                <div class="form-group mb-2 col-sm-6">
+                <div class="form-group mb-2 col-sm-4">
+                    <label>Break Time</label>
+                    <input type="time" name="attendance[signin_time]" class="form-control" value="01:00">
+                </div>
+
+                <div class="form-group mb-2 col-sm-4">
                     <label>Sign-out Time</label>
                     <input type="time" name="attendance[signout_time]" class="form-control">
                 </div>
@@ -50,23 +56,18 @@
                         </tr>
                     </thead>
                     <tbody id="report-lines">
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
             <button type="button" class="btn btn-sm btn-success my-2" onclick="addReportLine()">+ Add Report Line</button>
 
-            <div class="form-group mt-2">
-                <label for="excelUpload">Or Upload Excel File</label>
-                <input type="file" name="excel_file" id="excelUpload" class="form-control-file" accept=".xlsx, .xls" />
+            <div class="divider">
+                <div class="divider-text">OR</div>
+            </div>
+
+            <div class="form-group mt-2 col-sm-6">
+                <label for="excelUpload">Upload Excel File</label>
+                <input class="form-control" type="file" id="formFile" name="excelUpload" accept=".xlsx, .xls">
             </div>
         </div>
 
@@ -81,38 +82,40 @@
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <script>
+    
 function addReportLine(data = {}) {
     const container = document.getElementById('report-lines');
-    const wrapper = document.createElement('tbody');
-    wrapper.innerHTML = `
+    var wrapper = `
         <tr>
             <td>
-                <input type="text" name="reports[][project_name]" class="form-control" placeholder="Project Name" value="${data.project_name || ''}" />
+                <select class="form-control" data-placeholder="Select Project" name="reports[][project_id]">
+                    <option value="">Select Project</option>`+
+                    projects.map(project => `<option value="${project.id}">${project.name}</option>`).join('') : ''                
+                +`</select>
             </td>
             <td>
-                <input type="text" name="reports[][type_of_work]" class="form-control" placeholder="Type of Work" value="${data.type_of_work || ''}" />
-            </td>
-            <td>
-                <input type="text" name="reports[][time_of_work]" class="form-control" placeholder="Time of Work" value="${data.time_of_work || ''}" />
-            </td>
-            <td>
-                <input type="text" name="reports[][total_time]" class="form-control" placeholder="Total Time" value="${data.total_time || ''}" />
-            </td>
-            <td>
-                <input type="text" name="reports[][comments]" class="form-control" placeholder="Comments" value="${data.comments || ''}" />
+                <select class="form-control" data-placeholder="Select Project" name="reports[][type_of_work]">
+                    <option value="">Select Project</option>
+                </select>
             </td>
             <td>
                 <input type="text" name="reports[][total_records]" class="form-control" placeholder="Total Records" value="${data.total_records || ''}" />
             </td>
             <td>
-                <input type="text" name="reports[][productivity_hour]" class="form-control" placeholder="Productivity Hour" value="${data.productivity_hour || ''}" />
+                <input type="text" name="reports[][productivity_hour]" class="form-control" placeholder="Productivity Hour" value="${data.productivity_hour || ''}"  readonly />
             </td>
             <td>
-                <button type="button" class="btn btn-danger btn-sm mt-1" onclick="this.closest('.border').remove()">Remove</button>
+                <input type="text" name="reports[][total_time]" class="form-control" placeholder="Total Time" value="${data.total_time || ''}"  />
+            </td>
+            <td>
+                <input type="text" name="reports[][comments]" class="form-control" placeholder="Comments" value="${data.comments || ''}" />
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm mt-1" onclick="this.closest('tr').remove()"><i class="ti ti-trash"></i></button>
             </td>
         </tr>
     `;
-    container.appendChild(wrapper);
+    container.insertAdjacentHTML('beforeend', wrapper);
 }
 
 document.getElementById('excelUpload').addEventListener('change', function(e) {
