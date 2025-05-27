@@ -309,20 +309,20 @@ class CustomHelper
         $thisMonthLeaves = Leave::where('user_id', $userId)
             ->whereMonth('leave_from', $currentMonth)
             ->whereYear('leave_from', $currentYear)
-            ->where('status', 'Approved')
+            ->where('status', 2)
             ->count();
 
         $totalLeavesTaken = Leave::where('user_id', $userId)
-            ->where('status', 'Approved')
+            ->where('status', 2)
             ->count();
 
         $pastYearLeaves = Leave::where('user_id', $userId)
             ->whereYear('leave_from', $pastYear)
-            ->where('status', 'Approved')
+            ->where('status', 2)
             ->count();
 
         $pendingLeaves = Leave::where('user_id', $userId)
-            ->where('status', 'Pending')
+            ->where('status', 1)
             ->count();
 
         // Paid Leaves (assuming 'Paid' is a leave_type)
@@ -431,7 +431,7 @@ class CustomHelper
         'month' => $startOfMonth->format('F'),
         'year' => $startOfMonth->year,
         'avg_working_hours' => round($totalWorkHours->avg_hours ?? 0, 2),
-        'total_working_hours' => round($totalWorkHours->total_hours ?? 0, 2), 
+        'total_working_hours' => round($totalWorkHours->total_hours ?? 0, 2),
         'working_days' => $workingDays,
         'leaves' => $leaves,
         'off_days' => $offDays,
