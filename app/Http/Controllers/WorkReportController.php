@@ -165,9 +165,7 @@ class WorkReportController extends Controller
         $attendance = Attendance::where('emp_id', $request->emp_id)
             ->where('signin_date', $request->report_date)
             ->first();
-    
         $totalAttendanceTime = $attendance ? strtotime($attendance->working_hours) - strtotime('00:00:00') : 0;
-    
         // ✅ Get total reported work time for the same date and employee (convert to seconds)
         $totalReportedTime = WorkReport::where('emp_id', $request->emp_id)
             ->where('report_date', $request->report_date)

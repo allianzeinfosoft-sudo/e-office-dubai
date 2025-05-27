@@ -8,8 +8,8 @@
             <h5>Attendance Details</h5>
             <div class="row">
                 <div class="form-group mb-2 col-sm-6">
-                    <label>Employee</label>
-                    <slelect class="form-control select2" data-placeholder="Select Employee" name="attendance[employee_id]" id="emp_id">
+                    <label>Employee <span class="text-danger">*</span></label>
+                    <slelect class="form-control select2" data-placeholder="Select Employee" name="employee_id" id="emp_id">
                         @if($employees->count() > 0)
                             @foreach($employees as $employee)
                                 <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
@@ -19,23 +19,23 @@
                 </div>
 
                 <div class="form-group mb-2 col-sm-6">
-                    <label>Attendance Date</label>
-                    <input type="text" id="attendance_date" name="attendance[signin_date]" class="form-control">
+                    <label>Attendance Date <span class="text-danger">*</span></label>
+                    <input type="text" id="attendance_date" name="signin_date" id="signin_date" class="form-control">
                 </div>
 
                 <div class="form-group mb-2 col-sm-4">
-                    <label>Sign-in Time</label>
-                    <input type="time" name="attendance[signin_time]" class="form-control">
+                    <label>Sign-in Time <span class="text-danger">*</span></label>
+                    <input type="time" name="signin_time" id="signin_time" class="form-control">
                 </div>
 
                 <div class="form-group mb-2 col-sm-4">
-                    <label>Break Time</label>
-                    <input type="time" name="attendance[signin_time]" class="form-control" value="01:00">
+                    <label>Break Time <span class="text-danger">*</span></label>
+                    <input type="time" name="brake_time" class="form-control" value="01:00">
                 </div>
 
                 <div class="form-group mb-2 col-sm-4">
-                    <label>Sign-out Time</label>
-                    <input type="time" name="attendance[signout_time]" class="form-control">
+                    <label>Sign-out Time <span class="text-danger">*</span></label>
+                    <input type="time" name="signout_time" class="form-control">
                 </div>
             </div>
         </div>

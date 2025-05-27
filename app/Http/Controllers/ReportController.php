@@ -606,7 +606,8 @@ class ReportController extends Controller
             $endDate = $startDate;
         } else {
             $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
-            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+           // $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+            $endDate = $endDate = Carbon::now()->format('Y-m-d');
         }
 
         $attendances = Attendance::with('employee', 'employee.user')
