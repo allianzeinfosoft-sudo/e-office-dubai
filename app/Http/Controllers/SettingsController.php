@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\CustomHelper;
 
 class SettingsController extends Controller
 {
