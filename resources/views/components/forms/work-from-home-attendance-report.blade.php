@@ -88,12 +88,13 @@
     
 function addReportLine(data = {}) {
     const projects = {!! json_encode($projects) !!};
-    console.log(projects);
     const container = document.getElementById('report-lines');
+    const containerLength = container.children.length;
+
     var wrapper = `
         <tr>
             <td>
-                <select class="form-control select2" data-placeholder="Select Project" name="reports[][project_id]"/>
+                <select class="form-control select2" data-placeholder="Select Project" name="reports[][project_id]" id="project_`+containerLength+`" onchange="getProjectTasks(this.value, '`+containerLength+`')">
                     <option value=""></option>`+
                     projects.map(project => `<option value="${project.id}">${project.project_name}</option>`).join('')                
                 +`</select>
@@ -151,6 +152,20 @@ document.getElementById('excelUpload').addEventListener('change', function(e) {
     };
     reader.readAsBinaryString(file);
 });
+
+function getProjectTasks(projectId, index) {
+    const project_id = projectId;
+    
+    $.ajax({
+        type: "method",
+        url: "url",
+        data: "data",
+        dataType: "dataType",
+        success: function (response) {
+            
+        }
+    });
+}
 </script>
 
 @endpush
