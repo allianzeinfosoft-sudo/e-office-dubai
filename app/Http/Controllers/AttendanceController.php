@@ -91,7 +91,7 @@ class AttendanceController extends Controller{
             $hasAttendance  = in_array($date, $attendanceDays);
 
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
-                // Check if leave exists that covers this date
+                // Check if leave exists that covers this dategi
                 $leaveExists = DB::table('leaves')
                 ->where('user_id', $user->id)
                 ->whereDate('leave_from', '<=', $date)
@@ -109,8 +109,6 @@ class AttendanceController extends Controller{
                 }
             }
         }
-
-
 
         $daysInMonth    = now()->daysInMonth;
         $workedHours    = [];
