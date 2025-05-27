@@ -22,7 +22,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -60,7 +60,7 @@
                                         </tr>
                                     </thead>
                                 </table>
-                            </div>  
+                            </div>
                         </div>
 
                     </div>
@@ -68,9 +68,9 @@
                 </div>
 
                 <!-- Footer -->
-                <x-footer /> 
+                <x-footer />
                 <!-- / Footer -->
-                 
+
                 <div class="content-backdrop fade"></div>
 
                 <!-- Overlay -->
@@ -87,7 +87,7 @@
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="announcement_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-plus fs-2 text-white"></i> 
+            <i class="ti ti-file-plus fs-2 text-white"></i>
             <span id="offcanvas-title-container">
                 <h5 class="offcanvas-title text-white" id="staticBackdropLabel">Create Recruitment </h5>
                 <span class="text-white slogan">Create New Recruiments</span>
@@ -136,7 +136,7 @@
         }
     });
 
-    
+
     $(function(){
 
         const endPicker = $("#display_end_date").flatpickr({
@@ -156,7 +156,7 @@
         });
 
         var annoncementTable = $('.datatables-announcement');
-        
+
         if(annoncementTable.length){
 
             annoncementTable.DataTable({
@@ -165,8 +165,8 @@
                 ajax: {
                     type: "GET",
                     url: "{{ route('others.announcements.index') }}", // Fixed syntax
-                    dataType: "json", 
-                    dataSrc: "data"  
+                    dataType: "json",
+                    dataSrc: "data"
                 },
                 columns: [
                     { data: 'row', name: 'No' },
@@ -175,8 +175,8 @@
                     { data: 'display_start_date', name: 'From' },
                     { data: 'display_end_date', name: 'To' },
                     { data: 'createdAt', name: 'Created' },
-                    { 
-                        data: null, 
+                    {
+                        data: null,
                         title: 'Actions',
                         render: function (data, type, row) {
                             return `
@@ -189,9 +189,9 @@
             });
         }
 
-        
+
         $('#announcement-form').on('submit', function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
             $('#description').val(quillAnnouncement.root.innerHTML);
             const form = $(this);
             const formData = new FormData(this);
@@ -210,8 +210,8 @@
                   //  alert('Saved successfully!');
                     toastr["success"](response.message);
                     form.trigger('reset');
-                    quillAnnouncement.root.innerHTML = ''; 
-                    let offcanvasElement = document.getElementById('announcement_offcanvas'); 
+                    quillAnnouncement.root.innerHTML = '';
+                    let offcanvasElement = document.getElementById('announcement_offcanvas');
                     let offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                     // Hide it
                     if (offcanvas) {
@@ -251,7 +251,7 @@
             offcanvas.show();
         }
 
-        
+
         if (targetId) {
             const url = "{{ route('others.announcements.edit', ':announcement') }}".replace(':announcement', targetId);
             $('#target_id').val(targetId);
@@ -265,20 +265,20 @@
                     $('#name_announcement').val(data.announcement.name_announcement);
                     $('#display_start_date').flatpickr().setDate(data.announcement.display_start_date, true);
                     $('#display_end_date').flatpickr().setDate(data.announcement.display_end_date, true);
-                    
+
                     const anoDesc = data.announcement.description || '';
-                    
+
                     quillAnnouncement.root.innerHTML =  anoDesc;
                     //quillLoad.clipboard.dangerouslyPasteHTML(jobDesc);
                     $('#description').val(jobDesc); // sync hidden input
-                    
+
                 },
                 error: function (xhr, status, error) {
                     console.error('Failed to fetch recruitment data:', error);
                     alert('Failed to load recruitment data.');
                 }
             });
-        }        
+        }
     }
 
     function deleteAnnouncement(announcementId) {

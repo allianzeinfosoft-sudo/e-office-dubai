@@ -52,7 +52,7 @@
         "due-date": "8 April",
         "attachments": "8",
         "assigned": [
-          "11.png",
+          "1default-avatar.png",
           "6.png"
         ],
         "members": [
@@ -116,7 +116,7 @@
         "due-date": "7 April",
         "attachments": "6",
         "assigned": [
-          "1.png"
+          "default-avatar.png"
         ],
         "members": [
           "Sarah"

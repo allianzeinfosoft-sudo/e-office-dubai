@@ -38,7 +38,7 @@
                                                         <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image ) : '../../assets/img/avatars/default-avatar.png' }}" height="150" width="150" alt="User avatar">
                                                         <div class="user-info text-center">
                                                             <h4 class="mb-2">{{ $current_user->full_name ?? '' }}</h4>
-                                                            <span class="badge bg-label-secondary mt-1">{{ $current_user->role ?? '' }}</span>
+                                                            <span class="badge bg-label-secondary mt-1">{{ $current_user->designation ? $current_user->designation->designation : '' }}</span>
                                                         </div>
                                                         </div>
                                                     </div>
@@ -49,7 +49,7 @@
                                                         </div>
 
                                                         <div class="d-flex align-items-start pt-3 gap-2">
-                                                            <a href="" class="btn btn-primary"> <i class="ti ti-eye me-sm-1 me-0"></i> Work Summary </a>
+                                                            <a href="{{ route('reports.my-work-report'); }}" class="btn btn-primary"> <i class="ti ti-eye me-sm-1 me-0"></i> Work Summary </a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -175,9 +175,12 @@
 
                                         <div class="col-sm-12 mb-3">
                                             <div class="row">
-
+                                                    <div class="card-header">
+                                                        <h5 class="card-title mb-0">Leave Summary</h5>
+                                                    </div>
                                                 <div class="col-sm-4 mb-3">
                                                     <div class="card bg-white">
+
                                                         <div class="card-body">
                                                             <div class="d-flex justify-content-between align-items-center">
                                                                 <div class="mb-0">
@@ -358,8 +361,8 @@
                                         @csrf
                                         <div class="form-group mb-3">
                                             <label for="user">Select User</label>
-                                            <select name="user" id="user" class="form-control select2">
-                                                <option value="">Select</option>
+                                            <select name="user" id="user" class="form-control select2" data-placeholder="Select User">
+                                                <option value=""></option>
                                                 @foreach($employees as $employee)
                                                     <option value="{{ $employee->user_id }}" {{ request('user') == $employee->user_id ? 'selected' : '' }}>
                                                         {{ $employee->full_name }}

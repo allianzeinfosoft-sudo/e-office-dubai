@@ -32,7 +32,7 @@
                       <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
                         <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
                           @php
-                            $image = ($user->employee?->profile_image) ? '/storage/' . $user->employee?->profile_image : '/assets/img/avatars/1.png';
+                            $image = ($user->employee?->profile_image) ? '/storage/' . $user->employee?->profile_image : '/assets/img/avatars/default-avatar.png';
                           @endphp
                           <img
                             src="{{ $image }}"

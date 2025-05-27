@@ -182,7 +182,7 @@
                                 <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar">
-                                    <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle" />
+                                    <img src="../../assets/img/avatars/default-avatar.png" alt class="h-auto rounded-circle" />
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
@@ -319,7 +319,7 @@
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                   <div class="avatar avatar-online">
-                    <img src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/1.png') }}" alt class="h-auto rounded-circle" />
+                    <img src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/default-avatar.png') }}" alt class="h-auto rounded-circle" />
                   </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -328,7 +328,7 @@
                       <div class="d-flex">
                         <div class="flex-shrink-0 me-3">
                           <div class="avatar avatar-online">
-                          <img src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/1.png') }}"
+                          <img src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/default-avatar.png') }}"
                           alt="Profile Image"
                           class="h-auto rounded-circle" />
                           </div>
@@ -402,7 +402,7 @@
                     <h4 class="mb-2">Change Password</h4>
 
                     <div class="avatar avatar-online mx-auto d-flex">
-                        <img  src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/1.png') }}"
+                        <img  src="{{ optional(Auth::user()->employee)->profile_image ? asset('storage/' . Auth::user()->employee->profile_image) : asset('assets/img/avatars/default-avatar.png') }}"
                              alt
                              class=" rounded-circle" />
                     </div>

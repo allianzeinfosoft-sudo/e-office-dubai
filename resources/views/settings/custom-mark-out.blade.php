@@ -22,7 +22,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -52,15 +52,15 @@
                                     </tr>
                                 </thead>
                             </table>
-                        </div>  
+                        </div>
                     </div>
 
                 </div>
 
                 <!-- Footer -->
-                <x-footer /> 
+                <x-footer />
                 <!-- / Footer -->
-                 
+
                 <div class="content-backdrop fade"></div>
 
                 <!-- Overlay -->
@@ -76,7 +76,7 @@
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="custom_markout_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-logout fs-2 text-white"></i> 
+            <i class="ti ti-logout fs-2 text-white"></i>
             <span class="">
                 <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Custom Markout</h5>
                 <span class="text-white slogan">Custom markout</span>
@@ -137,16 +137,16 @@
         var customMarkoutTable = $('.datatables-custom-markout'),
             select2 = $('.select2');
 
-        if (customMarkoutTable.length) {            
+        if (customMarkoutTable.length) {
             customMarkoutTable.DataTable({
                 ajax: {
                     type: "GET",
                     url: "{{ route('attendance.marked-in-list') }}", // Fixed syntax
-                    dataType: "json", 
-                    dataSrc: "data"  
+                    dataType: "json",
+                    dataSrc: "data"
                 },
                 columns: [
-                    { 
+                    {
                         data: null,
                         title: 'Sl. No',
                         render: function (data, type, row) {
@@ -158,8 +158,8 @@
                     { data: 'username', title: 'Username' },
                     { data: 'markin_date', title: 'Markin Date' },
                     { data: 'markin_time', title: 'Time' },
-                    { 
-                        data: null, 
+                    {
+                        data: null,
                         title: 'Actions',
                         render: function (data, type, row) {
                             const editUrl = "{{ route('project.edit', ':id') }}".replace(':id', row.id);
@@ -172,7 +172,7 @@
                 ]
             });
         }
-       
+
         $('#start_date,  #end_date').flatpickr({
             monthSelectorType: 'static',
             altInput: true,
@@ -180,7 +180,7 @@
             dateFormat: 'd-m-Y'
         });
 
-        
+
     });
 
      function customMarkOut(id) {
@@ -196,7 +196,7 @@
             success: function (response) {
                 if (response.success) {
                     var data = response.data;
-                    var storagePath = data.employee.profile_image ? "/storage/" + data.employee.profile_image : '/assets/img/avatars/1.png';
+                    var storagePath = data.employee.profile_image ? "/storage/" + data.employee.profile_image : '/assets/img/avatars/default-avatar.png';
 
                     // Fill user profile image
                     $('#profileImage').attr('src', storagePath);
@@ -222,7 +222,7 @@
             }
         });
     }
- 
+
 function updateCustomMarkout() {
     var attendanceId = $('#attendance_id').val();
     var url = "{{ route('attendance.custom-mark-out', ':id') }}".replace(':id', attendanceId);
@@ -279,6 +279,6 @@ function deleteMarkin(id){
         });
     }
 }
-    
+
 </script>
 @endpush

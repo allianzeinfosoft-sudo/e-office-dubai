@@ -26,7 +26,7 @@
                       </div>
                       <div class="mx-auto my-3">
                         <img
-                            src="{{ $employee && $employee->profile_image ? asset('storage/' . $employee->profile_image) : asset('assets/img/avatars/1.png') }}"
+                            src="{{ $employee && $employee->profile_image ? asset('storage/' . $employee->profile_image) : asset('assets/img/avatars/default-avatar.png') }}"
                             alt="Avatar Image"
                             class="rounded-circle w-px-100"
                         >

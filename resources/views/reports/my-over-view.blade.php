@@ -175,7 +175,9 @@
 
                                         <div class="col-sm-12 mb-3">
                                             <div class="row">
-
+                                                <div class="card-header">
+                                                    <h5 class="card-title mb-0">Leave Summary</h5>
+                                                </div>
                                                 <div class="col-sm-4 mb-3">
                                                     <div class="card bg-white">
                                                         <div class="card-body">

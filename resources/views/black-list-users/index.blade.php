@@ -7,7 +7,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -44,7 +44,7 @@
                                                     @if ($employee->profile_image)
                                                         <img src="{{ asset('/storage/' . $employee->profile_image) }}" alt="Avatar" class="rounded-circle" width="40" height="40">
                                                     @else
-                                                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" width="40" height="40">
+                                                        <img src="{{ asset('assets/img/avatars/default-avatar.png') }}" alt="Avatar" class="rounded-circle" width="40" height="40">
                                                     @endif
                                                 </td>
                                                 <td>{{ $employee->full_name }}</td>
@@ -61,20 +61,20 @@
                                                     <a class="btn btn-sm btn-primary" href="{{ route('unblock-users.index', $employee->id) }}"><i class="bx bx-show me-1"></i> Whitelist</a>
                                                 </td>
                                             </tr>
-                                        @endforeach 
+                                        @endforeach
                                     @endif
                                 </tbody>
                             </table>
 
-                        </div>  
+                        </div>
                     </div>
 
                 </div>
 
                 <!-- Footer -->
-                <x-footer /> 
+                <x-footer />
                 <!-- / Footer -->
-                 
+
                 <div class="content-backdrop fade"></div>
 
                 <!-- Overlay -->
