@@ -368,6 +368,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/reports/my-overview', [ReportController::class, 'my_overview'])->name('reports.my-overview');
     Route::get('/reports/my-attendance-report', [ReportController::class, 'myAttendanceReport'])->name('reports.my-attendance-report');
     Route::get('/reports/my-work-report', [ReportController::class, 'myWorkReport'])->name('reports.my-work-report');
+    Route::get('/reports/user-work-report/{id}', [ReportController::class, 'userWorkReport'])->name('reports.user-work-report');
     Route::post('/reports/my-work-report-data', [ReportController::class, 'myWorkReportsData'])->name('reports.my-work-report-data');
 
     Route::get('/reports/user-overview', [ReportController::class, 'user_overview'])->name('reports.user-overview');

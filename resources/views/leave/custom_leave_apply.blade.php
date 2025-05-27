@@ -53,10 +53,10 @@
                     <div class="row g-3">
 
                         <div class="col-md-12">
-                            <label class="form-label" for="leave_from">User Name</label>
+                            <label class="form-label" for="leave_from">User Name<span class="mandatory">*</span></label>
 
                                 <select class="select2 form-select form-select-lg" name="user_id" id="user_id">
-                                    <option value=""></option>
+                                    <option value="">Select User</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>{{ $user->employee->full_name ?? 'N/A' }}</option>
                                     @endforeach
@@ -64,7 +64,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label" for="leave_from">Leave From</label>
+                            <label class="form-label" for="leave_from">Leave From<span class="mandatory">*</span></label>
                             <div class="input-group input-group-merge">
                                 <input type="text" name="leave_from" value="{{ old('leave_from') }}" class="form-control"
                                     placeholder="YYYY-MM-DD" id="leave-from" />
@@ -72,7 +72,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label" for="leave_to">Leave To</label>
+                            <label class="form-label" for="leave_to">Leave To<span class="mandatory">*</span></label>
                             <div class="input-group input-group-merge">
                                 <input type="text" name="leave_to" value="{{ old('leave_to') }}" class="form-control"
                                     placeholder="YYYY-MM-DD" id="leave-to" />
@@ -80,13 +80,13 @@
                         </div>
 
                         <div class="col-md-12">
-                            <label class="form-label" for="multicol-username">Leave Reason</label>
+                            <label class="form-label" for="multicol-username">Leave Reason<span class="mandatory">*</span></label>
                             <div id="leave-editor-custom"></div>
                             <input type="hidden" name="reason" value="{{ strip_tags(old('reason')) }}" id="reason">
                         </div>
 
                         <div class="row mt-3">
-                            <label class="form-label" for="multicol-username">Leave Type (Full/Half)</label>
+                            <label class="form-label" for="multicol-username">Leave Type (Full/Half)<span class="mandatory">*</span></label>
 
                             <div class="col-md-4">
                                 <div class="form-check">

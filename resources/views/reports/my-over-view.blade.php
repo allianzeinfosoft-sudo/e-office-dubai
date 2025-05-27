@@ -49,7 +49,7 @@
                                                         </div>
 
                                                         <div class="d-flex align-items-start pt-3 gap-2">
-                                                            <a href="" class="btn btn-primary"> <i class="ti ti-eye me-sm-1 me-0"></i> Work Summary </a>
+                                                            <a href="{{ route('reports.my-work-report'); }}" class="btn btn-primary"> <i class="ti ti-eye me-sm-1 me-0"></i> Work Summary1 </a>
                                                         </div>
                                                     </div>
                                                 </div>
