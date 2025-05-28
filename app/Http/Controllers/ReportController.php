@@ -246,7 +246,7 @@ class ReportController extends Controller
 
     /* user overview */
     public function user_overview(Request $request) {
-        
+
         $selected_user = $request->input('user') ?? auth()->id();
         $selected_year = $request->input('year'); // optional, pass to helpers
 
@@ -260,7 +260,7 @@ class ReportController extends Controller
         $data['monthly_report'] = CustomHelper::getMonthlyWorkReport($selected_user, $selected_year);
 
         // Attendance + Leave
-        $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
+        $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user);
         $data['leave_stats']          = CustomHelper::getEmployeeLeaveStats($selected_user, $selected_year);
 
         // Other info

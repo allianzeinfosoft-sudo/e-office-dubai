@@ -240,16 +240,21 @@ class CustomHelper
         return $analysis;
     }
 
-    public static function currentAttendanceAnalytics($empId, $month = null) {
+    public static function currentAttendanceAnalytics($empId, $year = null, $month = null) {
         $month = $month ?? Carbon::now()->month; // Default to current month if not provided
-        $year = Carbon::now()->year; // Always use the current year
+        $year = $year ?? Carbon::now()->year; // Always use the current year
 
         // Fetch the attendance data for the specified month and current year
         $attendances = Attendance::where('emp_id', $empId)
-            ->whereYear('signin_date', $year)
-            ->whereMonth('signin_date', $month)
-            ->where('status', 'mark-out')
-            ->get();
+        ->when($year, function ($query) use ($year) {
+            return $query->whereYear('signin_date', $year);
+        })
+        ->when($month, function ($query) use ($month) {
+            return $query->whereMonth('signin_date', $month);
+        })
+        ->where('status', 'mark-out')
+        ->get();
+
         if ($attendances->isEmpty()) {
             return [
                 'emp_id' => $empId,
