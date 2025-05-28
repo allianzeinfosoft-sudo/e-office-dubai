@@ -290,7 +290,7 @@
 
 
         if (userGroup == "HR" && initial_approve_status == 0) {
-            $("#commentBox")show();
+            $("#commentBox").show();
             $("#approving_info_div").hide();
 
 
