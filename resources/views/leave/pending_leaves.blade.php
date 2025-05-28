@@ -99,8 +99,8 @@
             </div>
 
             <div class="mb-3" id="commentBox">
-                <strong>Comment:</strong>
-                <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
+                <strong><span class="mandatory">*</span>Comment:</strong>
+                <textarea name="comment" id="comment" class="form-control" rows="3" required disabled></textarea>
             </div>
 
             <div class="mb-3" id="approving_info_div">
@@ -292,14 +292,16 @@
         if (userGroup == "HR" && initial_approve_status == 0) {
             $("#commentBox").show();
             $("#approving_info_div").hide();
-
+            $('#comment').prop('disabled', false).attr('required', true);
 
         } else {
 
             $("#commentBox").hide();
-            $("#approving_info_div").empty().show();
+            $("#approving_info_div").show();
+            $('#comment').prop('disabled', true).removeAttr('required');
 
             let actionVerb = functionType == 1 ? "approved" : "rejected";
+
             const msg = "Leave " + actionVerb + " by " + initial_approver_name;
             document.getElementById("initial_approving_msg").innerText = msg;
 
