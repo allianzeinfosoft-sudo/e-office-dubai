@@ -1,4 +1,4 @@
-<form action="{{ route('work-from-home-attendance.store') }}" method="post" id="event-form" enctype="multipart/form-data">
+<form action="{{ route('work-from-home-attendance.store') }}" method="post" id="work-from-home-attendance-form" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="id" id="target_id">
 
@@ -9,13 +9,13 @@
             <div class="row">
                 <div class="form-group mb-2 col-sm-6">
                     <label>Employee <span class="text-danger">*</span></label>
-                    <slelect class="form-control select2" data-placeholder="Select Employee" name="employee_id" id="emp_id">
+                    <select class="form-control select2" data-placeholder="Select Employee" name="employee_id" id="emp_id">
                         @if($employees->count() > 0)
                             @foreach($employees as $employee)
                                 <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
                             @endforeach
                         @endif
-                    </slelect>
+                    </select>
                 </div>
 
                 <div class="form-group mb-2 col-sm-6">

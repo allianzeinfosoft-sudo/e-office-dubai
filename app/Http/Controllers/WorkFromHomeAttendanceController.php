@@ -29,79 +29,82 @@ class WorkFromHomeAttendanceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request){
-        $validateedData = $request->validate([
-            'employee_id' => 'required',
-            'signin_date' => 'required',
-            'signin_time' => 'required',
-            'brake_time' => 'required',
-            'signout_time' => 'required',
+   public function store(Request $request){
+
+        $validatedData = $request->validate([
+            'employee_id'   => 'required|exists:employees,user_id',
+            'signin_date'   => 'required|date',
+            'signin_time'   => 'required',
+            'brake_time'    => 'required',
+            'signout_time'  => 'required',
         ]);
-        
-        $employee = Employee::with('user')->where('user_id', $validateedData['employee_id'])->first();
 
-        $wrokingHrs = CustomHelper::calculateTotalWorkingTime(
-            date('Y-m-d', strtotime($validateedData['signin_date'])),
-            CustomHelper::formatTimeToSeconds($validateedData['signin_time']),
-            CustomHelper::formatTimeToSeconds($validateedData['signout_time']),
-            $validateedData['brake_time']
-        );
-        
-        $totalWorkingTime = $wrokingHrs['total_working_time'] ?? '00:00:00';
+        // Fetch employee with user relationship
+        $employee = Employee::with('user')->where('user_id', $validatedData['employee_id'])->firstOrFail();
 
+        $signinDate = date('Y-m-d', strtotime($validatedData['signin_date']));
+        $signinTime = CustomHelper::formatTimeToSeconds($validatedData['signin_time']);
+        $signoutTime = CustomHelper::formatTimeToSeconds($validatedData['signout_time']);
+        $breakTime = $validatedData['brake_time'];
 
-        if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
-            $is_incomplete = 1;
+        $workingHrs = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signoutTime, $breakTime);
+        $totalWorkingTime = $workingHrs['total_working_time'] ?? '00:00:00';
 
+        // Check if working hours are less than 8 hours
+        $is_incomplete = (strtotime($totalWorkingTime) < strtotime('08:00:00')) ? 1 : 0;
+
+        if ($is_incomplete) {
             CustomHelper::addToBlockList([
-                'user_id'    => $validateedData['employee_id'],
-                'block_date' => date('Y-m-d'),
-                'username' => $employee->user->username,
-                'full_name' => $employee->full_name
+                'user_id'    => $validatedData['employee_id'],
+                'block_date' => $signinDate,
+                'username'   => $employee->user->username,
+                'full_name'  => $employee->full_name
             ]);
-
-        }else{
-            $is_incomplete = 0;
         }
 
+        // Save or update attendance
         $attendance = WorkFromHomeAttendance::updateOrCreate(
             ['id' => $request->id],
             [
                 'username'      => $employee->user->username,
-                'emp_id'        => $validateedData['employee_id'],
-                'signin_date'   => date('Y-m-d', strtotime($validateedData['signin_date'])), // if same $validateedData['signin_date'],
-                'signin_time'   => CustomHelper::formatTimeToSeconds($validateedData['signin_time']), // if same
-                'signout_date'  => date('Y-m-d', strtotime($validateedData['signin_date'])), // if same $validateedData['signin_date'],
-                'signout_time'  => CustomHelper::formatTimeToSeconds($validateedData['signout_time']),
-                'working_hours' => CustomHelper::formatTimeToSeconds($wrokingHrs['total_working_time']),
-                'break_time'    => CustomHelper::formatTimeToSeconds($validateedData['brake_time']),
+                'emp_id'        => $validatedData['employee_id'],
+                'signin_date'   => $signinDate,
+                'signin_time'   => $signinTime,
+                'signout_date'  => $signinDate,
+                'signout_time'  => $signoutTime,
+                'working_hours' => $totalWorkingTime,
+                'break_time'    => CustomHelper::formatTimeToSeconds($breakTime),
                 'status'        => 'WFH',
                 'is_incomplete' => $is_incomplete,
-                'created_by'    => Auth::user()->id,
+                'created_by'    => Auth::id(),
             ]
         );
 
-        // Delete old reports if updating
+        // Delete previous reports for this date if updating
         if ($request->id) {
-            WorkFromHomeReport::where(['username'=>$employee->user->username, 'report_date' => date('Y-m-d', strtotime($validateedData['signin_date']))])->delete();
+            WorkFromHomeReport::where([
+                'username'    => $employee->user->username,
+                'report_date' => $signinDate,
+            ])->delete();
         }
 
+        // Store new reports
         foreach ($request->input('reports', []) as $report) {
             WorkFromHomeReport::create([
-                'username' => $employee->user->username,
-                'emp_id' => $validateedData['employee_id'],
-                'project_name' => $report['project_id'],
-                'type_of_work' => $report['type_of_work'],
-                'time_of_work' => CustomHelper::formatTimeToSeconds($wrokingHrs['total_working_time']),
-                'total_time' => $report['total_time'],
-                'comments' => $report['comments'],
-                'report_date' => date('Y-m-d', strtotime($validateedData['signin_date'])),
-                'total_records' => $report['total_records'],
-                'productivity_hour' => $report['productivity_hour']
+                'username'          => $employee->user->username,
+                'emp_id'            => $validatedData['employee_id'],
+                'project_name'      => $report['project_id'],
+                'type_of_work'      => $report['type_of_work'],
+                'time_of_work'      => $totalWorkingTime,
+                'total_time'        => $report['total_time'],
+                'comments'          => $report['comments'],
+                'report_date'       => $signinDate,
+                'total_records'     => $report['total_records'],
+                'productivity_hour' => $report['productivity_hour'],
             ]);
         }
-        
-        return redirect()->back()->with('success', 'Event saved successfully!');
+
+        return redirect()->back()->with('success', 'Work From Home attendance saved successfully!');
     }
     
 
