@@ -305,7 +305,7 @@
 
         let html = '<tr data-id="${workReport.id}" >';
         html += `<td><strong>${workReport.project?.project_name || "-"}</strong></td>`;
-        html += `<td><strong>${workReport.project_task?.task_name || "-"}</strong></td>`;
+        html += `<td><strong>${workReport.tasks?.name || "-"}</strong></td>`;
         html += `<td><strong>${workReport.total_records || "-"}</strong></td>`;
         html += `<td><strong>${workReport.total_time || "00:00:00"}</strong></td>`;
         html += `<td><strong>${workReport.productivity_hour || "-"}</strong></td>`;
@@ -328,7 +328,7 @@
     let newRow = `
         <tr data-id="${workReport.id}">
             <td><strong>${workReport.project?.project_name || "-"}</strong></td>
-            <td><strong>${workReport.project_task?.task_name || "-"}</strong></td>
+            <td><strong>${workReport.tasks?.name || "-"}</strong></td>
             <td><strong>${workReport.total_records || "-"}</strong></td>
             <td><strong>${workReport.total_time || "00:00:00"}</strong></td>
             <td><strong>${workReport.productivity_hour || "-"}</strong></td>
