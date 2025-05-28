@@ -375,7 +375,7 @@ class ReportController extends Controller
                 'month' => $startDate->format('F Y'),
                 'avg_working_hours' => number_format($avgHours, 2),
                 'total_working_hours' => $totalWorkingTime,
-                'month_vs_min_hours' => ($workingDays * 8.00) . " / " . ($minTotalHours > 0 ? number_format($totalHours / $minTotalHours, 2) : 'N/A'),
+                'month_vs_min_hours' => ($daysWorked * 8.00) . " / " . ($workingDays * 8.00),
                 'days_worked' => $daysWorked,
                 'working_days' => $workingDays,
                 'leaves' => $leaves,

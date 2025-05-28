@@ -37,8 +37,8 @@ class WorkFromHomeAttendanceController extends Controller
             'brake_time' => 'required',
             'signout_time' => 'required',
         ]);
-
-        $employee = Employee::with('user')->where('user_id', $request->employee_id)->first();
+        
+        $employee = Employee::with('user')->where('user_id', $validateedData['employee_id'])->first();
 
         $wrokingHrs = CustomHelper::calculateTotalWorkingTime(
             date('Y-m-d', strtotime($validateedData['signin_date'])),
@@ -100,7 +100,7 @@ class WorkFromHomeAttendanceController extends Controller
                 'productivity_hour' => $report['productivity_hour']
             ]);
         }
-
+        
         return redirect()->back()->with('success', 'Event saved successfully!');
     }
     
