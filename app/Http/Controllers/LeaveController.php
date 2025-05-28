@@ -150,14 +150,13 @@ class LeaveController extends Controller
          {
             $approver = $user_info->employee->reporting_to;
          }
-         elseif($total_leave_days <= 3)
+         elseif($total_leave_days > 1 && $total_leave_days <= 3)
          {
             $approver = LeaveApprovalLevel::where('department',$user_department)->where('approval_level',2)->value('approver');
-
          }
          else
          {
-            $approver = User::where('email', 'binojn@mail.allianzegroup11.com')->first()?->id;
+            $approver = User::where('email', 'binojn@mail.allianzegroup.com')->first()?->id;
          }
 
         $leaveData = [
