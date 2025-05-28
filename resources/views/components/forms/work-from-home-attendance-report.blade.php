@@ -94,13 +94,13 @@ function addReportLine(data = {}) {
     var wrapper = `
         <tr>
             <td>
-                <select class="form-control select2" data-placeholder="Select Project" name="reports[][project_id]" id="project_`+containerLength+`" onchange="getProjectTasks(this.value, '`+containerLength+`')">
+                <select class="form-control select2" data-placeholder="Select Project" name="reports[][project_id]" id="project_`+containerLength+`" onchange="getProjectTasks(this.value, '`+containerLength+`')" required>
                     <option value=""></option>`+
                     projects.map(project => `<option value="${project.id}">${project.project_name}</option>`).join('')                
                 +`</select>
             </td>
             <td>
-                <select class="form-control" id="type_of_work_`+containerLength+`" data-placeholder="Select Project" name="reports[][type_of_work]" onchange="getProductivity(this.value, '`+containerLength+`')">
+                <select class="form-control" id="type_of_work_`+containerLength+`" data-placeholder="Select Task" name="reports[][type_of_work]" onchange="getProductivity(this.value, '`+containerLength+`')" required>
                     <option value="">Select Project</option>
                 </select>
             </td>

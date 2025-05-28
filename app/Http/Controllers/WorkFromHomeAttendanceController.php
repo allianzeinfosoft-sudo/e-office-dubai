@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\WorkFromHomeAttendance;
 use App\Models\WorkFromHomeReport;
+use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
+
+use Carbon\Carbon;
 
 use App\Helpers\CustomHelper;
 
@@ -48,6 +52,7 @@ class WorkFromHomeAttendanceController extends Controller
         $breakTime = $validatedData['brake_time'];
 
         $workingHrs = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signoutTime, $breakTime);
+
         $totalWorkingTime = $workingHrs['total_working_time'] ?? '00:00:00';
 
         // Check if working hours are less than 8 hours
@@ -75,6 +80,7 @@ class WorkFromHomeAttendanceController extends Controller
                 'working_hours' => $totalWorkingTime,
                 'break_time'    => CustomHelper::formatTimeToSeconds($breakTime),
                 'status'        => 'WFH',
+                'ipaddress'     => $request->ip(),
                 'is_incomplete' => $is_incomplete,
                 'created_by'    => Auth::id(),
             ]
@@ -91,16 +97,16 @@ class WorkFromHomeAttendanceController extends Controller
         // Store new reports
         foreach ($request->input('reports', []) as $report) {
             WorkFromHomeReport::create([
-                'username'          => $employee->user->username,
-                'emp_id'            => $validatedData['employee_id'],
-                'project_name'      => $report['project_id'],
-                'type_of_work'      => $report['type_of_work'],
-                'time_of_work'      => $totalWorkingTime,
-                'total_time'        => $report['total_time'],
-                'comments'          => $report['comments'],
-                'report_date'       => $signinDate,
-                'total_records'     => $report['total_records'],
-                'productivity_hour' => $report['productivity_hour'],
+                'username' => $employee->user->username,
+                'emp_id' => $validatedData['employee_id'],
+                'project_name' => $report['project_id'] ?? null,
+                'type_of_work' => $report['type_of_work'] ?? null,
+                'time_of_work' => CustomHelper::formatTimeToSeconds($workingHrs['total_working_time']),
+                'total_time' => $report['total_time'] ?? null,
+                'comments' => $report['comments'] ?? null,
+                'report_date' => date('Y-m-d', strtotime($validatedData['signin_date'])),
+                'total_records' => $report['total_records'] ?? null,
+                'productivity_hour' => $report['productivity_hour'] ?? null
             ]);
         }
 

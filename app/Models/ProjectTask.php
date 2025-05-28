@@ -21,7 +21,7 @@ class ProjectTask extends Model{
 
 
     public function employee(){
-        return $this->belongsTo(Employee::class, 'reporting_to', 'id'); 
+        return $this->belongsTo(Employee::class, 'reporting_to', 'user_id'); 
     }
 
     public function tasks(){

@@ -25,7 +25,7 @@ class ProjectTaskController extends Controller
                 'data' => $projectTasks->map(function ($task) {
                     $memberIds = explode(',', $task->members);
 
-                    $members = Employee::whereIn('id', $memberIds)->get()->map(function ($member) {
+                    $members = Employee::whereIn('user_id', $memberIds)->get()->map(function ($member) {
                         return [
                             'id' => $member->id,
                             'full_name' => $member->full_name,
