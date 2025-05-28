@@ -146,6 +146,7 @@ class CustomHelper
             $leaveCount = Leave::where('user_id', $empId)
                 ->whereYear('leave_from', $year)
                 ->whereMonth('leave_from', $month)
+                ->where('status', 2)
                 ->get()
                 ->sum(function ($leave) {
                     $from = Carbon::parse($leave->leave_from);
