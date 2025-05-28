@@ -488,6 +488,8 @@ class ReportController extends Controller
     }
 
     public function leaveReportData(Request $request){
+
+
         $query = Leave::with('user', 'employee');
 
         if ($request->filled('username')) {
