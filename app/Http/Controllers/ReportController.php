@@ -345,7 +345,7 @@ class ReportController extends Controller
             $seconds = $totalSeconds % 60;
 
             $totalWorkingTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-            
+
             $totalHours = $totalSeconds / 3600;
 
             $daysWorked = $attendances->where('status', 'mark-out')->count();
@@ -419,8 +419,8 @@ class ReportController extends Controller
                 ->join('');
             $initials = substr($initials, 0, 2);
 
-            $image = $user->profile_image
-                ? '<img src="' . asset('storage/' . $user->profile_image) . '" width="40" height="40" class="rounded-circle" />'
+            $image = $employee->profile_image
+                ? '<img src="' . asset('storage/' . $employee->profile_image) . '" width="40" height="40" class="rounded-circle" />'
                 : "<div class='rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center' style='width: 40px; height: 40px;'>$initials</div>";
 
             $attendance = $attendances[$userId] ?? null;
@@ -624,7 +624,7 @@ class ReportController extends Controller
     } */
 
     public function allAttendanceData(Request $request){
-        
+
         $data['current_user'] = Employee::where('user_id', $request->employee_id)->first();
         $data['day'] = $request->day;
         $data['month'] = $request->month;
@@ -917,7 +917,7 @@ class ReportController extends Controller
     if ($request->filled('year')) {
         $query->whereYear('report_date', $request->year);
     }
-    
+
     $query->orderBy('report_date', 'asc');
 
     return response()->json($query->get());

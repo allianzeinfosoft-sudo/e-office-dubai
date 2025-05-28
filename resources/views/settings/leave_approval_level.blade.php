@@ -41,7 +41,7 @@
           <!-- DataTable with Buttons -->
           <div class="card">
             <div class="card-datatable table-responsive">
-              <table class="datatables-leave-approver table border-top">
+              <table class="datatables-leave-approver table border-top" id="datatables-leave-approver">
                 <thead>
                   <tr>
                     <th>S.No</th>
@@ -49,7 +49,7 @@
                     <th>Approval Level</th>
                     <th>Approver</th>
                     {{-- <th>Approval Count</th> --}}
-                    {{-- <th></th> --}}
+                    <th>Action</th>
                   </tr>
                 </thead>
               </table>
@@ -163,15 +163,16 @@ if (dtLeaveApproverTable.length) {
                 }
             },
             { data: 'approver', title: 'Approver'},
-            // { data: 'count', title: 'Approval Count'},
-            // {
-            //     targets: null,
-            //     render: function(data, type, full, meta){
-            //         let approver_id = full['id'];
-            //         $buttons = `<a href="javascript:;" class="text-body delete-approver" data-id="${approver_id}"><i class="ti ti-trash ti-sm mx-2"></i></a>`;
-            //         return $buttons;
-            //     }
-            // },
+
+            {
+                data: null,
+                title: 'Action',
+                render: function(data, type, full, meta){
+                    let approver_id = full['id'];
+                    $buttons = `<a href="javascript:;" class="text-body delete-approver" data-id="${approver_id}"><i class="ti ti-trash ti-sm mx-2"></i></a>`;
+                    return $buttons;
+                }
+            },
 
             ],
 
@@ -240,51 +241,47 @@ if (dtLeaveApproverTable.length) {
 
 
 
+/*delete leave function*/
+
+    $(document).on('click', '.delete-approver', function(e) {
+        e.preventDefault();
+        const approverId = $(this).data('id');
+
+            Swal.fire({
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Yes, delete it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                                $.ajax({
+                            url: `/approver-delete/${approverId}`,
+                            type: 'DELETE',
+                            data: {
+                                _method: 'DELETE',
+                                _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                            },
+                            success: function(response) {
+
+                                Swal.fire("Deleted!", "Leave approver has been deleted.", "success").then(() => {
+                                    $('#datatables-leave-approver').DataTable().ajax.reload(); // Reload table
+                                });
+
+                            },
+                            error: function(xhr) {
+                                Swal.fire("Error!", "Something went wrong.", "error");
+                            }
+                            });
+
+                        }
+                    });
+        });
 
 
-        // window.onload = function () {
 
-        //     document.querySelectorAll(".delete-approver").forEach((element) => {
-        //         element.addEventListener("click", function () {
-        //             let approverId = this.getAttribute("data-id"); // Corrected
-
-        //             Swal.fire({
-        //                 title: "Are you sure?",
-        //                 text: "You won't be able to revert this!",
-        //                 icon: "warning",
-        //                 showCancelButton: true,
-        //                 confirmButtonColor: "#d33",
-        //                 cancelButtonColor: "#3085d6",
-        //                 confirmButtonText: "Yes, delete it!"
-        //             }).then((result) => {
-        //                 if (result.isConfirmed) {
-        //                     fetch(`/approver-delete/${approverId}`, {
-        //                         method: "DELETE",
-        //                         headers: {
-        //                             "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-        //                             "Content-Type": "application/json"
-        //                         }
-        //                     })
-        //                     .then(response => response.json())
-        //                     .then(data => {
-        //                         if (data.success) {
-        //                             Swal.fire("Deleted!", "Approver has been deleted.", "success").then(() => {
-        //                                 location.reload(); // Reload page after deletion
-        //                             });
-        //                         } else {
-        //                             Swal.fire("Error!", "Something went wrong.", "error");
-        //                         }
-        //                     })
-        //                     .catch(error => {
-        //                         console.error("Error:", error);
-        //                         Swal.fire("Error!", "Could not delete user.", "error");
-        //                     });
-        //                 }
-        //             });
-        //         });
-        //     });
-
-        //     }
 
 
 

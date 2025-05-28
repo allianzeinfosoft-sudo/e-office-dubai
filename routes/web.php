@@ -177,6 +177,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/get-leave-details',[LeaveController::class, 'getLeaveDetails'])->name('leave.leave.details');
     Route::post('/update-leave-allocation',[LeaveController::class, 'updateLeaveAllocation'])->name('leave.update_leave_allocation');
     Route::delete('/leaves/{id}', [LeaveController::class, 'destroy'])->name('leaves.destroy');
+    Route::delete('/approver-delete/{id}', [LeaveController::class, 'leave_approval_delete'])->name('approver.destroy');
     Route::get('/custom_leave',[LeaveController::class,'custom_leave'])->name('custom.leave');
     Route::get('/leave_approver/list',[LeaveController::class, 'leave_approver'])->name('leave.approver');
     Route::post('/leave_approval_store',[LeaveController::class, 'leave_approval_store'])->name('leave_approval_store');

@@ -699,6 +699,18 @@ class LeaveController extends Controller
         return redirect()->back()->with('success', 'Leave approver created successfully!');
     }
 
+   public function leave_approval_delete($id)
+    {
+        $leave_approver = LeaveApprovalLevel::find($id);
+        if (!$leave_approver) {
+            return response()->json(['success' => false, 'message' => 'Approver not found'], 404);
+        }
+
+        $leave_approver->delete();
+
+        return response()->json(['success' => true, 'message' => 'Leave deleted successfully']);
+    }
+
     public function checkOverlap(Request $request)
     {
         $userId = $request->user_id;
