@@ -134,7 +134,7 @@
                     <div class="card-header d-flex justify-content-between">
                       <div class="card-title mb-0">
                         <h5 class="mb-0">Leave Summary</h5>
-                        <small class="text-muted">May</small>
+                        <small class="text-muted"></small>
                       </div>
                       <div class="dropdown d-none d-sm-flex">
                         <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false">
