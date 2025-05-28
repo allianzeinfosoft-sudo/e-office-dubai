@@ -406,6 +406,7 @@ class RecruitmentController extends Controller
     }
 
     public function updateStatus(Request $request){
+        
         $request->validate([
             'id' => 'required|exists:recruitments,id',
             'status' => 'required|integer',

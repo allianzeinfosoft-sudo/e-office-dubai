@@ -279,7 +279,7 @@ class CustomHelper
             ->count();
 
         $totalLeaves = Leave::where('user_id', $empId)
-            ->where('status', 'Approved')
+            ->where('status', 2)
             ->whereYear('leave_from', $year)
             ->whereMonth('leave_from', $month)
             ->count();
