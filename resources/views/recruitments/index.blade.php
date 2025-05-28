@@ -66,7 +66,7 @@
                                 </tr>
                             </thead>
                         </table>
-                    </div>  
+                    </div>
                 </div>
             </div>
 
@@ -82,7 +82,7 @@
 <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="rrf_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-plus fs-2 text-white"></i> 
+            <i class="ti ti-file-plus fs-2 text-white"></i>
             <span id="offcanvas-title-container">
                 <h5 class="offcanvas-title text-white" id="staticBackdropLabel">Create Recruitment </h5>
                 <span class="text-white slogan">Create New Recruiments</span>
@@ -105,7 +105,7 @@
 @section('js')
 <script>
 
-    
+
 
     var recruitmentTable = $('.datatables-recruitments'),
     select2 = $('.select2');
@@ -140,21 +140,21 @@
     $(function() {
 
         const applicationStatus = @json(config('optionsData.applicationStatus'));
-        
-        if (recruitmentTable.length) {            
+
+        if (recruitmentTable.length) {
             recruitmentTable.DataTable({
                 ajax: {
                     type: "GET",
                     url: "{{ route('recruitments.index') }}", // Fixed syntax
-                    dataType: "json", 
-                    dataSrc: "data"  
+                    dataType: "json",
+                    dataSrc: "data"
                 },
                 columns: [
                     { data: 'row', title: 'No.' },
                     { data: 'rrfDate', title: 'Date' },
                     { data: 'jobTitle', title: 'Job Title' },
                     { data: 'designation', title: 'Designation' },
-                    { data: 'status', title: 'Status', 
+                    { data: 'status', title: 'Status',
                         render: function (data, type, row) {
                             const colors = {
                                 0: 'warning',
@@ -163,7 +163,7 @@
                                 3: 'info',
                                 4: 'success'
                             };
-                                        
+
                             return `
                                 <span class="badge bg-${colors[row.status] ?? 'warning'} bg-glow"> ${applicationStatus[row.status] ?? 'Pending'} </span>
                             `;
@@ -172,8 +172,8 @@
                     { data: 'priority', title: 'Priority' },
                     { data: 'projectName', title: 'Project Name' },
                     { data: 'interviewer', title: 'Interviewer' },
-                    { 
-                        data: null, 
+                    {
+                        data: null,
                         title: 'Actions',
                         render: function (data, type, row) {
                             return `
@@ -186,7 +186,7 @@
                 ]
             });
         }
-       
+
         $('#start_date,  #end_date').flatpickr({
             monthSelectorType: 'static',
             altInput: true,
@@ -249,7 +249,7 @@
 
     });
 
-    
+
     function deleteRecruitment(recruitmentId) {
         if (confirm('Are you sure you want to delete this recruitment?')) {
             $.ajax({
@@ -278,14 +278,14 @@
 
         $('#target_id').val(''); // Clear the hidden ID field
         $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Recruitment </h5><span class="text-white slogan">Create New Recruitment</span>`);
-        
+
         const offcanvasElement = $('#rrf_offcanvas');
         if (offcanvasElement.length) {
             const offcanvas = new bootstrap.Offcanvas(offcanvasElement[0]);
             offcanvas.show();
         }
 
-        
+
         if (targetId) {
             const url = "{{ route('recruitments.edit', ':recruitment') }}".replace(':recruitment', targetId);
             $('#target_id').val(targetId);
@@ -311,6 +311,20 @@
                         if ($el.length) {
                             let value = data.recruitment?.[field] ?? null;
 
+                            if (field === 'rrfDate' && value) {
+                            // Convert from Y-m-d to d-m-Y
+                            const parts = value.split('-'); // ['2025', '05', '28']
+                            if (parts.length === 3) {
+                                const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // 28-05-2025
+
+                                const rrfDatePicker = $('#rrfDate')[0]._flatpickr;
+                                if (rrfDatePicker) {
+                                    rrfDatePicker.setDate(formattedDate, true, 'd-m-Y');
+                                }
+                            }
+                        }
+
+
                             if ($el.prop('multiple')) {
                                 // Handle comma-separated string or array
                                 if (typeof value === 'string') {
@@ -332,6 +346,8 @@
                         //quillLoad.clipboard.dangerouslyPasteHTML(jobDesc);
                         $('#jobDescription').val(jobDesc); // sync hidden input
                     }
+
+
                 },
                 error: function (xhr, status, error) {
                     console.error('Failed to fetch recruitment data:', error);
@@ -340,7 +356,7 @@
             });
         }
 
-        
+
     }
 
     function saveAsDraft() {
@@ -398,7 +414,7 @@
         });
     }
 
-    
+
 </script>
 
 @stop
