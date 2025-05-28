@@ -22,7 +22,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -61,7 +61,7 @@
                                     </tr>
                                 </thead>
                             </table>
-                        </div>  
+                        </div>
                     </div>
 
                 </div>
@@ -79,7 +79,7 @@
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="project_tasks_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-plus fs-2 text-white"></i> 
+            <i class="ti ti-file-plus fs-2 text-white"></i>
             <span id="offcanvas-title-container">
                 <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Project Task</h5>
                 <span class="text-white slogan">Create New Project Tasks</span>
@@ -105,13 +105,13 @@
         var projectTable = $('.datatables-project-tasks'),
         select2 = $('.select2');
 
-        if (projectTable.length) {            
+        if (projectTable.length) {
             projectTable.DataTable({
                 ajax: {
                     type: "GET",
                     url: "{{ route('tasks-project.index') }}", // Fixed syntax
-                    dataType: "json", 
-                    dataSrc: "data"  
+                    dataType: "json",
+                    dataSrc: "data"
                 },
                 columns: [
                     { data: 'task_name', title: 'Task' },
@@ -148,8 +148,8 @@
                             return membersHtml;
                         }
                      },
-                    { 
-                        data: null, 
+                    {
+                        data: null,
                         title: 'Actions',
                         render: function (data, type, row) {
                             const editUrl = "{{ route('tasks-project.edit', ':id') }}".replace(':id', row.id);
@@ -203,7 +203,7 @@
                         dropdownParent: $('#project-task-form'),
                         placeholder: "Select an option",
                         allowClear: true
-                    }); 
+                    });
                 } else {
                     console.error('Invalid response data:', response.data);
                 }
@@ -223,8 +223,8 @@ function openOffcanvas(targetId = null) {
             url: `/tasks-project/${targetId}/edit`,
             type: 'GET',
             success: function (data) {
-                $('#target_id').val(data.projectTask.id);
-                $('#task_name').val(data.projectTask.task_name);
+                $('#target_id').val(data.projectTask.id).trigger('change');
+                $('#task_name').val(data.projectTask.task_name).trigger('change');
                 $('#project_id').val(data.projectTask.project_id).trigger('change');
                 $('#reporting_to').val(data.projectTask.reporting_to).trigger('change');
                 setTimeout(() => {
@@ -237,6 +237,6 @@ function openOffcanvas(targetId = null) {
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
 }
-    
+
 </script>
 @stop
