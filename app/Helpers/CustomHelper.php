@@ -240,48 +240,61 @@ class CustomHelper
         return $analysis;
     }
 
-    public static function currentAttendanceAnalytics($empId, $year = null, $month = null) {
-        $month = $month ?? Carbon::now()->month; // Default to current month if not provided
-        $year = $year ?? Carbon::now()->year; // Always use the current year
+    public static function currentAttendanceAnalytics($empId, $year = null, $month = null){
+        $now = Carbon::now();
+        $month = $month ?? $now->month;
+        $year = $year ?? $now->year;
 
-        // Fetch the attendance data for the specified month and current year
+        // Fetch attendance records for the employee
         $attendances = Attendance::where('emp_id', $empId)
-        ->when($year, function ($query) use ($year) {
-            return $query->whereYear('signin_date', $year);
-        })
-        ->when($month, function ($query) use ($month) {
-            return $query->whereMonth('signin_date', $month);
-        })
-        ->where('status', 'mark-out')
-        ->get();
+            ->when($year, fn($q) => $q->whereYear('signin_date', $year))
+            ->when($month, fn($q) => $q->whereMonth('signin_date', $month))
+            ->get();
 
         if ($attendances->isEmpty()) {
             return [
                 'emp_id' => $empId,
                 'year' => $year,
                 'month' => $month,
-                'message' => 'No attendance data found for this employee and month.',
+                'message' => 'No attendance data found for this employee.',
             ];
         }
 
         $username = $attendances->first()->username;
 
-        $completedDays = $attendances->filter(fn($e) =>
-            $e->signin_time && $e->signout_time && !$e->is_incomplete
-        )->count();
+        // Count all attendances
+        $totalAttendances = $attendances->count();
 
-        $incompleteOrHalfDays = $attendances->filter(fn($e) =>
-            $e->is_incomplete || !$e->signout_time
-        )->count();
+        // Count mark-out statuses
+        $markOutCount = $attendances->where('status', 'mark-out')->count();
 
-        $offDays = $attendances->where('status', 'Off')->count();
+        // 1. completed_days = total attendance - mark-out count
+        $completedDays = $totalAttendances - $markOutCount;
 
-        $customDays = $attendances->whereNotNull('custom_status')->count();
+        // 2. incomplete or half days (only mark-out + is_incomplete = 1)
+        $incompleteOrHalfDays = $attendances->filter(function ($att) {
+            return $att->status === 'mark-out' && $att->is_incomplete;
+        })->count();
 
-        $totalHolidays = Holiday::whereYear('date', $year)
+        // 3. off_days = attended on Saturday or Sunday
+        $offDays = $attendances->filter(function ($att) {
+            $dayOfWeek = Carbon::parse($att->signin_date)->dayOfWeek;
+            return in_array($dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
+        })->count();
+
+        // 4. custom_days = punch_type = custom
+        $customDays = $attendances->where('punch_type', 'custom')->count();
+
+        // 5. holidays worked
+        $holidays = Holiday::whereYear('date', $year)
             ->whereMonth('date', $month)
-            ->count();
+            ->pluck('date')->toArray();
 
+        $holidayWorked = $attendances->filter(function ($att) use ($holidays) {
+            return in_array(Carbon::parse($att->signin_date)->toDateString(), $holidays);
+        })->count();
+
+        // 6. leaves with status = 2
         $totalLeaves = Leave::where('user_id', $empId)
             ->where('status', 2)
             ->whereYear('leave_from', $year)
@@ -297,7 +310,7 @@ class CustomHelper
             'incomplete_or_half_days'   => $incompleteOrHalfDays,
             'off_days'                  => $offDays,
             'custom_days'               => $customDays,
-            'total_holidays'            => $totalHolidays,
+            'total_holidays'            => $holidayWorked,
             'total_leaves'              => $totalLeaves,
         ];
     }
