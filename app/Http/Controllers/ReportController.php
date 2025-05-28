@@ -246,6 +246,7 @@ class ReportController extends Controller
 
     /* user overview */
     public function user_overview(Request $request) {
+        
         $selected_user = $request->input('user') ?? auth()->id();
         $selected_year = $request->input('year'); // optional, pass to helpers
 

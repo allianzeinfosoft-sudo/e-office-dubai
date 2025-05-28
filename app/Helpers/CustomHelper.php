@@ -250,7 +250,6 @@ class CustomHelper
             ->whereMonth('signin_date', $month)
             ->where('status', 'mark-out')
             ->get();
-
         if ($attendances->isEmpty()) {
             return [
                 'emp_id' => $empId,
@@ -285,16 +284,16 @@ class CustomHelper
             ->count();
 
         return [
-            'emp_id'            => $empId,
-            'username'          => $username,
-            'year'              => $year,
-            'month'             => $month,
-            'completed_days'    => $completedDays,
+            'emp_id'                    => $empId,
+            'username'                  => $username,
+            'year'                      => $year,
+            'month'                     => $month,
+            'completed_days'            => $completedDays,
             'incomplete_or_half_days'   => $incompleteOrHalfDays,
-            'off_days'          => $offDays,
-            'custom_days'       => $customDays,
-            'total_holidays'    => $totalHolidays,
-            'total_leaves'      => $totalLeaves,
+            'off_days'                  => $offDays,
+            'custom_days'               => $customDays,
+            'total_holidays'            => $totalHolidays,
+            'total_leaves'              => $totalLeaves,
         ];
     }
 
