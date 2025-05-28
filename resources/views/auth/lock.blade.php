@@ -24,7 +24,7 @@
             <h4 class="mb-1 text-white text-center pt-2">User Name</h4>
             <p class="mb-4 text-center text-white">Enter your password to access Eoffice.</p>
 
-              <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}">
+              <form id="formAuthentication" class="mb-3" method="POST" action="/login">
                 @csrf
                 <div class="mb-3">
                   <input id="email" type="hidden" name="email" value="{{ $user->email }}" >
@@ -47,7 +47,7 @@
                               <strong>{{ $message }}</strong>
                           </span>
                       @enderror
-                    <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                    <span class="input-group-text cursor-pointer" id="togglePassword"><i class="ti ti-eye-off"></i></span>
                   </div>
                 </div>
                 <div class="mb-3">
@@ -80,3 +80,23 @@
 
 
 @endsection
+
+@push('js')
+   <script>
+    //   show password
+
+  const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    togglePassword.addEventListener('click', function () {
+        const isPasswordVisible = passwordInput.type === 'text';
+        passwordInput.type = isPasswordVisible ? 'password' : 'text';
+
+        // Toggle icon class
+        eyeIcon.classList.toggle('ti-eye');
+        eyeIcon.classList.toggle('ti-eye-off');
+    });
+</script>
+@endpush
+

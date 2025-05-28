@@ -254,7 +254,7 @@ class LeaveController extends Controller
                 'leave_reason' => $leaves->reason ?? '',
                 'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
                 'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
-                'leave_count' => $this->getDaysBetween($leaves->leave_from, $leaves->leave_to) ?? '',
+                'leave_count' => $leaves->leave_day_count ?? '',
                 'status' => $leaves->status ?? ''
             ];
         });
@@ -756,7 +756,7 @@ class LeaveController extends Controller
                 'leave_reason' => $leave->reason ?? '',
                 'apply_date' => $leave->created_at ? $this->formatDateDayMonthYear($leave->created_at) : '',
                 'approved_cancel_date' => $leave->approved_cancel_date ? $this->formatDateDayMonthYear($leave->approved_cancel_date) : '',
-                'leave_count' => $this->getDaysBetween($leave->leave_from, $leave->leave_to) ?? '',
+                'leave_count' => $leave->leave_day_count ?? '0.0',
                 'status' => $leave->status ?? ''
             ];
         });
