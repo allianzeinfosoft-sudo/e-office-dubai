@@ -33,6 +33,7 @@ use App\Http\Controllers\MailBoxController;
 use App\Http\Controllers\CustomAttendanceController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\WorkFromHomeAttendanceController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
