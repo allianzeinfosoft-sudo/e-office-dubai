@@ -487,7 +487,7 @@ class ReportController extends Controller
                 'username'      => $leave->Employee->full_name ?? '-',
                 'leave_from'    => Carbon::parse($leave->leave_from)->format('d-m-Y'),
                 'leave_to'      => Carbon::parse($leave->leave_to)->format('d-m-Y'),
-                'leave_count'   => Carbon::parse($leave->leave_from)->diffInDays($leave->leave_to) + 1,
+                'leave_count'   => $leave->leave_day_count ?? 0,
                 'leave_type'    => $leaveBadge,
                 'reason'        => $leave->reason,
                 'apply_date'    => $leave->created_at->format('d-m-Y'),
