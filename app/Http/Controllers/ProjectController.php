@@ -66,8 +66,8 @@ class ProjectController extends Controller
             'project_name'      => $request->project_name,
             'project_add_person'=> $request->project_add_person,
             'department_id'     => $request->department_id,
-            'start_date'        => Carbon::parse($request->start_date)->setTimeFrom(Carbon::now()),
-            'end_date'          => Carbon::parse($request->end_date)->setTimeFrom(Carbon::now()),
+            'start_date'        => $request->start_date ? Carbon::parse($request->start_date) : null,
+            'end_date'          => $request->end_date ? Carbon::parse($request->end_date) : null,
             'total_hours' => is_numeric($request->total_hours) ? $request->total_hours : 0,
             'total_day'   => is_numeric($request->total_day) ? $request->total_day : 0,
         ]);
