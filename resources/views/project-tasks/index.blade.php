@@ -196,7 +196,7 @@
                 if (response.success && Array.isArray(response.data)) {
                     let options = "<option value=''></option>";
                     response.data.forEach(member => {
-                        options += `<option value="${member.id}">${member.full_name} (${member.employeeID})</option>`;
+                        options += `<option value="${member.user_id}">${member.full_name} (${member.employeeID})</option>`;
                     });
                     $membersSelect.html(options);
                     $membersSelect.select2({
