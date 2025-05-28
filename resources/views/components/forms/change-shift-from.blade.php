@@ -38,15 +38,15 @@
                 <label for="login_limited_time">Login Limited Time</label>
                 <button type="button" class="btn btn-icon btn-xs btn-outline-primary waves-effect" data-bs-toggle="modal" data-bs-target="#addLoginLimitedTimeModal">
                     <span class="ti ti-plus text-xs" style="font-size: 12px;"></span>
-                  </button>
-                    <select name="login_limited_time" id="login_limited_time" class="form-control">
-                        @foreach ($loginlimitedtimes as $login_limited_time)
-                            <option value="{{ $login_limited_time->id  ?? '' }}"> {{ $login_limited_time->limited_time ?? '' }}</option>
-                        @endforeach
-                    </select>
+                </button>
+
+                <select name="login_limited_time" id="login_limited_time" class="form-control">
+                    @foreach($loginlimitedtimes as $login_limited_time)
+                        <option value="{{ $login_limited_time->id  ?? '' }}"> {{ $login_limited_time->limited_time ?? '' }} </option>
+                    @endforeach
+                </select>
             </div>
         </div>
-
         <div class="col-sm-12 mb-3">
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;  Save</button>
         </div>
@@ -70,7 +70,6 @@
                 <label class="form-label w-100" for="modalAddCard">Login Limited Time</label>
                 <div class="input-group input-group-merge">
                   <input id="login_limited_time" name="login_limited_time" class="form-control" type="time" placeholder="Choose Time" aria-describedby="login_limited_time" />
-
                 </div>
             </div>
 

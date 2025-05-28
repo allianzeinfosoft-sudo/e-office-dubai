@@ -114,10 +114,11 @@ class SettingsController extends Controller
 
     public function update_user_shift(Request $request)
     {
+        $limitTime = LoginLimitedTime::where('id', $request->login_limited_time)->first();
         $updated = Employee::where('user_id', $request->user)
         ->update([
             'shift_id' => $request->shift,
-            'login_limited_time' => $request->login_limited_time
+            'login_limited_time' => $limitTime->limited_time
         ]);
 
         if ($updated) {
