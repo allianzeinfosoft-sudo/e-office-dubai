@@ -283,7 +283,7 @@ class CustomHelper
         })->count();
 
         // 4. custom_days = punch_type = custom
-        $customDays = $attendances->where('punch_type', 'custom')->count();
+        $customDays = $attendances->where('punchin_type', 'custom')->count();
 
         // 5. holidays worked
         $holidays = Holiday::whereYear('date', $year)
@@ -306,7 +306,7 @@ class CustomHelper
             'username'                  => $username,
             'year'                      => $year,
             'month'                     => $month,
-            'completed_days'            => $markOutCount,
+            'completed_days'            => ($markOutCount - $customDays),
             'incomplete_or_half_days'   => $incompleteOrHalfDays,
             'off_days'                  => $offDays,
             'custom_days'               => $customDays,
