@@ -87,6 +87,7 @@ class LeaveController extends Controller
        return view('leave.apply');
     }
 
+
     public function custom_leave()
     {
         $users = User::with('employee')->where('username','!=','administrator')->get();
@@ -98,6 +99,13 @@ class LeaveController extends Controller
     {
 
     }
+
+    public function edit($id)
+    {
+        $leave = Leave::where('id',$id)->first();
+        return view('leave.apply',compact('leave'));
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -698,6 +706,7 @@ class LeaveController extends Controller
         $to = $request->leave_to;
 
         $overlap = Leave::where('user_id', $userId)
+            ->whereIn('status', [1, 2])
             ->where(function($q) use ($from, $to) {
                 $q->whereBetween('leave_from', [$from, $to])
                 ->orWhereBetween('leave_to', [$from, $to])
