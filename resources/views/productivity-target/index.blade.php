@@ -22,7 +22,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -61,13 +61,13 @@
                                     </tr>
                                 </thead>
                             </table>
-                        </div>  
+                        </div>
                     </div>
 
                 </div>
 
                 <!-- Footer -->
-                <x-footer /> 
+                <x-footer />
                 <!-- / Footer -->
                 <div class="content-backdrop fade"></div>
             </div>
@@ -79,7 +79,7 @@
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="productivity_target_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-plus fs-2 text-white"></i> 
+            <i class="ti ti-file-plus fs-2 text-white"></i>
             <span id="offcanvas-title-container">
                 <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Productivity Target</h5>
                 <span class="text-white slogan">Create New Productivity Target</span>
@@ -109,8 +109,8 @@
                 ajax: {
                     type: "GET",
                     url: "{{ route('productivity-target.index') }}", // Fixed syntax
-                    dataType: "json", 
-                    dataSrc: "data"  
+                    dataType: "json",
+                    dataSrc: "data"
                 },
                 columns: [
                     { data: 'projectName', title: 'Project' },
@@ -122,8 +122,8 @@
                         }
                      },
                     { data: 'rph', title: 'Rec/hr' },
-                    { 
-                        data: null, 
+                    {
+                        data: null,
                         title: 'Actions',
                         render: function (data, type, row) {
                             return `
@@ -147,14 +147,23 @@
             url: `/productivity-target/${targetId}/edit`,
             type: 'GET',
             success: function (data) {
+                console.log(data.target_year);
+                const target_month = data.target_year+'-'+data.target_month;
                 $('#target_id').val(data.id);
                 $('#project_id').val(data.project_id).trigger('change');
                 setTimeout(() => {
                     $('#project_task_id').val(data.project_task_id).trigger('change');
-                }, 500);
-                $('#assignedBy').val(data.assignedBy).trigger('change');
+                     setTimeout(() => {
+                        $('#assignedBy').val(data.assignedBy).trigger('change');
+                    }, 300);
+
+                }, 300);
+
+
+
                 $('#rph').val(data.rph);
-                $('#target_year').val(data.target_year);
+                $('#target_year').val(target_month).trigger('change');
+
             }
         });
     }
