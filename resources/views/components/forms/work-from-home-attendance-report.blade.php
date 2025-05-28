@@ -75,6 +75,7 @@
         </div>
 
         <div class="col-sm-12 mb-3">
+            <input type="hidden" name="work_type" value="{{ $type }}">
             <button type="submit" class="btn btn-primary">
                 <i class="fa fa-save"></i> Save
             </button>
@@ -94,27 +95,27 @@ function addReportLine(data = {}) {
     var wrapper = `
         <tr>
             <td>
-                <select class="form-control select2" data-placeholder="Select Project" name="reports[][project_id]" id="project_`+containerLength+`" onchange="getProjectTasks(this.value, '`+containerLength+`')" required>
+                <select class="form-control select2" data-placeholder="Select Project" name="reports[${containerLength}][project_id]" id="project_`+containerLength+`" onchange="getProjectTasks(this.value, '`+containerLength+`')" required>
                     <option value=""></option>`+
                     projects.map(project => `<option value="${project.id}">${project.project_name}</option>`).join('')                
                 +`</select>
             </td>
             <td>
-                <select class="form-control" id="type_of_work_`+containerLength+`" data-placeholder="Select Task" name="reports[][type_of_work]" onchange="getProductivity(this.value, '`+containerLength+`')" required>
+                <select class="form-control" id="type_of_work_`+containerLength+`" data-placeholder="Select Task" name="reports[${containerLength}][type_of_work]" onchange="getProductivity(this.value, '`+containerLength+`')" required>
                     <option value="">Select Project</option>
                 </select>
             </td>
             <td>
-                <input type="text" name="reports[][total_records]" class="form-control" placeholder="Total Records" value="${data.total_records || ''}" />
+                <input type="text" name="reports[${containerLength}][total_records]" class="form-control" placeholder="Total Records" value="${data.total_records || ''}" />
             </td>
             <td>
-                <input type="text" name="reports[][productivity_hour]" id="productivity_hour_`+containerLength+`" class="form-control" placeholder="Productivity Hour" value="${data.productivity_hour || ''}"  readonly />
+                <input type="text" name="reports[${containerLength}][productivity_hour]" id="productivity_hour_`+containerLength+`" class="form-control" placeholder="Productivity Hour" value="${data.productivity_hour || ''}"  readonly />
             </td>
             <td>
-                <input type="text" name="reports[][total_time]" class="form-control" placeholder="Total Time" value="${data.total_time || ''}"  />
+                <input type="text" name="reports[${containerLength}][total_time]" class="form-control" placeholder="Total Time" value="${data.total_time || ''}"  />
             </td>
             <td>
-                <input type="text" name="reports[][comments]" class="form-control" placeholder="Comments" value="${data.comments || ''}" />
+                <input type="text" name="reports[${containerLength}][comments]" class="form-control" placeholder="Comments" value="${data.comments || ''}" />
             </td>
             <td>
                 <button type="button" class="btn btn-danger btn-sm mt-1" onclick="this.closest('tr').remove()"><i class="ti ti-trash"></i></button>

@@ -41,6 +41,7 @@ class WorkFromHomeAttendanceController extends Controller
             'signin_time'   => 'required',
             'brake_time'    => 'required',
             'signout_time'  => 'required',
+            'work_type'  => 'required',
         ]);
 
         // Fetch employee with user relationship
@@ -49,9 +50,9 @@ class WorkFromHomeAttendanceController extends Controller
         $signinDate = date('Y-m-d', strtotime($validatedData['signin_date']));
         $signinTime = CustomHelper::formatTimeToSeconds($validatedData['signin_time']);
         $signoutTime = CustomHelper::formatTimeToSeconds($validatedData['signout_time']);
-        $breakTime = $validatedData['brake_time'];
-
-        $workingHrs = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signoutTime, $breakTime);
+        $breakTime = CustomHelper::formatTimeToSeconds($validatedData['brake_time']);
+        
+        $workingHrs = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signinDate, $signoutTime, $breakTime);
 
         $totalWorkingTime = $workingHrs['total_working_time'] ?? '00:00:00';
 
@@ -69,7 +70,7 @@ class WorkFromHomeAttendanceController extends Controller
 
         // Save or update attendance
         $attendance = WorkFromHomeAttendance::updateOrCreate(
-            ['id' => $request->id],
+            ['emp_id' => $validatedData['employee_id'], 'signin_date' => $signinDate],
             [
                 'username'      => $employee->user->username,
                 'emp_id'        => $validatedData['employee_id'],
@@ -79,7 +80,7 @@ class WorkFromHomeAttendanceController extends Controller
                 'signout_time'  => $signoutTime,
                 'working_hours' => $totalWorkingTime,
                 'break_time'    => CustomHelper::formatTimeToSeconds($breakTime),
-                'status'        => 'WFH',
+                'status'        => $validatedData['work_type'],
                 'ipaddress'     => $request->ip(),
                 'is_incomplete' => $is_incomplete,
                 'created_by'    => Auth::id(),
@@ -89,25 +90,25 @@ class WorkFromHomeAttendanceController extends Controller
         // Delete previous reports for this date if updating
         if ($request->id) {
             WorkFromHomeReport::where([
-                'username'    => $employee->user->username,
+                'emp_id'    => $validatedData['employee_id'],
                 'report_date' => $signinDate,
             ])->delete();
         }
-
         // Store new reports
         foreach ($request->input('reports', []) as $report) {
             if (!empty($report['project_id']) && !empty($report['type_of_work'])) {
+
                 WorkFromHomeReport::create([
-                    'username'      => $employee->user->username,
-                    'emp_id'        => $validatedData['employee_id'],
-                    'project_name'  => $report['project_id'] ?? null,
-                    'type_of_work'  => $report['type_of_work'] ?? null,
-                    'time_of_work'  => CustomHelper::formatTimeToSeconds($workingHrs['total_working_time']),
-                    'total_time'    => $report['total_time'] ?? null,
-                    'comments'      => $report['comments'] ?? null,
-                    'report_date'   => date('Y-m-d', strtotime($validatedData['signin_date'])),
-                    'total_records' => $report['total_records'] ?? null,
-                    'productivity_hour' => $report['productivity_hour'] ?? null
+                    'username'           => $employee->user->username,
+                    'emp_id'             => $validatedData['employee_id'],
+                    'project_name'       => $report['project_id'],
+                    'type_of_work'       => $report['type_of_work'],
+                    'time_of_work'       => CustomHelper::formatTimeToSeconds($workingHrs['total_working_time']),
+                    'total_time'         => $report['total_time'] ?? null,
+                    'comments'           => $report['comments'] ?? null,
+                    'report_date'        => date('Y-m-d', strtotime($validatedData['signin_date'])),
+                    'total_records'      => $report['total_records'] ?? null,
+                    'productivity_hour'  => $report['productivity_hour'] ?? null,
                 ]);
             }
         }

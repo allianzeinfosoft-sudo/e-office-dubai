@@ -387,7 +387,7 @@
   </div>
   <div class="offcanvas-body">
     <div class="row">
-          <x-work-from-home-attendance-report />
+          <x-work-from-home-attendance-report type="wfh" />
     </div>
   </div>
   <div class="offcanvas-footer"></div>
@@ -396,14 +396,14 @@
 
 <!-- work from site -->
 
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="wosOffcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wosOffcanvas" aria-labelledby="staticBackdropLabel">
   <div class="offcanvas-header bg-primary">
       <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  Work On Site & Report </h5>
       <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
   </div>
   <div class="offcanvas-body">
     <div class="row">
-          
+          <x-work-from-home-attendance-report type="wfs" />
     </div>
   </div>
   <div class="offcanvas-footer"></div>
