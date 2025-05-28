@@ -684,8 +684,8 @@ class ReportController extends Controller
             ->join('');
         $initials = substr($initials, 0, 2);
 
-        $image = $user->profile_image
-            ? '<img src="' . asset('storage/' . $user->profile_image) . '" width="40" height="40" class="rounded-circle" />'
+        $image = $employee->profile_image
+            ? '<img src="' . asset('storage/' . $employee->profile_image) . '" width="40" height="40" class="rounded-circle" />'
             : "<div class='rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center' style='width: 40px; height: 40px;'>$initials</div>";
 
         $serial = 1;
