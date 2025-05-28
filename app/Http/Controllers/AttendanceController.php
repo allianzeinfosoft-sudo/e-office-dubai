@@ -336,7 +336,7 @@ class AttendanceController extends Controller{
             return view('attendance.no_action_from', $data);
         }
 
-        return view('attendance.index', $data); 
+        return view('attendance.index', $data);
     }
 
 
@@ -368,7 +368,7 @@ class AttendanceController extends Controller{
             'username' => Auth::user()->username,
             'emp_id' => Auth::user()->id,
             'signin_date' => now()->format('Y-m-d'),
-            'signin_time' => CustomHelper::formatTimeToSeconds(now()->format('H:i')), 
+            'signin_time' => CustomHelper::formatTimeToSeconds(now()->format('H:i')),
             'punchin_type' => 'Web',
             'break_time' => '01:00:00',
             'ipaddress' => $request->ip(),
@@ -408,7 +408,7 @@ class AttendanceController extends Controller{
             ]);
         }
         $signoutTime = CustomHelper::formatTimeToSeconds(now()->format('H:i'));
-        
+
         $workingTime = CustomHelper::calculateTotalWorkingTime(
             $attendance->signin_date,
             $attendance->signin_time,
@@ -560,7 +560,7 @@ class AttendanceController extends Controller{
             ]);
 
         }
-    
+
         $markOut->signout_time      =  CustomHelper::formatTimeToSeconds($request->signout_time);
         $markOut->signout_date      = $request->signout_date;
         $markOut->signout_late_note = $request->signout_late_note;
@@ -711,7 +711,7 @@ class AttendanceController extends Controller{
             $employee = optional($markInList->employee);
                 $image = $employee->profile_image
                     ? asset('storage/' . $employee->profile_image)
-                    : asset('assets/img/avatars/1.png');
+                    : asset('assets/img/avatars/default-avatar.png');
 
                 return [
                     'id' => $markInList->id,
