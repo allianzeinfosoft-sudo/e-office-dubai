@@ -96,18 +96,20 @@ class WorkFromHomeAttendanceController extends Controller
 
         // Store new reports
         foreach ($request->input('reports', []) as $report) {
-            WorkFromHomeReport::create([
-                'username' => $employee->user->username,
-                'emp_id' => $validatedData['employee_id'],
-                'project_name' => $report['project_id'] ?? null,
-                'type_of_work' => $report['type_of_work'] ?? null,
-                'time_of_work' => CustomHelper::formatTimeToSeconds($workingHrs['total_working_time']),
-                'total_time' => $report['total_time'] ?? null,
-                'comments' => $report['comments'] ?? null,
-                'report_date' => date('Y-m-d', strtotime($validatedData['signin_date'])),
-                'total_records' => $report['total_records'] ?? null,
-                'productivity_hour' => $report['productivity_hour'] ?? null
-            ]);
+            if (!empty($report['project_id']) && !empty($report['type_of_work'])) {
+                WorkFromHomeReport::create([
+                    'username'      => $employee->user->username,
+                    'emp_id'        => $validatedData['employee_id'],
+                    'project_name'  => $report['project_id'] ?? null,
+                    'type_of_work'  => $report['type_of_work'] ?? null,
+                    'time_of_work'  => CustomHelper::formatTimeToSeconds($workingHrs['total_working_time']),
+                    'total_time'    => $report['total_time'] ?? null,
+                    'comments'      => $report['comments'] ?? null,
+                    'report_date'   => date('Y-m-d', strtotime($validatedData['signin_date'])),
+                    'total_records' => $report['total_records'] ?? null,
+                    'productivity_hour' => $report['productivity_hour'] ?? null
+                ]);
+            }
         }
 
         return redirect()->back()->with('success', 'Work From Home attendance saved successfully!');
