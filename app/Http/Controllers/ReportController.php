@@ -260,6 +260,7 @@ class ReportController extends Controller
 
         // Attendance + Leave
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
+        dd($data['attendance_analytics']);
         $data['leave_stats']          = CustomHelper::getEmployeeLeaveStats($selected_user, $selected_year);
 
         // Other info
