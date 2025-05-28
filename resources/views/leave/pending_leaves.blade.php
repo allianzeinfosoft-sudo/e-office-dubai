@@ -100,7 +100,7 @@
 
             <div class="mb-3" id="commentBox">
                 <strong>Comment:</strong>
-                <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
+                <textarea name="comment" id="comment" class="form-control" rows="3" required></textarea>
             </div>
 
             <div class="mb-3" id="approving_info_div">
