@@ -306,19 +306,47 @@ class ReportController extends Controller
         })->count();
 
         foreach ($users as $index => $user) {
-            $attendances = Attendance::where('emp_id', $user->id)
+            $attendances = Attendance::where('emp_id', $user->user_id)
                 ->whereBetween('signin_date', [$startDate, $endDate])
                 ->get();
 
-            $leaves = Leave::where('user_id', $user->id)
+            $leaves = Leave::where('user_id', $user->user_id)
                 ->where(function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('leave_from', [$startDate, $endDate])
                         ->orWhereBetween('leave_to', [$startDate, $endDate]);
-                })->count();
+                })
+                ->where('status', 2)
+                ->count();
 
-            $totalHours = $attendances->sum(function ($a) {
-                return is_numeric($a->working_hours) ? (float) $a->working_hours : 0;
+            $totalSeconds = $attendances->sum(function ($a) {
+                $time = $a->working_hours;
+
+                if (!$time || !str_contains($time, ':')) {
+                    return 0;
+                }
+
+                $parts = explode(':', $time);
+
+                // Normalize the time format to HH:MM:SS
+                if (count($parts) === 2) {
+                    [$hours, $minutes] = $parts;
+                    $seconds = 0;
+                } elseif (count($parts) === 3) {
+                    [$hours, $minutes, $seconds] = $parts;
+                } else {
+                    return 0; // Invalid format
+                }
+
+                return ($hours * 3600) + ($minutes * 60) + $seconds;
             });
+
+            $hours = floor($totalSeconds / 3600);
+            $minutes = floor(($totalSeconds % 3600) / 60);
+            $seconds = $totalSeconds % 60;
+
+            $totalWorkingTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            
+            $totalHours = $totalSeconds / 3600;
 
             $daysWorked = $attendances->count();
             $avgHours = $daysWorked > 0 ? $totalHours / $daysWorked : 0;
@@ -346,7 +374,7 @@ class ReportController extends Controller
                 'name' => $user->full_name,
                 'month' => $startDate->format('F Y'),
                 'avg_working_hours' => number_format($avgHours, 2),
-                'total_working_hours' => number_format($totalHours, 2),
+                'total_working_hours' => $totalWorkingTime,
                 'month_vs_min_hours' => ($workingDays * 8.00) . " / " . ($minTotalHours > 0 ? number_format($totalHours / $minTotalHours, 2) : 'N/A'),
                 'days_worked' => $daysWorked,
                 'working_days' => $workingDays,
