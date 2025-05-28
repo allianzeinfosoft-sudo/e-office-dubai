@@ -306,7 +306,7 @@ class CustomHelper
             'username'                  => $username,
             'year'                      => $year,
             'month'                     => $month,
-            'completed_days'            => $completedDays,
+            'completed_days'            => $markOutCount,
             'incomplete_or_half_days'   => $incompleteOrHalfDays,
             'off_days'                  => $offDays,
             'custom_days'               => $customDays,
