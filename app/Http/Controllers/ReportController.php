@@ -348,7 +348,7 @@ class ReportController extends Controller
             
             $totalHours = $totalSeconds / 3600;
 
-            $daysWorked = $attendances->count();
+            $daysWorked = $attendances->where('status', 'mark-out')->count();
             $avgHours = $daysWorked > 0 ? $totalHours / $daysWorked : 0;
 
             $minTotalHours = is_null($minTotalHours) ? $totalHours : min($minTotalHours, $totalHours);
@@ -808,7 +808,7 @@ class ReportController extends Controller
         if ($employeeId) {
             $workReportQuery->where('emp_id', $employeeId);
         }
-
+        $workReportQuery->orderBy('report_date', 'asc');
         $groupedReports = $workReportQuery->get()->groupBy(function ($item) {
             return $item->emp_id . '_' . $item->report_date;
         });
@@ -917,6 +917,8 @@ class ReportController extends Controller
     if ($request->filled('year')) {
         $query->whereYear('report_date', $request->year);
     }
+    
+    $query->orderBy('report_date', 'asc');
 
     return response()->json($query->get());
 }
