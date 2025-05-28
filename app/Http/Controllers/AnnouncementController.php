@@ -106,6 +106,15 @@ class AnnouncementController extends Controller
     public function edit(Announcement $announcement)
     {
         //
+
+         $announcement->display_start_date = $announcement->display_start_date 
+        ? Carbon::parse($announcement->display_start_date)->format('d-m-Y') 
+        : null;
+
+    $announcement->display_end_date = $announcement->display_end_date 
+        ? Carbon::parse($announcement->display_end_date)->format('d-m-Y') 
+        : null;
+
         $data['announcement'] = $announcement;
         $data['meta_title'] = 'Edit Announcement';
         return response()->json($data);

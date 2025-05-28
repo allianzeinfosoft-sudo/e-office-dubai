@@ -253,6 +253,22 @@
 
 
         if (targetId) {
+
+            const startPicker = $("#display_start_date").flatpickr({
+                altInput: true,
+                altFormat: 'd-m-Y',
+                dateFormat: 'd-m-Y',
+                onChange: function (selectedDates, dateStr, instance) {
+                    endPicker.set('minDate', dateStr);
+                }
+            });
+
+            const endPicker = $("#display_end_date").flatpickr({
+                altInput: true,
+                altFormat: 'd-m-Y',
+                dateFormat: 'd-m-Y'
+            });
+            
             const url = "{{ route('others.announcements.edit', ':announcement') }}".replace(':announcement', targetId);
             $('#target_id').val(targetId);
 
@@ -262,16 +278,18 @@
                 url: url,
                 type: 'GET',
                 success: function (data) {
+                    const startDate = data.announcement.display_start_date;
+                    const endDate = data.announcement.display_end_date;
+
                     $('#name_announcement').val(data.announcement.name_announcement);
-                    $('#display_start_date').flatpickr().setDate(data.announcement.display_start_date, true);
-                    $('#display_end_date').flatpickr().setDate(data.announcement.display_end_date, true);
+
+                    startPicker.setDate(startDate, true);      // sets the start date
+                    endPicker.set('minDate', startDate);       // applies validation to end date
+                    endPicker.setDate(endDate, true);          // sets the end date
 
                     const anoDesc = data.announcement.description || '';
-
-                    quillAnnouncement.root.innerHTML =  anoDesc;
-                    //quillLoad.clipboard.dangerouslyPasteHTML(jobDesc);
-                    $('#description').val(jobDesc); // sync hidden input
-
+                    quillAnnouncement.root.innerHTML = anoDesc;
+                    $('#description').val(anoDesc); // sync hidden input
                 },
                 error: function (xhr, status, error) {
                     console.error('Failed to fetch recruitment data:', error);
