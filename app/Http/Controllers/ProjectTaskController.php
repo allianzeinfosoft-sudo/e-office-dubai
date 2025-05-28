@@ -18,7 +18,7 @@ class ProjectTaskController extends Controller
         /* ajax request */
         if ($request->ajax()) {
             // Handle the AJAX request here
-            $projectTasks = ProjectTask::with('project', 'employee')->get();
+            $projectTasks = ProjectTask::with('project', 'employee', 'tasks')->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Attendance marked successfully',

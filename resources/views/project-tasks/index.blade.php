@@ -122,7 +122,7 @@
                             return `<div class="d-flex align-items-center">
                           <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
                             <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-sm pull-up" aria-label="Kaith D'souza" data-bs-original-title="Kaith D'souza">
-                                <img class="rounded-circle" src="${row.reporting_to && row.reporting_to.profile_image  ? '/storage/profile_pics/' + row.reporting_to.profile_image.replace(/^profile_pics\//, '')  : '../../assets/img/avatars/5.png'}" alt="`+ row.reporting_to.full_name +`" title="`+ row.reporting_to.full_name +`">
+                                <img class="rounded-circle" src="${row.reporting_to && row.reporting_to.profile_image  ? '/storage/profile_pics/' + row.reporting_to.profile_image.replace(/^profile_pics\//, '')  : '../../assets/img/avatars/default-avatar.png'}" alt="`+ row.reporting_to.full_name +`" title="`+ row.reporting_to.full_name +`">
                             </li>
                           </ul>
                         </div>`;
@@ -139,7 +139,7 @@
 
                             data.forEach(member => {
                                 membersHtml += `<li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top"  class="avatar avatar-sm pull-up" aria-label="${member.full_name}"  data-bs-original-title="${member.full_name}">
-                                                    <img class="rounded-circle" src="${member.profile_image ? '/storage/profile_pics/' + member.profile_image.replace(/^profile_pics\//, '') : '../../assets/img/avatars/5.png' }" alt="Avatar" title="${member.full_name}">
+                                                    <img class="rounded-circle" src="${member.profile_image ? '/storage/profile_pics/' + member.profile_image.replace(/^profile_pics\//, '') : '../../assets/img/avatars/default-avatar.png' }" alt="Avatar" title="${member.full_name}">
                                                 </li>`;
                                 });
 
