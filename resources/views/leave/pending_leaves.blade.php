@@ -103,7 +103,7 @@
                 <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
             </div>
 
-            <div class="mb-3" id="approving info_div">
+            <div class="mb-3" id="approving_info_div">
                 <p id="initial_approving_msg"></p>
             </div>
 
@@ -288,12 +288,14 @@
     $("#modalLeaveTo").text(leaveTo);
     $("#modalLeaveReason").text(leaveReason);
 
-        if (userGroup === "HR" && initial_approve_status == 0) {
-            $("#commentBox").empty().show();
+
+        if (userGroup == "HR" && initial_approve_status == 0) {
+            $("#commentBox").show();
             $("#approving_info_div").hide();
 
 
         } else {
+
             $("#commentBox").hide();
             $("#approving_info_div").empty().show();
 
