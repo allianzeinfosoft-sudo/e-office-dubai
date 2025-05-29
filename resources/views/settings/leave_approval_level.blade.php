@@ -68,7 +68,7 @@
                 </span>
                 <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
             </div>
-            <div class="offcanvas-body flex-grow-1">
+            <div class="offcanvas-body flex-grow-1" style="overflow: visible!important;">
               <div class="row">
                 <div class="col-sm-12">
                     <x-leave-approval-from />

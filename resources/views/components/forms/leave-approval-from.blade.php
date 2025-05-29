@@ -13,7 +13,8 @@
 
                 <div class="col-sm-12">
                     <label class="form-label" for="department">Department</label>
-                    <select name="department" id="department" class="form-control">
+                    <select name="department" id="department" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select Department">
+                        <option value=""></option>
                         @foreach ($departments as $department)
                             <option value="{{ $department->id }}">{{ $department->department ?? 'N/A' }}</option>
                         @endforeach
@@ -23,16 +24,18 @@
 
                 <div class="col-sm-12">
                     <label class="form-label" for="approval_level">Approval Level</label>
-                    <select name="approval_level" id="approval-level" class="form-control">
+                    <select name="approval_level" id="approval-level" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select approve level">
+                        <option value=""></option>
                        <option value="2">2nd Level</option>
-                       <option value="3">Final</option>
+                       <option value="3">3rd Level</option>
                     </select>
 
 
                   </div>
                 <div class="col-sm-12">
                   <label class="form-label" for="approver">Approver</label>
-                  <select name="approver" id="approver" class="form-control">
+                  <select name="approver" id="approver" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select approver">
+                        <option value=""></option>
                         @foreach ($users as $user)
                             <option value="{{ $user->user_id }}">{{ $user->full_name ?? '' }}</option>
                         @endforeach
