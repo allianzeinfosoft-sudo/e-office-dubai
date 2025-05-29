@@ -666,8 +666,9 @@ function wfh_attendance(){
     var offcanvasElement = $('#wfhOffcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
+    const workType = 'wfh';
     //$('#modelCustom').modal('show');
-    $('#attendance_date').flatpickr({
+    $('#' + workType + '_signin_date').flatpickr({
         monthSelectorType: 'static',
         altInput: true,
         altFormat: 'd-m-Y',
@@ -679,7 +680,14 @@ function wos_attendance(){
     var offcanvasElement = $('#wosOffcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
+    const workType = 'wfs';
     //$('#modelCustom').modal('show');
+    $('#' + workType + '_signin_date').flatpickr({
+        monthSelectorType: 'static',
+        altInput: true,
+        altFormat: 'd-m-Y',
+        dateFormat: 'd-m-Y'
+    });
 }
 
 

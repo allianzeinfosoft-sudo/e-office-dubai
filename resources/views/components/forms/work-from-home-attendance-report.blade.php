@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="form-group mb-2 col-sm-6">
                     <label>Employee <span class="text-danger">*</span></label>
-                    <select class="form-control select2" data-placeholder="Select Employee" name="employee_id" id="emp_id">
+                    <select class="form-control select2" data-placeholder="Select Employee" name="employee_id" id="{{ $type }}_emp_id">
                         @if($employees->count() > 0)
                             @foreach($employees as $employee)
                                 <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
@@ -20,22 +20,22 @@
 
                 <div class="form-group mb-2 col-sm-6">
                     <label>Attendance Date <span class="text-danger">*</span></label>
-                    <input type="text" id="attendance_date" name="signin_date" id="signin_date" class="form-control">
+                    <input type="text" name="signin_date" id="{{ $type }}_signin_date" class="form-control">
                 </div>
 
                 <div class="form-group mb-2 col-sm-4">
                     <label>Sign-in Time <span class="text-danger">*</span></label>
-                    <input type="time" name="signin_time" id="signin_time" class="form-control">
+                    <input type="time" name="signin_time" id="{{ $type }}_signin_time" class="form-control">
                 </div>
 
                 <div class="form-group mb-2 col-sm-4">
                     <label>Break Time <span class="text-danger">*</span></label>
-                    <input type="time" name="brake_time" class="form-control" value="01:00">
+                    <input type="time" name="brake_time" class="form-control" id="{{ $type }}_brake_time" value="01:00">
                 </div>
 
                 <div class="form-group mb-2 col-sm-4">
                     <label>Sign-out Time <span class="text-danger">*</span></label>
-                    <input type="time" name="signout_time" class="form-control">
+                    <input type="time" name="signout_time" id="{{ $type }}_signout_time" class="form-control">
                 </div>
             </div>
         </div>
@@ -57,12 +57,12 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="report-lines">
+                    <tbody id="{{ $type }}_report-lines">
                     </tbody>
                 </table>
             </div>
 
-            <button type="button" class="btn btn-sm btn-success my-2" onclick="addReportLine()">+ Add Report Line</button>
+            <button type="button" class="btn btn-sm btn-success my-2" onclick="addReportLine('{{ $type }}')">+ Add Report Line</button>
 
            <!--  <div class="divider">
                 <div class="divider-text">OR</div>
@@ -75,7 +75,7 @@
         </div>
 
         <div class="col-sm-12 mb-3">
-            <input type="hidden" name="work_type" value="{{ $type }}">
+            <input type="hidden" name="work_type" id="work_type" value="{{ $type }}">
             <button type="submit" class="btn btn-primary">
                 <i class="fa fa-save"></i> Save
             </button>
@@ -87,21 +87,28 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <script>
     
-function addReportLine(data = {}) {
+function addReportLine(workType, data = {}) {
+    let container;
+
+    if (workType === 'wfh') {
+        container = document.getElementById('wfh_report-lines');
+    } else {
+        container = document.getElementById('wfs_report-lines');
+    }
+
     const projects = {!! json_encode($projects) !!};
-    const container = document.getElementById('report-lines');
     const containerLength = container.children.length;
 
-    var wrapper = `
+    const wrapper = `
         <tr>
             <td>
-                <select class="form-control select2" data-placeholder="Select Project" name="reports[${containerLength}][project_id]" id="project_`+containerLength+`" onchange="getProjectTasks(this.value, '`+containerLength+`')" required>
-                    <option value=""></option>`+
-                    projects.map(project => `<option value="${project.id}">${project.project_name}</option>`).join('')                
-                +`</select>
+                <select class="form-control select2" data-placeholder="Select Project" name="reports[${containerLength}][project_id]" id="project_${containerLength}" onchange="getProjectTasks(this.value, '${containerLength}')" required>
+                    <option value=""></option>
+                    ${projects.map(project => `<option value="${project.id}">${project.project_name}</option>`).join('')}
+                </select>
             </td>
             <td>
-                <select class="form-control" id="type_of_work_`+containerLength+`" data-placeholder="Select Task" name="reports[${containerLength}][type_of_work]" onchange="getProductivity(this.value, '`+containerLength+`')" required>
+                <select class="form-control" id="type_of_work_${containerLength}" data-placeholder="Select Task" name="reports[${containerLength}][type_of_work]" onchange="getProductivity(this.value, '${containerLength}')" required>
                     <option value="">Select Project</option>
                 </select>
             </td>
@@ -109,20 +116,26 @@ function addReportLine(data = {}) {
                 <input type="text" name="reports[${containerLength}][total_records]" class="form-control" placeholder="Total Records" value="${data.total_records || ''}" />
             </td>
             <td>
-                <input type="text" name="reports[${containerLength}][productivity_hour]" id="productivity_hour_`+containerLength+`" class="form-control" placeholder="Productivity Hour" value="${data.productivity_hour || ''}"  readonly />
+                <input type="text" name="reports[${containerLength}][productivity_hour]" id="productivity_hour_${containerLength}" class="form-control" placeholder="Productivity Hour" value="${data.productivity_hour || ''}" readonly />
             </td>
             <td>
-                <input type="text" name="reports[${containerLength}][total_time]" class="form-control" placeholder="Total Time" value="${data.total_time || ''}"  />
+                <input type="text" name="reports[${containerLength}][total_time]" class="form-control" placeholder="Total Time" value="${data.total_time || ''}" />
             </td>
             <td>
                 <input type="text" name="reports[${containerLength}][comments]" class="form-control" placeholder="Comments" value="${data.comments || ''}" />
             </td>
             <td>
-                <button type="button" class="btn btn-danger btn-sm mt-1" onclick="this.closest('tr').remove()"><i class="ti ti-trash"></i></button>
+                <button type="button" class="btn btn-danger btn-sm mt-1" onclick="this.closest('tr').remove()">
+                    <i class="ti ti-trash"></i>
+                </button>
             </td>
         </tr>
     `;
+
     container.insertAdjacentHTML('beforeend', wrapper);
+
+    // Reinitialize select2 for dynamically added elements
+    //$('.select2').select2();
 }
 
 document.getElementById('excelUpload').addEventListener('change', function(e) {
