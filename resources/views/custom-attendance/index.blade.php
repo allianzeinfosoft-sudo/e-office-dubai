@@ -85,7 +85,8 @@
                         data: 'profile_image',
                         title: '<i class="ti ti-users"></i>',
                         render: function (data, type, row) {
-                            return `<img src="/storage/${row.profile_image}" alt="${row.username}" class="rounded-circle" width="40" height="40">`;
+                            const imagePath = row.profile_image ? `/storage/${row.profile_image}` : '/assets/img/avatars/default-avatar.png';
+                            return `<img src="${imagePath}" alt="${row.username}" class="rounded-circle" width="40" height="40">`;
                         }
                     },
                     { data: 'username', title: 'Username' },
