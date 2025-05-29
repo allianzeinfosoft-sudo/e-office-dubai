@@ -10,6 +10,7 @@
                 <div class="form-group mb-2 col-sm-6">
                     <label>Employee <span class="text-danger">*</span></label>
                     <select class="form-control select2" data-placeholder="Select Employee" name="employee_id" id="{{ $type }}_emp_id">
+                        <option value="">Select Employee</option>
                         @if($employees->count() > 0)
                             @foreach($employees as $employee)
                                 <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
