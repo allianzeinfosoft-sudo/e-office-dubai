@@ -11,6 +11,7 @@ use App\Models\Leave;
 use App\Models\Holiday;
 use App\Models\LeaveAllocation;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
@@ -200,7 +201,7 @@ public function getLeaveSummary(Request $request)
     $fullLeaves = 0;
     $halfLeaves = 0;
     $offDays = 0;
-    
+
     $leaveBalance = $leave_allocated?->remaining_leaves ?? 0;
 
     foreach ($leavesInRange as $leave) {
@@ -267,6 +268,26 @@ public function getLeaveSummary(Request $request)
         'offDays' => $offDays,
         'leaveBalance' => $leaveBalance
     ]);
+}
+
+public function showChangeForm()
+{
+    return view('auth.passwords.force_change');
+}
+
+public function change(Request $request)
+{
+
+     $request->validate([
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->must_change_password = true;
+        $user->save();
+
+        return redirect()->route('home')->with('success', 'Password changed successfully.');
 }
 
 }

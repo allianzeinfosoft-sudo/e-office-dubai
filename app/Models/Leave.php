@@ -31,7 +31,7 @@ class Leave extends Model
 
         // Fetch approved leaves overlapping with current month
         $leaves = Leave::where('user_id', $userId)
-            ->whereIn('status', [1,2]) // status = 2 => approved
+            ->whereIn('status', [1,2]) // status = 2 => approved, 1=>pending
             ->where('leave_type','!=','off_day')
             ->where(function ($query) use ($startOfMonth, $endOfMonth) {
                 $query->whereBetween('leave_from', [$startOfMonth, $endOfMonth])
