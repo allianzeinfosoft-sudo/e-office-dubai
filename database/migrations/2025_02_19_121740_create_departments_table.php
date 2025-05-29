@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->constrained()->onDelete('cascade'); // Link to branches
-            $table->string('department')->unique();
+            $table->string('department');
             $table->boolean('status')->default(1);
             $table->timestamps();
         });

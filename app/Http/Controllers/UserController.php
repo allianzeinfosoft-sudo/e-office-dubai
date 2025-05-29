@@ -484,7 +484,7 @@ class UserController extends Controller
             'half_day_leavecount' => $half_day_leavescount,
         ];
         $attendance_analytics = CustomHelper::currentAttendanceAnalytics($userid);
-        $experiance = CustomHelper::getExperience($user->employee->join_date);
+        $experiance = CustomHelper::getExperience($user);
 
         return view('users.profile', compact('user','leave_info', 'attendance_analytics', 'experiance'));
 

@@ -58,7 +58,7 @@
           <!-- Modal to add new record -->
 
           <div class="offcanvas offcanvas-end" id="add-leave-approvals">
-            <div class="offcanvas-header border-bottom">
+            <div class="offcanvas-header border-bottom bg-primary p-3">
                 <span class="d-flex justify-content-between align-items-center gap-2">
                     <i class="ti ti-file-plus fs-2 text-white"></i>
                     <span id="offcanvas-title-container">
