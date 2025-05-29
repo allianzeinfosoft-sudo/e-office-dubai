@@ -34,29 +34,24 @@ class WorkFromHomeAttendanceController extends Controller
      * Store a newly created resource in storage.
      */
    public function store(Request $request){
-
         $validatedData = $request->validate([
             'employee_id'   => 'required|exists:employees,user_id',
             'signin_date'   => 'required|date',
             'signin_time'   => 'required',
             'brake_time'    => 'required',
             'signout_time'  => 'required',
-            'work_type'  => 'required',
+            'work_type'     => 'required',
         ]);
 
-        // Fetch employee with user relationship
         $employee = Employee::with('user')->where('user_id', $validatedData['employee_id'])->firstOrFail();
 
-        $signinDate = date('Y-m-d', strtotime($validatedData['signin_date']));
-        $signinTime = CustomHelper::formatTimeToSeconds($validatedData['signin_time']);
-        $signoutTime = CustomHelper::formatTimeToSeconds($validatedData['signout_time']);
-        $breakTime = CustomHelper::formatTimeToSeconds($validatedData['brake_time']);
-        
-        $workingHrs = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signinDate, $signoutTime, $breakTime);
-
+        $signinDate   = date('Y-m-d', strtotime($validatedData['signin_date']));
+        $signinTime   = CustomHelper::formatTimeToSeconds($validatedData['signin_time']);
+        $signoutTime  = CustomHelper::formatTimeToSeconds($validatedData['signout_time']);
+        $breakTime    = CustomHelper::formatTimeToSeconds($validatedData['brake_time']);
+        $workingHrs   = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signinDate, $signoutTime, $breakTime);
         $totalWorkingTime = $workingHrs['total_working_time'] ?? '00:00:00';
 
-        // Check if working hours are less than 8 hours
         $is_incomplete = (strtotime($totalWorkingTime) < strtotime('08:00:00')) ? 1 : 0;
 
         if ($is_incomplete) {
@@ -64,13 +59,16 @@ class WorkFromHomeAttendanceController extends Controller
                 'user_id'    => $validatedData['employee_id'],
                 'block_date' => $signinDate,
                 'username'   => $employee->user->username,
-                'full_name'  => $employee->full_name
+                'full_name'  => $employee->full_name,
             ]);
         }
 
-        // Save or update attendance
+        // Create or update attendance and get ID
         $attendance = WorkFromHomeAttendance::updateOrCreate(
-            ['emp_id' => $validatedData['employee_id'], 'signin_date' => $signinDate],
+            [
+                'emp_id'      => $validatedData['employee_id'],
+                'signin_date' => $signinDate,
+            ],
             [
                 'username'      => $employee->user->username,
                 'emp_id'        => $validatedData['employee_id'],
@@ -79,7 +77,7 @@ class WorkFromHomeAttendanceController extends Controller
                 'signout_date'  => $signinDate,
                 'signout_time'  => $signoutTime,
                 'working_hours' => $totalWorkingTime,
-                'break_time'    => CustomHelper::formatTimeToSeconds($breakTime),
+                'break_time'    => $breakTime,
                 'status'        => $validatedData['work_type'],
                 'ipaddress'     => $request->ip(),
                 'is_incomplete' => $is_incomplete,
@@ -87,17 +85,15 @@ class WorkFromHomeAttendanceController extends Controller
             ]
         );
 
-        // Delete previous reports for this date if updating
-        if ($request->id) {
-            WorkFromHomeReport::where([
-                'emp_id'    => $validatedData['employee_id'],
-                'report_date' => $signinDate,
-            ])->delete();
-        }
-        // Store new reports
+        // Always delete previous reports for this date and employee before inserting new
+        WorkFromHomeReport::where([
+            'emp_id'      => $validatedData['employee_id'],
+            'report_date' => $signinDate,
+        ])->delete();
+
+        // Insert fresh report lines
         foreach ($request->input('reports', []) as $report) {
             if (!empty($report['project_id']) && !empty($report['type_of_work'])) {
-
                 WorkFromHomeReport::create([
                     'username'           => $employee->user->username,
                     'emp_id'             => $validatedData['employee_id'],
@@ -106,10 +102,10 @@ class WorkFromHomeAttendanceController extends Controller
                     'time_of_work'       => CustomHelper::formatTimeToSeconds($workingHrs['total_working_time']),
                     'total_time'         => $report['total_time'] ?? null,
                     'comments'           => $report['comments'] ?? null,
-                    'report_date'        => date('Y-m-d', strtotime($validatedData['signin_date'])),
+                    'report_date'        => $signinDate,
                     'total_records'      => $report['total_records'] ?? null,
                     'productivity_hour'  => $report['productivity_hour'] ?? null,
-                    'wfh_attendance_id'  => $attendance->id
+                    'wfh_attendance_id'  => $attendance->id, // always use ID from updateOrCreate
                 ]);
             }
         }
