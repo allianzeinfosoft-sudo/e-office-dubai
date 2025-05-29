@@ -291,10 +291,10 @@
                             <i class="menu-icon tf-icons ti ti-users"></i>
                           </div>
                           <div class="flex-grow-1">
-                            <h6 class="mb-1">List of Incomplete Employees&nbsp; &nbsp;<small class="text-muted">4 days ago</small></h6>
+                            <a href="{{ route('list-of-incomplete-work.index') }}"><h6 class="mb-1">List of Incomplete Working Hours Employees&nbsp; &nbsp;<small class="text-muted"></small></h6></a>
                           </div>
                           <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read">
+                            <a href="{{ route('list-of-incomplete-work.index') }}" class="dropdown-notifications-read">
                                 <span class="badge badge-dot"></span></a>
                           </div>
                         </div>

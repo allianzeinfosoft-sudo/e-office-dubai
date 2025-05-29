@@ -1069,5 +1069,48 @@ public function checkAccountNumber(Request $request)
             'meta_title' => $employee->full_name . "'s Late Arrival Details",
         ]);
     }
+
+     public function listOfIncompleteWork(){
+        $data['meta_title'] = 'Incomplete Working Hours';
+        return view('incomplete-work.index', $data);
+    }
+
+    public function incompletData(Request $request){
+
+        $month = $request->input('month') ?? date('m');  // Default to current month
+        $year = $request->input('year') ?? date('Y');    // Default to current year
+
+        // Calculate start and end date of the given month-year
+        $fromDate = date('Y-m-d', strtotime("$year-$month-01"));
+        $toDate = date('Y-m-t', strtotime($fromDate));  // t = last day of the month
+
+        $attendances = Attendance::with('employee')
+            ->where('is_incomplete', 1)
+            ->whereBetween('signin_date', [$fromDate, $toDate])
+            ->get();
+
+        $data = $attendances->map(function ($attendance, $index) {
+            $employee = $attendance->employee;
+
+            $avatar = $employee && $employee->profile_image
+                ? asset('storage/' . $employee->profile_image)
+                : asset('/assets/img/avatars/default-avatar.png');
+
+            $avatarImg = '<img src="' . $avatar . '" alt="Avatar" class="rounded-circle" width="40" height="40" />';
+
+            return [
+                'DT_RowIndex'   => $index + 1,
+                'avatar'        => $avatarImg,
+                'fullname'      => $employee->full_name ?? 'N/A',
+                'username'      => $attendance->username,
+                'working_hours' => $attendance->working_hours ?? 'N/A',
+                'signin_date'   => $attendance->signin_date 
+                    ? \Carbon\Carbon::parse($attendance->signin_date)->format('d-m-Y')
+                    : 'N/A',
+            ];
+        });
+
+        return response()->json(['data' => $data]);
+    }
     
 }
