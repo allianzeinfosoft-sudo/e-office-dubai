@@ -952,12 +952,13 @@ public function checkAccountNumber(Request $request)
         return view('latecomers-users.index', $data);
     }
     public function lateOfComersData(Request $request){
-        $fromDate = $request->input('from_date');
-        $toDate = $request->input('to_date');
+
+        $fromDate = date('Y-m-d', strtotime($request->input('from_date'))) ??  date('Y-m-d');
+        $toDate =  date('Y-m-d', strtotime($request->input('to_date'))) ?? date('Y-m-d');
 
         $employees = Employee::with('workshift')->whereNotIn('status', ['4'])->get();
 
-        $data['employees'] = $employees->map(function ($employee) use ($fromDate, $toDate) {
+        $data['employees'] = $employees->map(function ($employee, $index) use ($fromDate, $toDate) {
             $shift = $employee->workshift; 
 
             if (!$shift) return null;
@@ -982,22 +983,91 @@ public function checkAccountNumber(Request $request)
                 })
                 ->toArray();
 
-            $lateCount = Attendance::where('emp_id', $employee->id)
+            $lateCount = Attendance::where('emp_id', $employee->user_id)
                 ->whereBetween('signin_date', [$fromDate, $toDate])
                 ->whereTime('signin_time', '>', $shift->shift_start_time)
                 ->whereNotIn('signin_date', $leaveDates)
                 ->count();
 
             return [
+                'DT_RowIndex' => $index + 1,
                 'id' => $employee->id,
-                'user' => $employee->profile_image,
+                'user' => $employee->profile_image
+                    ? '<img src="' . asset('storage/' . $employee->profile_image) . '" alt="Avatar" class="rounded-circle" width="40" height="40" />'
+                    : '<img src="' . asset('assets/img/avatars/default-avatar.png') . '" alt="Avatar" class="rounded-circle" width="40" height="40" />',
                 'fullname' => $employee->full_name,
                 'count' => $lateCount,
-                'action' => $employee->department->name ?? '',
+
+                'action' => $lateCount > 0 
+                    ? '<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="Unlock User" onclick="viewMoreModal(' . $employee->id . ')"> More Details </i></a>' 
+                    : '<a href="javascript:void(0);" class="btn btn-sm btn-secondary desabled" desabled title="Unlock User"> More Details </i></a>',
             ];
         })->filter(); // Remove null values for employees without shifts
 
-        return response()->json($data);
+        return response()->json(['data' => $data['employees']]);
     }
 
+    
+    public function userLateCommers(Request $request){
+        $id = $request->id;
+        $fromDate = date('Y-m-d', strtotime($request->from_date)) ?? now()->format('Y-m-d');
+        $toDate = date('Y-m-d', strtotime($request->to_date)) ?? now()->format('Y-m-d');
+
+        // Fetch employee and their shift
+        $employee = Employee::with('workshift', 'user')->where('id', $id)->first();
+
+        if (!$employee) {
+            return response()->json([
+                'html' => '<p>Employee not found.</p>',
+                'meta_title' => 'Error'
+            ]);
+        }
+
+        $shift = $employee->workshift;
+
+        if (!$shift) {
+            return response()->json([
+                'html' => '<p>No shift assigned for this employee.</p>',
+                'meta_title' => 'Latecomer Details'
+            ]);
+        }
+
+        // Get list of leave dates
+        $leaveDates = Leave::where('user_id', $employee->user_id)
+            ->where('leave_type', 'off_type')
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('leave_from', [$fromDate, $toDate])
+                    ->orWhereBetween('leave_to', [$fromDate, $toDate])
+                    ->orWhere(function ($q) use ($fromDate, $toDate) {
+                        $q->where('leave_from', '<=', $fromDate)
+                            ->where('leave_to', '>=', $toDate);
+                    });
+            })
+            ->get()
+            ->flatMap(function ($leave) {
+                return \Carbon\CarbonPeriod::create($leave->leave_from, $leave->leave_to)->toArray();
+            })
+            ->map(fn($date) => $date->format('Y-m-d'))
+            ->toArray();
+
+        // Fetch late attendance records
+        $lateAttendances = Attendance::where('emp_id', $employee->user_id)
+            ->whereBetween('signin_date', [$fromDate, $toDate])
+            ->whereTime('signin_time', '>', $shift->shift_start_time)
+            ->whereNotIn('signin_date', $leaveDates)
+            ->orderBy('signin_date', 'desc')
+            ->get();
+
+        // Load modal HTML
+        $html = view('latecomers-users.view-details', [
+            'employee' => $employee,
+            'lateAttendances' => $lateAttendances,
+        ])->render();
+
+        return response()->json([
+            'html' => $html,
+            'meta_title' => $employee->full_name . "'s Late Arrival Details",
+        ]);
+    }
+    
 }

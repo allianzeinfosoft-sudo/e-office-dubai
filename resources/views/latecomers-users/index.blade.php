@@ -1,7 +1,18 @@
 @extends('layouts.app')
 
 @section('css')
-
+<style>
+    .dt-buttons{
+        float: left;
+        margin-top: 5px;
+        margin-left: 10px;
+    }
+    .dataTables_filter{
+        float: right;
+        margin-top: 5px;
+        margin-right: 10px;
+    }
+</style>
 @stop
 
 
@@ -36,31 +47,25 @@
                                 </div>
 
                                 <div class="col-md-3 mt-15">
-                                    <button type="button" class="btn btn-primary mt-15">Filter</button>
+                                    <button type="button" onclick="lateComersList()" id="lateComersList" class="btn btn-primary mt-15">Filter</button>
                                 </div>
 
                             </div>
 
                              <!-- Filter Result  -->   
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <table class="datatables-basic datatables-custom-attendance table border-top table-stripedc table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th width="8%">Sl. No.</th>
-                                                <th><i class="ti ti-users"></i></th>
-                                                <th>Fullname</th>
-                                                <th>Count</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-
+                            <table class="datatables-basic datatables-late-comers table border-top table-stripedc table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="8%">Sl. No.</th>
+                                        <th><i class="ti ti-users"></i></th>
+                                        <th>Fullname</th>
+                                        <th>Count</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
@@ -81,39 +86,101 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="viewMoreDetails" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel1">View Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
 
 
 @push('js')
 <script>
     $(function(){
+        $('#from_date, #to_date').flatpickr({
+            monthSelectorType: 'static',
+            altInput: true,
+            altFormat: 'd-m-Y',
+            dateFormat: 'd-m-Y'
+        });
+
         lateComersList();
         
     });
 
     function lateComersList() {
-        const fromDate = $('#from_date').val();
-        const toDate = $('#to_date').val();
+    const fromDate = $('#from_date').val();
+    const toDate = $('#to_date').val();
 
-        $('.datatables-basic').DataTable({
-            processing: true,
-            serverSide: false,
-            ajax: {
-                type: "GET",
-                url: "{{ route('list-of-latecomers-data') }}",
-                data: {
-                    from_date: fromDate,
-                    to_date: toDate,
-                }
-            },
-            columns: [
-                { data: 'DT_RowIndex', name: 'Sl. No' },
-                { data: 'user', name: '<i class="ti ti-users"></i>' },
-                { data: 'fullname', name: 'Fullname' },
-                { data: 'count', name: 'Count' },
-                { data: 'actions', name: 'Actions' },
-            ]
-        });
-    }
+    $('.datatables-late-comers').DataTable().destroy();
+
+    $('.datatables-late-comers').DataTable({
+        processing: true,
+        serverSide: false,
+        dom: 'Bfrtip',
+        ajax: {
+            url: "{{ route('list-of-latecomers-data') }}",
+            type: "GET",
+            data: {
+                from_date: fromDate,
+                to_date: toDate,
+            }
+        },
+        buttons: [
+            { extend: 'excelHtml5', title: 'All Attendance Report'},
+            { extend: 'pdfHtml5', title: 'All Attendance Report', orientation: 'landscape', pageSize: 'A4'},
+            { extend: 'print', title: 'All Attendance Report'}
+        ],
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+            { data: 'user', name: 'user' },
+            { data: 'fullname', name: 'fullname' },
+            { data: 'count', name: 'count' },
+            { data: 'action', name: 'action' },
+        ],
+        columnDefs: [
+            { orderable: false, targets: [1, 4] },
+            { searchable: false, targets: [1, 4] }
+        ]
+    });
+}
+
+function viewMoreModal(id) {
+    const fromDate = $('#from_date').val();
+    const toDate = $('#to_date').val();
+
+    const url = "{{ route('user-latecomers-list') }}";
+    $.ajax({
+        url: url,
+        data: {
+            id: id,
+            from_date: fromDate,
+            to_date: toDate
+        },
+        type: 'GET',
+        success: function (data) {
+            $('#viewMoreDetails .modal-body').html(data.html);
+            $('.modal-title').text(data.meta_title);
+            $('#viewMoreDetails').modal('show');
+            $('#target_id').val(id);
+        },
+        error: function () {
+            alert('Failed to load MOM data.');
+        }
+    });
+}
 </script>
 @endpush

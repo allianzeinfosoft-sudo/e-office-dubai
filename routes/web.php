@@ -148,6 +148,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/unblock-users/{id}', [UserController::class, 'unblockUser'])->name('unblock-users.index');
     Route::get('/list-of-latecomers', [UserController::class, 'listOfLatecomers'])->name('list-of-latecomers.index');
     Route::get('/list-of-latecomers-data', [UserController::class, 'lateOfComersData'])->name('list-of-latecomers-data');
+    Route::get('/user-latecomers-list', [UserController::class, 'userLateCommers'])->name('user-latecomers-list');
 
     /* department */
     Route::resource('departments',DepartmentController::class);
