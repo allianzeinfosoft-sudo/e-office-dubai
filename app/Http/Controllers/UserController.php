@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\Workshift;
 use App\Models\UserEntryBlockList;
+use App\Models\Attendance;
+use App\Models\Leave;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -943,6 +945,59 @@ public function checkAccountNumber(Request $request)
         $user->status = 0;
         $user->save();
         return redirect()->back()->with('success', 'User unblocked successfully');
+    }
+
+    public function listOfLatecomers(){
+        $data['meta_title'] = 'Latecomers';
+        return view('latecomers-users.index', $data);
+    }
+    public function lateOfComersData(Request $request){
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        $employees = Employee::with('workshift')->whereNotIn('status', ['4'])->get();
+
+        $data['employees'] = $employees->map(function ($employee) use ($fromDate, $toDate) {
+            $shift = $employee->workshift; 
+
+            if (!$shift) return null;
+
+             // Get list of leave dates (with off_type) for this employee
+            $leaveDates = Leave::where('user_id', $employee->user_id)
+                ->where('leave_type', 'off_type')
+                ->where(function ($query) use ($fromDate, $toDate) {
+                    $query->whereBetween('leave_from', [$fromDate, $toDate])
+                        ->orWhereBetween('leave_to', [$fromDate, $toDate])
+                        ->orWhere(function ($q) use ($fromDate, $toDate) {
+                            $q->where('leave_from', '<=', $fromDate)
+                                ->where('leave_to', '>=', $toDate);
+                        });
+                })
+                ->get()
+                ->flatMap(function ($leave) {
+                    return \Carbon\CarbonPeriod::create($leave->leave_from, $leave->leave_to)->toArray();
+                })
+                ->map(function ($date) {
+                    return $date->format('Y-m-d');
+                })
+                ->toArray();
+
+            $lateCount = Attendance::where('emp_id', $employee->id)
+                ->whereBetween('signin_date', [$fromDate, $toDate])
+                ->whereTime('signin_time', '>', $shift->shift_start_time)
+                ->whereNotIn('signin_date', $leaveDates)
+                ->count();
+
+            return [
+                'id' => $employee->id,
+                'user' => $employee->profile_image,
+                'fullname' => $employee->full_name,
+                'count' => $lateCount,
+                'action' => $employee->department->name ?? '',
+            ];
+        })->filter(); // Remove null values for employees without shifts
+
+        return response()->json($data);
     }
 
 }
