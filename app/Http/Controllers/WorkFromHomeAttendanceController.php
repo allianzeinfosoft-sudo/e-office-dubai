@@ -109,6 +109,7 @@ class WorkFromHomeAttendanceController extends Controller
                     'report_date'        => date('Y-m-d', strtotime($validatedData['signin_date'])),
                     'total_records'      => $report['total_records'] ?? null,
                     'productivity_hour'  => $report['productivity_hour'] ?? null,
+                    'wfh_attendance_id'  => $attendance->id
                 ]);
             }
         }
