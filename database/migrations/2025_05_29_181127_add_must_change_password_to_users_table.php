@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('departments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('branch_id')->constrained()->onDelete('cascade'); // Link to branches
-            $table->string('department');
-            $table->boolean('status')->default(1);
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('must_change_password')->default(false)->after('password');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('departments');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('must_change_password');
+        });
     }
 };

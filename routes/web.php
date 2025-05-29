@@ -43,23 +43,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-// Route::get('/', function () {
-//     return view('auth/login');
-// });
-
-// Auth::routes();
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
 Route::middleware(['web'])->group(function () {
@@ -76,11 +59,17 @@ Route::middleware(['web'])->group(function () {
         return redirect('/');
     })->name('logout');
 
-    Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
+
+
+
 });
 
-Route::middleware(['web', 'auth'])->group(function () {
+Route::get('/password/change', [HomeController::class, 'showChangeForm'])->name('password.change.form')->middleware('auth');
+Route::post('/password/change', [HomeController::class, 'change'])->name('password.change')->middleware('auth');
+
+Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     /* Home */
+    Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
     // Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/attendance-analytics', [HomeController::class, 'getAnalytics'])->name('attendance.analytics');
     Route::get('/leave-summary', [HomeController::class, 'getLeaveSummary'])->name('leave.summary');

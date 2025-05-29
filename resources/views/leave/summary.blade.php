@@ -228,7 +228,7 @@ $(document).ready(function () {
         table = $('#summaryTable').DataTable({
             processing: true,
             serverSide: false,
-            searching: false,
+            searching: true,
             paging: true,
             ordering: false,
             ajax: {

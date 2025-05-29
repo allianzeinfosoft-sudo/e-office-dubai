@@ -659,12 +659,18 @@ public static function getWorkRatingAnalysisMonthly($empId)
     }
 
     /* Total Experience */
-    public static function getExperience($joinDate)
+    public static function getExperience($user)
     {
-        $join = Carbon::parse($joinDate);
+        $join = Carbon::parse($user->employee->join_date);
         $now = Carbon::now();
+        if($user->employee->resigned_date != null)
+        {
+            $resigned_date = $user->employee->resigned_date;
+            $diff = $join->diff($resigned_date);
+        }else{
+             $diff = $join->diff($now);
+        }
 
-        $diff = $join->diff($now);
 
         return "{$diff->y} years, {$diff->m} months, {$diff->d} days";
     }
