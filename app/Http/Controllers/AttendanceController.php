@@ -348,6 +348,24 @@ class AttendanceController extends Controller{
         //
     }
 
+    public function destroy($id){
+        $attendance = Attendance::findOrFail($id);
+        
+        // Get the date of the attendance
+        $signinDate = $attendance->signin_date;
+        $userId = $attendance->user_id;
+        
+        // Delete related work reports for the same user on the same date
+        WorkReport::where('emp_id', $userId)
+            ->whereDate('report_date', $signinDate)
+            ->delete();
+
+        // Delete the attendance record
+        $attendance->delete();
+
+        return redirect()->back()->with('success', 'Attendance and related work report(s) deleted successfully.');
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -689,14 +707,14 @@ class AttendanceController extends Controller{
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    /* public function destroy($id)
     {
         //
         $item = Attendance::findOrFail($id);
         $item->delete();
 
         return response()->json(['success' => true]);
-    }
+    } */
 
     public function markedInList(){
         $markedInListData = Attendance::with('employee')

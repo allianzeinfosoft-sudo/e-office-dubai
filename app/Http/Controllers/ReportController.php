@@ -707,7 +707,8 @@ class ReportController extends Controller
                 'signin_note'   => 'N/A',
                 'signout_note'  => 'N/A',
                 'status'        => 'leave',
-                'statusText'    => 'Leave'
+                'statusText'    => 'Leave',
+                'atte_id'       => 'N/A',
             ];
 
             if (isset($attendances[$dateStr])) {
@@ -735,18 +736,23 @@ class ReportController extends Controller
                     $row->status = 'mark-out';
                     $row->statusText = '<span class="badge bg-label-info mt-1">Completed</span>';
                 }
+                $row->atte_id = $att->id ?? 'N/A';
             } elseif (in_array($dateStr, $leaveDates)) {
                 $row->status = 'leave';
                 $row->statusText = '<span class="badge bg-label-danger mt-1"> On Leave </span>';
+                $row->atte_id = $att->id ?? 'N/A';
             } elseif (in_array($dateStr, $holidays)) {
                 $row->status = 'holiday';
                 $row->statusText = '<span class="badge bg-label-secondary mt-1">Holiday</span>';
+                $row->atte_id = $att->id ?? 'N/A';
             } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
                 $row->status = 'weekend';
                 $row->statusText = '<span class="badge bg-label-primary mt-1">'. $dayName .'</span>';
+                $row->atte_id = $att->id ?? 'N/A';
             } else {
                 $row->status = 'absent';
                 $row->statusText = '<span class="badge bg-label-primary mt-1"> Absent </span>';
+                $row->atte_id = $att->id ?? 'N/A';
             }
 
             $report[] = $row;
@@ -754,6 +760,7 @@ class ReportController extends Controller
         }
 
         $data['attendances'] = collect($report);
+        
         $html = view('reports.all-attendance-report.report-view', $data)->render();
 
         return response()->json(['html' => $html]);

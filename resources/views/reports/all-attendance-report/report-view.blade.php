@@ -37,6 +37,7 @@
                                 <th>Signin Note</th>
                                 <th>Signout Note</th>
                                 <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,6 +53,17 @@
                                         <td>{{ $attendance->signin_note ?? 'N/A' }}</td>
                                         <td>{{ $attendance->signout_note ?? 'N/A' }}</td>
                                         <td>{!! $attendance->statusText ?? 'N/A' !!}</td>
+                                        <td>
+                                            @if($attendance->signin_time != "N/A" && $attendance->signout_time != "N/A")
+                                                <form action="{{ route('attendance.destroy', $attendance->atte_id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this record?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-xs btn-danger">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
