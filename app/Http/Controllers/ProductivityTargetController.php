@@ -15,7 +15,7 @@ class ProductivityTargetController extends Controller
         /* ajax request */
         if ($request->ajax()) {
             // Handle the AJAX request here
-            $productivityTargets = ProductivityTarget::with('project', 'projectTask', 'employee',)->get();
+            $productivityTargets = ProductivityTarget::with('project', 'projectTask', 'employee', 'tasks')->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Attendance marked successfully',
@@ -23,7 +23,7 @@ class ProductivityTargetController extends Controller
                     return [
                         'id'            => $productivityTarget->id,
                         'projectName'   => $productivityTarget->project->project_name ?? '',
-                        'projectTask'   => $productivityTarget->projectTask->tasks->name ?? '', 
+                        'projectTask'   => $productivityTarget->tasks->name ?? '', 
                         'employee'      => $productivityTarget->employee->full_name ?? '',
                         'target_month'  => $productivityTarget->target_month ?? '',
                         'target_year'   => $productivityTarget->target_year ?? '',

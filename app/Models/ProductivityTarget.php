@@ -30,4 +30,7 @@ class ProductivityTarget extends Model{
     public function employee(){
         return $this->belongsTo(Employee::class, 'assignedBy');
     }
+    public function tasks(){
+        return $this->belongsTo(Tasks::class, 'project_task_id', 'id'); 
+    }
 }
