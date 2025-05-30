@@ -55,7 +55,7 @@ class User extends Authenticatable
     }
 
     public function projects(){
-        return $this->hasMany(Project::class, 'project_add_person'); // Adjust if 'project_add_person' is the foreign key
+        return $this->hasMany(Project::class, 'project_add_person'); 
     }
 
     public function leave_allocation()
