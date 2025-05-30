@@ -58,7 +58,7 @@
 
                                 {{-- Filter Button --}}
                                 <div class="col-md-3 mt-15">
-                                    <button type="button" onclick="lateComersList()" id="lateComersList" class="btn btn-primary mt-15">Filter</button>
+                                    <button type="button" onclick="incompleteList()" id="incompleteList" class="btn btn-primary mt-15">Filter</button>
                                 </div>
                             </div>
 
@@ -132,10 +132,11 @@
         ],
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-            { data: 'user', name: 'user' },
+            { data: 'avatar', name: 'user' },
             { data: 'fullname', name: 'fullname' },
-            { data: 'count', name: 'count' },
-            { data: 'action', name: 'action' },
+            { data: 'username', name: 'User Name' },
+            { data: 'working_hours', name: 'Working Hours' },
+            { data: 'signin_date', name: 'Signin Date' },
         ],
         columnDefs: [
             { orderable: false, targets: [1, 4] },
