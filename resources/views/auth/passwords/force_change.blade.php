@@ -33,13 +33,14 @@
                   </div>
                   <div class="input-group input-group-merge">
                       <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required  placeholder="{{ __('en.password_placeholder')}}"  aria-describedby="password" autocomplete="current-password" tabindex="2" required>
+
+                    <span class="input-group-text cursor-pointer" id="togglePassword"><i class="ti ti-eye-off"></i></span>
                       @error('password')
                           <span class="invalid-feedback" role="alert">
                               <strong>{{ $message }}</strong>
                           </span>
                       @enderror
-                    <span class="input-group-text cursor-pointer" id="togglePassword"><i class="ti ti-eye-off"></i></span>
-                  </div>
+                </div>
                 </div>
 
                  <div class="mb-3 form-password-toggle">
@@ -48,12 +49,14 @@
                   </div>
                   <div class="input-group input-group-merge">
                      <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password_confirmation" required  placeholder="{{ __('en.password_placeholder')}}"  aria-describedby="confirmpassword" autocomplete="current-password" tabindex="2" required>
+
+                    {{-- <span class="input-group-text cursor-pointer" id="togglePassword"></span>
+                     --}}
                       @error('password')
                           <span class="invalid-feedback" role="alert">
                               <strong>{{ $message }}</strong>
                           </span>
                       @enderror
-                    <span class="input-group-text cursor-pointer" id="togglePassword"></span>
                   </div>
                 </div>
 
