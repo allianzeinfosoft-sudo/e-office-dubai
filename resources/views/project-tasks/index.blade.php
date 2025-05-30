@@ -52,8 +52,10 @@
                             <table class="datatables-basic datatables-project-tasks table border-top table-stripedc">
                                 <thead>
                                     <tr>
+                                        
                                         <th>Task</th>
                                         <th>Project</th>
+
                                         <th>Date</th>
                                         <th>Reporting To</th>
                                         <th>Members</th>
