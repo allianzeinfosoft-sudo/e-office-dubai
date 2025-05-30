@@ -140,9 +140,9 @@
             }
         },
         buttons: [
-            { extend: 'excelHtml5', title: 'All Attendance Report'},
-            { extend: 'pdfHtml5', title: 'All Attendance Report', orientation: 'landscape', pageSize: 'A4'},
-            { extend: 'print', title: 'All Attendance Report'}
+            { extend: 'excelHtml5', title: 'Late Comers User Report'},
+            { extend: 'pdfHtml5', title: 'Late Comers User Report', orientation: 'landscape', pageSize: 'A4'},
+            { extend: 'print', title: 'Late Comers User Report'}
         ],
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex' },
