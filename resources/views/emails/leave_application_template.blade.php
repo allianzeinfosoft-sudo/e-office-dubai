@@ -27,3 +27,5 @@
     {{ $details['employee_name'] }}</p>
 </body>
 </html>
+
+
