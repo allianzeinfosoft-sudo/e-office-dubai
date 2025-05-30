@@ -33,7 +33,7 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-3"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
-                    @can('custom attendance approval')
+                    @can('create project task')
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
@@ -55,11 +55,12 @@
                                         
                                         <th>Task</th>
                                         <th>Project</th>
-
-                                        <th>Date</th>
-                                        <th>Reporting To</th>
-                                        <th>Members</th>
-                                        <th>Actions</th>
+                                        @can('create project task')
+                                            <th>Date</th>
+                                            <th>Reporting To</th>
+                                            <th>Members</th>
+                                            <th>Actions</th>
+                                        @endcan
                                     </tr>
                                 </thead>
                             </table>
@@ -103,75 +104,88 @@
 
 @section('js')
 <script>
-
-     window.userPermissions = {
-        view: @json(auth()->user()->can('view tasks-project')),
-        create: @json(auth()->user()->can('create tasks-project')),
-        edit: @json(auth()->user()->can('edit tasks-project')),
+        window.userPermissions = {
+        view: @json(auth()->user()->can('view project tasks')),
+        create: @json(auth()->user()->can('create project task')),
     };
 
-    $(function() {
-        var projectTable = $('.datatables-project-tasks'),
+    $(function () {
+    var projectTable = $('.datatables-project-tasks'),
         select2 = $('.select2');
 
-        if (projectTable.length) {
-            projectTable.DataTable({
-                ajax: {
-                    type: "GET",
-                    url: "{{ route('tasks-project.index') }}", // Fixed syntax
-                    dataType: "json",
-                    dataSrc: "data"
-                },
-                columns: [
-                    { data: 'task_name', title: 'Task' },
-                    { data: 'project_name', title: 'Project' },
-                    { data: 'created_at', title: 'Date' },
-                    { data: 'reporting_to', title: 'Reporting To',
-                        render: function (data, type, row) {
-                            return `<div class="d-flex align-items-center">
-                          <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
-                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-sm pull-up" aria-label="Kaith D'souza" data-bs-original-title="Kaith D'souza">
-                                <img class="rounded-circle" src="${row.reporting_to && row.reporting_to.profile_image  ? '/storage/profile_pics/' + row.reporting_to.profile_image.replace(/^profile_pics\//, '')  : '../../assets/img/avatars/default-avatar.png'}" alt="`+ row.reporting_to.full_name +`" title="`+ row.reporting_to.full_name +`">
+    if (projectTable.length) {
+
+        const canView = window.userPermissions.view;
+        const canCreate = window.userPermissions.create;
+
+        const columns = [
+            { data: 'task_name', title: 'Task' },
+            { data: 'project_name', title: 'Project' },
+            
+        ];
+
+        // Add action column only if the user has create permission
+        if (canCreate) {
+            columns.push(
+                { data: 'created_at', title: 'Date' },
+            {
+                data: 'reporting_to',
+                title: 'Reporting To',
+                render: function (data, type, row) {
+                    return `<div class="d-flex align-items-center">
+                        <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
+                            <li class="avatar avatar-sm pull-up" title="${row.reporting_to?.full_name}">
+                                <img class="rounded-circle" src="${row.reporting_to?.profile_image ? '/storage/profile_pics/' + row.reporting_to.profile_image.replace(/^profile_pics\//, '') : '/assets/img/avatars/default-avatar.png'}" alt="${row.reporting_to?.full_name}">
                             </li>
-                          </ul>
-                        </div>`;
-                        }
-                    },
-                    { data: 'members', title: 'Members',
-                        render: function (data, type, row) {
-                            if (!Array.isArray(data) || data.length === 0) {
-                                return `<span>No Members</span>`;
-                            }
-
-                            let membersHtml = `<div class="d-flex align-items-center">
-                            <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">`;
-
-                            data.forEach(member => {
-                                membersHtml += `<li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top"  class="avatar avatar-sm pull-up" aria-label="${member.full_name}"  data-bs-original-title="${member.full_name}">
-                                                    <img class="rounded-circle" src="${member.profile_image ? '/storage/profile_pics/' + member.profile_image.replace(/^profile_pics\//, '') : '../../assets/img/avatars/default-avatar.png' }" alt="Avatar" title="${member.full_name}">
-                                                </li>`;
-                                });
-
-                            membersHtml += `</ul></div>`;
-
-                            return membersHtml;
-                        }
-                     },
-                    {
-                        data: null,
-                        title: 'Actions',
-                        render: function (data, type, row) {
-                            const editUrl = "{{ route('tasks-project.edit', ':id') }}".replace(':id', row.id);
-                            return `
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-project" onclick="openOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
-                            `;
-                        }
+                        </ul>
+                    </div>`;
+                }
+            },
+            {
+                data: 'members',
+                title: 'Members',
+                render: function (data, type, row) {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        return `<span>No Members</span>`;
                     }
-                ]
+
+                    let membersHtml = `<div class="d-flex align-items-center">
+                        <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">`;
+
+                    data.forEach(member => {
+                        membersHtml += `<li class="avatar avatar-sm pull-up" title="${member.full_name}">
+                            <img class="rounded-circle" src="${member.profile_image ? '/storage/profile_pics/' + member.profile_image.replace(/^profile_pics\//, '') : '/assets/img/avatars/default-avatar.png'}" alt="Avatar">
+                        </li>`;
+                    });
+
+                    membersHtml += `</ul></div>`;
+                    return membersHtml;
+                }
+            },
+                {
+                data: null,
+                title: 'Actions',
+                render: function (data, type, row) {
+                    const editUrl = "{{ route('tasks-project.edit', ':id') }}".replace(':id', row.id);
+                    return `
+                        <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-project" onclick="openOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
+                        <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
+                    `;
+                }
             });
         }
-    });
+
+        projectTable.DataTable({
+            ajax: {
+                type: "GET",
+                url: "{{ route('tasks-project.index') }}",
+                dataType: "json",
+                dataSrc: "data"
+            },
+            columns: columns
+        });
+    }
+});
 
     function deleteProjectTask(projectTask) {
         if (confirm('Are you sure you want to delete this Task?')) {
