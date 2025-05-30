@@ -33,7 +33,7 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-3"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
-
+                    @can('custom attendance approval')
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
@@ -45,7 +45,7 @@
                             </a>
                         </div>
                     </div>
-
+                    @endcan
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
@@ -101,6 +101,13 @@
 
 @section('js')
 <script>
+
+     window.userPermissions = {
+        view: @json(auth()->user()->can('view tasks-project')),
+        create: @json(auth()->user()->can('create tasks-project')),
+        edit: @json(auth()->user()->can('edit tasks-project')),
+    };
+
     $(function() {
         var projectTable = $('.datatables-project-tasks'),
         select2 = $('.select2');
