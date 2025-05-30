@@ -102,7 +102,7 @@
                           <span class="fw-bold"><i class="ti ti-calendar mt-n2"></i>Join Date: &nbsp;</span><span>{{ $user->employee->dob ? \Carbon\Carbon::parse($user->employee->join_date)->format('d-m-Y') : 'N/A' }}</span>
                         </li>
                         <li class="d-flex align-items-center justify-content-between mb-3">
-                          <span class="fw-bold"><i class="ti ti-user mt-n2"></i>Reporting To: &nbsp;</span><span>{{ $user->reporting_to->full_name ?? 'N/A'  }}</span>
+                          <span class="fw-bold"><i class="ti ti-user mt-n2"></i>Reporting To: &nbsp;</span><span>{{ $user->employee->reportingToEmployee ? $user->employee->reportingToEmployee->full_name : 'N/A'  }}</span>
                         </li>
                         <hr>
                         <li class="d-flex align-items-center mb-3">
