@@ -142,7 +142,7 @@ class UserController extends Controller
                 'pan' => !empty($request->pan) ? $request->pan : null,
                 'dob' => !empty($request->dob) ? $request->dob : null,
                 'group' => !empty($request->group) ? $request->group : null,
-                'address' => !empty($request->address) ? $request->address : null,
+                'address' => !empty($request->address) ? trim($request->address) : null,
                 'profile_image' => !empty($profileImagePath) ? $profileImagePath : null,
                 'mobile_number' => !empty($request->mobile_number) ? $request->mobile_number : null,
                 'mobile_relationship' => !empty($request->mobile_relationship) ? $request->mobile_relationship : null ,
@@ -304,7 +304,7 @@ class UserController extends Controller
             'pan' => !empty($request->pan) ? $request->pan : null,
             'dob' => !empty($request->dob) ? $request->dob : null,
             'group' => !empty($request->group) ? $request->group : null,
-            'address' => !empty($request->address) ? $request->address : null,
+            'address' => !empty($request->address) ? trim($request->address) : null,
             'mobile_number' => !empty($request->mobile_number) ? $request->mobile_number : null,
             'mobile_relationship' => !empty($request->mobile_relationship) ? $request->mobile_relationship : null,
             'landline' => !empty($request->landline) ? $request->landline : null,
@@ -959,7 +959,7 @@ public function checkAccountNumber(Request $request)
         $employees = Employee::with('workshift')->whereNotIn('status', ['4'])->get();
 
         $data['employees'] = $employees->map(function ($employee, $index) use ($fromDate, $toDate) {
-            $shift = $employee->workshift; 
+            $shift = $employee->workshift;
 
             if (!$shift) return null;
 
@@ -998,8 +998,8 @@ public function checkAccountNumber(Request $request)
                 'fullname' => $employee->full_name,
                 'count' => $lateCount,
 
-                'action' => $lateCount > 0 
-                    ? '<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="Unlock User" onclick="viewMoreModal(' . $employee->id . ')"> More Details </i></a>' 
+                'action' => $lateCount > 0
+                    ? '<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="Unlock User" onclick="viewMoreModal(' . $employee->id . ')"> More Details </i></a>'
                     : '<a href="javascript:void(0);" class="btn btn-sm btn-secondary desabled" desabled title="Unlock User"> More Details </i></a>',
             ];
         })->filter(); // Remove null values for employees without shifts
@@ -1007,7 +1007,7 @@ public function checkAccountNumber(Request $request)
         return response()->json(['data' => $data['employees']]);
     }
 
-    
+
     public function userLateCommers(Request $request){
         $id = $request->id;
         $fromDate = date('Y-m-d', strtotime($request->from_date)) ?? now()->format('Y-m-d');
@@ -1115,5 +1115,5 @@ public function checkAccountNumber(Request $request)
 
         return response()->json(['data' => $data]);
     }
-    
+
 }

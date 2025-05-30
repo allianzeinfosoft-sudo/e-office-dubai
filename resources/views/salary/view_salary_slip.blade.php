@@ -85,7 +85,7 @@
                             <select id="select2Month" name="select2Month" class="select2 form-select form-select-lg" data-allow-clear="true">
                                 @for ($month = 1; $month <= 12; $month++)
                                     <option value="{{ $month }}"
-                                        {{ old('select2Month', now()->month) == $month ? 'selected' : '' }}>
+                                        {{ old('select2Month', now()->subMonth()->month) == $month ? 'selected' : '' }}>
                                         {{ $helper->getMonthNames($month) }}
                                     </option>
                                 @endfor

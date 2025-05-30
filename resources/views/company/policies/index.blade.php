@@ -17,7 +17,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <x-menu />
 
         <div class="layout-page">
@@ -28,6 +28,7 @@
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Others /</span> {{ $meta_title }}</h4>
 
                     <div class="row">
+                    @hasanyrole('Developer|HR')
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openCompanyPolicyOffcanvas()">
                                 <span>
@@ -36,7 +37,7 @@
                                 </span>
                             </a>
                         </div>
-
+                    @endhasanyrole
                         <div class="card">
                             <div class="card-datatable table-policy">
                                 <table class="datatables-basic datatables-policy table border-top table-hover table-striped">
@@ -51,13 +52,13 @@
                                         </tr>
                                     </thead>
                                 </table>
-                            </div>  
+                            </div>
                         </div>
 
                     </div>
                 </div>
 
-                <x-footer /> 
+                <x-footer />
                 <div class="content-backdrop fade"></div>
                 <div class="layout-overlay layout-menu-toggle"></div>
                 <div class="drag-target"></div>
@@ -69,7 +70,7 @@
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="policy_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-description fs-2 text-white"></i> 
+            <i class="ti ti-file-description fs-2 text-white"></i>
             <span id="policy-offcanvas-title">
                 <h5 class="offcanvas-title text-white">Create Company Policy</h5>
                 <span class="text-white slogan">Create New Company Policy</span>
@@ -150,16 +151,16 @@
                     { data: 'policyTitle', name: 'Policy Title' },
                     { data: 'policyStartDate', name: 'Start Date' },
                     { data: 'policyDescription', name: 'Description' },
-                    { 
+                    {
                         data: 'attachments',
                         render: function (data) {
                             if (data) {
                                 return `<a href="${assetBaseUrl}/${data}" target="_blank" class="btn btn-sm btn-outline-success"><i class="ti ti-download"></i></a>`;
-                            } 
+                            }
                             return '-';
                         }
                     },
-                    { 
+                    {
                         data: null,
                         render: function (data, type, row) {
                             return `
@@ -173,7 +174,7 @@
         }
 
         $('#company-policy-form').on('submit', function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
             $('#description').val(quillPolicy.root.innerHTML);
             let form = $(this);
             let formData = new FormData(this);
@@ -191,7 +192,7 @@
                 success: function (response) {
                     toastr["success"](response.message);
                     form.trigger('reset');
-                    quillPolicy.root.innerHTML = ''; 
+                    quillPolicy.root.innerHTML = '';
                     const offcanvasElement = document.getElementById('policy_offcanvas');
                     const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                     if (offcanvas) offcanvas.hide();

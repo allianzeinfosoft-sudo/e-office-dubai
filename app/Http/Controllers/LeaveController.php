@@ -221,8 +221,18 @@ class LeaveController extends Controller
 
         ];
         // Send notification email
+        $email=[];
+        $apporver_email = '';
+
         $htmlBody = view('emails.leave_application_template', $data)->render();
-        $email = User::find($approver)?->email;
+        $apporver_email = User::find($approver)?->email;
+        $hr_mail =  'anilk@mail.allianzegroup.com';
+        if (!empty($approver_email))
+        {
+            $email[] = $approver_email;
+        }
+        $email[] = $hr_mail;
+
         if($email)
         {
             CustomHelper::sendNotificationMail(
