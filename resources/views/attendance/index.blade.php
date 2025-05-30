@@ -416,9 +416,16 @@
 <script>
   
   $(function(){
-
     /* Mark in function */
     $('#mark-in-btn').on('click', function() {
+      var $btn = $(this);
+
+      // Prevent double click
+      if ($btn.prop('disabled')) return;
+
+      // Disable the button and show loading text
+      $btn.prop('disabled', true).text('Loading..');
+
       $.ajax({
           url: '{{ route('attendance.mark-in') }}',
           type: 'POST',
@@ -477,12 +484,22 @@
           },
           error: function(xhr, status, error) {
               console.error('Error:', error);
+              // Re-enable the button if there's an error
+              $btn.prop('disabled', false).text('Mark In');
           }
-      });
+        });
     });
 
     /* Mark out function */
     $('#mark-out-btn').on('click', function() {
+      var $btn = $(this);
+
+      // Prevent double click
+      if ($btn.prop('disabled')) return;
+
+      // Disable button and show loading text
+      $btn.prop('disabled', true).text('Loading..');
+      
       $.ajax({
             url: '{{ route('attendance.mark-out') }}',
             type: 'POST',
@@ -516,10 +533,14 @@
                     window.location.reload();
                 } else {
                     alert(data.message);
+                    // Optional: re-enable button and restore text if you don't reload
+                    $btn.prop('disabled', false).text('Mark Out');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('Error:', error);
+                // Re-enable on error
+                $btn.prop('disabled', false).text('Mark Out');
             }
         });
     });
