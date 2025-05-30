@@ -114,7 +114,7 @@
                     <div class="col-12 col-xl-8 col-lg-8">
                       <div class="card card-sm">
                         <div class="card-header">
-                            <h4 class="card-title mb-1"> <i class="ti ti-user ti-sm"></i> {{ ucfirst(Auth::user()->username ?? 'N/A') }} </h4>
+                            <h4 class="card-title mb-1"> <i class="ti ti-user ti-sm"></i> {{ ucfirst(Auth::user()->employee?->full_name ?? 'N/A') }} </h4>
                         </div>
                         
                         <div class="card-body">                     
