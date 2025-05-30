@@ -13,7 +13,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <!-- Menu -->
         <x-menu />
 
@@ -31,8 +31,8 @@
                             <div id="all-report-container" >
                                 <div class="card card-bg">
                                     <div class="card-body">
-                                        <div class="row d-flex align-items-center"> 
-    
+                                        <div class="row d-flex align-items-center">
+
                                                 <div class="col-sm-6 mb-3">
                                                     <div class="card bg-white">
                                                         <div class="card-body">
@@ -43,7 +43,7 @@
                                                                 <div class="user-info">
                                                                     <h4 class="mb-2">{{ $current_user->full_name ?? '' }}</h4>
                                                                     <span class="badge bg-label-danger mt-1">{{ $current_user->employeeID ?? '' }}</span>
-                                                                    <span class="badge bg-label-secondary mt-1">{{ $current_user->role ?? '' }}</span>
+                                                                    <span class="badge bg-label-secondary mt-1">{{ $current_user->designation ? $current_user->designation->designation : '' }}</span>
                                                                     <h5 class="mt-2">Attendance Report</h5>
                                                                 </div>
                                                                 </div>
@@ -110,11 +110,11 @@
                                             <h5 class="card-title"> <i class="ti ti-filter ti-sm"></i> Avarage working hours</h5>
                                         </div>
                                         <div class="card-body">
-                                            <x-charts.apex-bar-chart 
+                                            <x-charts.apex-bar-chart
                                                 elementId="barChart"
                                                 :series="[
                                                     [
-                                                    'name' => 'Working Hours', 
+                                                    'name' => 'Working Hours',
                                                     'data' => $barChartData['working_hours'] ?? [],
                                                     ],
                                                     [
@@ -127,7 +127,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
 
                         </div>
 
@@ -139,8 +139,8 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            
-                                            <form action="{{ route('reports.my-attendance-report') }}" method="GET"> 
+
+                                            <form action="{{ route('reports.my-attendance-report') }}" method="GET">
                                                     @csrf
                                                     <div class="form-group mb-3">
                                                         <label for="month">Month</label>
@@ -177,9 +177,9 @@
                 </div>
 
                 <!-- Footer -->
-                <x-footer /> 
+                <x-footer />
                 <!-- / Footer -->
-                 
+
                 <div class="content-backdrop fade"></div>
 
                 <!-- Overlay -->
@@ -215,7 +215,7 @@
                 { extend: 'print', title: 'All Attendance Report'}
             ],
         });
-        
+
         // Reload table on form submit
         $('#filter-form').on('submit', function (e) {
             e.preventDefault();
@@ -242,7 +242,7 @@
 
     });
 
-    
+
 </script>
 @endpush
 

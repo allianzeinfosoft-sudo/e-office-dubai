@@ -663,9 +663,30 @@ class LeaveController extends Controller
 
     public function destroy($id)
     {
-        $leave = Leave::findOrFail($id);
-        $leave->delete();
-        return response()->json(['success' => true, 'message' => 'Leave deleted successfully']);
+        $leave = Leave::findOrFail($id); // Will throw 404 if not found
+
+        $leave_count = $leave->leave_day_count;
+        $year = Carbon::parse($leave->leave_from)->year;
+        $user_id = $leave->user_id;
+
+        if ($leave->delete()) {
+
+            $leaveBalance = LeaveAllocation::where('user_id', $user_id)
+            ->where('year', $year)
+            ->first();
+
+            if ($leaveBalance) {
+                $leaveBalance->used_leaves = (float) $leaveBalance->used_leaves - $leave_count;
+                $leaveBalance->remaining_leaves = (float) $leaveBalance->remaining_leaves + $leave_count;
+                $leaveBalance->save();
+            }
+
+
+            return response()->json(['success' => true, 'message' => 'Leave deleted successfully']);
+        } else {
+            return response()->json(['error' => true, 'message' => 'Leave deletion failed']);
+        }
+
     }
 
     public function leave_approver(Request $request)
