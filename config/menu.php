@@ -2,13 +2,13 @@
 return [
 
     [
-        'title' => 'Dashboards',
+        'title' => 'Dashboard',
         'icon' => 'ti ti-building-store',
         'route' => 'home',
         'isActive' => ['home'],
     ],
     [
-        'title' => 'EOffice Feeds',
+        'title' => 'EOffice Feed',
         'icon' => 'ti ti-gift',
         'route' => 'feeds',
         'isActive' => ['feeds'],
@@ -314,7 +314,7 @@ return [
         'icon' => 'ti ti-rss',
         'route' => 'javascript:void(0);',
         'isActive' => ['others*'],
-        'permission' => ['seen status report', 'view thoughts', 'view appreciation','view policy', 'view announcement','view banners','view event', 'view MOM'],
+        'permission' => ['seen status report', 'create thought', 'create appreciation','view policy', 'create announcement','view banners','create event', 'create MOM'],
         'submenu' => [
             /* [
                 'title' => 'Seen status report',
