@@ -23,11 +23,11 @@ class PermissionSeeder extends Seeder
             ],
             'Attendance Management' => [
                 'view attendance', 'mark attendance', 'edit attendance', 'delete attendance', 'approve attendance',
-                'custom attendance', 'custom markout', 'full day entry'
+                'custom attendance', 'custom markout', 'full day entry', 'custom attendance approval', 'incomplete working hour approval'
             ],
             'Leave Management' => [
                 'view leave requests', 'create leave request', 'edit leave request', 'delete leave request',
-                'approve leave', 'reject leave', 'custom leave', 'leave status', 'leave allocation','pending leave request','leave summary'
+                'approve leave', 'reject leave', 'custom leave', 'leave status', 'leave allocation','pending leave request','leave summary','All Leave Request'
             ],
             'Project Management' => [
                 'view projects', 'create project', 'edit project', 'delete project',
@@ -40,7 +40,9 @@ class PermissionSeeder extends Seeder
             ],
             'Reports Management' => [
                 'view reports', 'generate reports', 'export reports', 'delete reports','view my overview', 'view attendance report', 'view my work report',
-                'view emergency report', 'view salary slip', 'seen status report'
+                'view emergency report', 'view salary slip', 'seen status report', 'view monthly overview', 'view leave report', 'view all attendance report',
+                'view all work report', 'view over all work report', 'view emergency attendance report', 'view all emergency work report', 'view my attendance report',
+                'view user overview'
             ],
             'Survey Management' => [
                 'view surveys', 'create survey', 'edit survey', 'delete survey', 'submit survey response', 'assign survey'
@@ -92,7 +94,7 @@ class PermissionSeeder extends Seeder
                 'create policy', 'view policy', 'edit policy', 'delete policy', 'public policy'
             ],
             'MOM Management' => [
-                'create MOM', 'View MOM', 'edit MOM', 'delete MOM', 'assign MOM'
+                'create MOM', 'View MOM', 'edit MOM', 'delete MOM', 'assign MOM', 'view user moms'
             ],
             'Gallery Management' => [
                 'view gallery', 'upload media', 'edit media', 'delete media'
@@ -118,7 +120,8 @@ class PermissionSeeder extends Seeder
                 'view settings', 'update settings', 'manage roles', 'manage permissions', 'change appearence', 'view department',
                 'create department', 'edit department', 'delete department', 'view designation', 'create designation', 'edit designation',
                 'delete designation', 'assign designation', 'assign open work', 'view roles and permission', 'assign designation',
-                'view shift time', 'create shift time', 'edit shift time', 'delete shift time', 'assign shift time', 'view dashboard', 'change shift time'
+                'view shift time', 'create shift time', 'edit shift time', 'delete shift time', 'assign shift time', 'view dashboard', 'change shift time',
+                'view feeds', 'leave approvals'
             ]
         ];
 
