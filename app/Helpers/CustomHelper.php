@@ -738,6 +738,57 @@ public static function getWorkRatingAnalysisMonthly($empId)
         list($h, $m, $s) = array_pad(explode(':', $time), 3, 0);
         return ($h * 3600) + ($m * 60) + $s;
     }
+
+    public static function storeMail($data, $files = [])
+    {
+        try {
+            $mail = new MailBox();
+            $mail->from_user_id = Auth::id();
+            $mail->to_user_ids = is_string($data['to_user_ids']) ? json_decode($data['to_user_ids'], true) : $data['to_user_ids'];
+            $mail->cc_user_ids = isset($data['cc_user_ids']) ? (is_string($data['cc_user_ids']) ? json_decode($data['cc_user_ids'], true) : $data['cc_user_ids']) : [];
+            $mail->bcc_user_ids = isset($data['bcc_user_ids']) ? (is_string($data['bcc_user_ids']) ? json_decode($data['bcc_user_ids'], true) : $data['bcc_user_ids']) : [];
+            $mail->subject = $data['subject'];
+            $mail->message = $data['message'];
+            $mail->status = $data['status'] ?? 0;
+
+            if ($mail->status >= 0 && $mail->status <= 7) {
+                $folders = MailBox::folders();
+                $mail->folder = $folders[$mail->status] ?? 'inbox';
+            }
+
+            // Handle attachments
+            if (!empty($files)) {
+                $attachments = [];
+                foreach ($files as $file) {
+                    $fileName = $file->hashName();
+                    $file->storeAs('mail_attachments', $fileName, 'public');
+                    $attachments[] = $fileName;
+                }
+                $mail->attachments = json_encode($attachments);
+            }
+
+            $mail->save();
+
+            // Send notification email
+            $toUserIds = $mail->to_user_ids;
+            $emails = User::whereIn('id', $toUserIds)->pluck('email')->toArray();
+
+            if (!empty($emails)) {
+                $htmlBody = View::make('emails.notification', [
+                    'name' => 'Team',
+                    'message' => 'You are receiving a new email',
+                ])->render();
+
+                self::sendNotificationMail($emails, $mail->subject, $htmlBody);
+            }
+
+            return ['send' => true, 'mail' => $mail];
+
+        } catch (\Exception $e) {
+            \Log::error('Mail store error: ' . $e->getMessage());
+            return ['send' => false, 'error' => $e->getMessage()];
+        }
+    }
 }
 
 
