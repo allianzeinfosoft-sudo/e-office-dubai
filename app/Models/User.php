@@ -68,5 +68,5 @@ class User extends Authenticatable
         return $this->hasMany(Leave::class, 'user_id','id');
     }
 
-
+    
 }
