@@ -57,7 +57,7 @@ class UserController extends Controller
         $departments = Department::all();
         $employees = Employee::all();
         $positions = Position::all();
-        $lastEmployeeId = Employee::orderBy('employeeID', 'desc')->value('employeeID');
+        $lastEmployeeId = Employee::orderBy('employeeID', 'asc')->value('employeeID');
 
         if ($lastEmployeeId) {
             // preg_match('/^([A-Z]+)(\d+)$/', $lastEmployeeId, $matches);
