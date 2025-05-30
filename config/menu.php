@@ -462,14 +462,17 @@ return [
         'icon' => 'ti ti-target',
         'route' => 'javascript:void(0);',
         'isActive' => ['recruitments*'],
+        'permission' => ['view job applications'],
         'submenu' => [
             [
                 'title' => 'RRF',
                 'route' =>  '/recruitments',
+                'permission' => ['view job applications'],
             ],
             [
                 'title' => 'Draft',
                 'route' =>  '/recruitments/draft-list',
+                'permission' => ['view job applications'],
             ],
         ]
     ],
