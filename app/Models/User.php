@@ -51,7 +51,7 @@ class User extends Authenticatable
     }
 
     public function reporting_to(){
-        return $this->hasOne(Employee::class, 'reporting_to', 'id');
+        return $this->hasOne(Employee::class, 'reporting_to', 'user_id');
     }
 
     public function projects(){
