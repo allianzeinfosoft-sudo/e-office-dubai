@@ -1098,15 +1098,18 @@ public function checkAccountNumber(Request $request)
 
             $avatarImg = '<img src="' . $avatar . '" alt="Avatar" class="rounded-circle" width="40" height="40" />';
 
+            $workingHours = $attendance->working_hours ?? '0.00';
+
+            // Convert to float and compare
+            $badgeClass = (float)$workingHours < 4.30 ? 'bg-warning' : 'bg-danger';
+
             return [
                 'DT_RowIndex'   => $index + 1,
                 'avatar'        => $avatarImg,
                 'fullname'      => $employee->full_name ?? 'N/A',
                 'username'      => $attendance->username,
-                'working_hours' => $attendance->working_hours ?? 'N/A',
-                'signin_date'   => $attendance->signin_date 
-                    ? \Carbon\Carbon::parse($attendance->signin_date)->format('d-m-Y')
-                    : 'N/A',
+                'working_hours' => '<span class="badge ' . $badgeClass . '">' . $workingHours . '</span>',
+                'signin_date'   => $attendance->signin_date  ? '<span class="badge bg-primary" >' . Carbon::parse($attendance->signin_date)->format('d-m-Y') . '</span>' : 'N/A',
             ];
         });
 
