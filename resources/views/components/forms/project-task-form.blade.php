@@ -123,9 +123,11 @@
                 success: function (response) {
                     if(response.success) {
                         toastr["success"]("Task saved successfully!");
+
                         $('#task_name')
                             .append('<option value="'+response.data.id+'" selected>'+response.data.name+'</option>')
                             .trigger('change'); // corrected here
+
                         const modalElc = document.getElementById('popUpModel');
                         const modalInstance = bootstrap.Modal.getInstance(modalElc);
                         if (modalInstance) {

@@ -13,6 +13,7 @@ class ProjectForm extends Component
     public $project;
     public $users;
     public $departments;
+    
 
     public function __construct($action, $method = 'post', $project = null)
     {

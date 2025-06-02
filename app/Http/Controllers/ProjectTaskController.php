@@ -64,21 +64,37 @@ class ProjectTaskController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request){
-        $request->validate([
+        $validated = $request->validate([
+            'id'            => 'nullable|integer|exists:project_tasks,id',
             'task_name'     => 'required|string|max:255',
-            'project_id'    => 'required',
-            'reporting_to'  => 'nullable',
-            'members' => 'nullable',
+            'project_id'    => 'required|integer|exists:projects,id',
+            'reporting_to'  => 'nullable|integer|exists:users,id',
+            'members'       => 'nullable',
         ]);
 
-        // Create project Task
-        $task = ProjectTask::updateOrCreate(['id' => $request->id],[
-            'project_id'     => $request->project_id,
-            'task_name'      => $request->task_name,
-            'reporting_to'     => $request->reporting_to ?? null,
-            'members' => isset($request->members) ? implode(',', $request->members) : null,
-        ]);
-        $message = $task->wasRecentlyCreated ? 'Project created successfully' : 'Project updated successfully';
+        // Find the project
+        $project = Project::findOrFail($validated['project_id']);
+
+        // If 'all' is selected, get all employee user_ids in the department
+
+        if (in_array('all', $request->members)) {
+            $members = Employee::where('department_id', $project->department_id)->pluck('user_id')->toArray();
+        } else {
+            $members = is_array($request->members) ? $request->members : [];
+        }
+
+        // Create or update the project task
+        $task = ProjectTask::updateOrCreate(
+            ['id' => $request->id],
+            [
+                'project_id'   => $validated['project_id'],
+                'task_name'    => $validated['task_name'],
+                'reporting_to' => $validated['reporting_to'] ?? null,
+                'members'      => !empty($members) ? implode(',', $members) : null,
+            ]
+        );
+
+        $message = $task->wasRecentlyCreated ? 'Project task created successfully' : 'Project task updated successfully';
 
         return redirect()->route('tasks-project.index')->with('success', $message);
     }
