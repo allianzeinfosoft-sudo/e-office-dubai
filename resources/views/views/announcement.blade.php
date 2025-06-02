@@ -36,7 +36,7 @@
             @endphp
             <div class="content-wrapper">
                 <diiv class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-2"><span class="text-white "> /</span> Announcement</h4>
+                    <h4 class="fw-bold py-3 mb-2"><span class="text-white "> Views /</span> Announcement</h4>
                     <!-- Header -->
                     <div class="row mt-md-4">
 

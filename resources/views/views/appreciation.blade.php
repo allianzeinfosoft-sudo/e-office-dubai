@@ -35,7 +35,7 @@
 
 
                 <div class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-2"><span class="text-white">/</span> Appreciations</h4>
+                    <h4 class="fw-bold py-3 mb-2"><span class="text-white">Views /</span> Appreciations</h4>
 
                     <div class="row mt-md-4">
                         <div class="container-fluid">
