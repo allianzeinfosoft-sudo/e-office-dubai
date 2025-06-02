@@ -251,8 +251,8 @@ function openOffcanvas(targetId = null) {
                 $('#project_id').val(data.projectTask.project_id).trigger('change');
                 $('#reporting_to').val(data.projectTask.reporting_to).trigger('change');
                 setTimeout(() => {
-                    cosnt memersIds = data.projectTask.members.split(',');
-                    $('#members').val(memersIds).trigger('change');
+                    const memberIds = data.projectTask.members.split(',');
+                    $('#members').val(memberIds).trigger('change');
                 }, 500);
             }
         });
