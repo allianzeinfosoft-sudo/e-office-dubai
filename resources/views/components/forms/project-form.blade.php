@@ -117,3 +117,38 @@
         </div>
     </div>
 </form>
+
+<div class="modal fade" id="popUpModel" data-bs-backdrop="static" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel1">Add New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        
+            <div class="modal-body">
+                <div class="row">
+                    <form action="{{ route('tasks-project.store-task-name') }}" method="post" id="add-task-form">
+                        @csrf
+                        <div class="col-sm-12 mb-3">
+                            <div class="form-group">
+                                <label for="name">Task Name</label>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="Task Name" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Close</button>
+                <button type="button" onclick="saveFormDate()"  class="btn btn-primary waves-effect waves-light">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('js')
+$
+@endpush
