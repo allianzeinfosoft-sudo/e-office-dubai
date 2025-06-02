@@ -47,7 +47,7 @@
                 <div class="card">
                     <div class="card-datatable table-responsive">
                         <table class="datatables-basic datatables-projects-list table border-top table-stripedc table-hover table-striped">
-                            
+
                         </table>
                     </div>  
                 </div>
@@ -203,6 +203,37 @@
                 offcanvasElement.find('input[name="total_hours"]').val(response.project.total_hours);
                 offcanvasElement.find('input[name="total_day"]').val(response.project.total_day);
                 offcanvasElement.find('#project-form').attr('action', updateUrl);
+            }
+        });
+    }
+
+    function getMembers(value) {
+        const url = `/tasks-project/${value}/get-members`;
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function(response) {
+                const $membersSelect = $('#members');
+                $membersSelect.empty();
+                if (response.success && Array.isArray(response.data)) {
+                    let options = "<option value=''></option>";
+                    options += "<option value='all'>All</option>";
+                    response.data.forEach(member => {
+                        options += `<option value="${member.user_id}">${member.full_name} (${member.employeeID})</option>`;
+                    });
+                    $membersSelect.html(options);
+                    $membersSelect.select2({
+                        dropdownParent: $('#project-task-form'),
+                        placeholder: "Select an option",
+                        allowClear: true
+                    });
+                } else {
+                    console.error('Invalid response data:', response.data);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
             }
         });
     }

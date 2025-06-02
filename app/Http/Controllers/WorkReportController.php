@@ -86,6 +86,12 @@ class WorkReportController extends Controller
 
     // ✅ Convert working_hours to seconds
     list($hours, $minutes, $seconds) = array_pad(explode(":", $attendance->working_hours), 3, 0);
+        // Cast each part to an integer before calculations
+        $hours = (int) $hours;
+        $minutes = (int) $minutes;
+        $seconds = (int) $seconds;
+
+
     $totalAttendanceTime = ($hours * 3600) + ($minutes * 60) + $seconds;
 
     // ✅ Sum reported work time in seconds
