@@ -38,7 +38,11 @@ class UserController extends Controller
     {
 
         $users = Cache::remember('users', now()->addMinutes(60), function () {
-            return User::with('employee')->orderBy('employeeID', 'asc')->get();
+           // return User::with('employee')->orderBy('employeeID', 'asc')->get();
+           return User::join('employees', 'users.id', '=', 'employees.user_id')
+            ->with('employee')
+            ->orderBy('employees.employeeID', 'asc')
+            ->get();
 
         });
 
