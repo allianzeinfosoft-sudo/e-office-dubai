@@ -314,7 +314,7 @@ return [
         'icon' => 'ti ti-rss',
         'route' => 'javascript:void(0);',
         'isActive' => ['others*'],
-        'permission' => ['seen status report', 'create thought', 'create appreciation','view policy', 'create announcement','view banners','create event', 'create MOM'],
+        'permission' => ['seen status report', 'create thought', 'create appreciation','create policy', 'create announcement','create banners','create event', 'create MOM'],
         'submenu' => [
             /* [
                 'title' => 'Seen status report',
@@ -326,40 +326,40 @@ return [
                 'title' => 'Thoughts',
                 'route' =>  'thoughts',
                 'isActive' => [],
-                'permission' => ['view thought'],
+                'permission' => ['create thought'],
 
             ],
             [
                 'title' => 'Appreciation',
                 'route' =>  'appreciation',
                 'isActive' => [],
-                'permission' => ['view appreciation']
+                'permission' => ['create appreciation']
 
             ],
             [
                 'title' => 'Policies',
                 'route' =>  'others/policies',
                 'isActive' => ['policy*'],
-                'permission' => ['view policy'],
+                'permission' => ['create policy'],
             ],
             [
                 'title' => 'Announcement',
                 'route' =>  'javascript:void(0);',
-                'isActive' => ['announcements*'],
+                'isActive' => [],
                 'permission' => [],
                 'submenu' => [
                     [
                         'title' => 'Announcements',
                         'route' => "/others/announcements",
                         'isActive' => [],
-                        'permission' => [],
+                        'permission' => ['create announcement'],
                         ''
                     ],
                     [
                         'title' => 'Banner',
                         'route' => "banner",
                         'isActive' => [],
-                        'permission' => ['view banners'],
+                        'permission' => ['create banners'],
                         ''
                     ],
                 ]
@@ -368,13 +368,13 @@ return [
                 'title' => 'Events',
                 'route' =>  '/others/events',
                 'isActive' => ['events*'],
-                'permission' => ['view events'],
+                'permission' => ['create event'],
             ],
             [
                 'title' => 'MOM',
                 'route' =>  '/others/moms',
                 'isActive' => ['mom*'],
-                'permission' => [],
+                'permission' => ['create MOM'],
             ],
         ]
     ],
