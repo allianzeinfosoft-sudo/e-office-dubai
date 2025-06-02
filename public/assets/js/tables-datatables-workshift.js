@@ -182,7 +182,8 @@ $(function () {
           title: 'Actions',
             render: function (data, type, row, full) {
                 return `
-                    <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-workshift" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
+                     <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success edit-workshift" data-id="${row.id}"><i class="ti ti-pencil"></i></a>
+                      <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-workshift" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
             }
         }
       ],
