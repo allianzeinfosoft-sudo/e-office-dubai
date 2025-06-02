@@ -32,7 +32,7 @@
 
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
+                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Project / </span> {{ $meta_title }}</h4>
 
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
