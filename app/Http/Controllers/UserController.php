@@ -42,6 +42,7 @@ class UserController extends Controller
             ->with('employee')
             ->orderBy('employees.employeeID', 'asc')
             ->get();
+            
         });
 
         return view('users.index', compact('users'));
