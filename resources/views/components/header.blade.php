@@ -247,7 +247,7 @@
                           </div>
                         </div>
                       </li>
-                      
+
 
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
