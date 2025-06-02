@@ -17,6 +17,7 @@ class SettingsController extends Controller
 {
     public function list_work_shift()
     {
+
         return view('settings.work_shift');
     }
 
