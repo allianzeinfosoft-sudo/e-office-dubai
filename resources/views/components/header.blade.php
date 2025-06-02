@@ -66,7 +66,7 @@
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-clock fs-4"></i>
                         </span>
-                        <a href="{{ route('custom-attendance.index') }}" class="stretched-link">Approval</a>
+                        <a href="{{ route('custom-attendance.index') }}" class="stretched-link">Approvel</a>
                         <small class="text-muted mb-0">Custom Attendance</small>
                       </div>
                       @endcan
@@ -145,17 +145,6 @@
                   use App\Helpers\CustomHelper;
                 @endphp
 
-                @if (!Auth::user()->hasRole('G5'))
-                <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <div class="avatar avatar-online">
-                      <img src="{{ asset('backend/assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle" />
-                    </div>
-                  </a>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <a class="dropdown-item" href="pages-account-settings-account.html">
-
               <!-- Notification -->
               <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
                 <a
@@ -231,7 +220,6 @@
                           </div>
                         </div>
                       </li>
-                      @if (Auth::user()->hasRole(['HR', 'Developer']))
                        <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
@@ -247,7 +235,6 @@
                           </div>
                         </div>
                       </li>
-                      
 
                       <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                         <div class="d-flex">
@@ -313,7 +300,7 @@
                         </div>
                       </li>
 
-                      @endif
+
                     </ul>
                   </li>
                   {{-- <li class="dropdown-menu-footer border-top">
@@ -326,7 +313,6 @@
                 </ul>
               </li>
               <!--/ Notification -->
-              @endif
 
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
