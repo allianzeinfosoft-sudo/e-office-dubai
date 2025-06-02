@@ -138,7 +138,9 @@ class ProjectTaskController extends Controller
     }
 
     public function getMembers($employee_id){
-        $members = Employee::where('reporting_to', $employee_id)->get();
+        /* employee_id = project_id Updated for department wise emloyees on 02-06-2025 */
+        $project = Project::find($employee_id);
+        $members = Employee::where('department_id', $project->department_id)->get();
         return response()->json([
             'success' => true,
             'data' => $members,
