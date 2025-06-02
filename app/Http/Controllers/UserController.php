@@ -37,7 +37,7 @@ class UserController extends Controller
     {
 
         $users = Cache::remember('users', now()->addMinutes(60), function () {
-            return User::all();
+            return User::orderBy('employeeID', 'asc')->get();
         });
 
         return view('users.index', compact('users'));
