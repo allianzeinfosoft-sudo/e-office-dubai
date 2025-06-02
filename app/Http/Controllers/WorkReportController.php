@@ -91,7 +91,6 @@ class WorkReportController extends Controller
         $minutes = (int) $minutes;
         $seconds = (int) $seconds;
 
-
     $totalAttendanceTime = ($hours * 3600) + ($minutes * 60) + $seconds;
 
     // ✅ Sum reported work time in seconds
