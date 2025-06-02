@@ -40,7 +40,7 @@
                 </a>
               </li>
               <!--/ Style Switcher -->
-
+            @if (Auth::user()->hasRole(['HR','Developer']))
               <!-- Quick links  -->
               <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
                 <a
@@ -140,6 +140,7 @@
                   </div>
                 </div>
               </li>
+              @endif
               <!-- Quick links -->
                @php
                   use App\Helpers\CustomHelper;
@@ -147,6 +148,8 @@
 
               <!-- Notification -->
 
+
+            @if (!Auth::user()->hasRole('G5'))
 
               <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
                 <a
@@ -222,6 +225,9 @@
                           </div>
                         </div>
                       </li>
+
+
+                    @if (Auth::user()->hasRole(['HR','Developer']))
                        <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
@@ -301,7 +307,7 @@
                           </div>
                         </div>
                       </li>
-
+                      @endif
 
                     </ul>
                   </li>
@@ -314,6 +320,12 @@
                   </li> --}}
                 </ul>
               </li>
+
+              @endif
+
+
+
+
               <!--/ Notification -->
 
               <!-- User -->
