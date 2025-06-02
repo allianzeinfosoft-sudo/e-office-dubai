@@ -129,6 +129,18 @@ class ProjectTaskController extends Controller
             'pr_task_id'     => 'nullable',
             'pr_sub_task_id' => 'nullable',
         ]);
+
+        // Find the project
+        $project = Project::findOrFail($validated['project_id']);
+
+        // If 'all' is selected, get all employee user_ids in the department
+
+        if (in_array('all', $request->members)) {
+            $members = Employee::where('department_id', $project->department_id)->pluck('user_id')->toArray();
+        } else {
+            $members = is_array($request->members) ? $request->members : [];
+        }
+        
         // Find the project task
         $projectTask = ProjectTask::findOrFail($id);
         // Update the task details

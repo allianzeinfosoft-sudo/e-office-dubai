@@ -87,7 +87,7 @@
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
     </div>
-    <div class="offcanvas-body">
+    <div class="offcanvas-body" style="overflow: visible!important;">
         <div class="row">
             <div class="col-sm-12">
                 <x-productivity-target-form  action="{{ route('productivity-target.store') }}" method='post' />
