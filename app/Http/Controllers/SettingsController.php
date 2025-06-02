@@ -218,8 +218,8 @@ class SettingsController extends Controller
                 'signin_date'   => $signinDate,
                 'signin_time'   => CustomHelper::formatTimeToSeconds($validated['signin_time']),
                 'break_time'    => $validated['break_time'] ?? '00:00',
-                'signout_time'  => CustomHelper::formatTimeToSeconds($validated['signout_time']),
-                'working_hours' => CustomHelper::formatTimeToSeconds($validated['working_hours']),
+                'signout_time'  => $validated['signout_time'] ? CustomHelper::formatTimeToSeconds($validated['signout_time']) : null,
+                'working_hours' => $validated['working_hours'] ?CustomHelper::formatTimeToSeconds($validated['working_hours']) : null,
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'Attendance updated successfully.']);
