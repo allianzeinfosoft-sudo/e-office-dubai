@@ -85,7 +85,11 @@ class WorkReportController extends Controller
     }
 
     // ✅ Convert working_hours to seconds
-    list($hours, $minutes, $seconds) = array_pad(explode(":", $attendance->working_hours), 3, 0);
+        list($hours, $minutes, $seconds) = array_pad(
+            preg_split('/[:.,]/', $attendance->working_hours),
+            3,
+            0
+        );
         // Cast each part to an integer before calculations
         $hours = (int) $hours;
         $minutes = (int) $minutes;
