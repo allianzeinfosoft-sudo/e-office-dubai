@@ -226,7 +226,7 @@ class LeaveController extends Controller
 
         $htmlBody = view('emails.leave_application_template', $data)->render();
         $apporver_email = User::find($approver)?->email;
-        $hr_mail =  'anilk@mail.allianzegroup.com';
+        $hr_mail =  'hr@mail.allianzegroup.com';
         if (!empty($approver_email))
         {
             $email[] = $approver_email;
