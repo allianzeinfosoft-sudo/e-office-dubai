@@ -96,6 +96,7 @@ class CustomAttendanceController extends Controller
                 'signin_date'       => $custom_attendance->signin_date,
                 'signin_time'       => $custom_attendance->picktime,
                 'signin_late_note'  => $custom_attendance->reason,
+                'break_time'        => '01:00:00',
                 'punchin_type'      => 'Custom',
                 'ipaddress'         => $request->ip(),
                 'status'            => 'custom',

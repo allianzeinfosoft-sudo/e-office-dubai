@@ -157,7 +157,7 @@ class AttendanceController extends Controller{
 
         /* Mission Mark Out First */
         $missingMarkOut = Attendance::where('username', Auth::user()->username)
-        ->where('signin_date', '<', now()->format('Y-m-d')) // Check dates before today
+        // ->where('signin_date', '<', now()->format('Y-m-d')) // Check dates before today
         ->whereNull('signout_time') // No sign-out time means the user has not marked out
         ->first();
 
