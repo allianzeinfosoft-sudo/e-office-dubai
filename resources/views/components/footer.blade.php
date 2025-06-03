@@ -10,7 +10,7 @@
           <script>
             document.write(new Date().getFullYear());
           </script>
-          , made with ❤️ by <a href="https://www.allianzeinfosoft.com/" target="_blank" class="fw-semibold">Alliance Infosoft</a>
+          , made with ❤️ by <a href="https://www.allianzeinfosoft.com/" target="_blank" class="fw-semibold">Allianze Infosoft</a>
         </div>
       </div>
     </div>

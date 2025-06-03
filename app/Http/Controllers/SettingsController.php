@@ -23,18 +23,12 @@ class SettingsController extends Controller
 
     public function getWorkShift()
     {
-        $workshifts = Workshift::select(
-                    'id',
-                    'shift_id',
-                    'shift_start_time',
-                    'shift_end_time',
-                    'mini_break_time',
-                    'max_break_time',
-                )->get()
+        $workshifts = Workshift::with('shift_department')->get()
                 ->map(function ($workshifts) {
                     return [
                         'id' => $workshifts->id,
                         'shift_id' => $workshifts->shift_id,
+                        'department' => $workshifts->shift_department ? $workshifts->shift_department->department : '',
                         'shift_start_time' => $workshifts->shift_start_time,
                         'shift_end_time' => $workshifts->shift_end_time,
                         'mini_break_time' => $workshifts->mini_break_time,
@@ -42,8 +36,6 @@ class SettingsController extends Controller
 
                     ];
                 });
-
-
 
         $response = response()->json(['data' => $workshifts]);
         $json_data = json_decode($response->getContent(), true)['data'];
@@ -56,6 +48,7 @@ class SettingsController extends Controller
 
     public function store_work_shift(Request $request)
     {
+        dd($request->all());
         Workshift::create($request->all());
         return back()->with('success', 'Work shift created successfully!');
     }
@@ -115,6 +108,7 @@ class SettingsController extends Controller
 
     public function update_user_shift(Request $request)
     {
+
         $limitTime = LoginLimitedTime::where('id', $request->login_limited_time)->first();
         $updated = Employee::where('user_id', $request->user)
         ->update([

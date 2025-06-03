@@ -117,6 +117,7 @@ $(function () {
       columns: [
         { data: 'id' },
         { data: 'shift_id'},
+        { data: 'department'},
         { data: 'shift_start_time' },
         { data: 'shift_end_time' },
         { data: 'mini_break_time' },
@@ -148,13 +149,21 @@ $(function () {
            // User Role
            targets: 2,
            render: function (data, type, full, meta) {
+             let $department = full['department'];
+             return "<span class='text-truncate d-flex align-items-center'>" + $department + '</span>';
+           }
+        },
+        {
+           // User Role
+           targets: 3,
+           render: function (data, type, full, meta) {
              let $shiftStartTime = full['shift_start_time'];
              return "<span class='text-truncate d-flex align-items-center'>" + $shiftStartTime + '</span>';
            }
         },
         {
            // User Role
-           targets: 3,
+           targets: 4,
            render: function (data, type, full, meta) {
              let $shiftEndTime = full['shift_end_time'];
              return "<span class='text-truncate d-flex align-items-center'>" + $shiftEndTime + '</span>';
@@ -162,7 +171,7 @@ $(function () {
         },
         {
            // User Role
-           targets: 4,
+           targets: 5,
            render: function (data, type, full, meta) {
              let $minBreakTime = full['mini_break_time'];
              return "<span class='text-truncate d-flex align-items-center'>" + $minBreakTime + '</span>';
@@ -170,7 +179,7 @@ $(function () {
         },
         {
             // User Role
-            targets: 5,
+            targets: 6,
             render: function (data, type, full, meta) {
               let $maxBreaktTime = full['max_break_time'];
               return "<span class='text-truncate d-flex align-items-center'>" + $maxBreaktTime + '</span>';
@@ -178,11 +187,11 @@ $(function () {
          },
         {
           // Actions
-          targets: 6,
+          targets: 7,
           title: 'Actions',
             render: function (data, type, row, full) {
                 return `
-                     <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success edit-workshift" data-id="${row.id}"><i class="ti ti-pencil"></i></a>
+                     <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success edit-workshift" onclick="openShiftOffcanvas(${row.id})"><i class="ti ti-pencil"></i></a>
                       <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-workshift" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
             }
         }
@@ -255,7 +264,7 @@ $(document).on('click', '.delete-workshift', function(e) {
 });
 
 
-function openWorkshiftOffcanvas(targetId = null) {
+function openShiftOffcanvas(targetId = null) {
     $('#form-add-new-shift')[0].reset(); // Reset form
     $('#target_id').val(''); // Clear ID
     if (targetId) {
@@ -264,7 +273,7 @@ function openWorkshiftOffcanvas(targetId = null) {
             url: `/workshift/${targetId}/edit`,
             type: 'GET',
             success: function (data) {
-
+                $('#target_id').val(data.workshift.id);
                 $('#shift_id').val(data.workshift.shift_id);
                 $('#shift_start_time').val(data.workshift.shift_start_time);
                 $('#shift_end_time').val(data.workshift.shift_end_time);
@@ -273,7 +282,7 @@ function openWorkshiftOffcanvas(targetId = null) {
              }
         });
     }
-    var offcanvasElement = $('#workshift_offcanvas');
+    var offcanvasElement = $('#add-new-shift');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
 }
