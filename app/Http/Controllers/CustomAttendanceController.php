@@ -90,18 +90,26 @@ class CustomAttendanceController extends Controller
     public function acceptCustomMarkIn(Request $request, $id) {
         $custom_attendance = CustomAttendance::findOrFail($id);
             if($custom_attendance){
-                $attendance = Attendance::create([
-                'username'          => $custom_attendance->username,
-                'emp_id'            => $custom_attendance->emp_id,
-                'signin_date'       => $custom_attendance->signin_date,
-                'signin_time'       => $custom_attendance->picktime,
-                'signin_late_note'  => $custom_attendance->reason,
-                'break_time'        => '01:00:00',
-                'punchin_type'      => 'Custom',
-                'ipaddress'         => $request->ip(),
-                'status'            => 'custom',
-                'custom_status'     => '1'
-            ]); 
+
+                $attendance = Attendance::updateOrCreate(
+                    [
+                        'username'    => $custom_attendance->username,
+                        'emp_id'      => $custom_attendance->emp_id,
+                        'signin_date' => $custom_attendance->signin_date,
+                    ],
+                    [
+                        'username'          => $custom_attendance->username,
+                        'emp_id'            => $custom_attendance->emp_id,
+                        'signin_date'       => $custom_attendance->signin_date,
+                        'signin_time'       => $custom_attendance->picktime,
+                        'signin_late_note'  => $custom_attendance->reason,
+                        'break_time'        => '01:00:00',
+                        'punchin_type'      => 'Custom',
+                        'ipaddress'         => $request->ip(),
+                        'status'            => 'custom',
+                        'custom_status'     => '1'
+                    ]
+                ); 
         }
         CustomAttendance::where('id', $id)->update(['status' => '1']);
         return redirect()->back()->with('success', 'Custom Attendance Approved successfully');
