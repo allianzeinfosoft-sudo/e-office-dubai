@@ -638,8 +638,8 @@ class LeaveController extends Controller
         $request->validate([
             'user_id' => 'required', // Allow null for new records
             'year' => 'required|integer',
-            'total_leaves' => 'required|integer|min:0',
-            'remaining_leaves' => 'required|integer|min:0',
+            'total_leaves' => 'required|numeric|min:0',
+            'remaining_leaves' => 'required|numeric|min:0',
         ]);
 
         try {

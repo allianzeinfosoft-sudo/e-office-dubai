@@ -558,7 +558,7 @@ class AttendanceController extends Controller{
         $workingTime = CustomHelper::calculateTotalWorkingTime(
             $markOut->signin_date,
             $markOut->signin_time,
-            $request->signout_date,
+            date('Y-m-d', strtotime($request->signout_date)),
             CustomHelper::formatTimeToSeconds($request->signout_time),
             $markOut->break_time
         );
@@ -580,7 +580,7 @@ class AttendanceController extends Controller{
         }
 
         $markOut->signout_time      =  CustomHelper::formatTimeToSeconds($request->signout_time);
-        $markOut->signout_date      = $request->signout_date;
+        $markOut->signout_date      = date('Y-m-d', strtotime($request->signout_date)); //$request->signout_date;
         $markOut->signout_late_note = $request->signout_late_note;
         $markOut->status            = 'mark-out';
         $markOut->punchout_type     = 'custom';
