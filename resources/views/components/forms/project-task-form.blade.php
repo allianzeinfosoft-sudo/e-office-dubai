@@ -29,7 +29,7 @@
             <div class="col-sm-12 mb-3">
                 <div class="form-group">
                     <label for="project_id">Projects <span class="text-danger">*</span></label>
-                    <select class="form-control select2" name="project_id" id="project_id" data-placeholder="Select Project" required>
+                    <select class="form-control select2" name="project_id" id="project_id" data-placeholder="Select Project" onchange="getMembers(this.value)" required>
                         <option value=""></option>
                         @if($projects->isNotEmpty()) 
                             @foreach($projects as $project) 
@@ -43,7 +43,7 @@
             <div class="col-sm-6 mb-3">
                 <div class="form-group">
                     <label for="reporting_to">Reporting To <span class="text-danger">*</span></label>
-                    <select class="form-control select2" name="reporting_to" id="reporting_to" data-placeholder="Select Reporting To" onchange="getMembers(this.value)" required>
+                    <select class="form-control select2" name="reporting_to" id="reporting_to" data-placeholder="Select Reporting To" required>
                         <option value=""></option>
                         @if($reportingTo->isNotEmpty()) 
                             @foreach($reportingTo as $user) 
