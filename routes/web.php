@@ -143,6 +143,10 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/list-of-incomplete-work', [UserController::class, 'listOfIncompleteWork'])->name('list-of-incomplete-work.index');
     Route::get('/list-of-incomplete-work-data', [UserController::class, 'incompletData'])->name('list-of-incomplete-work-data');
 
+    Route::get('/get-user-details/{userId}', [UserController::class, 'getUserDetails'])->name('get-user-details');
+    Route::post('/change-user-password', [UserController::class, 'ChangeUserPassword'])->name('user_change_password');
+
+
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
@@ -350,6 +354,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/settings/edit-daily-attendance', [SettingsController::class, 'editDailyAttendance'])->name('settings.edit-daily-attendance');
     Route::get('/settings/get-attendance-data', [SettingsController::class, 'getAttendanceData'])->name('settings.get-attendance-data');
     Route::post('/settings/update-attendance-data/{id}', [SettingsController::class, 'updateAttendance'])->name('settings.update-attendance-data');
+    Route::get('/get-user-shifts/{userId}', [SettingsController::class, 'getUserShifts']);
 
     /* shifts */
 
