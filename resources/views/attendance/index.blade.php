@@ -160,6 +160,7 @@
 
                           <div class="row g-4">
                             <div class="col-lg-12">
+                              
                               @if($attendance)
                                   @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
