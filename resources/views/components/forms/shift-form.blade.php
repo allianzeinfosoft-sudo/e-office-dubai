@@ -1,6 +1,6 @@
                 <form class="add-new-record pt-0 row g-2" method="post" action="{{ route('store.workshift') }}" id="form-add-new-shift" onsubmit="return false">
                     @csrf
-                    <input type="hidden" name="id" id="target_id">
+                    <input type="hidden" name="target_id" id="target_id">
                   <div class="col-sm-12">
                     <label class="form-label" for="shift_id">Shitf ID</label>
                     <div class="input-group input-group-merge">
@@ -11,14 +11,12 @@
 
                    <div class="col-sm-12">
                     <label class="form-label" for="shift_id">Department</label>
-                    <div class="input-group input-group-merge">
                         <select name="department" id="department" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select department">
                             <option value=""></option>
                             @foreach ($departments as $department)
                                  <option value="{{ $department->id }}">{{ $department->department ?? '' }}</option>
                             @endforeach
                          </select>
-                    </div>
                   </div>
 
                   <div class="col-sm-12">

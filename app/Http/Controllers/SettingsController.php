@@ -48,9 +48,16 @@ class SettingsController extends Controller
 
     public function store_work_shift(Request $request)
     {
-        dd($request->all());
-        Workshift::create($request->all());
-        return back()->with('success', 'Work shift created successfully!');
+         $data = $request->except('_token', 'target_id'); // Exclude _token and target_id
+        if ($request->filled('target_id')) {
+            // Update existing workshift
+            Workshift::where('id', $request->target_id)->update($data);
+            return back()->with('success', 'Work shift updated successfully!');
+        } else {
+            // Create new workshift
+            Workshift::create($data);
+            return back()->with('success', 'Work shift created successfully!');
+        }
     }
 
     public function delete_work_shift($id)
