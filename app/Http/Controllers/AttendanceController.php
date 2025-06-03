@@ -54,26 +54,41 @@ class AttendanceController extends Controller{
         $data['disableCustomMarkIn'] = $isLate; */
 
         $shiftStartTime = $data['employee']?->workshift?->shift_start_time;
+        $shiftEndTime = $data['employee']?->workshift?->shift_end_time;
 
-        if ($shiftStartTime) {
-            // Convert shift start time to Carbon
-            $shiftTime = Carbon::createFromFormat('H:i:s', $shiftStartTime);
+        if ($shiftStartTime && $shiftEndTime) {
+            $today = today();
 
-            // Define allowed window
-            $earliestMarkIn = $shiftTime->copy()->subMinutes(30);
-            $latestMarkIn   = $shiftTime->copy()->addMinutes(15);
-            $now            = now();
+            $shiftStart = Carbon::createFromFormat('H:i:s', $shiftStartTime)->setDateFrom($today);
+            $shiftEnd = Carbon::createFromFormat('H:i:s', $shiftEndTime)->setDateFrom($today);
 
-            // Disable mark-in outside allowed window
-            $data['disableCustomMarkIn'] = !($now->between($earliestMarkIn, $latestMarkIn));
+            // Handle shift that ends the next day
+            if ($shiftEnd->lessThanOrEqualTo($shiftStart)) {
+                $shiftEnd->addDay();
+            }
+
+            // Calculate total shift duration in minutes
+            $shiftDurationMinutes = $shiftEnd->diffInMinutes($shiftStart); // 1435 minutes = 23h 55m
+
+            // Allow only if shift duration is close to 24 hours
+            if ($shiftDurationMinutes >= 1430) {
+                // Invalid shift duration, disable mark-in
+                $data['disableCustomMarkIn'] = false;
+            } else {
+                // Define allowed mark-in window
+                $earliestMarkIn = $shiftStart->copy()->subMinutes(30);
+                $latestMarkIn = $shiftStart->copy()->addMinutes(15);
+                $now = now();
+                // Disable mark-in outside allowed window
+                $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn);
+            }
         } else {
-            // Fallback: Disable mark-in if no shift time is defined
+            // Missing shift time data
             $data['disableCustomMarkIn'] = true;
         }
 
         // Fetch all holidays in the current month
         $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
-
         // Fetch all attendance records for the user in this month
         $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
 
@@ -165,10 +180,8 @@ class AttendanceController extends Controller{
             // If there's a missing mark-out, don't allow marking in
             $data['meta_title'] = 'Mark Out First';
             $data['missingMarkOut'] = $missingMarkOut; // Pass the missing mark-out date to the view
-
             $data['error'] = "You missed to Mark-out on ". date('d-m-Y', strtotime($missingMarkOut->signin_date)) ;
             return view('attendance.no_action_from', $data);
-
             //return view('attendance.markOut', $data); // Show a page telling the user to mark out first
         }
 
