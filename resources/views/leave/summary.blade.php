@@ -1,8 +1,20 @@
 @extends('layouts.app')
-
 @section('content')
  <!-- Layout wrapper -->
  <div class="layout-wrapper layout-content-navbar">
+<style>
+    .red{
+        color: darkred;
+    }
+
+    .green {
+        color: darkgreen;
+    }
+
+    .yellow{
+        color: darkorange;
+    }
+</style>
     <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
       <!-- Menu -->
       <x-menu /> <!-- Load the menu component here -->
@@ -71,7 +83,8 @@
                               <th>Leave Type</th>
                               <th>Leave Reason</th>
                               <th>Apply Date</th>
-                              <th>Accepeted/Rejected</th>
+                              <th>Accepeted/<br>Rejected</th>
+                              <th>Approval Status</th>
                               <th>Status</th>
                             </tr>
                           </thead>
@@ -119,107 +132,7 @@
 <script>
 $(function () {
 
-  var dtLeaveTable = $('.datatables-leave-summary')
-
-// Leave List datatable
-// if (dtLeaveTable.length) {
-//   var dtLeave = dtLeaveTable.DataTable({
-//       ajax: {
-//           url: "/leave-list",  // Fetch from Laravel API
-//           type: "GET",
-//           dataType: "json",
-//           dataSrc: "data"
-//       },
-//     columns: [
-//       // columns according to JSON
-//       {
-//         data: null, title: 'S.No',
-//         render: function (data, type, row, meta){
-//             return meta.row+1;
-//         }
-//       },
-//       { data: 'full_name', title: 'Name' },
-//       { data: 'leave_from', title: 'Leave From' },
-//       { data: 'leave_to', title:  'Leave To'},
-//       {
-//         targets: 4,
-//             render: function(data, type, full, meta){
-//                 let leave_count = full['leave_count'];
-//                 if(leave_count > 1)
-//                 {
-//                     $showCount = `<button class="btn btn-sm btn-primary">${leave_count}</button> days`
-//                 }
-//                 else
-//                 {
-//                     $showCount = `<button class="btn btn-sm btn-secondary">${leave_count}</button> day`
-//                 }
-
-//                 return $showCount;
-//             }
-//       },
-//       {
-//         targets: 5,
-//             render: function(data, type, full, meta){
-//                 let leaveType = full['leave_type'];
-//                 let displayType = 'N/A';
-//                 if(leaveType === 'half_day')
-//                 {
-//                     displayType = `<button class="btn btn-sm btn-warning">Half</button>`;
-//                 }
-//                 else if(leaveType === 'full_day')
-//                 {
-//                     displayType = `<button class="btn btn-sm btn-info">Full</button>`;
-//                 }
-//                 else if(leaveType === 'off_day')
-//                 {
-//                     displayType = `<button class="btn btn-sm btn-primary">Off</button>`
-//                 }
-
-//                 return displayType;
-//             }
-//       },
-//       { data: 'leave_reason', title: 'Leave Reason' },
-//       { data: 'apply_date', title: 'Apply Date' },
-//       { data: 'approved_cancel_date', title: 'Accepeted/Rejected'},
-//       {
-//         targets:9,
-//         render: function(data, type, full, row, meta){
-//             let status = full['status'];
-
-//             if(status == 1)
-//             {
-//                 $status_show = `<button type="button" class="btn btn-sm btn-label-linkedin waves-effect">
-//                             Pending
-//                           </button>`;
-//             }
-//             else if(status == 2)
-//             {
-//                 $status_show = `<button type="button" class="btn btn-sm btn-success waves-effect">
-//                               Approved
-//                           </button>`;
-//             }
-//             else if(status == 3)
-//             {
-//                 $status_show = `<button type="button" class="btn btn-sm btn-danger waves-effect">
-//                               Rejected
-//                           </button>`;
-//             }
-//             else if(status == 4)
-//             {
-//                 $status_show = `<button type="button" class="btn btn-sm btn-label-linkedin waves-effect">
-//                              Cancelled by user
-//                           </button>`;
-//             }
-
-//             return $status_show;
-//         }
-//       }
-//     ],
-
-//   });
-// }
-
-
+var dtLeaveTable = $('.datatables-leave-summary')
 
 let table;
 $(document).ready(function () {
@@ -279,7 +192,48 @@ $(document).ready(function () {
                 },
                 { data: 'leave_reason', title: 'Leave Reason' },
                 { data: 'apply_date', title: 'Apply Date' },
-                { data: 'approved_cancel_date', title: 'Accepted/Rejected' },
+                { data: 'approved_cancel_date', title: 'Accepted/<br>Rejected' },
+                {
+
+                    targets: 6,
+                        render: function(data, type, full, meta){
+
+                            let initial_approve_status = full['initial_approve_status'];
+                            let initial_approver = full['initial_approver'];
+                            let status = full['status'];
+                            let msg ='';
+                            if(status == 1)
+                            {
+                                if(initial_approve_status == 0)
+                                {
+                                     msg = '<span class="red">Pending from ' + initial_approver + '</span>';
+                                }
+                                else if(initial_approve_status == 1)
+                                {
+                                     msg = '<span class="red">Pending from HR</span>';
+                                }
+                            }
+                            else if(status == 2)
+                            {
+                                 msg = '<span class="green">Approved by ' + initial_approver + ' and HR</span>';
+                            }
+
+                            else if(status == 3)
+                            {
+                                 msg = '<span class="green">Rejected by ' + initial_approver + ' and HR</span>';
+                            }
+
+                            else if(status == 4)
+                            {
+                                  msg = '<span class="yellow">Cancelled by User</span>';
+                            }
+
+                            return msg;
+                        }
+
+
+
+                },
                 {
                     data: 'status',
                     title: 'Status',

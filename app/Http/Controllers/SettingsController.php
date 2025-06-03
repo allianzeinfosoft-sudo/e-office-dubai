@@ -231,4 +231,18 @@ class SettingsController extends Controller
         }
     }
 
+    public function getUserShifts($userId)
+        {
+            $user = Employee::where('user_id', $userId)->first();
+
+            if (!$user) {
+                return response()->json([]);
+            }
+
+            $shifts = Workshift::where('department', $user->department_id)->get();
+
+            return response()->json($shifts);
+        }
+
+
 }
