@@ -32,7 +32,7 @@
 
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
+                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Project / </span> {{ $meta_title }}</h4>
 
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
@@ -87,7 +87,7 @@
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
     </div>
-    <div class="offcanvas-body">
+    <div class="offcanvas-body" style="overflow: visible!important;">
         <div class="row">
             <div class="col-sm-12">
                 <x-productivity-target-form  action="{{ route('productivity-target.store') }}" method='post' />

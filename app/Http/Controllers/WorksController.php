@@ -175,7 +175,7 @@ class WorksController extends Controller
         
             $data['missingReport'] = $missingReport;
             $data['attendance'] = $attendance;
-            $data['repots_posted'] = WorkReport::with(['project', 'projectTask'])
+            $data['repots_posted'] = WorkReport::with(['project', 'projectTask', 'tasks'])
                 ->where('username', Auth::user()->username)
                 ->where('report_date', now()->format('Y-m-d'))
                 ->get();
