@@ -1114,7 +1114,7 @@ public function checkAccountNumber(Request $request)
                 'avatar'        => $avatarImg,
                 'fullname'      => $employee->full_name ?? 'N/A',
                 'username'      => $attendance->username,
-                'working_hours' => '<span class="badge ' . $badgeClass . '">' . $workingHours . '</span>',
+                'working_hours' => '<span class="badge ' . $badgeClass . '">' . $attendance->working_hours . '</span>',
                 'signin_date'   => $attendance->signin_date  ? '<span class="badge bg-primary" >' . Carbon::parse($attendance->signin_date)->format('d-m-Y') . '</span>' : 'N/A',
             ];
         });
