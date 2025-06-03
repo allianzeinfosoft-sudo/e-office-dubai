@@ -34,6 +34,7 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index()
+
     {
 
         $users = Cache::remember('users', now()->addMinutes(60), function () {
@@ -42,7 +43,7 @@ class UserController extends Controller
             ->with('employee')
             ->orderBy('employees.employeeID', 'asc')
             ->get();
-            
+
         });
 
         return view('users.index', compact('users'));

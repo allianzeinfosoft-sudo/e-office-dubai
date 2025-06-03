@@ -127,7 +127,7 @@
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!"
+            confirmButtonText: "Yes, Lock it!"
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch(`/user-delete/${userId}`, {
@@ -140,7 +140,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire("Deleted!", "User has been deleted.", "success").then(() => {
+                        Swal.fire("Locked!", "User has been locked.", "success").then(() => {
                             $('#userTable').DataTable().ajax.reload();
                         });
                     } else {
@@ -149,7 +149,7 @@
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    Swal.fire("Error!", "Could not delete user.", "error");
+                    Swal.fire("Error!", "Could not lock user.", "error");
                 });
             }
         });

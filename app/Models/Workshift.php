@@ -9,6 +9,11 @@ class Workshift extends Model
 {
     use HasFactory;
     protected $fillable= [
-        'shift_id','shift_start_time','shift_end_time','mini_break_time', 'max_break_time'
+        'shift_id','department','shift_start_time','shift_end_time','mini_break_time', 'max_break_time'
     ];
+
+    public function shift_department()
+    {
+         return $this->belongsTo(Department::class, 'department', 'id');
+    }
 }
