@@ -37,7 +37,14 @@ class AttendanceController extends Controller{
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
 
-        $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+        $nightShift = [6,7,8];
+        
+        if(in_array($user->employee?->shift_id, $nightShift)){
+            $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->subDay()->format('Y-m-d')])->first();
+        }else{
+            $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+        }
+
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
@@ -171,12 +178,21 @@ class AttendanceController extends Controller{
 
 
         /* Mission Mark Out First */
-        $missingMarkOut = Attendance::where('username', Auth::user()->username)
-        ->where('signin_date', '<', now()->format('Y-m-d')) // Check dates before today
-        ->whereNull('signout_time') // No sign-out time means the user has not marked out
-        ->first();
+        
 
-        if ($missingMarkOut) {
+        if(in_array($user->employee?->shift_id, $nightShift)){
+            $missingMarkOut = Attendance::with('employee')->where('username', Auth::user()->username)
+            ->where('signin_date', '<', now()->subDay()->format('Y-m-d')) // Check dates before today
+            ->whereNull('signout_time') // No sign-out time means the user has not marked out
+            ->first();
+        }else{
+            $missingMarkOut = Attendance::with('employee')->where('username', Auth::user()->username)
+            ->where('signin_date', '<', now()->format('Y-m-d')) // Check dates before today
+            ->whereNull('signout_time') // No sign-out time means the user has not marked out
+            ->first();
+        }
+
+        if ($missingMarkOut) {   
             // If there's a missing mark-out, don't allow marking in
             $data['meta_title'] = 'Mark Out First';
             $data['missingMarkOut'] = $missingMarkOut; // Pass the missing mark-out date to the view
@@ -299,10 +315,10 @@ class AttendanceController extends Controller{
         //dd($missingReport);
 
         if ($missingReport) {
+
             $attendance = Attendance::where('emp_id', $missingReport->emp_id)
                 ->where('signin_date', $missingReport->signin_date)
                 ->first();
-
             // ✅ Ensure 'working_hours' is correctly converted to seconds
             if (strpos($attendance->working_hours, ':') !== false) {
                 list($hours, $minutes, $seconds) = explode(":", $attendance->working_hours);
@@ -417,10 +433,21 @@ class AttendanceController extends Controller{
     }
 
     public function markOut(Request $request) {
-        $attendance = Attendance::where([
-            'username' => Auth::user()->username,
-            'signin_date' => now()->format('Y-m-d')
-        ])->first();
+        
+        $nightShift = [6,7,8];
+        $shift_id =  Auth::user()->employee?->shift_id;
+
+        if(in_array($shift_id, $nightShift)){
+            $attendance = Attendance::with('employee')->where([
+                'username' => Auth::user()->username,
+                'signin_date' => now()->subDay()->format('Y-m-d')
+            ])->first();
+        }else{
+            $attendance = Attendance::with('employee')->where([
+                'username' => Auth::user()->username,
+                'signin_date' => now()->format('Y-m-d')
+            ])->first();
+        }
 
         if (!$attendance) {
             return response()->json([
@@ -438,6 +465,7 @@ class AttendanceController extends Controller{
                 ]
             ]);
         }
+
         $signoutTime = CustomHelper::formatTimeToSeconds(now()->format('H:i'));
 
         $workingTime = CustomHelper::calculateTotalWorkingTime(
