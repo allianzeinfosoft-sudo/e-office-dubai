@@ -181,7 +181,7 @@ class ProjectTaskController extends Controller
         ]);
 
         $task = Tasks::updateOrCreate(['name' => $validated['name']],[
-            'name'      => $validated['name'],
+            'name' => $validated['name'],
         ]);
 
         return response()->json([

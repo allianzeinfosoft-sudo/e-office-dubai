@@ -111,10 +111,13 @@
                         </div>
                     </div>
 
-                    <div class="col-4 mb-3">
+                    <div class="col-6 mb-3">
                         <label for="signout_time" class="form-label">Mark-out Time <span class="text-danger">*</span></label>
                         <input class="form-control" type="time" id="signout_time" name="signout_time" value="{{ \Carbon\Carbon::now('Asia/Kolkata')->format('H:i') }}"  placeholder="Time" />
-                        <input type="hidden" id="signout_date" name="signout_date"  value="" />
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="signout_time" class="form-label">Mark-out Date <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="signout_date" name="signout_date"  value="{{ date('d-m-Y'); }}" />
                         <input type="hidden" id="attendance_id" name="attendance_id"  value="" />
                         <input type="hidden" id="signout_late_note" name="signout_late_note"  value="Admin side logout" />
                     </div>
@@ -173,7 +176,7 @@
             });
         }
 
-        $('#start_date,  #end_date').flatpickr({
+        $('#signout_date').flatpickr({
             monthSelectorType: 'static',
             altInput: true,
             altFormat: 'd-m-Y',
@@ -206,9 +209,7 @@
 
                     // Fill role or badge (optional)
                     $('#customMarkOutForm .badge').text(data.employee.designation ?? 'Employee');
-
                     $('#loggedInDate').text(data.signin_date);
-                    $('#signout_date').val(data.signin_date);
                     $('#loggedInTime').text(data.signin_time);
                     $('#attendance_id').val(data.id);
 
