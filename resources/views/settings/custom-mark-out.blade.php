@@ -153,7 +153,7 @@
                         data: null,
                         title: 'Sl. No',
                         render: function (data, type, row) {
-                            return customMarkoutTable.DataTable().page.info().start + 1;
+                            return row + 1;
                         }
                     },
                     { data: 'profile_image', title: '<i class="ti ti-users"></i>' },
