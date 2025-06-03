@@ -123,25 +123,7 @@
                                                             </td>
                                                             <td>{{ $attendance->employee->full_name ?? 'N/A' }}</td>
                                                             <td>{{ $attendance->username ?? 'N/A' }}</td>
-                                                            <td>
-                                                                @if($attendance->signin_time && $attendance->signout_time)
-                                                                    @php
-                                                                        $signIn = \Carbon\Carbon::parse($attendance->signin_time);
-                                                                        $signOut = \Carbon\Carbon::parse($attendance->signout_time);
-                                                                        $totalSeconds = $signOut->diffInSeconds($signIn);
-
-                                                                        $breakSeconds = 3600; // Subtract 1 hour break
-                                                                        $workedSeconds = max(0, $totalSeconds - $breakSeconds);
-
-                                                                        $hours = floor($workedSeconds / 3600);
-                                                                        $minutes = floor(($workedSeconds % 3600) / 60);
-                                                                        $seconds = $workedSeconds % 60;
-                                                                    @endphp
-                                                                        <span class="alert bg-label-danger"> {{ sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds) }} </span> 
-                                                                @else
-                                                                    Incomplete
-                                                                @endif
-                                                            </td>
+                                                            <td> <span class="alert bg-label-danger"> {{ $attendance->working_hours }} </span> </td>
                                                             <td><span class="alert bg-label-primary"> {{ \Carbon\Carbon::parse($attendance->signin_date)->format('d-m-Y') }} </span></td>
                                                             <td>
                                                             <a href="{{ route('attendance.incomplete.approve', $attendance->id) }}"  class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to approve this attendance?')"> <i class="ti ti-check"></i> Accept </a>
