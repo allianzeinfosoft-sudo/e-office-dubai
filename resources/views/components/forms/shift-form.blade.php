@@ -13,6 +13,7 @@
                     <label class="form-label" for="shift_id">Department</label>
                         <select name="department" id="department" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select department">
                             <option value=""></option>
+                            <option value="0">General</option>
                             @foreach ($departments as $department)
                                  <option value="{{ $department->id }}">{{ $department->department ?? '' }}</option>
                             @endforeach

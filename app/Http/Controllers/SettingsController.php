@@ -92,7 +92,7 @@ class SettingsController extends Controller
                     'user_name' => $usersShifts->user ? $usersShifts->user->username : '',
                     'shift_start_time' => $usersShifts->workshift ? $usersShifts->workshift->shift_start_time : '',
                     'shift_end_time' => $usersShifts->workshift ? $usersShifts->workshift->shift_end_time : '',
-                    'wildcard_entry' => $usersShifts->login_limited_time_info?->limited_time ? $usersShifts->login_limited_time_info?->limited_time : '',
+                    'wildcard_entry' => $usersShifts->login_limited_time ? $usersShifts->login_limited_time : '',
                 ];
             });
 
