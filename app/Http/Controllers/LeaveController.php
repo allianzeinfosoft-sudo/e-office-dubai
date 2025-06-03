@@ -768,7 +768,7 @@ class LeaveController extends Controller
 
         $user = auth()->user();
         $user_id = $user->id;
-        $query = Leave::with(['employee', 'user']);
+        $query = Leave::with(['employee', 'user','initialApprover']);
 
         if ($user->hasRole('G5')) {
             $query->where('user_id', $user_id);
@@ -808,6 +808,8 @@ class LeaveController extends Controller
                 'apply_date' => $leave->created_at ? $this->formatDateDayMonthYear($leave->created_at) : '',
                 'approved_cancel_date' => $leave->approved_cancel_date ? $this->formatDateDayMonthYear($leave->approved_cancel_date) : '',
                 'leave_count' => $leave->leave_day_count ?? '0.0',
+                'initial_approve_status' => $leave->initial_approve_status,
+                'initial_approver' => $leave->initialApprover->full_name ?? 'N/A',
                 'status' => $leave->status ?? ''
             ];
         });

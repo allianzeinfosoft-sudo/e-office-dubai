@@ -2,6 +2,19 @@
 
 @section('content')
  <!-- Layout wrapper -->
+ <style>
+    .red{
+        color: darkred;
+    }
+
+    .green {
+        color: darkgreen;
+    }
+
+    .yellow{
+        color: darkorange;
+    }
+</style>
  <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
       <!-- Menu -->
@@ -36,6 +49,7 @@
                               <th>Leave Type</th>
                               <th>Leave Reason</th>
                               <th>Apply Date</th>
+                              <th>Approval Status</th>
                               <th>Accept/Reject</th>
 
                             </tr>
@@ -228,6 +242,33 @@
           },
           { data: 'leave_reason', title: 'Leave Reason' },
           { data: 'apply_date', title: 'Apply Date' },
+          {
+              targets: 6,
+                  render: function(data, type, full, meta){
+
+                      let initial_approve_status = full['init_appr_status'];
+                      let initial_approver = full['initial_approver_name'];
+                      let status = full['status'];
+                      let msg ='';
+                      if(status == 1)
+                      {
+                          if(initial_approve_status == 0)
+                          {
+                                msg = '<span class="red">Pending from ' + initial_approver + '</span>';
+                          }
+                          else if(initial_approve_status == 1)
+                          {
+                                msg = '<span class="red">Pending from HR</span>';
+                          }
+                      }
+
+
+                      return msg;
+                  }
+
+
+
+          },
           {
             targets: 10,
             render: function(data, type, full, meta){
