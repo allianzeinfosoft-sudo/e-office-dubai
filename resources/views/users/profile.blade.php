@@ -56,10 +56,14 @@
                               </ul>
                             </div>
 
+                            @if(Auth::user()->hasRole(['HR','Developer']))
+                                <a class="btn btn-primary open-change-password-modal" href="javascript:void(0)" data-user-id="{{ $user->employee->user_id }}" data-bs-toggle="modal" data-bs-target="#changeUsersPassword"><i class="ti ti-lock me-2 ti-sm"></i><span class="align-middle">Change Password</span></a>
+                            @endif
+
                             <span class="btn btn-primary">
                               <li class="list-inline-item"><i class="ti ti-user mt-n2"></i>AIS-{{ $user->employee->employeeID ?? 'N/A' }}</li>
-
                             </span>
+
                             @if ($user->employee->status === 4)
                                 <span class="btn btn-primary">
                                     <li class="list-inline-item"><i class="ti-xs ti ti-lock me-1"></i>Resigned On {{ optional($user->employee)->resigned_date ? \Carbon\Carbon::parse($user->employee->resigned_date)->format('d-m-Y') : '' }}</li>
@@ -404,6 +408,56 @@
     <div class="drag-target"></div>
   </div>
   <!-- / Layout wrapper -->
+
+
+  {{-- change password model --}}
+
+
+
+        <div class="modal fade" id="changeUsersPassword" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
+              <div class="modal-content p-3 p-md-5">
+                <div class="modal-body">
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <div class="text-center mb-4">
+                    <h4 class="mb-2">Change Password</h4>
+
+                    <div class="avatar avatar-online mx-auto d-flex">
+                        <img id="modal-profile-image" src="{{ asset('assets/img/avatars/default-avatar.png') }}" alt class="rounded-circle" />
+                    </div>
+
+                      <h4 class="text-muted" id="modal-user-name"></h4>
+                      <p class="text-muted" id="modal-user-designation"></p>
+                        <!-- Add a hidden field to store the user ID -->
+                        <input type="hidden" name="user_id" id="modal-user-id">
+                  </div>
+                  <form id="user-changepassword-form" action="{{ route('user_change_password') }}" method="post" class="row g-3" >
+                    @csrf
+                    <input type="hidden" name="password_user_id" id="password-user-id">
+                     <div class="col-12">
+                        <label class="form-label w-100" for="modalAddCard">New Password</label>
+                        <div class="input-group input-group-merge">
+
+                          <input id="users_new_password" name="users_new_password" class="form-control" type="password" placeholder="New Password" aria-describedby="users_new_password" />
+                        </div>
+                      </div>
+
+
+
+                    <div class="col-12 text-center">
+                      <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>
+                      <button  type="reset" class="btn btn-label-secondary btn-reset"  data-bs-dismiss="modal" aria-label="Close">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
 @endsection
 
 
@@ -428,6 +482,39 @@
        reader.readAsDataURL(input.files[0]);
      }
   }
+
+
+
+  // change user password
+  $(document).ready(function () {
+    $('.open-change-password-modal').on('click', function () {
+        let userId = $(this).data('user-id');
+
+        // Clear modal data
+        $('#modal-user-name').text('');
+        $('#modal-user-designation').text('');
+        $('#modal-profile-image').attr('src', '{{ asset('assets/img/avatars/default-avatar.png') }}');
+        $('#modal-user-id').val(userId);
+
+        // Generate dynamic URL by replacing placeholder
+        let userDetailsUrl = "{{ route('get-user-details', ['userId' => '__USER_ID__']) }}";
+        userDetailsUrl = userDetailsUrl.replace('__USER_ID__', userId);
+
+        $.ajax({
+            url: userDetailsUrl,
+            type: 'GET',
+            success: function (user) {
+                $('#password-user-id').val(userId ?? '');
+                $('#modal-user-name').text(user.full_name ?? '');
+                $('#modal-user-designation').text(user.designation ?? '');
+                $('#modal-profile-image').attr('src', user.profile_image ?? '{{ asset('assets/img/avatars/default-avatar.png') }}');
+            },
+            error: function () {
+                alert('Failed to load user details.');
+            }
+        });
+    });
+});
 </script>
 @endpush
 

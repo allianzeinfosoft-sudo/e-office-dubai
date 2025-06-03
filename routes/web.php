@@ -143,6 +143,10 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/list-of-incomplete-work', [UserController::class, 'listOfIncompleteWork'])->name('list-of-incomplete-work.index');
     Route::get('/list-of-incomplete-work-data', [UserController::class, 'incompletData'])->name('list-of-incomplete-work-data');
 
+    Route::get('/get-user-details/{userId}', [UserController::class, 'getUserDetails'])->name('get-user-details');
+    Route::post('/change-user-password', [UserController::class, 'ChangeUserPassword'])->name('user_change_password');
+
+
     /* department */
     Route::resource('departments',DepartmentController::class);
     Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');

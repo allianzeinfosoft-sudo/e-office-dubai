@@ -1122,4 +1122,39 @@ public function checkAccountNumber(Request $request)
         return response()->json(['data' => $data]);
     }
 
+
+    public function getUserDetails($userId)
+    {
+        $employee = Employee::with('designation')->where('user_id', $userId)->first();
+
+        if (!$employee) {
+            return response()->json([], 404);
+        }
+
+        return response()->json([
+
+            'full_name' => $employee->full_name,
+            'designation' => $employee->designation->designation ?? '',
+            'profile_image' => $employee->profile_image
+                ? asset('storage/' . $employee->profile_image)
+                : asset('assets/img/avatars/default-avatar.png')
+        ]);
+    }
+
+    public function ChangeUserPassword(Request $request)
+    {
+
+
+        $user = User::find($request->password_user_id);
+
+        if (!$user) {
+            return back()->with('error', 'User not found.');
+        }
+
+        $user->password = Hash::make($request->users_new_password);
+        $user->save();
+
+        return back()->with('success', 'Password changed successfully.');
+    }
+
 }
