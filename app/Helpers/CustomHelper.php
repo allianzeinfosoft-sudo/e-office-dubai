@@ -21,13 +21,14 @@ class CustomHelper
 {
     public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null) {
         $timezone = 'Asia/Kolkata';
+
         try {
             // Validate inputs
             if (empty($signin_date) || empty($signin_time) || empty($signout_date) || empty($signout_time)) {
                 throw new \Exception("Invalid date or time values provided.");
             }
 
-            // Convert to Carbon objects
+            // Convert to Carbon instances
             $signIn = Carbon::parse("$signin_date $signin_time", $timezone);
             $signOut = Carbon::parse("$signout_date $signout_time", $timezone);
 
@@ -40,30 +41,32 @@ class CustomHelper
                 ];
             }
 
-            // Calculate total work duration in seconds
+            // Calculate total working duration in seconds
             $totalSeconds = $signOut->diffInSeconds($signIn);
 
-            // Ensure break time is numeric and convert to seconds
-            $breakSeconds = 3600; // Default 1 hour
+            // Default break time (1 hour)
+            $breakSeconds = 0;
+
+            // If custom break time is provided
             if (!empty($break_time)) {
-                if (strpos($break_time, ':') !== false) {
-                    [$h, $m, $s] = array_pad(explode(':', $break_time), 3, 0);
+                if (preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $break_time)) {
+                    // Handle break time in format HH:MM or HH:MM:SS
+                    $parts = array_map('intval', explode(':', $break_time));
+                    $parts = array_pad($parts, 3, 0);
+                    list($h, $m, $s) = $parts;
                     $breakSeconds = ($h * 3600) + ($m * 60) + $s;
                 } elseif (is_numeric($break_time)) {
+                    // Handle break time in minutes
                     $breakSeconds = max(0, $break_time * 60);
                 }
             }
 
-            // Calculate actual working seconds
+            // Calculate net working time
             $actualWorkSeconds = max($totalSeconds - $breakSeconds, 0);
 
-            // Convert to HH:MM:SS format
-            $formattedWorkTime  = gmdate("H:i:s", $actualWorkSeconds);
-            $formattedBreakTime = gmdate("H:i:s", $breakSeconds);
-
             return [
-                'total_working_time' => $formattedWorkTime,
-                'break_time' => $formattedBreakTime,
+                'total_working_time' => gmdate("H:i:s", $actualWorkSeconds),
+                'break_time' => gmdate("H:i:s", $breakSeconds),
             ];
         } catch (\Exception $e) {
             return [
