@@ -41,9 +41,15 @@
           </div>
 
           <!-- Modal to add new record -->
-          <div class="offcanvas offcanvas-end" id="add-new-shift">
-            <div class="offcanvas-header border-bottom">
-              <h5 class="offcanvas-title" id="exampleModalLabel">New Work Shift</h5>
+          <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1"  id="add-new-shift" aria-labelledby="staticBackdropLabel">
+            <div class="offcanvas-header border-bottom bg-primary p-3">
+              <span class="d-flex justify-content-between align-items-center gap-2">
+                 <i class="ti ti-file-plus fs-2 text-white"></i>
+                  <span id="offcanvas-title-container">
+                      <h5 class="offcanvas-title" id="exampleModalLabel">New Work Shift</h5>
+                      <span class="text-white slogan">Add New Work Shift</span>
+                  </span>
+              </span>
               <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body flex-grow-1">

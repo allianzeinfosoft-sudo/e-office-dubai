@@ -14,7 +14,8 @@
         <div class="col-sm-12 mb-3">
             <div class="form-group">
                 <label for="user">Select User</label>
-                <select name="user" id="user" class="form-control">
+                <select name="user" id="user" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select User">
+                    <option value=""></option>
                     @foreach ($users as $user)
                         <option value="{{ $user->user_id  ?? '' }}">{{ $user->full_name ?? '' }}</option>
                     @endforeach
@@ -25,9 +26,10 @@
         <div class="col-sm-12 mb-3">
             <div class="form-group">
                 <label for="shift">Shift Time</label>
-                <select name="shift" id="shift" class="form-control">
+                <select name="shift" id="shift" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select Shift">
+                    <option value=""></option>
                     @foreach ($shifts as $shift)
-                        <option value="{{ $shift->id  ?? '' }}">{{ $shift->shift_id ?? '' }}( {{ $shift->shfit_start_time ?? '' }} - {{ $shift->shift_end_time ?? '' }})</option>
+                        <option value="{{ $shift->id  ?? '' }}">{{ $shift->shift_id ?? '' }} [ {{ $shift->shift_start_time ?? '' }} - {{ $shift->shift_end_time ?? '' }} ( {{ $shift->shift_department ? $shift->shift_department->department : '' }}) ] </option>
                     @endforeach
                 </select>
             </div>
@@ -40,7 +42,7 @@
                     <span class="ti ti-plus text-xs" style="font-size: 12px;"></span>
                 </button>
 
-                <select name="login_limited_time" id="login_limited_time" class="form-control">
+                <select name="login_limited_time" id="login_limited_time" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select login limited time">
                     @foreach($loginlimitedtimes as $login_limited_time)
                         <option value="{{ $login_limited_time->id  ?? '' }}"> {{ $login_limited_time->limited_time ?? '' }} </option>
                     @endforeach

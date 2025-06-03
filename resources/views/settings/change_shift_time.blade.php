@@ -194,7 +194,13 @@
                         }
                     },
                     { data: 'user_name', title: 'Username' },
-                    { data: 'shift_start_time', title: 'Shift Time' },
+                    {
+                        data: null,
+                        title: 'Shift Time',
+                        render: function(data, type, row) {
+                            return row.shift_start_time + ' - ' + row.shift_end_time;
+                        }
+                    },
                     { data: 'wildcard_entry', title: 'Wildcard Entry'},
 
                 ]
