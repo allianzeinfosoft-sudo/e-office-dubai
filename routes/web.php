@@ -350,6 +350,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/settings/edit-daily-attendance', [SettingsController::class, 'editDailyAttendance'])->name('settings.edit-daily-attendance');
     Route::get('/settings/get-attendance-data', [SettingsController::class, 'getAttendanceData'])->name('settings.get-attendance-data');
     Route::post('/settings/update-attendance-data/{id}', [SettingsController::class, 'updateAttendance'])->name('settings.update-attendance-data');
+    Route::get('/get-user-shifts/{userId}', [SettingsController::class, 'getUserShifts']);
 
     /* shifts */
 

@@ -88,3 +88,35 @@
     </div>
   </div>
 
+@push('js')
+
+<script>
+$(document).ready(function() {
+    $('#user').on('change', function() {
+        let userId = $(this).val();
+        $('#shift').html('<option value="">Loading...</option>');
+
+        if (userId) {
+            $.ajax({
+                url: '/get-user-shifts/' + userId,
+                method: 'GET',
+                success: function(shifts) {
+                    let options = '<option value=""></option>';
+                    shifts.forEach(function(shift) {
+                        options += `<option value="${shift.id}">${shift.shift_id} [ ${shift.shift_start_time} - ${shift.shift_end_time} ]</option>`;
+                    });
+                    $('#shift').html(options);
+                },
+                error: function() {
+                    $('#shift').html('<option value="">Error loading shifts</option>');
+                }
+            });
+        } else {
+            $('#shift').html('<option value="">Select User First</option>');
+        }
+    });
+});
+</script>
+d
+
+@endpush
