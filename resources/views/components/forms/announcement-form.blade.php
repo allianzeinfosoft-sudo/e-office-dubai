@@ -1,5 +1,5 @@
 <form action="{{ route('others.announcements.store') }} " method="post" id="announcement-form" >
-    @csrf 
+    @csrf
     <input type="hidden" name="id" id="target_id">
 
     <div class="row">
@@ -32,9 +32,49 @@
                 <input type="hidden" name="description" id="description">
             </div>
         </div>
-        
+
+        <div class="col-sm-12 mb-3">
+            <div class="form-group">
+                <label for="announcement_details">Image</label>
+                    <div class="card-body">
+                        <div class="mt-3 d-flex justify-content-center align-items-center" style="background-color: #625acc; height: 200px;">
+                             <img id="PicturePreview" src="" accept="image/*" alt="" class="" style="width: 150px; height: 150px; object-fit: cover;  border: 2px solid #ddd;"/>
+                        </div>
+                        <div class="mb-3 mt-15">
+                            <div class="input-group input-group-merge">
+                                <input class="form-control" type="file" id="picture" name="picture" onchange="previewImage(event)" />
+                            </div>
+                        </div>
+                  </div>
+            </div>
+        </div>
+
+
+
         <div class="col-sm-12 mb-3">
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;  Save</button>
-        </div>   
+        </div>
     </div>
 </form>
+
+
+@push('js')
+    <script>
+        function previewImage(event) {
+
+        const input = event.target;
+        const preview = document.getElementById("PicturePreview");
+
+        if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+        };
+
+        reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+@endpush

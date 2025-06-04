@@ -200,13 +200,14 @@ $(document).ready(function () {
 
                             let initial_approve_status = full['initial_approve_status'];
                             let initial_approver = full['initial_approver'];
+                            let initial_approver_role = full['initial_approver_role']
                             let status = full['status'];
                             let msg ='';
                             if(status == 1)
                             {
                                 if(initial_approve_status == 0)
                                 {
-                                     msg = '<span class="red">Pending from ' + initial_approver + '</span>';
+                                     msg = '<span class="red">Pending from ' + initial_approver_role + '</span>';
                                 }
                                 else if(initial_approve_status == 1)
                                 {
@@ -215,12 +216,12 @@ $(document).ready(function () {
                             }
                             else if(status == 2)
                             {
-                                 msg = '<span class="green">Approved by ' + initial_approver + ' and HR</span>';
+                                 msg = '<span class="green">Approved by ' + initial_approver_role + ' and HR</span>';
                             }
 
                             else if(status == 3)
                             {
-                                 msg = '<span class="green">Rejected by ' + initial_approver + ' and HR</span>';
+                                 msg = '<span class="green">Rejected by ' + initial_approver_role + ' and HR</span>';
                             }
 
                             else if(status == 4)

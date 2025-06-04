@@ -248,13 +248,14 @@
 
                       let initial_approve_status = full['init_appr_status'];
                       let initial_approver = full['initial_approver_name'];
+                      let initial_approver_role = full['initial_approver_role']
                       let status = full['status'];
                       let msg ='';
                       if(status == 1)
                       {
                           if(initial_approve_status == 0)
                           {
-                                msg = '<span class="red">Pending from ' + initial_approver + '</span>';
+                                msg = '<span class="red">Pending from ' + initial_approver_role + '</span>';
                           }
                           else if(initial_approve_status == 1)
                           {
