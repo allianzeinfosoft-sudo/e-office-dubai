@@ -183,6 +183,42 @@ class AttendanceController extends Controller{
             $data['avgProgressPercentage'] = 0;
         }
 
+        if (!empty($data['attendance_current']->signout_time)) {
+            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
+            ->selectRaw("
+                COALESCE(
+                    SUM(
+                        TIMESTAMPDIFF(
+                            MINUTE,
+                            STR_TO_DATE(signin_time, '%H:%i:%s'),
+                            STR_TO_DATE(signout_time, '%H:%i:%s')
+                        )
+                    ), 0
+                ) as today_minutes
+            ")
+            ->value('today_minutes') ?? 0;
+        } else {
+            // If signout_time is not available, calculate up to current time
+            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
+                ->selectRaw("
+                    COALESCE(
+                        SUM(
+                            TIMESTAMPDIFF(
+                                MINUTE,
+                                STR_TO_DATE(signin_time, '%H:%i:%s'),
+                                STR_TO_DATE(?, '%H:%i:%s')
+                            )
+                        ), 0
+                    ) as today_minutes
+                ", [now()->format('H:i:s')])
+                ->value('today_minutes') ?? 0;
+        }
+
+        $todayHours                      = intdiv($todayMinutes, 60);
+        $todayMins                       = $todayMinutes % 60;
+        $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
+        $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
+
         /* Mission Mark Out First */
 
         if($shiftType == 'night'){
