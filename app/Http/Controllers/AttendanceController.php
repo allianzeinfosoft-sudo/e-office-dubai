@@ -29,6 +29,7 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
+
         $data['meta_title'] = 'Attendance';
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
