@@ -70,19 +70,19 @@ class AttendanceController extends Controller{
         $data['disableCustomMarkIn'] = $isLate; */
 
         $shiftStartTime = Carbon::parse($data['employee']?->workshift?->shift_start_time); //$data['employee']?->workshift?->shift_start_time;
-        $shiftEndTime = Carbon::parse($data['employee']?->workshift?->shift_end_time); //$data['employee']?->workshift?->shift_end_time;
+        $shiftEndTime   = Carbon::parse($data['employee']?->workshift?->shift_end_time); //$data['employee']?->workshift?->shift_end_time;
 
         if($shiftType == 'night') {
             // Define allowed mark-in window
-            $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
-            $latestMarkIn = $shiftStartTime->copy()->addMinutes(15);
+            $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
+            $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
             $now = now();
             // Disable mark-in outside allowed window
             $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
         } else {
             // Missing shift time data
-            $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
-            $latestMarkIn = $shiftStartTime->copy()->addMinutes(15);
+            $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
+            $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
             $now = now();
             // Disable mark-in outside allowed window
             $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;

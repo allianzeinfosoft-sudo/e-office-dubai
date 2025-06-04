@@ -162,6 +162,8 @@
                             <div class="col-lg-12">
                               
                               @if($attendance && $attendance_current)
+
+                              {{ dd( $attendance_current, $attendance, $shiftType)  }}
                               
                                @php
                                     $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
