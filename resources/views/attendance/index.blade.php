@@ -161,9 +161,9 @@
                           <div class="row g-4">
                             <div class="col-lg-12">
                               
-                              @if($attendance)
-
-                                @php
+                              @if($attendance && $attendance_current)
+                              
+                               @php
                                     $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                     $now              = \Carbon\Carbon::now();
                                     $isLate           = $now->gt($loginLimitTime);
@@ -175,9 +175,9 @@
                                     $isWeekOffToday   = in_array($todayName, $allWeekOffs);
                                 @endphp
 
-                                @if($shiftType == 'night') 
-                                     
-                                  @if($attendance_current?->signin_date === date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
+                                @if($shiftType == 'night')      
+
+                                  @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
                                           Last punch In Time: {{ date('H:i A', strtotime($attendance_current?->signin_time)) }}
                                       </div>

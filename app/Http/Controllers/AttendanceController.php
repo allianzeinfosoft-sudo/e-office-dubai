@@ -29,23 +29,27 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> jerson_eoffice_updates
         $data['meta_title'] = 'Attendance';
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
-
+        
         $shift =  Workshift::where('id', $user->employee?->shift_id)->first();
-
+        
         if(strtotime($shift->shift_start_time) < strtotime('20:00:00')){
             $shiftType = 'day';
         }else{
             $shiftType = 'night';
         }
         $data['shiftType'] = $shiftType;
-
+        
         if($shiftType == 'night'){
             $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->subDay()->format('Y-m-d')])->first();
             $data['attendance_current'] = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
