@@ -161,9 +161,10 @@
                           <div class="row g-4">
                             <div class="col-lg-12">
                               
-                              @if($attendance && $attendance_current)
+                              {{ dd( 'val1'=> $attendance_current, 'val2'=> $attendance, val3'=> $shiftType)  }}
 
-                              {{ dd( $attendance_current, $attendance, $shiftType)  }}
+                              @if($attendance && $attendance_current)
+                              
                               
                                @php
                                     $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
