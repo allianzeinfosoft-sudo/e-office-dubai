@@ -161,7 +161,7 @@
                           <div class="row g-4">
                             <div class="col-lg-12">
                               
-                              {{ dd( 'val1'=> $attendance_current, 'val2'=> $attendance, val3'=> $shiftType)  }}
+                              {{ dd( ['val1'=> $attendance_current, 'val2'=> $attendance, 'val3'=> $shiftType])  }}
 
                               @if($attendance && $attendance_current)
                               
