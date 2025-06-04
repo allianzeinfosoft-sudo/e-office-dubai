@@ -170,7 +170,7 @@ class AttendanceController extends Controller{
         // Convert totalMinutes to HH:MM
         $totalWorkedHours = sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
         $data['totalWorkedHours'] = $totalWorkedHours;
-
+        
         // Calculate average worked hours per day
         if ($workedDays > 0) {
             $avgMinutes = round($totalMinutes / $workedDays);
