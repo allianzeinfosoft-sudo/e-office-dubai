@@ -161,8 +161,8 @@
                           <div class="row g-4">
                             <div class="col-lg-12">
                               
-                              @if($attendance)
-
+                              @if($attendance && $attendance_current)
+                              
                                @php
                                     $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                     $now              = \Carbon\Carbon::now();
@@ -177,7 +177,7 @@
 
                                 @if($shiftType == 'night')      
 
-                                  @if($attendance_current?->signin_date === date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
+                                  @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
                                           Last punch In Time: {{ date('H:i A', strtotime($attendance_current?->signin_time)) }}
                                       </div>
@@ -188,10 +188,10 @@
                                       <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
                                           <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
                                       </div>
-                                  <!-- @else
+                                  @else
                                     <div class="text-center">
                                       <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($disableCustomMarkIn  || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
-                                    </div> -->
+                                    </div> 
                                   @endif
 
                                 @else
