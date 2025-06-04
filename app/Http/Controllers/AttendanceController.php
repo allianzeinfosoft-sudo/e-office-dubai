@@ -36,12 +36,16 @@ class AttendanceController extends Controller{
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
 
-        $nightShift = [6,7,8];        
+        
+
+        $nightShift = [6,7,8];  
+
         if(in_array($user->employee?->shift_id, $nightShift)){
             $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->subDay()->format('Y-m-d')])->first();
         }else{
             $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
         }
+        
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
