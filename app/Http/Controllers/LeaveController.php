@@ -353,6 +353,7 @@ class LeaveController extends Controller
                     'this_month_leave_count' => $thisMonthLeaveCount,
                     'leave_approver' => $leaves->initial_approver_id,
                     'initial_approver_name' => $leaves->initialApprover?->full_name,
+                    'initial_approver_role' => $leaves->initialApprover?->role,
                     'init_appr_status' => $leaves->initial_approve_status,
                     'login_user' => Auth::user()->id,
                     'login_user_group' => Auth::user()->employee?->group,
@@ -810,6 +811,7 @@ class LeaveController extends Controller
                 'leave_count' => $leave->leave_day_count ?? '0.0',
                 'initial_approve_status' => $leave->initial_approve_status,
                 'initial_approver' => $leave->initialApprover->full_name ?? 'N/A',
+                'initial_approver_role' => $leave->initialApprover?->role ?? 'N/A',
                 'status' => $leave->status ?? ''
             ];
         });
