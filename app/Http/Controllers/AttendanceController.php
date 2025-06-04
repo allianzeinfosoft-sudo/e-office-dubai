@@ -36,14 +36,21 @@ class AttendanceController extends Controller{
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
 
-        
+        $shift =  Workshift::where('id', $user->employee?->shift_id)->first();
 
-        $nightShift = [6,7,8];  
+        if($shift->shift_start_time < '20:00:00'){
+            $shiftType = 'day';
+        }else{
+            $shiftType = 'night';
+        }
+        $data['shiftType'] = $shiftType;
 
-        if(in_array($user->employee?->shift_id, $nightShift)){
+        if($shiftType == 'night'){
             $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->subDay()->format('Y-m-d')])->first();
+            $data['attendance_current'] = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
         }else{
             $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+            $data['attendance_current'] = $data['attendance'];
         }
         
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
@@ -61,38 +68,23 @@ class AttendanceController extends Controller{
         $isLate = now()->format('H:i:s') > $cutoffTime;
         $data['disableCustomMarkIn'] = $isLate; */
 
-        $shiftStartTime = $data['employee']?->workshift?->shift_start_time;
-        $shiftEndTime = $data['employee']?->workshift?->shift_end_time;
+        $shiftStartTime = Carbon::parse($data['employee']?->workshift?->shift_start_time); //$data['employee']?->workshift?->shift_start_time;
+        $shiftEndTime = Carbon::parse($data['employee']?->workshift?->shift_end_time); //$data['employee']?->workshift?->shift_end_time;
 
-        if ($shiftStartTime && $shiftEndTime) {
-            $today = today();
-
-            $shiftStart = Carbon::createFromFormat('H:i:s', $shiftStartTime)->setDateFrom($today);
-            $shiftEnd = Carbon::createFromFormat('H:i:s', $shiftEndTime)->setDateFrom($today);
-
-            // Handle shift that ends the next day
-            if ($shiftEnd->lessThanOrEqualTo($shiftStart)) {
-                $shiftEnd->addDay();
-            }
-
-            // Calculate total shift duration in minutes
-            $shiftDurationMinutes = $shiftEnd->diffInMinutes($shiftStart); // 1435 minutes = 23h 55m
-
-            // Allow only if shift duration is close to 24 hours
-            if ($shiftDurationMinutes >= 1430) {
-                // Invalid shift duration, disable mark-in
-                $data['disableCustomMarkIn'] = false;
-            } else {
-                // Define allowed mark-in window
-                $earliestMarkIn = $shiftStart->copy()->subMinutes(30);
-                $latestMarkIn = $shiftStart->copy()->addMinutes(15);
-                $now = now();
-                // Disable mark-in outside allowed window
-                $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn);
-            }
+        if($shiftType == 'night') {
+            // Define allowed mark-in window
+            $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
+            $latestMarkIn = $shiftStartTime->copy()->addMinutes(15);
+            $now = now();
+            // Disable mark-in outside allowed window
+            $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
         } else {
             // Missing shift time data
-            $data['disableCustomMarkIn'] = true;
+            $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
+            $latestMarkIn = $shiftStartTime->copy()->addMinutes(15);
+            $now = now();
+            // Disable mark-in outside allowed window
+            $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
         }
 
         // Fetch all holidays in the current month
@@ -181,7 +173,7 @@ class AttendanceController extends Controller{
         /* Mission Mark Out First */
         
 
-        if(in_array($user->employee?->shift_id, $nightShift)){
+        if($shiftType == 'night'){
             $missingMarkOut = Attendance::with('employee')->where('username', Auth::user()->username)
             ->where('signin_date', '<', now()->subDay()->format('Y-m-d')) // Check dates before today
             ->whereNull('signout_time') // No sign-out time means the user has not marked out
