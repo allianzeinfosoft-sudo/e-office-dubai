@@ -30,21 +30,18 @@ class AttendanceController extends Controller{
      */
     public function index() {
         $data['meta_title'] = 'Attendance';
-
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
 
-        $nightShift = [6,7,8];
-        
+        $nightShift = [6,7,8];        
         if(in_array($user->employee?->shift_id, $nightShift)){
             $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->subDay()->format('Y-m-d')])->first();
         }else{
             $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
         }
-
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
@@ -191,7 +188,6 @@ class AttendanceController extends Controller{
             ->whereNull('signout_time') // No sign-out time means the user has not marked out
             ->first();
         }
-
         if ($missingMarkOut) {   
             // If there's a missing mark-out, don't allow marking in
             $data['meta_title'] = 'Mark Out First';
@@ -319,6 +315,7 @@ class AttendanceController extends Controller{
             $attendance = Attendance::where('emp_id', $missingReport->emp_id)
                 ->where('signin_date', $missingReport->signin_date)
                 ->first();
+
             // ✅ Ensure 'working_hours' is correctly converted to seconds
             if (strpos($attendance->working_hours, ':') !== false) {
                 list($hours, $minutes, $seconds) = explode(":", $attendance->working_hours);
@@ -327,6 +324,7 @@ class AttendanceController extends Controller{
                 list($hours, $minutes) = explode(":", $attendance->working_hours);
                 $seconds = 0;
             }
+
             $totalAttendanceTime = ($hours * 3600) + ($minutes * 60) + $seconds;
 
             // ✅ Sum reported time in seconds (using TIME_TO_SEC)
@@ -335,7 +333,7 @@ class AttendanceController extends Controller{
                 ->sum(DB::raw('TIME_TO_SEC(total_time)'));
 
             // 🔍 Debug: Log values to check
-            Log::info("Attendance Time: {$attendance->working_hours} -> $totalAttendanceTime seconds");
+            Log::info("Attendance Time: { $attendance->working_hours } -> $totalAttendanceTime seconds");
             Log::info("Reported Time: $totalReportedTime seconds");
 
             // ✅ Calculate balance time
@@ -480,14 +478,12 @@ class AttendanceController extends Controller{
 
         /* send to block list */
         if($isIncomplete){
-
             CustomHelper::addToBlockList([
                 'user_id'    => $attendance->emp_id,
                 'block_date' => date('Y-m-d'),
                 'username' => $attendance->username,
                 'full_name' => Employee::where('user_id', $attendance->emp_id)->first()->full_name
             ]);
-
         }
 
         $attendance->update([
