@@ -44,7 +44,7 @@ class HomeController extends Controller
         // Total Working Hours
         $attendances = Attendance::where('status', 'mark-out')->where('emp_id', $user->id)->whereBetween('signin_date', [$fromDate, $toDate]) ->get();
 
-        $totalWorkHours = Attendance::where('emp_id', $user->id)
+        /* $totalWorkHours = Attendance::where('emp_id', $user->id)
                 ->whereYear('signin_date', $selected_year)
                 ->whereBetween('signin_date', [$fromDate, $toDate])
                 ->where('status', 'mark-out')
@@ -61,7 +61,36 @@ class HomeController extends Controller
 
         $data['totalWorkingTime']   = $totalWorkHours->total_hours;
         $data['averageWorkingTime'] = $totalWorkHours->avg_hours;
-        $data['workingDays']        = $attendances->count();
+        $data['workingDays']        = $attendances->count(); */
+
+        // Get all working_hours within the selected range
+        $attendancesHours = Attendance::where('emp_id', $user->id)
+            ->whereYear('signin_date', $selected_year)
+            ->whereBetween('signin_date', [$fromDate, $toDate])
+            ->where('status', 'mark-out')
+            ->pluck('working_hours'); // Returns a collection of HH:MM:SS strings
+
+        $totalSeconds = 0;
+        $validDays = 0;
+
+        foreach ($attendancesHours as $time) {
+            if (preg_match('/^(\d+):(\d{2}):(\d{2})$/', $time, $matches)) {
+                $hours = (int) $matches[1];
+                $minutes = (int) $matches[2];
+                $seconds = (int) $matches[3];
+                $totalSeconds += ($hours * 3600) + ($minutes * 60) + $seconds;
+                $validDays++;
+            }
+        }
+
+        // Helper to format seconds to H:i:s
+        function formatTime($seconds) {
+            return gmdate("H:i:s", $seconds);
+        }
+
+        $data['totalWorkingTime']   = formatTime($totalSeconds);
+        $data['averageWorkingTime'] = $validDays > 0 ? formatTime($totalSeconds / $validDays) : '00:00:00';
+        $data['workingDays']        = $validDays;
 
         // Leave count
         $data['leaveCount'] = Leave::where('user_id', $user->id)->where(function ($q) use ($fromDate, $toDate) {
