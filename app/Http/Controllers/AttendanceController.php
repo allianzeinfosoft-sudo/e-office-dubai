@@ -29,11 +29,7 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
-<<<<<<< HEAD
-
-=======
         
->>>>>>> jerson_eoffice_updates
         $data['meta_title'] = 'Attendance';
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
