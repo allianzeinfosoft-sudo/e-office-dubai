@@ -134,7 +134,7 @@
                                                             <td><strong>Break Time</strong></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
-                                                            <td><input class="form-control" type="text" name="break_time" id="break_time" value="{{ ($missingReport->break_time) ?? $user_shift->max_break_time }}"></td>
+                                                            <td><input class="form-control" type="text" name="break_time" id="break_time" value="{{ ($missingReport->break_time) ?? $user_shift->mini_break_time }}"></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
@@ -168,6 +168,7 @@
                                         </div>                                                        
                                     </div>
                                 </div>
+                                
                                 <div class="card-footer">
                                     <div class="d-flex justify-content-between"></div>
                                         <div class="d-flex align-items-right justify-content-end">
