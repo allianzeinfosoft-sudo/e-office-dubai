@@ -38,7 +38,7 @@ class AttendanceController extends Controller{
 
         $shift =  Workshift::where('id', $user->employee?->shift_id)->first();
 
-        if($shift->shift_start_time < '20:00:00'){
+        if(strtotime($shift->shift_start_time) < strtotime('20:00:00')){
             $shiftType = 'day';
         }else{
             $shiftType = 'night';
