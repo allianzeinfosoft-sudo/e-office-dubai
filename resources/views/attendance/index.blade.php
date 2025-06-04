@@ -164,7 +164,7 @@
                               
 
                               @if($attendance && $attendance_current)
-                              
+
                                @php
                                     $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                     $now              = \Carbon\Carbon::now();

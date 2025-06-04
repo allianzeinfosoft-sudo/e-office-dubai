@@ -132,24 +132,30 @@ class AttendanceController extends Controller{
         $weekOffDays    = [];
         $totalMinutes   = 0;
         $workedDays     = 0;
-
-        if (!empty($data['attendance']->signout_time)) {
-            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
-            ->selectRaw("
-                COALESCE(
-                    SUM(
-                        TIMESTAMPDIFF(
-                            MINUTE,
-                            STR_TO_DATE(signin_time, '%H:%i:%s'),
-                            STR_TO_DATE(signout_time, '%H:%i:%s')
-                        )
-                    ), 0
-                ) as today_minutes
-            ")
-            ->value('today_minutes') ?? 0;
+        
+        if (!empty($data['attendance_current']->signout_time)) {
+            // Case: User has signed out
+            $todayMinutes = Attendance::where('username', Auth::user()->username)
+                ->whereDate('signin_date', now())
+                ->selectRaw("
+                    COALESCE(
+                        SUM(
+                            TIMESTAMPDIFF(
+                                MINUTE,
+                                STR_TO_DATE(signin_time, '%H:%i:%s'),
+                                STR_TO_DATE(signout_time, '%H:%i:%s')
+                            )
+                        ), 0
+                    ) as today_minutes
+                ")
+                ->value('today_minutes') ?? 0;
+            dd($todayMinutes);
         } else {
-            // If signout_time is not available, calculate up to current time
-            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
+            // Case: User has not signed out — calculate up to current time
+            $currentTime = now()->format('H:i:s');
+
+            $todayMinutes = Attendance::where('username', Auth::user()->username)
+                ->whereDate('signin_date', now())
                 ->selectRaw("
                     COALESCE(
                         SUM(
@@ -160,7 +166,7 @@ class AttendanceController extends Controller{
                             )
                         ), 0
                     ) as today_minutes
-                ", [now()->format('H:i:s')])
+                ", [$currentTime])
                 ->value('today_minutes') ?? 0;
         }
 
@@ -169,10 +175,7 @@ class AttendanceController extends Controller{
         $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
-
-
         /* Mission Mark Out First */
-        
 
         if($shiftType == 'night'){
             $missingMarkOut = Attendance::with('employee')->where('username', Auth::user()->username)
@@ -236,7 +239,7 @@ class AttendanceController extends Controller{
 
         // Total working days (excluding week off days)
         $totalWorkingDays = $daysInMonth - count($weekOffDays);
-
+        
         // Total worked hours and minutes
         $totalHours = floor($totalMinutes / 60);
         $totalMins = $totalMinutes % 60;
