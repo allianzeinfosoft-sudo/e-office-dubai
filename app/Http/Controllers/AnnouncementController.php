@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Announcement;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AnnouncementController extends Controller
 {
@@ -26,6 +27,7 @@ class AnnouncementController extends Controller
                         'id' => $result->id,
                         'name_announcement' => $result->name_announcement ?? '',
                         'description' => $result->description ?? '',
+                        'picture' => $result->picture ? $result->picture : '',
                         'display_start_date' => date('d-m-Y', strtotime($result->display_start_date)),
                         'display_end_date' => date('d-m-Y', strtotime($result->display_end_date)),
                         'createdAt' => $result->created_at->format('d-m-Y')
@@ -67,13 +69,23 @@ class AnnouncementController extends Controller
         $validatedData['display_start_date'] = Carbon::parse($validated['display_start_date'])->format('Y-m-d');
         $validatedData['display_end_date'] = Carbon::parse($validated['display_end_date'])->format('Y-m-d');
 
+        $announcementImagePath = null;
+        if ($request->hasFile('picture')) {
+            $file = $request->file('picture');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $announcementImagePath = $file->storeAs('announcement_pictures', $filename, 'public');
+        }
+
+
         $announcement = Announcement::updateOrCreate(
             ['id' => $validatedData['id'] ?? null],
             [
                 'name_announcement' => $validatedData['name_announcement'] ?? '',
                 'display_start_date' => $validatedData['display_start_date']?? '',
                 'display_end_date' => $validatedData['display_end_date']?? '',
-                'description' => $validatedData['description']?? '',            ]
+                'description' => $validatedData['description']?? '',
+                'picture' =>  $announcementImagePath ?? '',
+            ]
         );
 
         $recipients = Employee::whereNotNull('user_id')->pluck('user_id')->toArray();
@@ -107,12 +119,12 @@ class AnnouncementController extends Controller
     {
         //
 
-         $announcement->display_start_date = $announcement->display_start_date 
-        ? Carbon::parse($announcement->display_start_date)->format('d-m-Y') 
+         $announcement->display_start_date = $announcement->display_start_date
+        ? Carbon::parse($announcement->display_start_date)->format('d-m-Y')
         : null;
 
-    $announcement->display_end_date = $announcement->display_end_date 
-        ? Carbon::parse($announcement->display_end_date)->format('d-m-Y') 
+    $announcement->display_end_date = $announcement->display_end_date
+        ? Carbon::parse($announcement->display_end_date)->format('d-m-Y')
         : null;
 
         $data['announcement'] = $announcement;
@@ -133,7 +145,9 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
-        //
+        if ($announcement->picture && Storage::disk('public')->exists($announcement->picture)) {
+            Storage::disk('public')->delete($announcement->picture);
+        }
         $announcement->delete();
         return response()->json(['message' => 'Announcement deleted successfully']);
     }

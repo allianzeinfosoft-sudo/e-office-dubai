@@ -52,6 +52,7 @@
                                         <tr>
                                             <th>No.</th>
                                             <th>Title</th>
+                                            <th>Image</th>
                                             <th>Details</th>
                                             <th>From</th>
                                             <th>To</th>
@@ -171,6 +172,17 @@
                 columns: [
                     { data: 'row', name: 'No' },
                     { data: 'name_announcement', name: 'Title' },
+                    {
+                        data: 'picture',
+                        title: 'Image',
+                        render: function (data, type, row) {
+                            if (data) {
+                                return `<img src="/storage/${data}" alt="Image" style="width: 150px; height: 150px; object-fit: cover; border-radius: 6px;" />`;
+                            } else {
+                                return 'No Image';
+                            }
+                        }
+                    },
                     { data: 'description', name: 'Details' },
                     { data: 'display_start_date', name: 'From' },
                     { data: 'display_end_date', name: 'To' },
@@ -268,7 +280,7 @@
                 altFormat: 'd-m-Y',
                 dateFormat: 'd-m-Y'
             });
-            
+
             const url = "{{ route('others.announcements.edit', ':announcement') }}".replace(':announcement', targetId);
             $('#target_id').val(targetId);
 
