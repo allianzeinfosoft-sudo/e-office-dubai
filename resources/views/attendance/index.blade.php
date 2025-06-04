@@ -161,7 +161,12 @@
                           <div class="row g-4">
                             <div class="col-lg-12">
                               
-                              @php
+                              
+
+                              @if($attendance && $attendance_current)
+                              
+                              
+                               @php
                                     $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                     $now              = \Carbon\Carbon::now();
                                     $isLate           = $now->gt($loginLimitTime);
@@ -173,9 +178,6 @@
                                     $isWeekOffToday   = in_array($todayName, $allWeekOffs);
                                 @endphp
 
-                              @if($attendance && $attendance_current)
-
-                               
                                 @if($shiftType == 'night')      
 
                                   @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
@@ -736,7 +738,6 @@ function wos_attendance(){
         dateFormat: 'd-m-Y'
     });
 }
-
 
 
 </script>
