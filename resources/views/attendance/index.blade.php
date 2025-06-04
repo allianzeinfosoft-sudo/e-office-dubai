@@ -164,15 +164,15 @@
                               @if($attendance)
 
                                @php
-                                    $loginLimitTime = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
-                                    $now = \Carbon\Carbon::now();
-                                    $isLate = $now->gt($loginLimitTime);
-                                    $todayName = $now->format('l'); // E.g., "Monday"
-                                    $fixedWeekOffs = ['Saturday', 'Sunday'];
+                                    $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
+                                    $now              = \Carbon\Carbon::now();
+                                    $isLate           = $now->gt($loginLimitTime);
+                                    $todayName        = $now->format('l'); // E.g., "Monday"
+                                    $fixedWeekOffs    = ['Saturday', 'Sunday'];
                                     $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
-                                    $customWeekOffs = array_map('trim', explode(',', $employeeWeekOffs));
-                                    $allWeekOffs = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
-                                    $isWeekOffToday = in_array($todayName, $allWeekOffs);
+                                    $customWeekOffs   = array_map('trim', explode(',', $employeeWeekOffs));
+                                    $allWeekOffs      = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
+                                    $isWeekOffToday   = in_array($todayName, $allWeekOffs);
                                 @endphp
 
                                 @if($shiftType == 'night')      
@@ -188,10 +188,10 @@
                                       <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
                                           <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
                                       </div>
-                                  @else
+                                  <!-- @else
                                     <div class="text-center">
                                       <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($disableCustomMarkIn  || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
-                                    </div>
+                                    </div> -->
                                   @endif
 
                                 @else
