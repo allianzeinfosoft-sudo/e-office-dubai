@@ -114,12 +114,8 @@ class FeedsController extends Controller
 
             // Ensure consistent ordering or re-indexing
             $feeds = $feeds->values();
-
-
             return response()->json(['data' => $feeds]);
         }
-
-
 
         $data['meta_title'] = 'Feeds';
         return view('settings.view_feeds', $data);
