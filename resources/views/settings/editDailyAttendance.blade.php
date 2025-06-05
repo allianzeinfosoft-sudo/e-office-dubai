@@ -59,7 +59,7 @@
 
                                             <div class="col-3 mb-3">
                                                 <label for="signout_time" class="form-label">Mark Out Time</label>
-                                                <input type="time" id="signout_time" name="signout_time" onch class="form-control" onchange="getWorkingHours()"  value=""  placeholder="Time" />
+                                                <input type="time" id="signout_time" name="signout_time" onch class="form-control"  value=""  placeholder="Time" />
                                             </div>
 
                                             <div class="col-3 mb-3">
@@ -141,18 +141,11 @@ const CustomHelper = {
 
         $('.select2').select2();
 
-        $('#signout_time').on('change', function() {
-            var startTime = $('#signin_time').val();
-            var endTime = $(this).val();
-            var breakTime = $('#break_time').val();
-            var workingHours = CustomHelper.calculateWorkingHours(startTime, endTime, breakTime);
-            // If input is type="time", use convertHoursToTimeFormat
-            $('#working_hours').val(CustomHelper.convertHoursToTimeFormat(workingHours));
-        });
-
         $('#emp_id, #signin_date').on('change', function() {
             fetchAttendanceData();
         });
+
+        $('#signin_time, #signout_time, #break_time').on('change', getWorkingHours);
         
     });
 
@@ -247,14 +240,32 @@ const CustomHelper = {
     }
 
     function getWorkingHours() {
-
-        var startTime = $('#signin_time').val();
-        var endTime = $('#signout_time').val();
-        var breakTime = $('#break_time').val();
+        var startTime = $('#signin_time').val();   // e.g., "09:00:00" or "09:00 AM"
+        var endTime = $('#signout_time').val();    // e.g., "18:00:00" or "06:00 PM"
+        var breakTime = $('#break_time').val();    // e.g., "01:00:00"
 
         if (!startTime || !endTime) {
             $('#working_hours').val('');
             return;
+        }
+
+        // Parse time string to 24-hour HH:mm:ss
+        function parseTime(timeStr) {
+            timeStr = timeStr.trim().toUpperCase();
+
+            // If already in HH:mm:ss
+            if (/^\d{2}:\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+
+            // If in 12-hour format like "09:00 AM" or "06:00 PM"
+            let date = new Date('1970-01-01T' + timeStr);
+            if (!isNaN(date.getTime())) {
+                let hrs = date.getHours().toString().padStart(2, '0');
+                let mins = date.getMinutes().toString().padStart(2, '0');
+                let secs = '00';
+                return `${hrs}:${mins}:${secs}`;
+            }
+
+            return '00:00:00'; // fallback
         }
 
         // Convert HH:mm:ss to seconds
@@ -271,16 +282,14 @@ const CustomHelper = {
             return `${hrs}:${mins}:${secs}`;
         }
 
-        var startSeconds    = timeToSeconds(startTime);
-        var endSeconds      = timeToSeconds(endTime);
-        var breakSeconds    = breakTime ? timeToSeconds(breakTime) : 0;
-        var totalSeconds    = endSeconds - startSeconds - breakSeconds;
-        alert(otalSeconds);
-        if (totalSeconds < 0) {
-            $('#working_hours').val('00:00:00'); // handle invalid time range
-        } else {
-            $('#working_hours').val(secondsToTime(totalSeconds));
-        }
+        // Handle 12-hour or 24-hour time formats
+        let parsedStart = parseTime(startTime);
+        let parsedEnd = parseTime(endTime);
+        let parsedBreak = parseTime(breakTime || '00:00:00');
+
+        let totalSeconds = timeToSeconds(parsedEnd) - timeToSeconds(parsedStart) - timeToSeconds(parsedBreak);
+
+        $('#working_hours').val(totalSeconds < 0 ? '00:00:00' : secondsToTime(totalSeconds));
     }
 
 </script>
