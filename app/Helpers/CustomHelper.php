@@ -251,6 +251,7 @@ class CustomHelper
 
         // Fetch attendance records for the employee
         $attendances = Attendance::where('emp_id', $empId)
+            ->where('status', 'mark-out')
             ->when($year, fn($q) => $q->whereYear('signin_date', $year))
             ->when($month, fn($q) => $q->whereMonth('signin_date', $month))
             ->get();
