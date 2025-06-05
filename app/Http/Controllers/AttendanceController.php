@@ -8,6 +8,7 @@ use App\Models\workReport;
 use App\Models\CustomAttendance;
 use App\Models\Employee;
 use App\Models\Workshift;
+use App\Models\UserEntryBlockList;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -987,6 +988,15 @@ class AttendanceController extends Controller{
     $attendance = Attendance::findOrFail($id);
 
         if ($attendance->is_incomplete && !$attendance->incomplete_approved) {
+
+            /* unblock user */
+            $blocked_user = UserEntryBlockList::where(['user_id' => $attendance->emp_id, 'block_date' => date('Y-m-d', strtotime($attendance->signout_date))])->first();
+            
+            if ($blocked_user) {
+                $blocked_user->status = 0;
+                $blocked_user->save();
+            }
+            
             $attendance->incomplete_approved = 1;
             $attendance->incomplete_approved_by = Auth::id();
             $attendance->incomplete_approved_at = now();

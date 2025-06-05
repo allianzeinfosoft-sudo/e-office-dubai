@@ -30,9 +30,10 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index(Request $request){
+
         $selected_user =  Auth::user()->id;
         $selected_year =  date('Y');
-
+        
         $data['employee'] = Employee::with('department', 'designation', 'workshift', 'reportingToEmployee')->where('user_id', $selected_user)->first();
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
         $data['holidays'] = Holiday::where('holiday_group', $data['employee']?->holidayGroup)->get();
@@ -43,25 +44,39 @@ class HomeController extends Controller
 
         // Total Working Hours
         $attendances = Attendance::where('status', 'mark-out')->where('emp_id', $user->id)->whereBetween('signin_date', [$fromDate, $toDate]) ->get();
+        
+        // Get all working_hours within the selected range
+        $attendancesHours = Attendance::where('emp_id', $user->id)
+            ->whereYear('signin_date', $selected_year)
+            ->whereBetween('signin_date', [$fromDate, $toDate])
+            ->where('status', 'mark-out')
+            ->pluck('working_hours'); // Returns a collection of HH:MM:SS strings
 
-        $totalWorkHours = Attendance::where('emp_id', $user->id)
-                ->whereYear('signin_date', $selected_year)
-                ->whereBetween('signin_date', [$fromDate, $toDate])
-                ->where('status', 'mark-out')
-                ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
-                ->first();
+        $totalSeconds = 0;
+        $validDays = 0;
 
+        foreach ($attendancesHours as $time) {
+            if (preg_match('/^(\d+):(\d{2}):(\d{2})$/', $time, $matches)) {
+                $hours = (int) $matches[1];
+                $minutes = (int) $matches[2];
+                $seconds = (int) $matches[3];
+                $totalSeconds += ($hours * 3600) + ($minutes * 60) + $seconds;
+                $validDays++;
+            }
+        }
 
-        // Convert seconds to H:i:s
+        // Helper to format seconds to H:i:s
         function formatTime($seconds) {
             $hours = floor($seconds / 3600);
             $minutes = floor(($seconds % 3600) / 60);
-            return sprintf('%02d:%02d', $hours, $minutes);
+            $seconds = $seconds % 60;
+
+            return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
-        $data['totalWorkingTime']   = $totalWorkHours->total_hours;
-        $data['averageWorkingTime'] = $totalWorkHours->avg_hours;
-        $data['workingDays']        = $attendances->count();
+        $data['totalWorkingTime']   = formatTime($totalSeconds);
+        $data['averageWorkingTime'] = $validDays > 0 ? formatTime($totalSeconds / $validDays) : '00:00:00';
+        $data['workingDays']        = $validDays;
 
         // Leave count
         $data['leaveCount'] = Leave::where('user_id', $user->id)->where(function ($q) use ($fromDate, $toDate) {
