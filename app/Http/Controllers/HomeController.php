@@ -44,26 +44,7 @@ class HomeController extends Controller
 
         // Total Working Hours
         $attendances = Attendance::where('status', 'mark-out')->where('emp_id', $user->id)->whereBetween('signin_date', [$fromDate, $toDate]) ->get();
-
-        /* $totalWorkHours = Attendance::where('emp_id', $user->id)
-                ->whereYear('signin_date', $selected_year)
-                ->whereBetween('signin_date', [$fromDate, $toDate])
-                ->where('status', 'mark-out')
-                ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
-                ->first();
-
-
-        // Convert seconds to H:i:s
-        function formatTime($seconds) {
-            $hours = floor($seconds / 3600);
-            $minutes = floor(($seconds % 3600) / 60);
-            return sprintf('%02d:%02d', $hours, $minutes);
-        }
-
-        $data['totalWorkingTime']   = $totalWorkHours->total_hours;
-        $data['averageWorkingTime'] = $totalWorkHours->avg_hours;
-        $data['workingDays']        = $attendances->count(); */
-
+        
         // Get all working_hours within the selected range
         $attendancesHours = Attendance::where('emp_id', $user->id)
             ->whereYear('signin_date', $selected_year)
@@ -86,7 +67,11 @@ class HomeController extends Controller
 
         // Helper to format seconds to H:i:s
         function formatTime($seconds) {
-            return gmdate("H:i:s", $seconds);
+            $hours = floor($seconds / 3600);
+            $minutes = floor(($seconds % 3600) / 60);
+            $seconds = $seconds % 60;
+
+            return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
         $data['totalWorkingTime']   = formatTime($totalSeconds);
