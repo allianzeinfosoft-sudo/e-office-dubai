@@ -128,6 +128,7 @@ class WorksController extends Controller
         ->where('attendances.status', 'mark-out') 
         ->first();
         
+
         $attendance = Attendance::where('emp_id', Auth::user()->id) ->where('signin_date', now()->format('Y-m-d'))->first();
         
         // ✅ Ensure 'working_hours' is correctly converted to seconds
@@ -145,7 +146,6 @@ class WorksController extends Controller
             if (!empty($attendance->signin_date) && !empty($attendance->signin_time)) {
                 $signout_date = $attendance->signout_date ?? now()->toDateString(); 
                 $signout_time = $attendance->signout_time ?? now()->toTimeString(); 
-        
                 $calculatedTime = CustomHelper::calculateTotalWorkingTime(
                     $attendance->signin_date,
                     $attendance->signin_time,
@@ -164,17 +164,28 @@ class WorksController extends Controller
             }
         }
         
-        $totalAttendanceTime = ($hours * 3600) + ($minutes * 60) + $seconds;
-        // ✅ Sum reported time in seconds (using TIME_TO_SEC)
-        $totalReportedTime = WorkReport::where('emp_id', Auth::user()->id)->where('report_date', now()->format('Y-m-d')) ->sum(DB::raw('TIME_TO_SEC(total_time)'));
+            $totalAttendanceTime = $calculatedTime['total_working_time'] ?? '00:00:00';
+            $attendanceParts = array_map('intval', explode(':', $totalAttendanceTime));
+            $attendanceParts = array_pad($attendanceParts, 3, 0);
+            $totalAttendanceSeconds = ($attendanceParts[0] * 3600) + ($attendanceParts[1] * 60) + $attendanceParts[2];
+         
+            // ✅ Sum reported time in seconds (using TIME_TO_SEC)
+            $totalReportedSeconds = WorkReport::where('emp_id', Auth::user()->id)
+            ->where('report_date', now()->format('Y-m-d'))
+            ->whereRaw("TIME_TO_SEC(total_time) IS NOT NULL")
+            ->sum(DB::raw('TIME_TO_SEC(total_time)'));
 
-            $balanceTime = max($totalAttendanceTime - $totalReportedTime, 0);
-            $formattedBalanceTime = gmdate("H:i:s", $balanceTime);
+            // $totalReportedTime = gmdate("H:i:s", $totalSeconds);    
 
-            // $missingReport->balance_time = $formattedBalanceTime;
-        
+            $balanceSeconds = max($totalAttendanceSeconds - $totalReportedSeconds, 0);
+            $formattedBalanceTime = gmdate("H:i:s", $balanceSeconds);
+            
+            $missingReport->balance_time = $formattedBalanceTime;
+           
             $data['missingReport'] = $missingReport;
             $data['attendance'] = $attendance;
+            $data['calculatedTime'] = $calculatedTime;
+
             $data['repots_posted'] = WorkReport::with(['project', 'projectTask', 'tasks'])
                 ->where('username', Auth::user()->username)
                 ->where('report_date', now()->format('Y-m-d'))
