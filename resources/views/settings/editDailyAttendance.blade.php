@@ -59,7 +59,7 @@
 
                                             <div class="col-3 mb-3">
                                                 <label for="signout_time" class="form-label">Mark Out Time</label>
-                                                <input type="time" id="signout_time" name="signout_time" onch class="form-control"  value=""  placeholder="Time" />
+                                                <input type="time" id="signout_time" name="signout_time" onch class="form-control" onchange="getWorkingHours()"  value=""  placeholder="Time" />
                                             </div>
 
                                             <div class="col-3 mb-3">
@@ -108,11 +108,12 @@
 
 const CustomHelper = {
     calculateWorkingHours: function(startTime, endTime, breakTime) {
+
         if (!startTime || !endTime) return 0;
 
         let start = new Date('1970-01-01T' + startTime + ':00');
         let end = new Date('1970-01-01T' + endTime + ':00');
-
+        
         // Handle overnight shifts (e.g., 10 PM to 6 AM)
         if (end < start) {
             end.setDate(end.getDate() + 1);
@@ -122,8 +123,7 @@ const CustomHelper = {
         diff -= parseFloat(breakTime) || 0; // Subtract break time
 
         return diff > 0 ? diff.toFixed(2) : 0;
-    },
-    convertHoursToTimeFormat: function(hours) {
+    }, convertHoursToTimeFormat: function(hours) {
         let h = Math.floor(hours);
         let m = Math.round((hours - h) * 60);
         return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
@@ -146,7 +146,6 @@ const CustomHelper = {
             var endTime = $(this).val();
             var breakTime = $('#break_time').val();
             var workingHours = CustomHelper.calculateWorkingHours(startTime, endTime, breakTime);
-
             // If input is type="time", use convertHoursToTimeFormat
             $('#working_hours').val(CustomHelper.convertHoursToTimeFormat(workingHours));
         });
@@ -244,6 +243,43 @@ const CustomHelper = {
                     console.error('Failed to fetch attendance:', error);
                 }
             });
+        }
+    }
+
+    function getWorkingHours() {
+
+        var startTime = $('#signin_time').val();
+        var endTime = $('#signout_time').val();
+        var breakTime = $('#break_time').val();
+
+        if (!startTime || !endTime) {
+            $('#working_hours').val('');
+            return;
+        }
+
+        // Convert HH:mm:ss to seconds
+        function timeToSeconds(timeStr) {
+            var parts = timeStr.split(':');
+            return (+parts[0]) * 3600 + (+parts[1]) * 60 + (+parts[2]);
+        }
+
+        // Convert seconds to HH:mm:ss
+        function secondsToTime(seconds) {
+            var hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            var mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            var secs = (seconds % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        var startSeconds    = timeToSeconds(startTime);
+        var endSeconds      = timeToSeconds(endTime);
+        var breakSeconds    = breakTime ? timeToSeconds(breakTime) : 0;
+        var totalSeconds    = endSeconds - startSeconds - breakSeconds;
+        alert(otalSeconds);
+        if (totalSeconds < 0) {
+            $('#working_hours').val('00:00:00'); // handle invalid time range
+        } else {
+            $('#working_hours').val(secondsToTime(totalSeconds));
         }
     }
 
