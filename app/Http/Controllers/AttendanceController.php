@@ -82,6 +82,13 @@ class AttendanceController extends Controller{
             $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
         } else {
             // Missing shift time data
+            $start = Carbon::parse($shiftStartTime)->format('H:i:s');
+            $end = Carbon::parse($shiftEndTime)->format('H:i:s');
+
+            if ($start === '08:00:00' && $end === '07:55:00') {
+                $data['disableCustomMarkIn'] = false;
+            }
+
             $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
             $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
             $now = now();
