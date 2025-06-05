@@ -52,7 +52,7 @@
                                             <div class="col-sm-6 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="report_date" class="form-label">Report Date</label>
-                                                    <input type="text" name="report_date" id="report_date" placeholder="Report Date" class="form-control" />
+                                                    <input type="text" name="report_date" id="report_date" placeholder="Report Date" class="form-control" value="{{ date('d-m-Y') }}" />
                                                 </div>
                                             </div>
 
@@ -176,6 +176,8 @@
             }
         });
 
+        
+
         $('#submitForm').on('click', function() {
             var formData = new FormData($('#workReportForm')[0]);
 
@@ -251,7 +253,34 @@
                 });
             }
         });
-        
+
+        /* get working hours */
+        $('#emp_id, #report_date').on('change', function () {
+            let emp_id = $('#emp_id').val();
+            let signin_date = $('#report_date').val(); // Match Laravel param
+
+            if (!emp_id || !signin_date) return;
+
+            $.ajax({
+                type: "GET",
+                url: "{{ route('settings.get-working-hours') }}",
+                data: {
+                    emp_id: emp_id,
+                    signin_date: signin_date
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.success && response.data) {
+                        // Example: populate working hours field
+                        $('#total_time').val(response.data.working_hours);
+                    }
+                },
+                error: function (xhr) {
+                    console.error(xhr.responseJSON?.message || 'Request failed');
+                }
+            });
+        });
+
     });
 </script>
 @endpush

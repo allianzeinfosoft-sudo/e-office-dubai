@@ -90,102 +90,110 @@ class WorksController extends Controller
     }
 
     public function temporaryStatus(){
+        
         $data['meta_title'] = 'Temporary Status';
 
-        $attendance = Attendance::with('employee')->where('emp_id', Auth::user()->id)
-        ->where('signin_date', now()->format('Y-m-d'))
-        ->first();
+        // Get today's attendance
+        $attendance = Attendance::with('employee')
+            ->where('emp_id', Auth::user()->id)
+            ->where('signin_date', now()->format('Y-m-d'))
+            ->first();
 
         if (!$attendance) {
             return redirect()->back()->with('error', 'You did not mark attendance today.');
         }
-        
-        $missingReport = Attendance::leftJoin('work_reports', function ($join) {
-            $join->on('work_reports.report_date', '=', 'attendances.signin_date')
-                 ->on('work_reports.username', '=', 'attendances.username');
-        })
-        ->select(
-            'attendances.id',
-            'attendances.emp_id',
-            'attendances.username',
-            'attendances.signin_date',
-            'attendances.working_hours',
-            'attendances.break_time',
-            'attendances.status',
-            DB::raw('COALESCE(SUM(TIME_TO_SEC(work_reports.total_time)), 0) as total_reported_time'),
-            DB::raw('TIME_TO_SEC(attendances.working_hours) as total_attendance_time')
-        )
-        ->groupBy(
-            'attendances.id',
-            'attendances.emp_id',
-            'attendances.username',
-            'attendances.signin_date',
-            'attendances.working_hours',
-            'attendances.break_time',
-            'attendances.status'
-        )
-        ->havingRaw('total_reported_time < total_attendance_time') // Ensure reported time is less than attendance time
-        ->where('attendances.status', 'mark-out') 
-        ->first();
-        
-        $attendance = Attendance::where('emp_id', Auth::user()->id) ->where('signin_date', now()->format('Y-m-d'))->first();
-        
-        // ✅ Ensure 'working_hours' is correctly converted to seconds
-        if (!empty($attendance->working_hours) && is_string($attendance->working_hours) && strpos($attendance->working_hours, ':') !== false) {
-            $timeParts = explode(":", $attendance->working_hours);
-            $hours = $timeParts[0];
-            $minutes = $timeParts[1];
-            $seconds = $timeParts[2] ?? 0; // Default to 0 if seconds are missing
-        } else {
-            // Calculate working time if working_hours is null or not a string
-            $hours = 0;
-            $minutes = 0;
-            $seconds = 0;
-        
-            if (!empty($attendance->signin_date) && !empty($attendance->signin_time)) {
-                $signout_date = $attendance->signout_date ?? now()->toDateString(); 
-                $signout_time = $attendance->signout_time ?? now()->toTimeString(); 
-        
-                $calculatedTime = CustomHelper::calculateTotalWorkingTime(
-                    $attendance->signin_date,
-                    $attendance->signin_time,
-                    $signout_date,
-                    $signout_time,
-                    $attendance->break_time ?? null
-                );
 
-                // Ensure calculated time is a string before processing
-                if (is_string($calculatedTime) && strpos($calculatedTime, ':') !== false) {
-                    $timeParts = explode(":", $calculatedTime);
-                    $hours = $timeParts[0];
-                    $minutes = $timeParts[1];
-                    $seconds = $timeParts[2] ?? 0;
-                }
+        // Determine total working time
+        $calculatedTime = ['total_working_time' => '00:00:00'];
+        $hours = $minutes = $seconds = 0;
+
+        if (!empty($attendance->working_hours) && strpos($attendance->working_hours, ':') !== false) {
+            $timeParts = explode(":", $attendance->working_hours);
+            $hours = (int)$timeParts[0];
+            $minutes = (int)$timeParts[1];
+            $seconds = isset($timeParts[2]) ? (int)$timeParts[2] : 0;
+
+            $calculatedTime['total_working_time'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        } else {
+            $signout_date = $attendance->signout_date ?? now()->toDateString();
+            $signout_time = $attendance->signout_time ?? now()->toTimeString();
+
+            $calculatedTime = CustomHelper::calculateTotalWorkingTime(
+                $attendance->signin_date,
+                $attendance->signin_time,
+                $signout_date,
+                $signout_time,
+                $attendance->break_time ?? null
+            );
+
+            if (
+                isset($calculatedTime['total_working_time']) &&
+                strpos($calculatedTime['total_working_time'], ':') !== false
+            ) {
+                $timeParts = explode(":", $calculatedTime['total_working_time']);
+                $hours = (int)$timeParts[0];
+                $minutes = (int)$timeParts[1];
+                $seconds = isset($timeParts[2]) ? (int)$timeParts[2] : 0;
             }
         }
-        
-        $totalAttendanceTime = ($hours * 3600) + ($minutes * 60) + $seconds;
-        // ✅ Sum reported time in seconds (using TIME_TO_SEC)
-        $totalReportedTime = WorkReport::where('emp_id', Auth::user()->id)->where('report_date', now()->format('Y-m-d')) ->sum(DB::raw('TIME_TO_SEC(total_time)'));
 
-            $balanceTime = max($totalAttendanceTime - $totalReportedTime, 0);
-            $formattedBalanceTime = gmdate("H:i:s", $balanceTime);
+        $totalAttendanceSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
 
-            // $missingReport->balance_time = $formattedBalanceTime;
-        
-            $data['missingReport'] = $missingReport;
-            $data['attendance'] = $attendance;
-            $data['repots_posted'] = WorkReport::with(['project', 'projectTask', 'tasks'])
-                ->where('username', Auth::user()->username)
-                ->where('report_date', now()->format('Y-m-d'))
-                ->get();
+        // Total reported time in seconds
+        $totalReportedSeconds = WorkReport::where('emp_id', Auth::user()->id)
+            ->where('report_date', now()->format('Y-m-d'))
+            ->whereRaw("TIME_TO_SEC(total_time) IS NOT NULL")
+            ->sum(DB::raw('TIME_TO_SEC(total_time)'));
 
-            $data['projects'] = Project::all();
-            //return view('attendance.work_report', $data);
-            $data['user_shift'] = Workshift::where('id', $attendance->employee->shift_id)->first(); 
+        // Calculate balance time
+        $balanceSeconds = max($totalAttendanceSeconds - $totalReportedSeconds, 0);
+        $formattedBalanceTime = gmdate("H:i:s", $balanceSeconds);
+
+        // Get missing report (only if needed)
+        $missingReport = Attendance::leftJoin('work_reports', function ($join) {
+            $join->on('work_reports.report_date', '=', 'attendances.signin_date')
+                ->on('work_reports.username', '=', 'attendances.username');
+        })
+            ->select(
+                'attendances.id',
+                'attendances.emp_id',
+                'attendances.username',
+                'attendances.signin_date',
+                'attendances.working_hours',
+                'attendances.break_time',
+                'attendances.status',
+                DB::raw('COALESCE(SUM(TIME_TO_SEC(work_reports.total_time)), 0) as total_reported_time'),
+                DB::raw('TIME_TO_SEC(attendances.working_hours) as total_attendance_time')
+            )
+            ->groupBy(
+                'attendances.id',
+                'attendances.emp_id',
+                'attendances.username',
+                'attendances.signin_date',
+                'attendances.working_hours',
+                'attendances.break_time',
+                'attendances.status'
+            )
+            ->havingRaw('total_reported_time < total_attendance_time')
+            ->where('attendances.status', 'mark-out')
+            ->where('attendances.emp_id', Auth::user()->id)
+            ->first();
+
+        if ($missingReport) {
+            $missingReport->balance_time = $formattedBalanceTime;
+        }
+
+        $data['attendance'] = $attendance;
+        $data['calculatedTime'] = $calculatedTime;
+        $data['missingReport'] = $missingReport;
+        $data['repots_posted'] = WorkReport::with(['project', 'projectTask', 'tasks'])
+            ->where('username', Auth::user()->username)
+            ->where('report_date', now()->format('Y-m-d'))
+            ->get();
+        $data['projects'] = Project::all();
+        $data['user_shift'] = Workshift::find($attendance->employee->shift_id);
 
         return view('works.temporaray_status', $data);
-    
     }
 
     public function entryOpen(){

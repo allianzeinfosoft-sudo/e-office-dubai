@@ -168,8 +168,8 @@ class SettingsController extends Controller
 
     public function customWorkReportEntry(){
         $data['meta_title'] = 'Custom Work Report Entry';
-        $data['employees'] = Employee::get();
-        $data['projects'] = Project::all();
+        $data['employees']  = Employee::get();
+        $data['projects']   = Project::all();
         return view('settings.customWorkReportEntry', $data);
     }
 
@@ -231,18 +231,33 @@ class SettingsController extends Controller
         }
     }
 
-    public function getUserShifts($userId)
-        {
-            $user = Employee::where('user_id', $userId)->first();
+    public function getUserShifts($userId){
+        $user = Employee::where('user_id', $userId)->first();
 
-            if (!$user) {
-                return response()->json([]);
-            }
-
-            $shifts = Workshift::where('department', $user->department_id)->get();
-
-            return response()->json($shifts);
+        if (!$user) {
+            return response()->json([]);
         }
 
+        $shifts = Workshift::where('department', $user->department_id)->get();
 
+        return response()->json($shifts);
+    }
+
+    public function getWorkingHours(Request $request){
+        $request->validate([
+            'emp_id' => 'required|integer',
+            'signin_date' => 'required|date',
+        ]);
+
+        $attendance = Attendance::where([
+            'emp_id' => $request->emp_id,
+            'signin_date' => Carbon::parse($request->signin_date)->format('Y-m-d'),
+            'status' => 'mark-out'
+        ])->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $attendance
+        ]);
+    }
 }
