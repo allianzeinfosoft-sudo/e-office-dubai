@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use DateTime;
 
-class CustomHelper
-{
+class CustomHelper{
+
     public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null) {
         $timezone = 'Asia/Kolkata';
 
@@ -92,16 +92,14 @@ class CustomHelper
         return 'Needs Improvement';
     }
 
-    public function getMonthNames($month_id)
-    {
+    public function getMonthNames($month_id){
         return DateTime::createFromFormat('!m', $month_id)->format('F');
 
     }
 
 
     /* get monthly avarage working hours */
-    public static function getMonthlyAverageHours($empId, $year = null)
-    {
+    public static function getMonthlyAverageHours($empId, $year = null){
         $year = $year ?? Carbon::now()->year;
 
         $monthlyData = Attendance::select(
@@ -131,8 +129,7 @@ class CustomHelper
         ];
     }
 
-    public static function getMonthlyWorkReport($empId, $year = null)
-    {
+    public static function getMonthlyWorkReport($empId, $year = null){
         $year = $year ?? now()->year;
         $currentMonth = now()->month;
 
@@ -251,7 +248,6 @@ class CustomHelper
 
         // Fetch attendance records for the employee
         $attendances = Attendance::where('emp_id', $empId)
-            ->where('status', 'mark-out')
             ->when($year, fn($q) => $q->whereYear('signin_date', $year))
             ->when($month, fn($q) => $q->whereMonth('signin_date', $month))
             ->get();
