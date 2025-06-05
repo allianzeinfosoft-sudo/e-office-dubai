@@ -27,12 +27,7 @@
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between">
                                         <small class="d-block mb-1"> You must be enter your work report on {{ date('d-m-Y', strtotime($missingReport->signin_date)) ?? '' }} </small>
-                                        <p class="text-danger text-bold">Your balance time : <span class="badge bg-label-danger">@if(isset($missingReport) && isset($missingReport->balance_time))
-                                                        {{ $missingReport->balance_time }}
-                                                    @else
-                                                        00:00:00
-                                                    @endif
-                                        </span></p>
+                                        <p class="text-danger text-bold">Your balance time : <span class="badge bg-label-danger">{{ date('H:i', strtotime($missingReport->balance_time)) }}</span></p>
                                     </div>
                                     <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> {{ $meta_title }}</h4>
                                 </div>
