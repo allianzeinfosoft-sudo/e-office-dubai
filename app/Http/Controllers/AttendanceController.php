@@ -193,7 +193,7 @@ class AttendanceController extends Controller{
         }
 
         if (!empty($data['attendance_current']->signout_time)) {
-            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
+            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', $data['attendance_current']->signin_date)
             ->selectRaw("
                 COALESCE(
                     SUM(
@@ -208,24 +208,35 @@ class AttendanceController extends Controller{
             ->value('today_minutes') ?? 0;
         } else {
             // If signout_time is not available, calculate up to current time
-            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
+            $now = now();
+            $nowFormatted = $now->format('Y-m-d H:i:s');
+
+            if ($shiftType === 'night') {
+                $signinDate = Carbon::yesterday()->toDateString();
+            } else {
+                $signinDate = now()->toDateString();
+            }
+
+            $todayMinutes = Attendance::where('username', Auth::user()->username)
+                ->whereDate('signin_date', $signinDate)
                 ->selectRaw("
                     COALESCE(
                         SUM(
                             TIMESTAMPDIFF(
                                 MINUTE,
-                                STR_TO_DATE(signin_time, '%H:%i:%s'),
-                                STR_TO_DATE(?, '%H:%i:%s')
+                                STR_TO_DATE(CONCAT(signin_date, ' ', signin_time), '%Y-%m-%d %H:%i:%s'),
+                                STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s')
                             )
                         ), 0
                     ) as today_minutes
-                ", [now()->format('H:i:s')])
+                ", [$nowFormatted])
                 ->value('today_minutes') ?? 0;
         }
 
         $todayHours                      = intdiv($todayMinutes, 60);
         $todayMins                       = $todayMinutes % 60;
         $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
+
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
 
         /* Mission Mark Out First */
