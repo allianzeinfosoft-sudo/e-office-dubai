@@ -87,13 +87,14 @@ class AttendanceController extends Controller{
 
             if ($start === '08:00:00' && $end === '07:55:00') {
                 $data['disableCustomMarkIn'] = false;
+            }else{
+                $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
+                $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
+                $now = now();
+                // Disable mark-in outside allowed window
+                $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
             }
-
-            $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
-            $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
-            $now = now();
-            // Disable mark-in outside allowed window
-            $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
+            
         }
 
         // Fetch all holidays in the current month
