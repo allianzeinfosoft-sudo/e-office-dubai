@@ -223,52 +223,47 @@ class AttendanceController extends Controller{
             $data['avgProgressPercentage'] = 0;
         }
 
+        
+        
         if (!empty($data['attendance_current']->signout_time)) {
-            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', $data['attendance_current']->signin_date)
-            ->selectRaw("
-                COALESCE(
-                    SUM(
+            
+            $todayMinutes = Attendance::where('username', Auth::user()->username)
+                ->whereDate('signin_date', $data['attendance_current']->signin_date)
+                ->selectRaw("
+                    COALESCE(SUM(
                         TIMESTAMPDIFF(
                             MINUTE,
                             STR_TO_DATE(signin_time, '%H:%i:%s'),
                             STR_TO_DATE(signout_time, '%H:%i:%s')
                         )
-                    ), 0
-                ) as today_minutes
-            ")
-            ->value('today_minutes') ?? 0;
+                    ), 0) as today_minutes
+                ")
+                ->value('today_minutes') ?? 0;
         } else {
-            // If signout_time is not available, calculate up to current time
-            $now = now();
-            $nowFormatted = $now->format('Y-m-d H:i:s');
-
-            if ($shiftType === 'night') {
-                $signinDate = Carbon::yesterday()->toDateString();
-            } else {
-                $signinDate = now()->toDateString();
-            }
-
+            // No signout_time, calculate till now
+            $now = now()->format('Y-m-d H:i:s');
+            $signinDate = now()->toDateString();
+            
             $todayMinutes = Attendance::where('username', Auth::user()->username)
                 ->whereDate('signin_date', $signinDate)
                 ->selectRaw("
-                    COALESCE(
-                        SUM(
-                            TIMESTAMPDIFF(
-                                MINUTE,
-                                STR_TO_DATE(CONCAT(signin_date, ' ', signin_time), '%Y-%m-%d %H:%i:%s'),
-                                STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s')
-                            )
-                        ), 0
-                    ) as today_minutes
-                ", [$nowFormatted])
+                    COALESCE(SUM(
+                        TIMESTAMPDIFF(
+                            MINUTE,
+                            STR_TO_DATE(CONCAT(signin_date, ' ', signin_time), '%Y-%m-%d %H:%i:%s'),
+                            STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s')
+                        )
+                    ), 0) as today_minutes
+                ", [$now])
                 ->value('today_minutes') ?? 0;
         }
 
-        $todayHours                      = intdiv($todayMinutes, 60);
-        $todayMins                       = $todayMinutes % 60;
-        $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
+        // Calculate hours and minutes
+        $todayHours = intdiv($todayMinutes, 60);
+        $todayMins  = $todayMinutes % 60;
 
-        $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
+        $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
+        $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100); // Assuming 480 = 8 hours work
 
         /* Mission Mark Out First */
 
