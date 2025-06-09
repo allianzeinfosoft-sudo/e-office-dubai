@@ -158,25 +158,27 @@
 
                           </div>
 
+                          
                           <div class="row g-4">
                             <div class="col-lg-12">
                               
                               @php
-                                    $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
-                                    $now              = \Carbon\Carbon::now();
-                                    $isLate           = $now->gt($loginLimitTime);
-                                    $todayName        = $now->format('l'); // E.g., "Monday"
-                                    $fixedWeekOffs    = ['Saturday', 'Sunday'];
-                                    $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
-                                    $customWeekOffs   = array_map('trim', explode(',', $employeeWeekOffs));
-                                    $allWeekOffs      = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
-                                    $isWeekOffToday   = in_array($todayName, $allWeekOffs);
-                                @endphp
-
+                                $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
+                                $now              = \Carbon\Carbon::now();
+                                $isLate           = $now->gt($loginLimitTime);
+                                $todayName        = $now->format('l'); // E.g., "Monday"
+                                $fixedWeekOffs    = ['Saturday', 'Sunday'];
+                                $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
+                                $customWeekOffs   = array_map('trim', explode(',', $employeeWeekOffs));
+                                $allWeekOffs      = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
+                                $isWeekOffToday   = in_array($todayName, $allWeekOffs);
+                              @endphp
+                              
+                              
                               @if($attendance && $attendance_current)
+                             
                               
                                 @if($shiftType == 'night')      
-
                                   @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
                                           Last punch In Time: {{ date('H:i A', strtotime($attendance_current?->signin_time)) }}

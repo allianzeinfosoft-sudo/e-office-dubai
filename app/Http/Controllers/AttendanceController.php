@@ -9,6 +9,7 @@ use App\Models\CustomAttendance;
 use App\Models\Employee;
 use App\Models\Workshift;
 use App\Models\UserEntryBlockList;
+use App\Models\Holiday;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,24 +35,54 @@ class AttendanceController extends Controller{
         $data['meta_title'] = 'Attendance';
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
+        $yesterday          = now()->subDay()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
-        
-        $shift =  Workshift::where('id', $user->employee?->shift_id)->first();
-        
-        if(strtotime($shift->shift_start_time) < strtotime('16:00:00')){
-            $shiftType = 'day';
-        }else{
-            $shiftType = 'night';
-        }
+
+        $shift = Workshift::find($user->employee?->shift_id);
+
+        $shiftType = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
         $data['shiftType'] = $shiftType;
-        
-        if($shiftType == 'night'){
-            $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->subDay()->format('Y-m-d')])->first();
-            $data['attendance_current'] = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
-        }else{
-            $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+
+        // Optional: Define how to check holidays or weekly off
+        $isHolidayOrWeekOff = function ($date) use ($weekOffDays, $user) {
+            $isHoliday = Holiday::where('holiday_group', $user->employee->holidayGroup)
+                            ->whereDate('date', $date)
+                            ->exists();
+
+            $isWeekOff = in_array(date('w', strtotime($date)), $weekOffDays);
+
+            return $isHoliday || $isWeekOff;
+        };
+
+        // Get last working day for night shift (excluding holidays/weekoffs)
+        $getLastWorkingDate = function ($startDate) use ($isHolidayOrWeekOff) {
+            $date = $startDate;
+            while ($isHolidayOrWeekOff($date)) {
+                $date = \Carbon\Carbon::parse($date)->subDay()->format('Y-m-d');
+            }
+            return $date;
+        };
+
+        if ($shiftType === 'night') {
+            $lastWorkingDate = $getLastWorkingDate($yesterday);
+
+            $data['attendance'] = Attendance::where([
+                'username' => $user->username,
+                'signin_date' => $lastWorkingDate,
+            ])->first();
+
+            $data['attendance_current'] = Attendance::where([
+                'username' => $user->username,
+                'signin_date' => $today,
+            ])->first();
+        } else {
+            $data['attendance'] = Attendance::where([
+                'username' => $user->username,
+                'signin_date' => $today,
+            ])->first();
+
             $data['attendance_current'] = $data['attendance'];
         }
         
