@@ -466,7 +466,7 @@
 
 
 
-        @push('js')
+@push('js')
         <script>
 
          $(function () {

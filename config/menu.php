@@ -505,6 +505,25 @@ return [
         'permission' => ['view emails','view starred','send mail','trashed mail']
     ],
     [
+        'title' => 'Conference Hall',
+        'icon' => 'ti ti-calendar-time',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['conference-hall*'],
+        'permission' => ['view bookings', 'view conference hall report'],
+        'submenu' => [
+            [
+                'title' => 'Bookings',
+                'route' =>  '/conferance-hall',
+                'permission' => ['view bookings'],
+            ],
+            [
+                'title' => 'Reports',
+                'route' =>  '/conferance-hall/reports',
+                'permission' => ['view conference hall report'],
+            ],
+        ]
+    ],
+    [
         'header' => 'Settings',
     ],
     [

@@ -442,7 +442,8 @@
   
   $(function(){
     /* Mark in function */
-    $('#mark-in-btn').on('click', function() {
+    $('#mark-in-btn').on('click', function(e) {
+      e.preventDefault(); // 🔐 stop form from submitting
       var $btn = $(this);
 
       // Prevent double click
@@ -452,7 +453,7 @@
       $btn.prop('disabled', true).text('Loading..');
 
       $.ajax({
-          url: '{{ route('attendance.mark-in') }}',
+          url: "{{ route('attendance.mark-in') }}",
           type: 'POST',
           headers: {
               'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -516,7 +517,8 @@
     });
 
     /* Mark out function */
-    $('#mark-out-btn').on('click', function() {
+    $('#mark-out-btn').on('click', function(e) {
+      e.preventDefault(); // 🔐 stop form from submitting
       var $btn = $(this);
 
       // Prevent double click
@@ -526,7 +528,7 @@
       $btn.prop('disabled', true).text('Loading..');
       
       $.ajax({
-            url: '{{ route('attendance.mark-out') }}',
+            url: "{{ route('attendance.mark-out') }}",
             type: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'

@@ -34,6 +34,7 @@ use App\Http\Controllers\CustomAttendanceController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WorkFromHomeAttendanceController;
+use App\Http\Controllers\ConferenceHallController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -403,6 +404,13 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     /* workfrom home */
     Route::post('/work-from-home-attendance/store', [WorkFromHomeAttendanceController::class, 'store'])->name('work-from-home-attendance.store');
+
+    /* conference hall */
+    Route::get('/conferance-hall', [ConferenceHallController::class, 'index'])->name('conferance-hall.index');
+    Route::get('/conferance-hall/reports', [ConferenceHallController::class, 'index'])->name('conferance-hall.reports');
+    Route::post('/conferance-hall/store', [ConferenceHallController::class, 'store'])->name('conferance-hall.store');
+    Route::get('/conferance-hall/{conferenceHall}/edit', [ConferenceHallController::class, 'edit'])->name('conferance-hall.edit');
+    Route::delete('/conferance-hall/{conferenceHall}/distroy', [ConferenceHallController::class, 'destroy'])->name('conferance-hall.destroy');
 
 
     /* Mail Testing Route */
