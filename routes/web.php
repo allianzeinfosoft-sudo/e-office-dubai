@@ -407,10 +407,12 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     /* conference hall */
     Route::get('/conferance-hall', [ConferenceHallController::class, 'index'])->name('conferance-hall.index');
-    Route::get('/conferance-hall/reports', [ConferenceHallController::class, 'index'])->name('conferance-hall.reports');
     Route::post('/conferance-hall/store', [ConferenceHallController::class, 'store'])->name('conferance-hall.store');
     Route::get('/conferance-hall/{conferenceHall}/edit', [ConferenceHallController::class, 'edit'])->name('conferance-hall.edit');
     Route::delete('/conferance-hall/{conferenceHall}/distroy', [ConferenceHallController::class, 'destroy'])->name('conferance-hall.destroy');
+    Route::get('/conferance-hall/report', [ConferenceHallController::class, 'conferanceHallReport'])->name('conferance-hall.report');
+    Route::get('/conferance-hall/report-data', [ConferenceHallController::class, 'conferanceHallReportData'])->name('conferance-hall.report-data');
+    
 
 
     /* Mail Testing Route */

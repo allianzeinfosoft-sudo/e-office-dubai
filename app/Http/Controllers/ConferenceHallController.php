@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConferenceHall;
+use App\Models\Department;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -151,5 +153,60 @@ class ConferenceHallController extends Controller {
         //
         $conferenceHall->delete();
         return response()->json(['message' => 'Conference Hall deleted successfully']);
+    }
+
+    public function conferanceHallReport(){
+        $data['meta_title'] = 'Reports';
+        $data['departments'] = Department::where('status', 1)->get();
+        $data['employees'] = Employee::all();
+        return view('conferance-hall.reports', $data);
+    }
+
+    public function conferanceHallReportData(Request $request){
+        $query = ConferenceHall::with(['dept', 'bookedBy']); // Eager load relationships if needed
+
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('booking_date', [
+                Carbon::parse($request->from_date)->format('Y-m-d'),
+                Carbon::parse($request->to_date)->format('Y-m-d')
+            ]);
+        }
+
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+
+        if ($request->filled('booked_by')) {
+            $query->where('booked_by', $request->booked_by);
+        }
+
+        $bookings = $query->orderByDesc('booking_date')->get();
+        
+        $data = $bookings->map(function ($result, $index) {
+                    $participants = '';
+
+                    foreach($result->participants_employees as $participant){
+                        $participants .= '<span class="badge bg-label-danger m-1">'. $participant . '</span> ';
+                    }
+
+                    return [
+                        'row' => $index + 1,
+                        'id' => $result->id,
+                        'booked_by' => $result->bookedBy?->full_name,
+                        'department' => $result->dept?->department,
+                        'booking_date' => date('d-m-Y', strtotime($result->booking_date)),
+                        'start_time' => date('H:i', strtotime($result->start_time)),
+                        'end_time' => date('H:i', strtotime($result->end_time)),
+                        'participants' => $participants,
+                        'purpose' => $result->purpose ?? '',
+                        'status' => ($result->status == 2) ? 'Rejected' : (($result->status == 1) ? '<span class="badge bg-label-success m-1"> Confirmed </span>' : '<span class="badge bg-label-warning m-1"> Pending </span>'),
+                        'createdAt' => $result->created_at->format('d-m-Y')
+                    ];
+                });
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
     }
 }

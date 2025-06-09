@@ -518,7 +518,7 @@ return [
             ],
             [
                 'title' => 'Reports',
-                'route' =>  '/conferance-hall/reports',
+                'route' =>  '/conferance-hall/report',
                 'permission' => ['view conference hall report'],
             ],
         ]
