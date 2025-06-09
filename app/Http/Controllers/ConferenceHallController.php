@@ -15,17 +15,40 @@ class ConferenceHallController extends Controller {
     public function index(Request $request)
     {
         if($request->ajax()){
-            $bookings = ConferenceHall:: with('dept','bookedBy')->orderBy('id', 'desc')->get();
+            $bookings = ConferenceHall:: with('dept','bookedBy')->orderBy('booking_date', 'desc')->get();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Bookings fetched successfully',
                 'data' => $bookings->map(function ($result, $index) {
                     $participants = '';
-
                     foreach($result->participants_employees as $participant){
                         $participants .= '<span class="badge bg-label-danger m-1">'. $participant . '</span> ';
                     }
+
+                    // Parse booking datetime
+                    $now = now();
+                    $bookingDate = Carbon::parse($result->booking_date);
+                    $startDateTime = Carbon::parse($result->booking_date . ' ' . $result->start_time);
+                    $endDateTime = Carbon::parse($result->booking_date . ' ' . $result->end_time);
+
+                    // Determine live status
+                    $liveStatus = '';
+                    if ($now->lt($startDateTime)) {
+                        $liveStatus = '<span class="badge bg-label-info m-1"> Upcoming </span>';
+                    } elseif ($now->between($startDateTime, $endDateTime)) {
+                        $liveStatus = '<span class="badge bg-label-success m-1"> Ongoing </span>';
+                    } else {
+                        $liveStatus = '<span class="badge bg-label-primary m-1"> Completed </span>';
+                    }
+
+                    // Final status badge (use liveStatus if status is confirmed)
+                    $statusBadge = match ((int) $result->status) {
+                        2 => '<span class="badge bg-label-danger m-1"> Rejected </span>',
+                        1 => $liveStatus,
+                        default => '<span class="badge bg-label-warning m-1"> Pending </span>',
+                    };
+                   
 
                     return [
                         'row' => $index + 1,
@@ -37,7 +60,7 @@ class ConferenceHallController extends Controller {
                         'end_time' => date('H:i', strtotime($result->end_time)),
                         'participants' => $participants,
                         'purpose' => $result->purpose ?? '',
-                        'status' => ($result->status == 2) ? 'Rejected' : (($result->status == 1) ? '<span class="badge bg-label-success m-1"> Confirmed </span>' : '<span class="badge bg-label-warning m-1"> Pending </span>'),
+                        'status' => $statusBadge,
                         'createdAt' => $result->created_at->format('d-m-Y')
                     ];
                 }),
@@ -181,7 +204,7 @@ class ConferenceHallController extends Controller {
         }
 
         $bookings = $query->orderByDesc('booking_date')->get();
-        
+
         $data = $bookings->map(function ($result, $index) {
                     $participants = '';
 
