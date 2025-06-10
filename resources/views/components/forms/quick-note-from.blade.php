@@ -8,7 +8,7 @@
 </div>
 @endif
 
-<form action="{{ route('thoughts.store') }}" method="POST" id="quick_note_form" enctype="multipart/form-data">
+<form action="{{ route('tools.quick-note.store') }}" method="POST" id="quick_note_form" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="id" id="target_id">
     <div class="row">

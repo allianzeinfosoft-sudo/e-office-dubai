@@ -125,21 +125,21 @@
 
     document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById('quick_note_form');
-        
+
         form.addEventListener('submit', function (e) {
             e.preventDefault(); // Always prevent default first
 
             // Get values
-            const quick_note_title          = document.getElementById('thoughts_title').value.trim();
+            const quick_note_title          = document.getElementById('title').value.trim();
             const quick_note_editor         = quillEditor1.root.innerText.trim();
             const hidden_quick_note_details = document.getElementById('note_description');
 
-            hidden_quick_note_details.value = thoughts_details;
+            hidden_quick_note_details.value = quick_note_editor;
 
             let errors = [];
 
             // === Validation ===
-            if (!thoughts_title) {
+            if (!quick_note_title) {
                 errors.push("Quick Note Title is required.");
             }
 

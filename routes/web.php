@@ -416,6 +416,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     /* Tools - Quick Note */
     Route::get('/tools/quick-note', [QuickNoteController::class, 'index'])->name('tools.quick-note.index');
+    Route::post('/tools/quick-note/store', [QuickNoteController::class, 'store'])->name('tools.quick-note.store');
     
 
 

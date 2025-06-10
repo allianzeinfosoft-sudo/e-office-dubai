@@ -537,12 +537,12 @@ return [
             ],
             [
                 'title' => 'Event Calendar',
-                'route' =>  '/conferance-hall/report',
+                'route' =>  '#',
                 'permission' => ['view event calendar'],
             ],
             [
                 'title' => 'KSP',
-                'route' =>  '/conferance-hall/report',
+                'route' =>  '#',
                 'permission' => ['view KSP'],
             ],
         ]

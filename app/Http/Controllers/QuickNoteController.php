@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\QuickNote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuickNoteController extends Controller
 {
@@ -43,9 +44,10 @@ class QuickNoteController extends Controller
                 'title' => $request->title,
                 'note_description' => $request->note_description,
                 'assigned_to' => $request->assigned_to,
-                'created_by' => Auth::user()->user_id
+                'created_by' => Auth::user()->id,
             ]
         );
+        return redirect()->back()->with('success', 'Thoughts created successfully!');
     }
 
     /**
