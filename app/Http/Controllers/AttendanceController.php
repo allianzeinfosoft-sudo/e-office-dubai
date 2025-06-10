@@ -24,6 +24,7 @@ class AttendanceController extends Controller{
     public function __construct()
     {
         $this->middleware('auth');
+     
           // Restrict access to admin role
     }
 
@@ -31,7 +32,6 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
-        
         $data['meta_title'] = 'Attendance';
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
@@ -239,30 +239,35 @@ class AttendanceController extends Controller{
                     ), 0) as today_minutes
                 ")
                 ->value('today_minutes') ?? 0;
-        } else {
+            } else {
+              
             $signinDate = now()->toDateString();
             $now = now()->toDateTimeString();
             $effectiveSigninDate = $signinDate;
 
             if ($shiftType == 'night') {
-                if (now()->hour < 23) { // '12' (noon) is the threshold here.
+                // For night shifts, we consider the "working day" to be the calendar day when the shift started
+                // So if it's before the cutoff time (e.g., 6 AM), we consider it part of the previous day's shift
+                if (now()->hour < 6) { // 6 AM cutoff for night shifts
                     $effectiveSigninDate = now()->subDay()->toDateString();
                 }
             }
 
             $todayMinutes = Attendance::where('username', Auth::user()->username)
                 ->where(function($query) use ($effectiveSigninDate) {
-                    // Check for records matching either the effective signin date
-                    // or the next day (for night shifts that span midnight)
-                    $query->whereDate('signin_date', $effectiveSigninDate)
-                        ->orWhereDate('signin_date', Carbon::parse($effectiveSigninDate)->addDay()->toDateString());
+                    // Check for records matching the effective signin date (the "working day")
+                    $query->whereDate('signin_date', $effectiveSigninDate);
                 })
                 ->selectRaw("
                     COALESCE(SUM(
                         TIMESTAMPDIFF(
                             MINUTE,
                             STR_TO_DATE(CONCAT(signin_date, ' ', signin_time), '%Y-%m-%d %H:%i:%s'),
-                            STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s')
+                            CASE 
+                                WHEN signout_date IS NOT NULL AND signout_time IS NOT NULL 
+                                THEN STR_TO_DATE(CONCAT(signout_date, ' ', signout_time), '%Y-%m-%d %H:%i:%s')
+                                ELSE STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s')
+                            END
                         )
                     ), 0) as today_minutes
                 ", [$now])
