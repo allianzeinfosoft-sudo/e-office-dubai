@@ -42,8 +42,9 @@ use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
-
-
+use App\Http\Controllers\SarTemplate;
+use App\Http\Controllers\SarTemplateController;
+use App\Http\Controllers\SelfAppraisalReportController;
 
 Route::middleware(['web'])->group(function () {
     Auth::routes();  // or your custom login routes
@@ -418,5 +419,21 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
             ? 'Mail sent successfully!'
             : 'Mail sending failed!';
     });
+
+
+    //SAR
+    Route::resource('sartemplate', SarTemplateController::class);
+    Route::get('/sartemplate/{id}/fetch', [SarTemplateController::class, 'fetch']);
+    Route::get('/sartemplate-assign', [SarTemplateController::class, 'assign_template'])->name('sar.user.assign');
+    Route::post('/store-sar-assign',[SarTemplateController::class, 'store_assign_template'])->name('store.sar.assign');
+
+    Route::get('/branches/{branch}/templates', [SarTemplateController::class, 'getTemplates'])->name('branch.templates');
+    Route::get('/sar-assign-edit', [SarTemplateController::class, 'sar_edit'])->name('sar_assigning.edit');
+    Route::delete('/sar_assign/{id}', [SarTemplateController::class, 'destroyAssign'])->name('sar.assign.delete');
+
+    Route::get('/user-sars',[SarTemplateController::class, 'user_sars'])->name('user.sars');
+    Route::get('/usersars/{id}/sarfetch', [SarTemplateController::class, 'sarsfetch']);
+    Route::get('/usersars/{id}/saranswerfetch', [SarTemplateController::class, 'sarAnswerfetch']);
+    Route::resource('self-appraisal', SelfAppraisalReportController::class);
 
 });

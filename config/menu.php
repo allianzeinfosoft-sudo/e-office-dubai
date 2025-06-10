@@ -173,25 +173,30 @@ return [
     //         ],
     //     ]
     // ],
-    /* [
+    [
         'title' => 'SAR',
         'icon' => 'ti ti-replace',
         'route' => 'javascript:void(0);',
         'permission' => ['view SARs','review SAR'],
         'submenu' => [
-            [
-                'title' => 'SAR Form',
-                'route' =>  '#',
+             [
+                'title' => 'My SAR`s',
+                'route' =>  '/user-sars',
                 'permission' => ['view SARs'],
             ],
             [
-                'title' => 'SAR Reviews',
-                'route' =>  '#',
-                'permission' => ['review SAR'],
+                'title' => 'SAR Templates',
+                'route' =>  'sartemplate',
+                'permission' => ['view SARs'],
+            ],
+            [
+                'title' => 'Assign SAR',
+                'route' =>  '/sartemplate-assign',
+                'permission' => ['assign SAR'],
             ],
         ]
     ],
-    [
+    /* [
         'title' => 'PAR',
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',

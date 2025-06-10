@@ -190,6 +190,7 @@
 
     <script src="{{ asset('assets/js/forms-selects.js') }}"></script>
     <script src="{{ asset('assets/js/forms-tagify.js') }}"></script>
+    <script src="{{ asset('assets/js/modal-add-new-address.js') }}"></script>
      <!-- Vendors JS -->
 
     @stack('js')

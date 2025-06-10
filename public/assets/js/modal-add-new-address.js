@@ -24,7 +24,7 @@ $(function () {
 document.addEventListener('DOMContentLoaded', function () {
   (function () {
     // initCustomOptionCheck on modal show to update the custom select
-    let addNewAddress = document.getElementById('addNewAddress');
+    let addNewAddress = document.getElementById('sar_template_offcanvas');
     addNewAddress.addEventListener('show.bs.modal', function (event) {
       // Init custom option check
       window.Helpers.initCustomOptionCheck();
