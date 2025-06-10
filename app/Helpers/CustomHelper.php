@@ -17,22 +17,21 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use DateTime;
 
-class CustomHelper
-{
-    public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null) {
+class CustomHelper{
+
+    public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null){
+
         $timezone = 'Asia/Kolkata';
 
         try {
-            // Validate inputs
             if (empty($signin_date) || empty($signin_time) || empty($signout_date) || empty($signout_time)) {
                 throw new \Exception("Invalid date or time values provided.");
             }
 
-            // Convert to Carbon instances
+            // Parse sign-in and sign-out using Carbon's flexible parsing
             $signIn = Carbon::parse("$signin_date $signin_time", $timezone);
             $signOut = Carbon::parse("$signout_date $signout_time", $timezone);
 
-            // Ensure sign-out is after sign-in
             if ($signOut->lessThanOrEqualTo($signIn)) {
                 return [
                     'total_working_time' => '00:00:00',
@@ -41,27 +40,28 @@ class CustomHelper
                 ];
             }
 
-            // Calculate total working duration in seconds
             $totalSeconds = $signOut->diffInSeconds($signIn);
-
-            // Default break time (1 hour)
             $breakSeconds = 0;
 
-            // If custom break time is provided
+            // Normalize and convert break_time
             if (!empty($break_time)) {
-                if (preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $break_time)) {
-                    // Handle break time in format HH:MM or HH:MM:SS
-                    $parts = array_map('intval', explode(':', $break_time));
-                    $parts = array_pad($parts, 3, 0);
-                    list($h, $m, $s) = $parts;
-                    $breakSeconds = ($h * 3600) + ($m * 60) + $s;
+                $break_time = trim($break_time);
+
+                if (preg_match('/\d{1,2}(:\d{2})?(:\d{2})?\s?(AM|PM)?/i', $break_time)) {
+                    try {
+                        // Use Carbon just to get difference from midnight
+                        $breakCarbon = Carbon::parse($break_time);
+                        $midnight = Carbon::createFromTime(0, 0, 0);
+                        $breakSeconds = $breakCarbon->diffInSeconds($midnight);
+                    } catch (\Exception $e) {
+                        $breakSeconds = 3600; // fallback to 1 hour
+                    }
                 } elseif (is_numeric($break_time)) {
-                    // Handle break time in minutes
-                    $breakSeconds = max(0, $break_time * 60);
+                    // treat as minutes
+                    $breakSeconds = max(0, intval($break_time) * 60);
                 }
             }
 
-            // Calculate net working time
             $actualWorkSeconds = max($totalSeconds - $breakSeconds, 0);
 
             return [
@@ -92,16 +92,14 @@ class CustomHelper
         return 'Needs Improvement';
     }
 
-    public function getMonthNames($month_id)
-    {
+    public function getMonthNames($month_id){
         return DateTime::createFromFormat('!m', $month_id)->format('F');
 
     }
 
 
     /* get monthly avarage working hours */
-    public static function getMonthlyAverageHours($empId, $year = null)
-    {
+    public static function getMonthlyAverageHours($empId, $year = null){
         $year = $year ?? Carbon::now()->year;
 
         $monthlyData = Attendance::select(
@@ -131,8 +129,7 @@ class CustomHelper
         ];
     }
 
-    public static function getMonthlyWorkReport($empId, $year = null)
-    {
+    public static function getMonthlyWorkReport($empId, $year = null){
         $year = $year ?? now()->year;
         $currentMonth = now()->month;
 

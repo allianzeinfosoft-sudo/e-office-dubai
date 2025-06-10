@@ -26,7 +26,14 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between">
-                                        <small class="d-block mb-1"> You must be enter your work report</small>
+                                        <small class="d-block mb-1"> You can enter your temporary work report on {{ date('d-m-Y') }}</small>
+                                        <p class="text-danger text-bold">Your balance time : <span class="badge bg-label-danger">
+                                            @if(isset($missingReport) && isset($missingReport->balance_time))
+                                                {{ $missingReport->balance_time }}
+                                            @else
+                                                00:00:00
+                                            @endif
+                                        </span></p>
                                     </div>
                                     <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> {{ $meta_title }}</h4>
                                 </div>
@@ -77,7 +84,7 @@
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_time" class="form-label">No. of Hours</label>
-                                                    <input type="text" name="total_time" id="total_time" placeholder="No. of Hours"  value="" class="form-control" required />
+                                                    <input type="text" name="total_time" id="total_time" placeholder="No. of Hours"  value="{{ old('total_time', $missingReport->balance_time ?? '') }}" class="form-control" required />
                                                 </div>
                                             </div>    
 
@@ -224,6 +231,17 @@
 
         $('#submitForm').on('click', function(e) {
             e.preventDefault(); // Prevent default form submission
+            let current_working_hours = '{{ $missingReport->balance_time }}';
+            let total_time = $('#total_time').val();
+
+            let currentSeconds = parseTimeToSeconds(current_working_hours);
+            let enteredSeconds = parseTimeToSeconds(total_time);
+
+            if (enteredSeconds > currentSeconds) {
+                alert('No. of Hours cannot be greater than current working hours');
+                $('#total_time').focus();
+                return;    
+            }
 
             let form = $('#workReportForm')[0]; // Get raw DOM form element
             let formData = new FormData(form);  // Load existing form inputs
@@ -434,6 +452,36 @@
                 }
             }
         });
+    }
+
+    function parseTimeToSeconds(rawTime) {
+        if (!rawTime) return 0;
+
+        let timeStr = rawTime.trim()
+            .toLowerCase()
+            .replace(/[\.\-]/g, ':') // convert `8.30` or `8-30` to `8:30`
+            .replace(/\s+/g, ' ')    // normalize spacing
+
+        let isAMPM = timeStr.includes('am') || timeStr.includes('pm');
+
+        // Handle AM/PM with Date
+        if (isAMPM) {
+            let dateObj = new Date(`1970-01-01T${timeStr}`);
+            if (!isNaN(dateObj.getTime())) {
+                return dateObj.getHours() * 3600 + dateObj.getMinutes() * 60 + dateObj.getSeconds();
+            }
+        }
+
+        // Remove AM/PM if malformed
+        timeStr = timeStr.replace(/(am|pm)/g, '');
+
+        // Split parts safely
+        let parts = timeStr.split(':').map(p => parseInt(p, 10));
+        parts = parts.filter(p => !isNaN(p));
+        parts = Array(3).fill(0).map((_, i) => parts[i] || 0); // [hh, mm, ss]
+
+        let [hh, mm, ss] = parts;
+        return (hh * 3600) + (mm * 60) + ss;
     }
 
 </script>

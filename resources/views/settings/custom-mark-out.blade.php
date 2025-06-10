@@ -152,8 +152,8 @@
                     {
                         data: null,
                         title: 'Sl. No',
-                        render: function (data, type, row) {
-                            return row + 1;
+                        render: function (data, type, row, meta) {
+                            return meta.row + 1;
                         }
                     },
                     { data: 'profile_image', title: '<i class="ti ti-users"></i>' },

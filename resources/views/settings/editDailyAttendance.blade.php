@@ -108,11 +108,12 @@
 
 const CustomHelper = {
     calculateWorkingHours: function(startTime, endTime, breakTime) {
+
         if (!startTime || !endTime) return 0;
 
         let start = new Date('1970-01-01T' + startTime + ':00');
         let end = new Date('1970-01-01T' + endTime + ':00');
-
+        
         // Handle overnight shifts (e.g., 10 PM to 6 AM)
         if (end < start) {
             end.setDate(end.getDate() + 1);
@@ -122,8 +123,7 @@ const CustomHelper = {
         diff -= parseFloat(breakTime) || 0; // Subtract break time
 
         return diff > 0 ? diff.toFixed(2) : 0;
-    },
-    convertHoursToTimeFormat: function(hours) {
+    }, convertHoursToTimeFormat: function(hours) {
         let h = Math.floor(hours);
         let m = Math.round((hours - h) * 60);
         return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
@@ -141,19 +141,11 @@ const CustomHelper = {
 
         $('.select2').select2();
 
-        $('#signout_time').on('change', function() {
-            var startTime = $('#signin_time').val();
-            var endTime = $(this).val();
-            var breakTime = $('#break_time').val();
-            var workingHours = CustomHelper.calculateWorkingHours(startTime, endTime, breakTime);
-
-            // If input is type="time", use convertHoursToTimeFormat
-            $('#working_hours').val(CustomHelper.convertHoursToTimeFormat(workingHours));
-        });
-
         $('#emp_id, #signin_date').on('change', function() {
             fetchAttendanceData();
         });
+
+        $('#signin_time, #signout_time, #break_time').on('change', getWorkingHours);
         
     });
 
@@ -245,6 +237,59 @@ const CustomHelper = {
                 }
             });
         }
+    }
+
+    function getWorkingHours() {
+        var startTime = $('#signin_time').val();   // e.g., "09:00:00" or "09:00 AM"
+        var endTime = $('#signout_time').val();    // e.g., "18:00:00" or "06:00 PM"
+        var breakTime = $('#break_time').val();    // e.g., "01:00:00"
+
+        if (!startTime || !endTime) {
+            $('#working_hours').val('');
+            return;
+        }
+
+        // Parse time string to 24-hour HH:mm:ss
+        function parseTime(timeStr) {
+            timeStr = timeStr.trim().toUpperCase();
+
+            // If already in HH:mm:ss
+            if (/^\d{2}:\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+
+            // If in 12-hour format like "09:00 AM" or "06:00 PM"
+            let date = new Date('1970-01-01T' + timeStr);
+            if (!isNaN(date.getTime())) {
+                let hrs = date.getHours().toString().padStart(2, '0');
+                let mins = date.getMinutes().toString().padStart(2, '0');
+                let secs = '00';
+                return `${hrs}:${mins}:${secs}`;
+            }
+
+            return '00:00:00'; // fallback
+        }
+
+        // Convert HH:mm:ss to seconds
+        function timeToSeconds(timeStr) {
+            var parts = timeStr.split(':');
+            return (+parts[0]) * 3600 + (+parts[1]) * 60 + (+parts[2]);
+        }
+
+        // Convert seconds to HH:mm:ss
+        function secondsToTime(seconds) {
+            var hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            var mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            var secs = (seconds % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        // Handle 12-hour or 24-hour time formats
+        let parsedStart = parseTime(startTime);
+        let parsedEnd = parseTime(endTime);
+        let parsedBreak = parseTime(breakTime || '00:00:00');
+
+        let totalSeconds = timeToSeconds(parsedEnd) - timeToSeconds(parsedStart) - timeToSeconds(parsedBreak);
+
+        $('#working_hours').val(totalSeconds < 0 ? '00:00:00' : secondsToTime(totalSeconds));
     }
 
 </script>

@@ -128,24 +128,46 @@ class WorksController extends Controller
         ->where('attendances.status', 'mark-out') 
         ->first();
         
+
         $attendance = Attendance::where('emp_id', Auth::user()->id) ->where('signin_date', now()->format('Y-m-d'))->first();
+
         
         // ✅ Ensure 'working_hours' is correctly converted to seconds
+        $hours = 0;
+        $minutes = 0;
+        $seconds = 0;
+
         if (!empty($attendance->working_hours) && is_string($attendance->working_hours) && strpos($attendance->working_hours, ':') !== false) {
             $timeParts = explode(":", $attendance->working_hours);
             $hours = $timeParts[0];
             $minutes = $timeParts[1];
             $seconds = $timeParts[2] ?? 0; // Default to 0 if seconds are missing
-        } else {
+        }else if ($attendance->signout_date && $attendance->signout_time) {
+                $signout_date = $attendance->signout_date; 
+                $signout_time = $attendance->signout_time; 
+                $calculatedTime = CustomHelper::calculateTotalWorkingTime(
+                    $attendance->signin_date,
+                    $attendance->signin_time,
+                    $signout_date,
+                    $signout_time,
+                    $attendance->break_time ?? null
+                );
+
+                // Ensure calculated time is a string before processing
+                if (is_string($calculatedTime) && strpos($calculatedTime, ':') !== false) {
+                    $timeParts = explode(":", $calculatedTime);
+                    $hours = $timeParts[0];
+                    $minutes = $timeParts[1];
+                    $seconds = $timeParts[2] ?? 0;
+                }
+        }
+        else {
             // Calculate working time if working_hours is null or not a string
-            $hours = 0;
-            $minutes = 0;
-            $seconds = 0;
         
             if (!empty($attendance->signin_date) && !empty($attendance->signin_time)) {
                 $signout_date = $attendance->signout_date ?? now()->toDateString(); 
                 $signout_time = $attendance->signout_time ?? now()->toTimeString(); 
-        
+
                 $calculatedTime = CustomHelper::calculateTotalWorkingTime(
                     $attendance->signin_date,
                     $attendance->signin_time,
@@ -164,17 +186,29 @@ class WorksController extends Controller
             }
         }
         
-        $totalAttendanceTime = ($hours * 3600) + ($minutes * 60) + $seconds;
-        // ✅ Sum reported time in seconds (using TIME_TO_SEC)
-        $totalReportedTime = WorkReport::where('emp_id', Auth::user()->id)->where('report_date', now()->format('Y-m-d')) ->sum(DB::raw('TIME_TO_SEC(total_time)'));
+            $totalAttendanceTime = $calculatedTime['total_working_time'] ?? $attendance->working_hours;
+            $attendanceParts = array_map('intval', explode(':', $totalAttendanceTime));
+            $attendanceParts = array_pad($attendanceParts, 3, 0);
+            $totalAttendanceSeconds = ($attendanceParts[0] * 3600) + ($attendanceParts[1] * 60) + $attendanceParts[2];
+         
+            // ✅ Sum reported time in seconds (using TIME_TO_SEC)
+            $totalReportedSeconds = WorkReport::where('emp_id', Auth::user()->id)
+            ->where('report_date', now()->format('Y-m-d'))
+            ->whereRaw("TIME_TO_SEC(total_time) IS NOT NULL")
+            ->sum(DB::raw('TIME_TO_SEC(total_time)'));
 
-            $balanceTime = max($totalAttendanceTime - $totalReportedTime, 0);
-            $formattedBalanceTime = gmdate("H:i:s", $balanceTime);
+            // $totalReportedTime = gmdate("H:i:s", $totalSeconds);    
 
-            // $missingReport->balance_time = $formattedBalanceTime;
-        
+            $balanceSeconds = max($totalAttendanceSeconds - $totalReportedSeconds, 0);
+            $formattedBalanceTime = gmdate("H:i:s", $balanceSeconds);
+
+            $missingReport->balance_time = $formattedBalanceTime;
+           
             $data['missingReport'] = $missingReport;
             $data['attendance'] = $attendance;
+
+            $data['calculatedTime'] = $calculatedTime ?? '08:00:00';
+
             $data['repots_posted'] = WorkReport::with(['project', 'projectTask', 'tasks'])
                 ->where('username', Auth::user()->username)
                 ->where('report_date', now()->format('Y-m-d'))

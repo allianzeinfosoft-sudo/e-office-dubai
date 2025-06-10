@@ -8,6 +8,8 @@ use App\Models\workReport;
 use App\Models\CustomAttendance;
 use App\Models\Employee;
 use App\Models\Workshift;
+use App\Models\UserEntryBlockList;
+use App\Models\Holiday;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,19 +31,61 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
+        
         $data['meta_title'] = 'Attendance';
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
+        $yesterday          = now()->subDay()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
 
-        $nightShift = [6,7,8];        
-        if(in_array($user->employee?->shift_id, $nightShift)){
-            $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->subDay()->format('Y-m-d')])->first();
-        }else{
-            $data['attendance']     = Attendance::where(['username' => Auth::user()->username, 'signin_date' => now()->format('Y-m-d')])->first();
+        $shift = Workshift::find($user->employee?->shift_id);
+
+        $shiftType = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
+        $data['shiftType'] = $shiftType;
+
+        // Optional: Define how to check holidays or weekly off
+        $isHolidayOrWeekOff = function ($date) use ($weekOffDays, $user) {
+            $isHoliday = Holiday::where('holiday_group', $user->employee->holidayGroup)
+                            ->whereDate('date', $date)
+                            ->exists();
+
+            $isWeekOff = in_array(date('w', strtotime($date)), $weekOffDays);
+
+            return $isHoliday || $isWeekOff;
+        };
+
+        // Get last working day for night shift (excluding holidays/weekoffs)
+        $getLastWorkingDate = function ($startDate) use ($isHolidayOrWeekOff) {
+            $date = $startDate;
+            while ($isHolidayOrWeekOff($date)) {
+                $date = \Carbon\Carbon::parse($date)->subDay()->format('Y-m-d');
+            }
+            return $date;
+        };
+
+        if ($shiftType === 'night') {
+            $lastWorkingDate = $getLastWorkingDate($yesterday);
+
+            $data['attendance'] = Attendance::where([
+                'username' => $user->username,
+                'signin_date' => $lastWorkingDate,
+            ])->first();
+
+            $data['attendance_current'] = Attendance::where([
+                'username' => $user->username,
+                'signin_date' => $today,
+            ])->first();
+        } else {
+            $data['attendance'] = Attendance::where([
+                'username' => $user->username,
+                'signin_date' => $today,
+            ])->first();
+
+            $data['attendance_current'] = $data['attendance'];
         }
+        
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
         $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
@@ -57,38 +101,31 @@ class AttendanceController extends Controller{
         $isLate = now()->format('H:i:s') > $cutoffTime;
         $data['disableCustomMarkIn'] = $isLate; */
 
-        $shiftStartTime = $data['employee']?->workshift?->shift_start_time;
-        $shiftEndTime = $data['employee']?->workshift?->shift_end_time;
+        $shiftStartTime = Carbon::parse($data['employee']?->workshift?->shift_start_time); //$data['employee']?->workshift?->shift_start_time;
+        $shiftEndTime   = Carbon::parse($data['employee']?->workshift?->shift_end_time); //$data['employee']?->workshift?->shift_end_time;
 
-        if ($shiftStartTime && $shiftEndTime) {
-            $today = today();
-
-            $shiftStart = Carbon::createFromFormat('H:i:s', $shiftStartTime)->setDateFrom($today);
-            $shiftEnd = Carbon::createFromFormat('H:i:s', $shiftEndTime)->setDateFrom($today);
-
-            // Handle shift that ends the next day
-            if ($shiftEnd->lessThanOrEqualTo($shiftStart)) {
-                $shiftEnd->addDay();
-            }
-
-            // Calculate total shift duration in minutes
-            $shiftDurationMinutes = $shiftEnd->diffInMinutes($shiftStart); // 1435 minutes = 23h 55m
-
-            // Allow only if shift duration is close to 24 hours
-            if ($shiftDurationMinutes >= 1430) {
-                // Invalid shift duration, disable mark-in
-                $data['disableCustomMarkIn'] = false;
-            } else {
-                // Define allowed mark-in window
-                $earliestMarkIn = $shiftStart->copy()->subMinutes(30);
-                $latestMarkIn = $shiftStart->copy()->addMinutes(15);
-                $now = now();
-                // Disable mark-in outside allowed window
-                $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn);
-            }
+        if($shiftType == 'night') {
+            // Define allowed mark-in window
+            $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
+            $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
+            $now = now();
+            // Disable mark-in outside allowed window
+            $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
         } else {
             // Missing shift time data
-            $data['disableCustomMarkIn'] = true;
+            $start = Carbon::parse($shiftStartTime)->format('H:i:s');
+            $end = Carbon::parse($shiftEndTime)->format('H:i:s');
+
+            if ($start === '08:00:00' && $end === '07:55:00') {
+                $data['disableCustomMarkIn'] = false;
+            }else{
+                $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
+                $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
+                $now = now();
+                // Disable mark-in outside allowed window
+                $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
+            }
+            
         }
 
         // Fetch all holidays in the current month
@@ -129,55 +166,108 @@ class AttendanceController extends Controller{
             }
         }
 
-        $daysInMonth    = now()->daysInMonth;
-        $workedHours    = [];
-        $categories     = [];
-        $weekOffDays    = [];
-        $totalMinutes   = 0;
-        $workedDays     = 0;
+        $totalMinutes = 0;
+        $workedHours = [];
+        $categories = [];
+        $weekOffDays = [];
+        $workedDays = 0;
 
-        if (!empty($data['attendance']->signout_time)) {
-            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
-            ->selectRaw("
-                COALESCE(
-                    SUM(
+        for ($day = 1; $day <= now()->day; $day++) {
+            $date = now()->format('Y-m-') . str_pad($day, 2, '0', STR_PAD_LEFT);
+            $dayOfWeek = date('w', strtotime($date)); // 0 = Sunday, 6 = Saturday
+
+            if ($dayOfWeek == 0 || $dayOfWeek == 6) {
+                $weekOffDays[] = $day;
+                continue;
+            }
+
+            // Sum working_hours field by converting time string to seconds → then to minutes
+            $minutes = Attendance::where('username', Auth::user()->username)
+                ->where('signin_date', $date)
+                ->selectRaw("
+                    IFNULL(
+                        SUM(
+                            TIME_TO_SEC(STR_TO_DATE(working_hours, '%H:%i:%s')) / 60
+                        ), 0
+                    ) as worked_minutes
+                ")
+                ->value('worked_minutes') ?? 0;
+                if ($minutes > 0) {
+                    $workedDays++;
+                }
+                
+                $totalMinutes += $minutes;
+                
+                // Format to HH:MM
+                $hours = floor($minutes / 60);
+                $mins = $minutes % 60;
+                
+                $workedHours[] = sprintf('%02d:%02d', $hours, $mins);
+                $categories[] = $day;
+                
+        }
+
+        // Convert totalMinutes to HH:MM
+        $totalWorkedHours = sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
+        $data['totalWorkedHours'] = $totalWorkedHours;
+        
+        // Calculate average worked hours per day
+        if ($workedDays > 0) {
+            $avgMinutes = round($totalMinutes / $workedDays);
+            $avgHours = floor($avgMinutes / 60);
+            $avgMins = $avgMinutes % 60;
+            $data['avgWorkedHours'] = sprintf('%02d:%02d', $avgHours, $avgMins);
+            $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
+        } else {
+            $data['avgWorkedHours'] = '00:00';
+            $data['avgProgressPercentage'] = 0;
+        }
+
+        
+        
+        if (!empty($data['attendance_current']->signout_time)) {
+            
+            $todayMinutes = Attendance::where('username', Auth::user()->username)
+                ->whereDate('signin_date', $data['attendance_current']->signin_date)
+                ->selectRaw("
+                    COALESCE(SUM(
                         TIMESTAMPDIFF(
                             MINUTE,
                             STR_TO_DATE(signin_time, '%H:%i:%s'),
                             STR_TO_DATE(signout_time, '%H:%i:%s')
                         )
-                    ), 0
-                ) as today_minutes
-            ")
-            ->value('today_minutes') ?? 0;
+                    ), 0) as today_minutes
+                ")
+                ->value('today_minutes') ?? 0;
         } else {
-            // If signout_time is not available, calculate up to current time
-            $todayMinutes = Attendance::where('username', Auth::user()->username)->whereDate('signin_date', now())
+            // No signout_time, calculate till now
+            $now = now()->format('Y-m-d H:i:s');
+            $signinDate = now()->toDateString();
+            
+            $todayMinutes = Attendance::where('username', Auth::user()->username)
+                ->whereDate('signin_date', $signinDate)
                 ->selectRaw("
-                    COALESCE(
-                        SUM(
-                            TIMESTAMPDIFF(
-                                MINUTE,
-                                STR_TO_DATE(signin_time, '%H:%i:%s'),
-                                STR_TO_DATE(?, '%H:%i:%s')
-                            )
-                        ), 0
-                    ) as today_minutes
-                ", [now()->format('H:i:s')])
+                    COALESCE(SUM(
+                        TIMESTAMPDIFF(
+                            MINUTE,
+                            STR_TO_DATE(CONCAT(signin_date, ' ', signin_time), '%Y-%m-%d %H:%i:%s'),
+                            STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s')
+                        )
+                    ), 0) as today_minutes
+                ", [$now])
                 ->value('today_minutes') ?? 0;
         }
 
-        $todayHours                      = intdiv($todayMinutes, 60);
-        $todayMins                       = $todayMinutes % 60;
-        $data['todayWorkedHours']        = sprintf('%02d:%02d', $todayHours, $todayMins);
-        $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
+        // Calculate hours and minutes
+        $todayHours = intdiv($todayMinutes, 60);
+        $todayMins  = $todayMinutes % 60;
 
-
+        $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
+        $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100); // Assuming 480 = 8 hours work
 
         /* Mission Mark Out First */
-        
 
-        if(in_array($user->employee?->shift_id, $nightShift)){
+        if($shiftType == 'night'){
             $missingMarkOut = Attendance::with('employee')->where('username', Auth::user()->username)
             ->where('signin_date', '<', now()->subDay()->format('Y-m-d')) // Check dates before today
             ->whereNull('signout_time') // No sign-out time means the user has not marked out
@@ -188,6 +278,7 @@ class AttendanceController extends Controller{
             ->whereNull('signout_time') // No sign-out time means the user has not marked out
             ->first();
         }
+
         if ($missingMarkOut) {   
             // If there's a missing mark-out, don't allow marking in
             $data['meta_title'] = 'Mark Out First';
@@ -198,15 +289,17 @@ class AttendanceController extends Controller{
         }
 
 
-        for ($day = 1; $day <= $daysInMonth; $day++) {
+        /* for ($day = 1; $day <= now()->day; $day++) {
             $date = now()->format('Y-m-') . str_pad($day, 2, '0', STR_PAD_LEFT);
             $dayOfWeek = date('w', strtotime($date)); // 0 = Sunday, 6 = Saturday
-
+            
             // Mark week off days and skip them from calculations
             if ($dayOfWeek == 0 || $dayOfWeek == 6) {
                 $weekOffDays[] = $day;
                 continue;
             }
+
+            
 
             // Fetch worked minutes for the day
             $minutes = Attendance::where('username', Auth::user()->username)
@@ -222,8 +315,7 @@ class AttendanceController extends Controller{
                         ), 0
                     ) as worked_hours
                 ")
-                ->value('worked_hours') ?? 0;
-
+                ->value('worked_hours') ?? 0;            
             if ($minutes > 0) {
                 $workedDays++;
             }
@@ -235,15 +327,17 @@ class AttendanceController extends Controller{
 
             $workedHours[] = sprintf('%02d:%02d', $hours, $mins);
             $categories[] = $day;
-        }
+        } */
+        
+
 
         // Total working days (excluding week off days)
         $totalWorkingDays = $daysInMonth - count($weekOffDays);
-
+        
         // Total worked hours and minutes
         $totalHours = floor($totalMinutes / 60);
         $totalMins = $totalMinutes % 60;
-        $data['totalWorkedHours'] = sprintf('%02d:%02d', $totalHours, $totalMins);
+       // $data['totalWorkedHours'] = sprintf('%02d:%02d', $totalHours, $totalMins);
 
         // Assuming an 8-hour workday
         $possibleMinutes = $totalWorkingDays * (8 * 60); // Total possible working minutes
@@ -253,17 +347,7 @@ class AttendanceController extends Controller{
             ? round(($totalMinutes / $possibleMinutes) * 100)
             : 0;
 
-        // Calculate average worked hours per day
-        if ($workedDays > 0) {
-            $avgMinutes = round($totalMinutes / $workedDays);
-            $avgHours = floor($avgMinutes / 60);
-            $avgMins = $avgMinutes % 60;
-            $data['avgWorkedHours'] = sprintf('%02d:%02d', $avgHours, $avgMins);
-            $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
-        } else {
-            $data['avgWorkedHours'] = '00:00';
-            $data['avgProgressPercentage'] = 0;
-        }
+        
 
         // Pass data to frontend
         $data['categories'] = $categories;
@@ -949,6 +1033,15 @@ class AttendanceController extends Controller{
     $attendance = Attendance::findOrFail($id);
 
         if ($attendance->is_incomplete && !$attendance->incomplete_approved) {
+
+            /* unblock user */
+            $blocked_user = UserEntryBlockList::where(['user_id' => $attendance->emp_id, 'block_date' => date('Y-m-d', strtotime($attendance->signout_date))])->first();
+            
+            if ($blocked_user) {
+                $blocked_user->status = 0;
+                $blocked_user->save();
+            }
+            
             $attendance->incomplete_approved = 1;
             $attendance->incomplete_approved_by = Auth::id();
             $attendance->incomplete_approved_at = now();
