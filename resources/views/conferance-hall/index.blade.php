@@ -43,11 +43,11 @@
                                     <thead>
                                         <tr>
                                             <th>No.</th>
-                                            <th>Date</th>
+                                            <th>Booked By</th>
+                                            <th width="10%">Date</th>
                                             <th>Start Time</th>
                                             <th>End Time</th>
-                                            <th>Booked By</th>
-                                            <th>Department</th>
+                                            <th>Departments</th>
                                             <th>Participants</th>
                                             <th>Purpose</th>
                                             <th>Status</th>
@@ -111,12 +111,45 @@
                 },
                 columns: [
                     { data: 'row', name: 'No' },
+                    {
+                        data: 'booked_by',
+                        title: 'Booked By',
+                        render: function (data, type, row) {
+                            return `<div class="d-flex align-items-center gap-2">
+                                <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
+                                    <li class="avatar avatar-sm pull-up" title="${row.booked_by?.full_name}">
+                                        <img class="rounded-circle" src="${row.booked_by?.profile_image ? '/storage/profile_pics/' + row.booked_by?.profile_image.replace(/^profile_pics\//, '') : '/assets/img/avatars/default-avatar.png'}" alt="${row.booked_by?.full_name}">
+                                    </li>
+                                </ul>
+                                ${row.booked_by?.full_name}
+                            </div>`;
+                        }
+                    },
                     { data: 'booking_date', name: 'Date' },
                     { data: 'start_time', name: 'Start Time' },
                     { data: 'end_time', name: 'End Time' },
-                    { data: 'booked_by', name: 'Booked By' },
                     { data: 'department', name: 'Department' },
-                    { data: 'participants', name: 'Participent' },
+                    {
+                        data: 'participants',
+                        title: 'Participents',
+                        render: function (data, type, row) {
+                            if (!Array.isArray(data) || data.length === 0) {
+                                return `<span>No Members</span>`;
+                            }
+
+                            let participantHtml = `<div class="d-flex align-items-center">
+                                <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">`;
+
+                            data.forEach(participant => {
+                                participantHtml += `<li class="avatar avatar-sm pull-up" title="${participant.full_name}">
+                                    <img class="rounded-circle" src="${participant.profile_image ? '/storage/profile_pics/' + participant.profile_image.replace(/^profile_pics\//, '') : '/assets/img/avatars/default-avatar.png'}" alt="Avatar">
+                                </li>`;
+                            });
+
+                            participantHtml += `</ul></div>`;
+                            return participantHtml;
+                        }
+                    },
                     { data: 'purpose', name: 'Purpose' },
                     { data: 'status', name: 'Status' },
                     { 
@@ -175,7 +208,7 @@
     function openConferanceOffcanvas(id = null) {
         const $form = $('#coferance_hall_form');
         $form[0].reset();
-        
+
         $('#booking_date').flatpickr().setDate(null, true);
         $('#start_time').val('');
         $('#end_time').val('');

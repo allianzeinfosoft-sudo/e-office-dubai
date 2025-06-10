@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ConferenceHall;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Helpers\CustomHelper;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -21,10 +22,16 @@ class ConferenceHallController extends Controller {
                 'success' => true,
                 'message' => 'Bookings fetched successfully',
                 'data' => $bookings->map(function ($result, $index) {
-                    $participants = '';
-                    foreach($result->participants_employees as $participant){
-                        $participants .= '<span class="badge bg-label-danger m-1">'. $participant . '</span> ';
-                    }
+                    // Parse participants
+                    $participantsIds = explode(',', $result->participants);
+
+                    $participants = Employee::whereIn('user_id', $participantsIds)->get()->map(function ($member) {
+                        return [
+                            'id' => $member->id,
+                            'full_name' => $member->full_name,
+                            'profile_image' => $member->profile_image  ? $member->profile_image  : 'default.png',
+                        ];
+                    });
 
                     // Parse booking datetime
                     $now = now();
@@ -51,17 +58,17 @@ class ConferenceHallController extends Controller {
                    
 
                     return [
-                        'row' => $index + 1,
-                        'id' => $result->id,
-                        'booked_by' => $result->bookedBy?->full_name,
-                        'department' => $result->dept?->department,
-                        'booking_date' => date('d-m-Y', strtotime($result->booking_date)),
-                        'start_time' => date('H:i', strtotime($result->start_time)),
-                        'end_time' => date('H:i', strtotime($result->end_time)),
-                        'participants' => $participants,
-                        'purpose' => $result->purpose ?? '',
-                        'status' => $statusBadge,
-                        'createdAt' => $result->created_at->format('d-m-Y')
+                        'row'           => $index + 1,
+                        'id'            => $result->id,
+                        'booked_by'     => $result->bookedBy??'', 
+                        'department'    => $result->dept?->department,
+                        'booking_date'  => date('d-m-Y', strtotime($result->booking_date)),
+                        'start_time'    => date('H:i', strtotime($result->start_time)),
+                        'end_time'      => date('H:i', strtotime($result->end_time)),
+                        'participants'  => $participants,
+                        'purpose'       => $result->purpose ?? '',
+                        'status'        => $statusBadge,
+                        'createdAt'     => $result->created_at->format('d-m-Y')
                     ];
                 }),
             ]);
@@ -117,7 +124,7 @@ class ConferenceHallController extends Controller {
         }
 
         // Save booking
-        ConferenceHall::updateOrCreate(
+        $booking = ConferenceHall::updateOrCreate(
             ['id' => $request->id],
             [
                 'department_id' => $validated['department_id'],
@@ -132,6 +139,30 @@ class ConferenceHallController extends Controller {
                 'status'        => 1
             ]
         );
+
+    // Prepare data object for mail
+    $data = new \stdClass();
+    $data->from_user_id = $validated['booked_by'];
+    $data->to_user_ids = is_array($validated['participants']) ? $validated['participants'] : explode(',', $validated['participants']);
+    $data->cc_user_ids = []; // optional
+    $data->bcc_user_ids = []; // optional
+    $data->subject = 'Conference Hall Booking Confirmation';
+    $data->message = "Your booking is confirmed for {$bookingDate} from {$startTime} to {$endTime}.";
+    $data->status = 0; // e.g., confirmed status
+
+    // Extra info for template
+    $data->booking_info = [
+        'department_id' => $validated['department_id'],
+        'booked_by'     => $validated['booked_by'],
+        'booking_date'  => $bookingDate,
+        'start_time'    => $startTime,
+        'end_time'      => $endTime,
+        'participants'  => $data->to_user_ids,
+        'purpose'       => $validated['purpose'],
+    ];
+
+    // Call the helper to store mail and send notification
+    $result = CustomHelper::storeMail($data, 'emails.conference_booking_template');
 
         return response()->json([
             'success' => true,

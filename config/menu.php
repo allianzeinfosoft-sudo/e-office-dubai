@@ -524,6 +524,30 @@ return [
         ]
     ],
     [
+        'title' => 'Tools',
+        'icon' => 'ti ti-tools',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['conference-hall*'],
+        'permission' => ['view bookings', 'view conference hall report'],
+        'submenu' => [
+            [
+                'title' => 'Quick Note',
+                'route' =>  '/tools/quick-note',
+                'permission' => ['view quick notes'],
+            ],
+            [
+                'title' => 'Event Calendar',
+                'route' =>  '/conferance-hall/report',
+                'permission' => ['view event calendar'],
+            ],
+            [
+                'title' => 'KSP',
+                'route' =>  '/conferance-hall/report',
+                'permission' => ['view KSP'],
+            ],
+        ]
+    ],
+    [
         'header' => 'Settings',
     ],
     [

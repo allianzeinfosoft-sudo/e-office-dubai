@@ -35,6 +35,7 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WorkFromHomeAttendanceController;
 use App\Http\Controllers\ConferenceHallController;
+use App\Http\Controllers\QuickNoteController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -412,6 +413,9 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::delete('/conferance-hall/{conferenceHall}/distroy', [ConferenceHallController::class, 'destroy'])->name('conferance-hall.destroy');
     Route::get('/conferance-hall/report', [ConferenceHallController::class, 'conferanceHallReport'])->name('conferance-hall.report');
     Route::get('/conferance-hall/report-data', [ConferenceHallController::class, 'conferanceHallReportData'])->name('conferance-hall.report-data');
+
+    /* Tools - Quick Note */
+    Route::get('/tools/quick-note', [QuickNoteController::class, 'index'])->name('tools.quick-note.index');
     
 
 

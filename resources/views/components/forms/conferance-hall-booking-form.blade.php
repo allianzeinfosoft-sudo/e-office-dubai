@@ -54,7 +54,6 @@
             <div class="form-group">
                 <label for="participants">Participence <span class="text-danger">*</span> </label>
                 <select name="participants[]" id="participants" class="form-control select2" multiple required>
-                    <option value="">Select Employee</option>
                         @foreach($employees as $result)
                         <option value="{{ $result->user_id }}">{{ $result->full_name }}</option>
                         @endforeach

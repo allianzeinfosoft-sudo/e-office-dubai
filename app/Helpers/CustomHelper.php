@@ -9,10 +9,14 @@ use App\Models\workReport;
 use App\Models\LeaveAllocation;
 use App\Models\UserEntryBlockList;
 use App\Models\CustomAttendance;
+use App\Models\MailBox;
+use App\Models\User;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
 use DateTime;
@@ -739,24 +743,34 @@ public static function getWorkRatingAnalysisMonthly($empId)
         return ($h * 3600) + ($m * 60) + $s;
     }
 
-    public static function storeMail($data, $files = [])
-    {
+    public static function storeMail($data, $template = null, $files = []){
         try {
             $mail = new MailBox();
-            $mail->from_user_id = Auth::id();
-            $mail->to_user_ids = is_string($data['to_user_ids']) ? json_decode($data['to_user_ids'], true) : $data['to_user_ids'];
-            $mail->cc_user_ids = isset($data['cc_user_ids']) ? (is_string($data['cc_user_ids']) ? json_decode($data['cc_user_ids'], true) : $data['cc_user_ids']) : [];
-            $mail->bcc_user_ids = isset($data['bcc_user_ids']) ? (is_string($data['bcc_user_ids']) ? json_decode($data['bcc_user_ids'], true) : $data['bcc_user_ids']) : [];
-            $mail->subject = $data['subject'];
-            $mail->message = $data['message'];
-            $mail->status = $data['status'] ?? 0;
+
+            // Ensure to_user_ids, cc_user_ids, bcc_user_ids are arrays (decode if string)
+            $toUserIds = is_string($data->to_user_ids) ? json_decode($data->to_user_ids, true) ?? [] : (array)$data->to_user_ids;
+            $ccUserIds = isset($data->cc_user_ids) 
+                        ? (is_string($data->cc_user_ids) ? json_decode($data->cc_user_ids, true) ?? [] : (array)$data->cc_user_ids) 
+                        : [];
+            $bccUserIds = isset($data->bcc_user_ids) 
+                        ? (is_string($data->bcc_user_ids) ? json_decode($data->bcc_user_ids, true) ?? [] : (array)$data->bcc_user_ids) 
+                        : [];
+
+            $mail->from_user_id = $data->from_user_id ?? null;  // Can be int or string
+            $mail->to_user_ids = json_encode($toUserIds);
+            $mail->cc_user_ids = json_encode($ccUserIds);
+            $mail->bcc_user_ids = json_encode($bccUserIds);
+
+            $mail->subject = $data->subject ?? '';
+            $mail->message = $data->message ?? '';
+            $mail->status = $data->status ?? 0;
 
             if ($mail->status >= 0 && $mail->status <= 7) {
                 $folders = MailBox::folders();
                 $mail->folder = $folders[$mail->status] ?? 'inbox';
             }
 
-            // Handle attachments
+            // Handle attachments if any
             if (!empty($files)) {
                 $attachments = [];
                 foreach ($files as $file) {
@@ -769,21 +783,18 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
             $mail->save();
 
-            // Send notification email
-            $toUserIds = $mail->to_user_ids;
+            // Fetch emails from to_user_ids array
             $emails = User::whereIn('id', $toUserIds)->pluck('email')->toArray();
 
-            if (!empty($emails)) {
-                $htmlBody = View::make('emails.notification', [
-                    'name' => 'Team',
-                    'message' => 'You are receiving a new email',
+            if (!empty($emails) && $template) {
+                $htmlBody = View::make($template, [
+                    'data' => $data,
                 ])->render();
 
                 self::sendNotificationMail($emails, $mail->subject, $htmlBody);
             }
 
             return ['send' => true, 'mail' => $mail];
-
         } catch (\Exception $e) {
             \Log::error('Mail store error: ' . $e->getMessage());
             return ['send' => false, 'error' => $e->getMessage()];
