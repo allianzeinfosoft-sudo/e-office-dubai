@@ -240,12 +240,23 @@ class AttendanceController extends Controller{
                 ")
                 ->value('today_minutes') ?? 0;
         } else {
-            // No signout_time, calculate till now
-            $now = now()->format('Y-m-d H:i:s');
             $signinDate = now()->toDateString();
-            
+            $now = now()->toDateTimeString();
+            $effectiveSigninDate = $signinDate;
+
+            if ($shiftType == 'night') {
+                if (now()->hour < 23) { // '12' (noon) is the threshold here.
+                    $effectiveSigninDate = now()->subDay()->toDateString();
+                }
+            }
+
             $todayMinutes = Attendance::where('username', Auth::user()->username)
-                ->whereDate('signin_date', $signinDate)
+                ->where(function($query) use ($effectiveSigninDate) {
+                    // Check for records matching either the effective signin date
+                    // or the next day (for night shifts that span midnight)
+                    $query->whereDate('signin_date', $effectiveSigninDate)
+                        ->orWhereDate('signin_date', Carbon::parse($effectiveSigninDate)->addDay()->toDateString());
+                })
                 ->selectRaw("
                     COALESCE(SUM(
                         TIMESTAMPDIFF(
@@ -516,10 +527,12 @@ class AttendanceController extends Controller{
 
     public function markOut(Request $request) {
         
-        $nightShift = [6,7,8];
-        $shift_id =  Auth::user()->employee?->shift_id;
+        $shift = Workshift::find(Auth::user()->employee?->shift_id);
+        $shiftType = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
+        $data['shiftType'] = $shiftType;
+        
 
-        if(in_array($shift_id, $nightShift)){
+        if($shiftType == 'night'){
             $attendance = Attendance::with('employee')->where([
                 'username' => Auth::user()->username,
                 'signin_date' => now()->subDay()->format('Y-m-d')
