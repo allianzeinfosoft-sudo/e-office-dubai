@@ -59,7 +59,7 @@
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="earningReports" style="">
                                                 <a class="dropdown-item" href="javascript:void(0);" onclick="openQuickNoteOffcanvas({{ $quick_note->id }})">Edit</a>
-                                                <a class="dropdown-item" href="{{ route('quick-note.destroy', $quick_note->id) }}" onclick="return confirm('Are you sure you want to delete this quick note?')">Delete</a>
+                                                <a class="dropdown-item" href="{{ route('tools.quick-note.destroy', $quick_note->id) }}" onclick="return confirm('Are you sure you want to delete this quick note?')">Delete</a>
                                                 </div>
                                             </div>
                                         </div>

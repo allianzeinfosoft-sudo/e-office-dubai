@@ -419,7 +419,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/tools/quick-note', [QuickNoteController::class, 'index'])->name('tools.quick-note.index');
     Route::post('/tools/quick-note/store', [QuickNoteController::class, 'store'])->name('tools.quick-note.store');
     Route::get('/tools/quick-note/{quickNote}/edit', [QuickNoteController::class, 'edit'])->name('tools.quick-note.edit');
-    Route::delete('/tools/quick-note/{id}/distroy', [QuickNoteController::class, 'destroy'])->name('tools.quick-note.distroy');
+    Route::get('/tools/quick-note/{id}/destroy', [QuickNoteController::class, 'destroy'])->name('tools.quick-note.destroy');
     
 
 
