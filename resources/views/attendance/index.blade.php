@@ -519,13 +519,10 @@
     /* Mark out function */
     $('#mark-out-btn').on('click', function() {
       var $btn = $(this);
-
       // Prevent double click
       if ($btn.prop('disabled')) return;
-
       // Disable button and show loading text
       $btn.prop('disabled', true).text('Loading..');
-      
       $.ajax({
             url: "{{ route('attendance.mark-out') }}",
             type: 'POST',
@@ -538,25 +535,25 @@
                 if (data.success) {
                       toastr["success"](data.message);
                       toastr.options = {
-                      "closeButton": false,
-                      "debug": false,
-                      "newestOnTop": false,
-                      "progressBar": false,
-                      "positionClass": "toast-top-right",
-                      "preventDuplicates": false,
-                      "onclick": null,
-                      "showDuration": "300",
-                      "hideDuration": "1000",
-                      "timeOut": "5000",
-                      "extendedTimeOut": "1000",
-                      "showEasing": "swing",
-                      "hideEasing": "linear",
-                      "showMethod": "fadeIn",
-                      "hideMethod": "fadeOut"
-                    }
-                    $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
-                    $('#mark-out-btn').prop('disabled', true);
-                    window.location.reload();
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": false,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                      }
+                      $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
+                      $('#mark-out-btn').prop('disabled', true);
+                      window.location.reload();
                 } else {
                     alert(data.message);
                     // Optional: re-enable button and restore text if you don't reload
