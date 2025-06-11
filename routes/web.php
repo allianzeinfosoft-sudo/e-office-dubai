@@ -42,9 +42,12 @@ use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
+use App\Http\Controllers\ParTemplateController;
+use App\Http\Controllers\PerformanceAppraisalReportController;
 use App\Http\Controllers\SarTemplate;
 use App\Http\Controllers\SarTemplateController;
 use App\Http\Controllers\SelfAppraisalReportController;
+use App\Models\PerformanceAppraisalReport;
 
 Route::middleware(['web'])->group(function () {
     Auth::routes();  // or your custom login routes
@@ -436,5 +439,21 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/usersars/{id}/sarfetch', [SarTemplateController::class, 'sarsfetch']);
     Route::get('/usersars/{id}/saranswerfetch', [SarTemplateController::class, 'sarAnswerfetch']);
     Route::resource('self-appraisal', SelfAppraisalReportController::class);
+
+
+    //PAR
+    Route::resource('partemplate', ParTemplateController::class);
+    Route::get('/partemplate/{id}/fetch', [ParTemplateController::class, 'fetch']);
+    Route::get('/partemplate-assign', [ParTemplateController::class, 'assign_template'])->name('par.user.assign');
+    Route::post('/store-par-assign',[ParTemplateController::class, 'store_assign_template'])->name('store.par.assign');
+
+    Route::get('/branches/{branch}/templates', [ParTemplateController::class, 'getTemplates'])->name('branch.templates');
+    Route::get('/par-assign-edit', [ParTemplateController::class, 'par_edit'])->name('par_assigning.edit');
+    Route::delete('/par_assign/{id}', [ParTemplateController::class, 'destroyAssign'])->name('par.assign.delete');
+
+    Route::get('/user-pars',[ParTemplateController::class, 'user_pars'])->name('user.pars');
+    Route::get('/userpars/{id}/parfetch', [ParTemplateController::class, 'parsfetch']);
+    Route::get('/userpars/{id}/paranswerfetch', [ParTemplateController::class, 'parAnswerfetch']);
+    Route::resource('performance-appraisal', PerformanceAppraisalReportController::class);
 
 });

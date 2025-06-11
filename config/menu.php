@@ -185,18 +185,18 @@ return [
                 'permission' => ['view SARs'],
             ],
             [
-                'title' => 'SAR Templates',
-                'route' =>  'sartemplate',
-                'permission' => ['view SARs'],
-            ],
-            [
                 'title' => 'Assign SAR',
                 'route' =>  '/sartemplate-assign',
                 'permission' => ['assign SAR'],
             ],
+            [
+                'title' => 'SAR Templates',
+                'route' =>  'sartemplate',
+                'permission' => ['view SARs'],
+            ]
         ]
     ],
-    /* [
+    [
         'title' => 'PAR',
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',
@@ -204,22 +204,22 @@ return [
         'badge' => "New",
         'submenu' => [
             [
-                'title' => 'Add PAR',
-                'route' => '#',
+                'title' => 'MY PAR`S',
+                'route' => '/user-pars',
                 'permission' => ['create PAR'],
             ],
             [
-                'title' => 'Assing PAR',
-                'route' => '#',
+                'title' => 'Assign PAR',
+                'route' => '/partemplate-assign',
                 'permission' => ['assign PAR'],
             ],
             [
-                'title' => 'View PAR',
-                'route' => '#',
+                'title' => 'PAR Templates',
+                'route' => '/partemplate',
             ],
 
         ]
-    ], */
+    ],
     [
         'title' => 'Leave',
         'icon' => 'ti ti-leaf',

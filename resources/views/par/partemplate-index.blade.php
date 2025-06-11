@@ -85,11 +85,11 @@
 
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
-                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openSarTemplateOffcanvas()">
+                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openParTemplateOffcanvas()">
 
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                    <span class="d-none d-sm-inline-block">Assign Template</span>
+                                    <span class="d-none d-sm-inline-block">Add New Template</span>
                                 </span>
                             </a>
                         </div>
@@ -98,16 +98,14 @@
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <table class="hover_effect datatables-basic datatables-sar-assign table border-top table-stripedc" id="datatables-sar-assign">
+                            <table class="hover_effect datatables-basic datatables-par-template table border-top table-stripedc" id="datatables-par-template">
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
                                         <th>Template Name</th>
                                         <th>Department</th>
-                                        <th>Employees</th>
-                                        <th>SAR Start Date</th>
-                                        <th>SAR End Date</th>
                                         <th>Created By</th>
+                                        <th>Created Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -126,13 +124,13 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-end w-25" data-bs-backdrop="static" tabindex="-1" id="sar_template_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="par_template_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-plus fs-2 text-white"></i>
             <span id="offcanvas-title-container">
-                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Assign SAR</h5>
-                <span class="text-white slogan">Assign SAR to Employees</span>
+                <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Add PAR Template</h5>
+                <span class="text-white slogan">Create New PAR Template</span>
             </span>
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i> </button>
@@ -140,7 +138,7 @@
     <div class="offcanvas-body">
         <div class="row">
             <div class="col-sm-12">
-                <x-s-a-r-assign-form/>
+                <x-par-template-form/>
             </div>
         </div>
     </div>
@@ -148,12 +146,12 @@
 
 
 <!-- question view mode -->
-   <div class="modal fade" id="sar_question_view" tabindex="-1" aria-hidden="true">
+   <div class="modal fade" id="par_question_view" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-simple modal-add-new-address">
         <div class="modal-content p-3 p-md-4">
             <div class="modal-header-custom">
 
-                <h3 class="address-title">SAR Question Template</h3>
+                <h3 class="address-title">PAR Question Template</h3>
                 <p class="  address-subtitle">Department</p>
             </div>
             <div class="modal-body">
@@ -162,9 +160,12 @@
                 </div>
             </div>
 
-            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">
-                Close
-            </button>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">
+                    Close
+                </button>
+
+            </div>
         </div>
     </div>
 </div>
@@ -176,72 +177,18 @@
 
 @push('js')
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById('sar-assign-form');
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const department = document.getElementById('department')?.value.trim();
-        const template = document.getElementById('template')?.value.trim();
-        const employeeSelect = document.getElementById('employee');
-        const employees = Array.from(employeeSelect.selectedOptions).map(option => option.value);
-        const sar_start_date = document.getElementById('sar_start_date')?.value.trim();
-        const sar_end_date = document.getElementById('sar_end_date')?.value.trim();
-
-        let errors = [];
-
-        if (!template) {
-            errors.push("Template is required.");
-        }
-
-        if (!employees.length) {
-            errors.push("At least one employee must be selected.");
-        }
-
-        if (!sar_start_date) {
-            errors.push("SAR start date is required.");
-        } else if (isNaN(Date.parse(sar_start_date))) {
-            errors.push("SAR start date must be a valid date.");
-        }
-
-        if (!sar_end_date) {
-            errors.push("SAR end date is required.");
-        } else if (isNaN(Date.parse(sar_end_date))) {
-            errors.push("SAR end date must be a valid date.");
-        }
-
-        if (sar_start_date && sar_end_date && new Date(sar_start_date) > new Date(sar_end_date)) {
-            errors.push("SAR end date must be after SAR start date.");
-        }
-
-        let errorBox = document.getElementById('formErrors');
-        if (!errorBox) {
-            errorBox = document.createElement('div');
-            errorBox.id = 'formErrors';
-            errorBox.className = 'alert alert-danger mt-3';
-            form.prepend(errorBox);
-        }
-
-        if (errors.length > 0) {
-            errorBox.innerHTML = '<ul class="mb-0">' + errors.map(e => `<li>${e}</li>`).join('') + '</ul>';
-        } else {
-            errorBox.innerHTML = '';
-            form.submit(); // Native submit proceeds if all is valid
-        }
-    });
-});
 
 
     $(function() {
-        var sarTemplateTable = $('.datatables-sar-assign'),
+        var parTemplateTable = $('.datatables-par-template'),
         select2 = $('.select2');
-        if (sarTemplateTable.length) {
+        if (parTemplateTable.length) {
 
-            sarTemplateTable.DataTable({
+            parTemplateTable.DataTable({
                 ajax: {
                     type: "GET",
-                    url: "{{ route('sar.user.assign') }}", // Fixed syntax
+                    url: "{{ route('partemplate.index') }}", // Fixed syntax
                     dataType: "json",
                     dataSrc: "data"
                 },
@@ -252,24 +199,22 @@
                         render: function (data, type, row, meta) {
                             return meta.row + 1;
                         },
-                        orderable: false,
-                        searchable: false
+                        orderable: false, // Optional: prevent sorting on this column
+                        searchable: false // Optional: exclude from search
                     },
                     { data: 'template_name', title: 'Template Name' },
                     { data: 'department', title: 'Department' },
-                    { data: 'employees', title: 'Employees'},
-                    { data: 'sar_start_date', title: 'SAR Start Date'},
-                    { data: 'sar_end_date', title: 'SAR End Date'},
                     { data: 'created_by', title: 'Created By' },
+                    { data: 'created_date', title: 'Created Date'},
                     {
                         data: null,
                         title: 'Actions',
                         render: function (data, type, row, full) {
-                            const editUrl = "{{ route('sar_assigning.edit', ':id') }}".replace(':id', row.id);
+                            const editUrl = "{{ route('partemplate.edit', ':id') }}".replace(':id', row.id);
                             return `
-
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-sar-assign" title="edit" onclick="openSarAssignOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-sar-assign" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary view-par-template" title="view questions"  onclick="openParQuestionOffcanvas(${row.id})""><i class="ti ti-eye"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-par-template" title="edit" onclick="openParTemplateOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-par-template" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>
                             `;
                         }
                     }
@@ -280,9 +225,9 @@
 
     /*delete thoughts function*/
 
-    $(document).on('click', '.delete-sar-assign', function(e) {
+    $(document).on('click', '.delete-par-template', function(e) {
         e.preventDefault();
-        const sarAssignId = $(this).data('id');
+        const sarTemplateId = $(this).data('id');
 
         Swal.fire({
                 title: "Are you sure?",
@@ -296,15 +241,15 @@
                 if (result.isConfirmed) {
 
                         $.ajax({
-                        url: `/sar_assign/${sarAssignId}`,
+                        url: `/partemplate/${sarTemplateId}`,
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
                         },
                         success: function(response) {
 
-                            Swal.fire("Deleted!", "User SAR has been deleted.", "success").then(() => {
-                                $('#datatables-sar-assign').DataTable().ajax.reload(); // Reload table
+                            Swal.fire("Deleted!", "PAR has been deleted.", "success").then(() => {
+                                $('#datatables-par-template').DataTable().ajax.reload(); // Reload table
                             });
 
                         },
@@ -320,11 +265,11 @@
 
 
 
-  function openSarAssignOffcanvas(sarTemplateId) {
+  function openParQuestionOffcanvas(parTemplateId) {
 
-    if (sarTemplateId) {
+    if (parTemplateId) {
         $.ajax({
-            url: `/sartemplate/${sarTemplateId}/fetch`,
+            url: `/partemplate/${parTemplateId}/fetch`,
             type: 'GET',
             success: function (data) {
                 $('#modalAddressFirstName').val(data.template_name || '');
@@ -382,7 +327,7 @@
                 $('#questionContainer').html(questionsHtml);
 
                 // Show modal (not offcanvas)
-                const modal = new bootstrap.Modal(document.getElementById('sar_question_view'));
+                const modal = new bootstrap.Modal(document.getElementById('par_question_view'));
                 modal.show();
             }
         });
@@ -392,13 +337,13 @@
 
 
 
-function openSarTemplateOffcanvas(targetId = null) {
-    $('#sar-assign-form')[0].reset(); // Reset form
+function openParTemplateOffcanvas(targetId = null) {
+    $('#par-template-form')[0].reset(); // Reset form
     $('#target_id').val(''); // Clear ID
     if (targetId) {
-        $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Sar Template</h5><span class="text-white slogan">Edit Sar Template</span>`);
+        $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Par Template</h5><span class="text-white slogan">Edit Par Template</span>`);
         $.ajax({
-            url: `/sartemplate/${targetId}/edit`,
+            url: `/partemplate/${targetId}/edit`,
             type: 'GET',
             success: function (data) {
 
@@ -420,7 +365,7 @@ function openSarTemplateOffcanvas(targetId = null) {
             }
         });
     }
-    var offcanvasElement = $('#sar_template_offcanvas');
+    var offcanvasElement = $('#par_template_offcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
 }

@@ -7,7 +7,7 @@
     </ul>
 </div>
 @endif
-<form action="{{ route('sartemplate.store') }}" method="POST" id="sar-template-form" enctype="multipart/form-data">
+<form action="{{ route('partemplate.store') }}" method="POST" id="par-template-form" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="id" id="target_id">
     <div class="row">
@@ -40,6 +40,8 @@
 </form>
 @push('js')
     <script>
+
+
 
     // add questions
 

@@ -85,13 +85,13 @@
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <table class="hover_effect datatables-basic datatables-user-sars table border-top table-stripedc" id="datatables-user-sars">
+                            <table class="hover_effect datatables-basic datatables-user-pars table border-top table-stripedc" id="datatables-user-pars">
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
                                         <th>Template Name</th>
-                                        <th>SAR Start Date</th>
-                                        <th>SAR End Date</th>
+                                        <th>PAR Start Date</th>
+                                        <th>PAR End Date</th>
                                         <th>Created By</th>
                                         <th>Actions</th>
                                     </tr>
@@ -113,16 +113,17 @@
 
 
 
+
 <!-- question view mode -->
-   <div class="modal fade" id="sar_question_view" tabindex="-1" aria-hidden="true">
+   <div class="modal fade" id="par_question_view" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-simple modal-add-new-address">
         <div class="modal-content p-3 p-md-4">
             <div class="modal-header-custom">
 
-                <h3 class="address-title">SAR Question Template</h3>
+                <h3 class="address-title">PAR Question Template</h3>
                 <p class="  address-subtitle">Department</p>
             </div>
-            <form id="sarQuestionForm" action="{{ route('self-appraisal.store') }}" method="post">
+            <form id="parQuestionForm" action="{{ route('performance-appraisal.store') }}" method="post">
                 @csrf
                 <div class="modal-body">
                     <div id="questionContainer" class="col-12">
@@ -146,12 +147,12 @@
 
 
 <!-- view sar answer sheet -->
- <div class="modal fade" id="sar_answer_view" tabindex="-1" aria-hidden="true">
+ <div class="modal fade" id="par_answer_view" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-simple modal-add-new-address">
         <div class="modal-content p-3 p-md-4">
             <div class="modal-header-custom">
 
-                <h3 class="address-title">SAR Answer Sheet</h3>
+                <h3 class="address-title">PAR Answer Sheet</h3>
                 <p class="  address-subtitle">Department</p>
             </div>
 
@@ -177,7 +178,7 @@
 @push('js')
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById('sarQuestionForm');
+        const form = document.getElementById('parQuestionForm');
 
         if (!form) return;
 
@@ -212,14 +213,14 @@
 
 
     $(function() {
-        var sarTemplateTable = $('.datatables-user-sars'),
+        var parTemplateTable = $('.datatables-user-pars'),
         select2 = $('.select2');
-        if (sarTemplateTable.length) {
+        if (parTemplateTable.length) {
 
-            sarTemplateTable.DataTable({
+            parTemplateTable.DataTable({
                 ajax: {
                     type: "GET",
-                    url: "{{ route('user.sars') }}", // Fixed syntax
+                    url: "{{ route('user.pars') }}", // Fixed syntax
                     dataType: "json",
                     dataSrc: "data"
                 },
@@ -234,8 +235,8 @@
                         searchable: false
                     },
                     { data: 'template_name', title: 'Template Name' },
-                    { data: 'sar_start_date', title: 'SAR Start Date'},
-                    { data: 'sar_end_date', title: 'SAR End Date'},
+                    { data: 'par_start_date', title: 'PAR Start Date'},
+                    { data: 'par_end_date', title: 'PAR End Date'},
                     { data: 'created_by', title: 'Created By' },
                     {
                         data: null,
@@ -243,10 +244,10 @@
                         render: function (data, type, row, full) {
 
                             if (row.status === 1) {
-                                 const editUrl = "{{ route('sar_assigning.edit', ':id') }}".replace(':id', row.id);
-                                 return `<a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary view-sar-assign" title="Reply SAR" onclick="openSarQuestionOffcanvas(${row.id})"><i class="ti ti-keyboard"></i></a>`;
+                                 const editUrl = "{{ route('par_assigning.edit', ':id') }}".replace(':id', row.id);
+                                 return `<a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary view-par-assign" title="Reply PAR" onclick="openParQuestionOffcanvas(${row.id})"><i class="ti ti-keyboard"></i></a>`;
                             }else{
-                                return `<a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary view-sar-assign" title="Reply SAR" onclick="showAnswerOffcanvas(${row.id})"><i class="ti ti-file"></i></a>`;
+                                return `<a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary view-par-assign" title="Reply PAR" onclick="showAnswerOffcanvas(${row.id})"><i class="ti ti-file"></i></a>`;
                             }
 
                         }
@@ -260,16 +261,16 @@
 
 
 
-function openSarQuestionOffcanvas(sarsId) {
-    currentSarId = sarsId;
+function openParQuestionOffcanvas(parsId) {
+    currentParId = parsId;
 
-    if (sarsId) {
+    if (parsId) {
         $.ajax({
-            url: `/usersars/${sarsId}/sarfetch`,
+            url: `/userpars/${parsId}/parfetch`,
             type: 'GET',
             success: function (data) {
 
-                $('#sarQuestionForm').prepend(`<input type="hidden" name="sar_id" value="${sarsId}">`);
+                $('#parQuestionForm').prepend(`<input type="hidden" name="par_id" value="${parsId}">`);
                 $('.address-subtitle').text('Department: ' + (data.department ?? 'N/A') + ' | Created By: ' + (data.created_by ?? 'N/A'));
 
                 let questionsHtml = '';
@@ -319,7 +320,7 @@ function openSarQuestionOffcanvas(sarsId) {
 
                 $('#questionContainer').html(questionsHtml);
 
-                const modal = new bootstrap.Modal(document.getElementById('sar_question_view'));
+                const modal = new bootstrap.Modal(document.getElementById('par_question_view'));
                 modal.show();
             }
         });
@@ -328,17 +329,17 @@ function openSarQuestionOffcanvas(sarsId) {
 
 
 
-function showAnswerOffcanvas(sarsId) {
-    currentSarId = sarsId;
+function showAnswerOffcanvas(parsId) {
+    currentarId = parsId;
 
-    if (sarsId) {
+    if (parsId) {
         $.ajax({
-            url: `/usersars/${sarsId}/saranswerfetch`,
+            url: `/userpars/${parsId}/paranswerfetch`,
             type: 'GET',
             success: function (data) {
                 // Set department info in subtitle
                 $('.address-subtitle').text(
-                    `Department: ${data.sar_info?.template?.department_info?.name ?? 'N/A'} | Created By: ${data.sar_info?.template?.creator?.name ?? 'N/A'}`
+                    `Department: ${data.par_info?.template?.department_info?.name ?? 'N/A'} | Created By: ${data.par_info?.template?.creator?.name ?? 'N/A'}`
                 );
 
                 let questionsHtml = '';
@@ -359,7 +360,7 @@ function showAnswerOffcanvas(sarsId) {
 
                 $('#answerContainer').html(questionsHtml);
 
-                const modal = new bootstrap.Modal(document.getElementById('sar_answer_view'));
+                const modal = new bootstrap.Modal(document.getElementById('par_answer_view'));
                 modal.show();
             },
             error: function () {
