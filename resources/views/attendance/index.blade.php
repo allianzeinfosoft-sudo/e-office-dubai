@@ -177,8 +177,6 @@
                               
                               
                               @if($attendance && $attendance_current)
-                             
-                              
                                 @if($shiftType == 'night')      
                                   @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
@@ -455,7 +453,7 @@
       $btn.prop('disabled', true).text('Loading..');
 
       $.ajax({
-          url: '{{ route('attendance.mark-in') }}',
+          url: "{{ route('attendance.mark-in') }}",
           type: 'POST',
           headers: {
               'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -529,10 +527,10 @@
       $btn.prop('disabled', true).text('Loading..');
       
       $.ajax({
-            url: '{{ route('attendance.mark-out') }}',
+            url: "{{ route('attendance.mark-out') }}",
             type: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
             },
             contentType: 'application/json',
             data: JSON.stringify({}),
