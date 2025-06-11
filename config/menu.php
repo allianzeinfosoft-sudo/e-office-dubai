@@ -533,7 +533,7 @@ return [
         'icon' => 'ti ti-tools',
         'route' => 'javascript:void(0);',
         'isActive' => ['conference-hall*'],
-        'permission' => ['view bookings', 'view conference hall report'],
+        'permission' => ['view quick notes', 'view conference hall report'],
         'submenu' => [
             [
                 'title' => 'Quick Note',

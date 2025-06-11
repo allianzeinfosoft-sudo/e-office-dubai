@@ -800,6 +800,21 @@ public static function getWorkRatingAnalysisMonthly($empId)
             return ['send' => false, 'error' => $e->getMessage()];
         }
     }
+    public static function getTimeAge($datetime, $timezone = null): ?string{
+        if (!$datetime) {
+            return null;
+        }
+
+        try {
+            $time = $timezone
+                ? Carbon::parse($datetime)->timezone($timezone)
+                : Carbon::parse($datetime);
+
+            return $time->diffForHumans(); // Example: "2 hours ago"
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }
 
 

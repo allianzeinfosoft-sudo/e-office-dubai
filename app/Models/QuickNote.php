@@ -15,4 +15,7 @@ class QuickNote extends Model{
     public function createdBy(){
         return $this->belongsTo(Employee::class,'created_by', 'user_id');
     }
+    public function comments(){
+        return $this->hasMany(QuickNoteComments::class, 'quick_note_id', 'id');
+    }
 }
