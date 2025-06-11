@@ -130,15 +130,15 @@
                                             <table id="reportTable" class="table table-bordered table-striped table-hover table-sm display nowrap" style="width:100%">
                                                 <thead>
                                                     <tr>
-                                                        <th>Username</th>
+                                                        <th>Report Date</th>
                                                         <th>Project</th>
                                                         <th>Type of Work</th>
-                                                        <th>Time of Work</th>
-                                                        <th>Total Time</th>
                                                         <th>Comments</th>
-                                                        <th>Report Date</th>
+                                                        <th>Total Time</th>
                                                         <th>Total Records</th>
                                                         <th>Productivity Hour</th>
+                                                        <th>Username</th>
+                                                        <th>Time of Work</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="reportContainer">
@@ -258,16 +258,16 @@
                     let html = ``;
                     response.forEach(row => {
                         html += `<tr>
-                                <td>${row.username}</td>
-                                <td>${row.project.project_name}</td>
-                                <td>${row.tasks.name}</td>
-                                <td>${row.time_of_work}</td>
-                                <td>${row.total_time}</td>
-                                <td>${row.comments}</td>
-                                <td>${row.report_date}</td>
-                                <td>${row.total_records}</td>
-                                <td>${row.productivity_hour}</td>
-                            </tr>`;
+                        <td>${row.report_date}</td>
+                        <td>${row.project.project_name}</td>
+                        <td>${row.tasks.name}</td>
+                        <td>${row.comments}</td>
+                        <td>${row.total_time}</td>
+                        <td>${row.productivity_hour}</td>
+                        <td>${row.time_of_work}</td>
+                        <td>${row.username}</td>
+                        <td>${row.total_records}</td>
+                        </tr>`;
                     });
 
                     $('#reportContainer').html(html);
