@@ -224,7 +224,7 @@
                     });
                     $membersSelect.html(options);
                     $membersSelect.select2({
-                        dropdownParent: $('#project-task-form'),
+                        dropdownParent: $('#project-form'),
                         placeholder: "Select an option",
                         allowClear: true
                     });
