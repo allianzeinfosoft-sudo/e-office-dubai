@@ -44,33 +44,59 @@
                                 </span>
                             </a>
                         </div>
+                        @if(isset($quick_notes) && count($quick_notes) > 0)
+                            @foreach($quick_notes as $quick_note)
+                                <div class="col-sm-3 mb-4">
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between bg-light" style="padding: 1rem 1rem !important;">
+                                            <div class="card-title mb-0">
+                                                <h5 class="m-0">{{ $quick_note->title }}</h5>
+                                                <small class="text-muted">{{ $quick_note->createdBy?->full_name }} | {{ date('d M Y H:i', strtotime($quick_note->created_at)) }} </small>
+                                            </div>
+                                            <div class="dropdown">
+                                                <button class="btn p-0" type="button" id="earningReports" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="ti ti-dots-vertical ti-sm text-muted"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="earningReports" style="">
+                                                <a class="dropdown-item" href="javascript:void(0);" onclick="openQuickNoteOffcanvas({{ $quick_note->id }})">Edit</a>
+                                                <a class="dropdown-item" href="{{ route('quick-note.destroy', $quick_note->id) }}" onclick="return confirm('Are you sure you want to delete this quick note?')">Delete</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body p-3">
+                                            @if($quick_note->assigned_to)
+                                                <div class="mb-2 text-muted" style="font-size: 12px !important;">
+                                                    Assigned To: <span class="badge bg-label-primary">{{ $quick_note->assignedTo?->full_name }}</span>
+                                                </div>
+                                            @endif
 
-                        <div class="col-sm-3">
-                            <div class="card">
-                                <div class="card-header d-flex justify-content-between bg-light" style="padding: 1rem 1rem !important;">
-                                    <div class="card-title mb-0">
-                                        <h5 class="m-0">Title</h5>
-                                        <small class="text-muted">Created by / date</small>
-                                    </div>
-                                    <div class="dropdown">
-                                        <button class="btn p-0" type="button" id="earningReports" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="ti ti-dots-vertical ti-sm text-muted"></i>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="earningReports" style="">
-                                        <a class="dropdown-item" href="javascript:void(0);">Edit</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                                            @php
+                                                $fullDescription = strip_tags($quick_note->note_description); // Get clean text
+                                                $limit = 100; // Set your desired character limit for the preview
+
+                                                if (strlen($fullDescription) > $limit) {
+                                                    $limitedDescription = Str::limit($fullDescription, $limit); // Truncate using Laravel's Str::limit
+                                                    $showReadMore = true;
+                                                } else {
+                                                    $limitedDescription = $fullDescription;
+                                                    $showReadMore = false;
+                                                }
+                                            @endphp
+
+                                            {{ $limitedDescription }}
+
+                                            @if ($showReadMore)
+                                                | <a href="#" class="read-more-link text-primary" style="font-size: 12px !important;">Read More</a>
+                                            @endif
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-between text-muted p-3">
+                                            <span style="font-size: 11px !important;">1 minuts ago </span> 
+                                            <span style="font-size: 11px !important;" ><a href="#"><i class="ti ti-message me-1"></i>121</a></span>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="card-body p-3 mt-2">
-                                    <p>Summanry text</p>
-                                </div>
-                                 <div class="card-footer d-flex justify-content-between text-muted p-3">
-                                    <span stye="font-size: 9px !important;">1 minuts ago </span> 
-                                     <span stye="font-size: 9px !important;" ><a href="#"><i class="ti ti-message me-1"></i>121</a></span>
-                                 </div>
-                            </div>
-                        </div>
+                                </div>  
+                            @endforeach
+                        @endif
                     </div>
                 </div>
 
@@ -215,27 +241,23 @@ function openQuickNoteOffcanvas(targetId = null) {
     $('#quick_note_form')[0].reset(); // Reset form
     $('#target_id').val(''); // Clear ID
     if (targetId) {
+        let url = "{{ route('tools.quick-note.edit', ':quickNote') }}".replace(':quickNote', targetId);
+
         $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Thoughts</h5><span class="text-white slogan">Edit New Thoughts</span>`);
         $.ajax({
-            url: `/thoughts/${targetId}/edit`,
+            url: url,
             type: 'GET',
             success: function (data) {
 
-                let content = data.thoughts.thoughts_details;
+                let content = data.quick_note.note_description;
                 let cleanContent = content.replace(/^<p>|<\/p>$/g, '');
 
-                $('#target_id').val(data.thoughts.id);
-                $('#thoughts_title').val(data.thoughts.thoughts_title);
-                $('#display_date').val(data.thoughts.display_date);
-                $('#thoughts_details').val(cleanContent);
+                $('#target_id').val(data.quick_note.id);
+                $('#title').val(data.quick_note.title);
+                $('#note_description').val(cleanContent);
+                $('#assigned_to').val(data.quick_note.title).trigger('change');
                 // document.getElementById('thoughts-editor').textContent = cleanContent;
                 quillEditor1.root.innerHTML = cleanContent;
-
-                const previewEdit = document.getElementById("PicturePreview");
-                previewEdit.src = `/storage/${data.thoughts.picture}`;;
-                previewEdit.style.display = "block";
-
-                $('#picture').val('');
             }
         });
     }

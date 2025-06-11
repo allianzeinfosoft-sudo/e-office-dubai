@@ -15,6 +15,7 @@ class QuickNoteController extends Controller
     {
         //
         $data['meta_title'] = 'Quick Notes';
+        $data['quick_notes'] = QuickNote::with('assignedTo', 'createdBy')->where('created_by', Auth::user()->id)->get();
         return view('tools.quick-note.index', $data);
     }
 
@@ -63,7 +64,8 @@ class QuickNoteController extends Controller
      */
     public function edit(QuickNote $quickNote)
     {
-        //
+        $data['quick_note'] = $quickNote;
+        return response()->json($data);
     }
 
     /**
@@ -77,8 +79,11 @@ class QuickNoteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(QuickNote $quickNote)
+    public function destroy($id)
     {
         //
+        $quickNote = QuickNote::find($id);
+        $quickNote->delete();
+        return redirect()->back()->with('success', 'Thoughts deleted successfully!');
     }
 }
