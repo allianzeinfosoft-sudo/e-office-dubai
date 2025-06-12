@@ -195,6 +195,8 @@
                                     </div> 
                                   @endif
 
+                                  
+
                                 @else
 
                                   @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
