@@ -569,7 +569,7 @@ class AttendanceController extends Controller{
         ]);
     } 
 
-    public function markOut(Request $request){
+    /* public function markOut(Request $request){
         $user = Auth::user();
         $employee = $user->employee;
 
@@ -666,7 +666,7 @@ class AttendanceController extends Controller{
                 'signout_time' => date('h:i A', strtotime($attendance->signout_time)),
             ],
         ]);
-    }
+    } */
 
     public function customMarkIn(Request $request) {
         $userId = Auth::user()->id;
