@@ -166,7 +166,7 @@
                               @php
                                 $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                 $now              = \Carbon\Carbon::now();
-                                $isLate           = $now->gt($loginLimitTime);
+                                $isLate           = ($shiftType == 'fullday') ? false : $now->gt($loginLimitTime);
                                 $todayName        = $now->format('l'); // E.g., "Monday"
                                 $fixedWeekOffs    = ['Saturday', 'Sunday'];
                                 $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
@@ -174,6 +174,7 @@
                                 $allWeekOffs      = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
                                 $isWeekOffToday   = in_array($todayName, $allWeekOffs);
                               @endphp
+                              
                               
                               
                               @if($attendance && $attendance_current)
@@ -190,6 +191,7 @@
                                           <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
                                       </div>
                                   @else
+
                                     <div class="text-center">
                                       <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($disableCustomMarkIn  || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
                                     </div> 
@@ -213,8 +215,7 @@
                                 @endif
 
                               @elseif(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-                                 
-                                  @if(!empty($disableCustomMarkIn))
+                                  @if($disableCustomMarkIn)
                                       <div class="badge bg-label-warning p-3 w-100 mb-3">
                                           You can mark in only between {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A') : '' }}
                                           and {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->addMinutes(15)->format('h:i A') : '' }}.

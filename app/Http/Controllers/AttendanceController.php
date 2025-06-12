@@ -118,6 +118,7 @@ class AttendanceController extends Controller{
 
             if ($start === '08:00:00' && $end === '07:55:00') {
                 $data['disableCustomMarkIn'] = false;
+                $data['shiftType'] = 'fullday';
             }else{
                 $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
                 $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
@@ -280,7 +281,7 @@ class AttendanceController extends Controller{
 
         $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100); // Assuming 480 = 8 hours work
-
+        
         /* Mission Mark Out First */
 
         if($shiftType == 'night'){
@@ -462,7 +463,7 @@ class AttendanceController extends Controller{
             $data['error'] = "Incomplete working hours found. You need to take  approve from your higher authority.";
             return view('attendance.no_action_from', $data);
         }
-
+        
         return view('attendance.index', $data);
     }
 
@@ -530,12 +531,16 @@ class AttendanceController extends Controller{
 
     }
 
-    public function markOut(Request $request) {
+    /* public function markOut(Request $request) {
         
         $shift = Workshift::find(Auth::user()->employee?->shift_id);
         $shiftType = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
         $data['shiftType'] = $shiftType;
         
+        $start = Carbon::parse($shift->shift_start_time)->format('H:i:s');
+        $end = Carbon::parse($shift->shift_end_time)->format('H:i:s');
+
+            
 
         if($shiftType == 'night'){
             $attendance = Attendance::with('employee')->where([
@@ -549,6 +554,14 @@ class AttendanceController extends Controller{
             ])->first();
         }
 
+        if ($start === '08:00:00' && $end === '07:55:00') {
+            $attendance = Attendance::with('employee')->where([
+                'username' => Auth::user()->username,
+                'signout_date' => null,
+                'signout_time' => null,
+            ])->first();
+        }
+
         if (!$attendance) {
             return response()->json([
                 'success' => false,
@@ -556,7 +569,7 @@ class AttendanceController extends Controller{
             ]);
         }
 
-        if ($attendance->signout_time) {
+        if ($attendance->signout_time){
             return response()->json([
                 'success' => false,
                 'message' => 'You have already marked out today.',
@@ -578,7 +591,7 @@ class AttendanceController extends Controller{
 
         $isIncomplete = strtotime($workingTime['total_working_time']) < strtotime('08:00:00') ? 1 : 0;
 
-        /* send to block list */
+        
         if($isIncomplete){
             CustomHelper::addToBlockList([
                 'user_id'    => $attendance->emp_id,
@@ -603,6 +616,105 @@ class AttendanceController extends Controller{
             'data' => [
                 'signout_time' => date('h:i A', strtotime($attendance->signout_time))
             ]
+        ]);
+    } */
+
+    public function markOut(Request $request){
+        $user = Auth::user();
+        $employee = $user->employee;
+
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee record not found.',
+            ]);
+        }
+
+        $shift = Workshift::find($employee->shift_id);
+        if (!$shift) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Shift information is missing.',
+            ]);
+        }
+
+        $start = Carbon::parse($shift->shift_start_time)->format('H:i:s');
+        $end = Carbon::parse($shift->shift_end_time)->format('H:i:s');
+
+        $shiftType = (strtotime($start) < strtotime('16:00:00')) ? 'day' : 'night';
+        $signinDate = now()->toDateString();
+
+        if ($shiftType === 'night' && now()->hour < 12) {
+            $signinDate = now()->subDay()->toDateString();
+        }
+
+        // Special overnight shift handling
+        if ($start === '08:00:00' && $end === '07:55:00') {
+            $attendance = Attendance::with('employee')->where([
+                'username' => $user->username,
+                'signout_date' => null,
+                'signout_time' => null,
+            ])->first();
+        } else {
+            $attendance = Attendance::with('employee')->where([
+                'username' => $user->username,
+                'signin_date' => $signinDate,
+            ])->first();
+        }
+
+        if (!$attendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have not marked in yet.',
+            ]);
+        }
+
+        if ($attendance->signout_time) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already marked out today.',
+                'data' => [
+                    'signout_time' => date('h:i A', strtotime($attendance->signout_time)),
+                ],
+            ]);
+        }
+
+        $signoutTime = CustomHelper::formatTimeToSeconds(now()->format('H:i'));
+
+        $workingTime = CustomHelper::calculateTotalWorkingTime(
+            $attendance->signin_date,
+            $attendance->signin_time,
+            now()->format('Y-m-d'),
+            $signoutTime,
+            $attendance->break_time
+        );
+
+        $isIncomplete = strtotime($workingTime['total_working_time']) < strtotime('08:00:00') ? 1 : 0;
+
+        if ($isIncomplete) {
+            CustomHelper::addToBlockList([
+                'user_id'    => $attendance->emp_id,
+                'block_date' => now()->format('Y-m-d'),
+                'username'   => $attendance->username,
+                'full_name'  => $employee->full_name ?? '',
+            ]);
+        }
+
+        $attendance->update([
+            'signout_time' => $signoutTime,
+            'signout_date' => now()->format('Y-m-d'),
+            'punchout_type' => 'Web',
+            'status' => 'mark-out',
+            'working_hours' => $workingTime['total_working_time'],
+            'is_incomplete' => $isIncomplete,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Marked out successfully.',
+            'data' => [
+                'signout_time' => date('h:i A', strtotime($attendance->signout_time)),
+            ],
         ]);
     }
 
