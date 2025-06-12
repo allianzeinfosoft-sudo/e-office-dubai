@@ -81,42 +81,6 @@ class AttendanceController extends Controller{
             return view('attendance.index', $data);
         }
 
-<<<<<<< HEAD
-        /* cutofftime */
-        /* $cutoffTime = $user->employee->login_limited_time ?? '09:15:00';
-        $isLate = now()->format('H:i:s') > $cutoffTime;
-        $data['disableCustomMarkIn'] = $isLate; */
-
-        $shiftStartTime = Carbon::parse($data['employee']?->workshift?->shift_start_time); //$data['employee']?->workshift?->shift_start_time;
-        $shiftEndTime   = Carbon::parse($data['employee']?->workshift?->shift_end_time); //$data['employee']?->workshift?->shift_end_time;
-
-        if($shiftType == 'night') {
-            // Define allowed mark-in window
-            $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
-            $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
-            $now = now();
-            // Disable mark-in outside allowed window
-            $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
-        } else {
-            // Missing shift time data
-            $start = Carbon::parse($shiftStartTime)->format('H:i:s');
-            $end = Carbon::parse($shiftEndTime)->format('H:i:s');
-
-            if ($start === '08:00:00' && $end === '07:55:00') {
-                $data['disableCustomMarkIn'] = false;
-                $data['shiftType'] = 'fullday';
-            }else{
-                $earliestMarkIn     = $shiftStartTime->copy()->subMinutes(30);
-                $latestMarkIn       = $shiftStartTime->copy()->addMinutes(15);
-                $now = now();
-                // Disable mark-in outside allowed window
-                $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn)?? true ;
-            }
-            
-        }
-
-=======
->>>>>>> jerson_eoffice_updates
         // Fetch all holidays in the current month
         $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
         // Fetch all attendance records for the user in this month
