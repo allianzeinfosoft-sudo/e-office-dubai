@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Project;
+use App\Models\ProjectTask;
 use App\Models\User;
 use App\Models\Department;
 use Illuminate\Http\Request;
@@ -50,7 +51,50 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request){
+
+     public function store(Request $request){
+        $request->validate([
+            'project_name'        => 'required|string',
+            'project_add_person'  => 'required|integer|exists:users,id',
+            'department_id'       => 'required|integer|exists:departments,id',
+            'start_date'          => 'nullable|date',
+            'end_date'            => 'nullable|date',
+            'total_hours'         => 'nullable|numeric',
+            'total_day'           => 'nullable|numeric',
+            'task_name'           => 'nullable|array',
+            'task_name.*'         => 'required|string',
+            'reporting_to'        => 'nullable|integer|exists:users,id',
+            'members'             => 'nullable|array',
+            'members.*'           => 'nullable|integer|exists:users,id',
+        ]);
+
+        // Save Project
+        $project = Project::create([
+            'project_name'        => $request->project_name,
+            'project_add_person'  => $request->project_add_person,
+            'department_id'       => $request->department_id,
+            'start_date'          => $request->start_date,
+            'end_date'            => $request->end_date,
+            'total_hours'         => $request->total_hours ?? 0,
+            'total_day'           => $request->total_day ?? 0,
+        ]);
+
+        // Save Tasks
+        if (!empty($request->task_name)) {
+            foreach ($request->task_name as $taskName) {
+                ProjectTask::create([
+                    'project_id'   => $project->id,
+                    'task_name'    => $taskName,
+                    'reporting_to' => $request->reporting_to ?? null,
+                    'members'      => !empty($request->members) ? implode(',', $request->members) : null,
+                ]);
+            }
+        }
+
+        return redirect()->route('projects.index')->with('success', 'Project and tasks created successfully.');
+    }
+
+    /* public function store(Request $request){
         $request->validate([
             'project_name'      => 'required',
             'project_add_person'=> 'required',
@@ -73,7 +117,7 @@ class ProjectController extends Controller
         ]);
 
         return redirect()->route('projects.index')->with('success', 'Project created successfully');
-    }
+    } */
 
     /**
      * Display the specified resource.
