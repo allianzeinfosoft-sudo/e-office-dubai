@@ -22,20 +22,20 @@ class ProjectController extends Controller
 
     public function getProject(Request $request){
         $projects = Project::with('department', 'user')->get();
-            return response()->json([
-                'success' => true,
-                'message' => 'Projects fetched successfully',
-                'data' => $projects->map(function ($project) {
-                    return [
-                        'id'              => $project->id,
-                        'project_name'    => $project->project_name,
-                        'department_name' => optional($project->department)->department ?? '',
-                        'user_name'       => optional($project->user)->username ?? '',
-                        'start_date'      => $project->start_date,
-                        'end_date'        => $project->end_date,
-                    ];
-                }),
-            ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Projects fetched successfully',
+            'data' => $projects->map(function ($project) {
+                return [
+                    'id'              => $project->id,
+                    'project_name'    => $project->project_name,
+                    'department_name' => optional($project->department)->department ?? '',
+                    'user_name'       => optional($project->user)->username ?? '',
+                    'start_date'      => $project->start_date,
+                    'end_date'        => $project->end_date,
+                ];
+            }),
+        ]);
     }
 
     /**
