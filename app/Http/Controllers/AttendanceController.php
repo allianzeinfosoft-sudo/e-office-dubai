@@ -288,78 +288,8 @@ class AttendanceController extends Controller{
         
         $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100); // Assuming 480 = 8 hours work
-<<<<<<< HEAD
-        
-        /* Mission Mark Out First */
-
-        if($shiftType == 'night'){
-            $missingMarkOut = Attendance::with('employee')->where('username', Auth::user()->username)
-            ->where('signin_date', '<', now()->subDay()->format('Y-m-d')) // Check dates before today
-            ->whereNull('signout_time') // No sign-out time means the user has not marked out
-            ->first();
-        }else{
-            $missingMarkOut = Attendance::with('employee')->where('username', Auth::user()->username)
-            ->where('signin_date', '<', now()->format('Y-m-d')) // Check dates before today
-            ->whereNull('signout_time') // No sign-out time means the user has not marked out
-            ->first();
-        }
-
-        if ($missingMarkOut) {   
-            // If there's a missing mark-out, don't allow marking in
-            $data['meta_title'] = 'Mark Out First';
-            $data['missingMarkOut'] = $missingMarkOut; // Pass the missing mark-out date to the view
-            $data['error'] = "You missed to Mark-out on ". date('d-m-Y', strtotime($missingMarkOut->signin_date)) ;
-            return view('attendance.no_action_from', $data);
-            //return view('attendance.markOut', $data); // Show a page telling the user to mark out first
-        }
-
-
-        /* for ($day = 1; $day <= now()->day; $day++) {
-            $date = now()->format('Y-m-') . str_pad($day, 2, '0', STR_PAD_LEFT);
-            $dayOfWeek = date('w', strtotime($date)); // 0 = Sunday, 6 = Saturday
-            
-            // Mark week off days and skip them from calculations
-            if ($dayOfWeek == 0 || $dayOfWeek == 6) {
-                $weekOffDays[] = $day;
-                continue;
-            }
-
-            
-
-            // Fetch worked minutes for the day
-            $minutes = Attendance::where('username', Auth::user()->username)
-                ->where('signin_date', $date)
-                ->selectRaw("
-                    IFNULL(
-                        SUM(
-                            TIMESTAMPDIFF(
-                                MINUTE,
-                                STR_TO_DATE(signin_time, '%H:%i:%s'),
-                                STR_TO_DATE(signout_time, '%H:%i:%s')
-                            )
-                        ), 0
-                    ) as worked_hours
-                ")
-                ->value('worked_hours') ?? 0;            
-            if ($minutes > 0) {
-                $workedDays++;
-            }
-
-            $totalMinutes += $minutes;
-
-            $hours = floor($minutes / 60);
-            $mins = $minutes % 60;
-
-            $workedHours[] = sprintf('%02d:%02d', $hours, $mins);
-            $categories[] = $day;
-        } */
-        
-
-
-=======
 
        
->>>>>>> jerson_eoffice_updates
         // Total working days (excluding week off days)
         $totalWorkingDays = $daysInMonth - count($weekOffDays);
         
@@ -537,12 +467,7 @@ class AttendanceController extends Controller{
 
     }
 
-<<<<<<< HEAD
-    /* public function markOut(Request $request) {
-        
-=======
     public function markOut(Request $request) {
->>>>>>> jerson_eoffice_updates
         $shift = Workshift::find(Auth::user()->employee?->shift_id);
         $shiftType = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
         $data['shiftType'] = $shiftType;
@@ -586,16 +511,6 @@ class AttendanceController extends Controller{
             }
         }
 
-<<<<<<< HEAD
-        if ($start === '08:00:00' && $end === '07:55:00') {
-            $attendance = Attendance::with('employee')->where([
-                'username' => Auth::user()->username,
-                'signout_date' => null,
-                'signout_time' => null,
-            ])->first();
-        }
-=======
->>>>>>> jerson_eoffice_updates
 
         if (!$attendance) {
             return response()->json([
@@ -652,7 +567,7 @@ class AttendanceController extends Controller{
                 'signout_time' => date('h:i A', strtotime($attendance->signout_time))
             ]
         ]);
-    } */
+    } 
 
     public function markOut(Request $request){
         $user = Auth::user();
