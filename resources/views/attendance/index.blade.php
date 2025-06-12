@@ -44,8 +44,7 @@
           <h4 class="fw-bold py-3 mb-4 text-muted "><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
           
           <div class="row">
-            
-            
+              
                 <!-- Statistics -->
                 <div class="col-12 col-xl-12 col-lg-12">
                   <div class="row g-4 mb-4 justify-content-center">
@@ -159,14 +158,16 @@
 
                           </div>
 
-                          
+                           
+
                           <div class="row g-4">
                             <div class="col-lg-12">
                               
+
                               @php
                                 $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                 $now              = \Carbon\Carbon::now();
-                                $isLate           = $now->gt($loginLimitTime);
+                                $isLate           = ($shiftType == 'fullday') ? false : $now->gt($loginLimitTime);
                                 $todayName        = $now->format('l'); // E.g., "Monday"
                                 $fixedWeekOffs    = ['Saturday', 'Sunday'];
                                 $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
@@ -174,13 +175,13 @@
                                 $allWeekOffs      = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
                                 $isWeekOffToday   = in_array($todayName, $allWeekOffs);
                               @endphp
-                              
-                              
-                              @if($attendance && $attendance_current)
-                                @if($shiftType == 'night')      
+                            
+                              @if($attendance || $attendance_current)
+                                @if($shiftType == 'night')
+                                
                                   @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
-                                      <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                          Last punch In Time: {{ date('H:i A', strtotime($attendance_current?->signin_time)) }}
+                                      <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
+                                          Last Punch In Time: {{ date('d-m-Y', strtotime($attendance_current?->signin_date)) }} {{ date('H:i A', strtotime($attendance_current?->signin_time)) }}
                                       </div>
                                       <div class="text-center">
                                           <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
@@ -194,14 +195,10 @@
                                       <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($disableCustomMarkIn  || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
                                     </div> 
                                   @endif
-
-                                  
-
                                 @else
-
                                   @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-                                      <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                          Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}
+                                      <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
+                                          Last Punch In Time: {{date('d-m-Y', strtotime($attendance->signin_date))}}  {{ date('H:i A', strtotime($attendance->signin_time)) }}
                                       </div>
                                       <div class="text-center">
                                           <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
@@ -216,7 +213,7 @@
 
                               @elseif(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
                                  
-                                  @if(!empty($disableCustomMarkIn))
+                                  @if($disableCustomMarkIn || $isLate || $isWeekOffToday)
                                       <div class="badge bg-label-warning p-3 w-100 mb-3">
                                           You can mark in only between {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A') : '' }}
                                           and {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->addMinutes(15)->format('h:i A') : '' }}.
