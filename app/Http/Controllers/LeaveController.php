@@ -354,6 +354,7 @@ class LeaveController extends Controller
                     'leave_approver' => $leaves->initial_approver_id,
                     'initial_approver_name' => $leaves->initialApprover?->full_name,
                     'initial_approver_role' => $leaves->initialApprover?->role,
+                    'initial_approver_designation' => $leaves->initialApprover?->designation,
                     'init_appr_status' => $leaves->initial_approve_status,
                     'login_user' => Auth::user()->id,
                     'login_user_group' => Auth::user()->employee?->group,
