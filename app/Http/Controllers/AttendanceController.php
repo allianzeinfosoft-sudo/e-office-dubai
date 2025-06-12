@@ -32,27 +32,30 @@ class AttendanceController extends Controller{
      * Display a listing of the resource.
      */
     public function index() {
-        $data['meta_title'] = 'Attendance';
         $user               = Auth::user();
         $today              = now()->format('Y-m-d');
         $yesterday          = now()->subDay()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
+        $shift              = Workshift::find($user->employee?->shift_id);
+        $shiftType          = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
+        
+        $data['meta_title']     = 'Attendance';
+        $data['shiftType']      = $shiftType;
+        $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
+        $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
 
-        $shift = Workshift::find($user->employee?->shift_id);
+        $shiftStartTime     = Carbon::parse($data['employee']?->workshift?->shift_start_time); 
+        $shiftEndTime       = Carbon::parse($data['employee']?->workshift?->shift_end_time); 
 
-        $shiftType = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
-        $data['shiftType'] = $shiftType;
+        $start = Carbon::parse($shiftStartTime)->format('H:i:s');
+        $end = Carbon::parse($shiftEndTime)->format('H:i:s');
 
         // Optional: Define how to check holidays or weekly off
         $isHolidayOrWeekOff = function ($date) use ($weekOffDays, $user) {
-            $isHoliday = Holiday::where('holiday_group', $user->employee->holidayGroup)
-                            ->whereDate('date', $date)
-                            ->exists();
-
+            $isHoliday = Holiday::where('holiday_group', $user->employee->holidayGroup)->whereDate('date', $date)->exists();
             $isWeekOff = in_array(date('w', strtotime($date)), $weekOffDays);
-
             return $isHoliday || $isWeekOff;
         };
 
@@ -60,42 +63,25 @@ class AttendanceController extends Controller{
         $getLastWorkingDate = function ($startDate) use ($isHolidayOrWeekOff) {
             $date = $startDate;
             while ($isHolidayOrWeekOff($date)) {
-                $date = \Carbon\Carbon::parse($date)->subDay()->format('Y-m-d');
+                $date = Carbon::parse($date)->subDay()->format('Y-m-d');
             }
             return $date;
         };
 
-        if ($shiftType === 'night') {
-            $lastWorkingDate = $getLastWorkingDate($yesterday);
-
-            $data['attendance'] = Attendance::where([
-                'username' => $user->username,
-                'signin_date' => $lastWorkingDate,
-            ])->first();
-
-            $data['attendance_current'] = Attendance::where([
-                'username' => $user->username,
-                'signin_date' => $today,
-            ])->first();
-        } else {
-            $data['attendance'] = Attendance::where([
-                'username' => $user->username,
-                'signin_date' => $today,
-            ])->first();
-
-            $data['attendance_current'] = $data['attendance'];
-        }
-        
-        $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
-        $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
-
+        /* If join date is today then set start day to 1 */
         $joinDate = Carbon::parse($user->employee?->join_date);
-        $startDay = 1;
+
+        if ($joinDate->isSameMonth($today)) {
+            $startDay = $joinDate->day;
+        }else{
+            $startDay = 1;
+        }
 
         if($user->employee?->join_date == $today){
             return view('attendance.index', $data);
         }
 
+<<<<<<< HEAD
         /* cutofftime */
         /* $cutoffTime = $user->employee->login_limited_time ?? '09:15:00';
         $isLate = now()->format('H:i:s') > $cutoffTime;
@@ -129,24 +115,20 @@ class AttendanceController extends Controller{
             
         }
 
+=======
+>>>>>>> jerson_eoffice_updates
         // Fetch all holidays in the current month
         $holidays = DB::table('holidays') ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
         // Fetch all attendance records for the user in this month
         $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
-
-        if ($joinDate->isSameMonth($today)) {
-            $startDay = $joinDate->day;
-        }
-
-
+        
         for ($day = $startDay; $day < now()->day; $day++) {
-
             $date           = "$currentMonth-" . str_pad($day, 2, '0', STR_PAD_LEFT);
             $dayOfWeek      = date('w', strtotime($date));
             $isWeekOff      = in_array($dayOfWeek, $weekOffDays);
             $isHoliday      = in_array($date, $holidays);
             $hasAttendance  = in_array($date, $attendanceDays);
-
+            
             if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
                 // Check if leave exists that covers this dategi
                 $leaveExists = DB::table('leaves')
@@ -154,18 +136,82 @@ class AttendanceController extends Controller{
                 ->whereDate('leave_from', '<=', $date)
                 ->whereDate('leave_to', '>=', $date)
                 ->exists();
-
+                
                 if (!$leaveExists) {
-                    // User missed work on a working day without leave
                     $data['date'] = $date;
                     $data['error'] = "You missed work on ". date('d-m-Y', strtotime($date))  ." without apply leave. Please click here to
                     <a class='btn btn-xs btn-primary' href='" . route('leaves.create', ['date' => $date]) . "'> Apply Leave </a>";
                     return view('attendance.no_action_from', $data);
-                    /* return redirect()->route('leaves.create', ['date' => $date])
-                        ->with('error', "You missed work on $date without leave. Please apply for leave."); */
                 }
             }
         }
+        
+        if ($shiftType === 'night') {
+            $lastWorkingDate = $getLastWorkingDate($yesterday);
+
+            $data['attendance'] = Attendance::where([
+                'username' => $user->username,
+                'signin_date' => $lastWorkingDate
+            ])->first();
+            
+            $data['attendance_current'] = Attendance::where([
+                'username' => $user->username,
+                'signin_date' => $today,
+            ])->first();
+            
+            // Define allowed mark-in window
+            $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
+            $latestMarkIn = $shiftStartTime->copy()->addMinutes(15);
+            $now = now();
+            
+            $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn);
+            
+            // Check for any previous attendance missing signout (excluding current)
+            $missingMarkOut = Attendance::with('employee')
+                ->where(['username' => $user->username, 'signin_date' => $lastWorkingDate, 'signout_date' => null, 'signout_time' => null])
+                ->first();
+            if ($missingMarkOut) {
+                $data['meta_title'] = 'Mark Out First';
+                $data['missingMarkOut'] = $missingMarkOut;
+                $data['error'] = "You missed to Mark-out on " . date('d-m-Y', strtotime($missingMarkOut->signin_date));
+                return view('attendance.no_action_from', $data);
+            }
+
+        } else {
+
+            /* Full day shift */
+            if ($start === '08:00:00' && $end === '07:55:00') {
+                $data['disableCustomMarkIn'] = false;
+                $data['shiftType'] = 'fullday';
+                $data['attendance'] = Attendance::where([ 'username' => $user->username, 'signout_date' => null, 'signout_time' => null, ])->first();
+                $data['attendance_current'] = $data['attendance'];
+
+            } else {
+                $data['attendance'] = Attendance::where([ 'username' => $user->username, 'signin_date' => $today, ])->first();
+                $data['attendance_current'] = $data['attendance'];
+
+                $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
+                $latestMarkIn = $shiftStartTime->copy()->addMinutes(15);
+                $now = now();
+                $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn);
+
+                $missingMarkOut = Attendance::with('employee')
+                    ->where('username', $user->username)
+                    ->where('signin_date', '<', $today)
+                    ->whereNull('signout_time')
+                    ->latest('signin_date')
+                    ->first();
+    
+                if ($missingMarkOut) {
+                    $data['meta_title'] = 'Mark Out First';
+                    $data['missingMarkOut'] = $missingMarkOut;
+                    $data['error'] = "You missed to Mark-out on " . date('d-m-Y', strtotime($missingMarkOut->signin_date));
+                    return view('attendance.no_action_from', $data);
+                }
+            }
+        }
+
+        
 
         $totalMinutes = 0;
         $workedHours = [];
@@ -224,8 +270,6 @@ class AttendanceController extends Controller{
             $data['avgProgressPercentage'] = 0;
         }
 
-        
-        
         if (!empty($data['attendance_current']->signout_time)) {
             
             $todayMinutes = Attendance::where('username', Auth::user()->username)
@@ -241,18 +285,17 @@ class AttendanceController extends Controller{
                 ")
                 ->value('today_minutes') ?? 0;
             } else {
-              
-            $signinDate = now()->toDateString();
-            $now = now()->toDateTimeString();
-            $effectiveSigninDate = $signinDate;
-
-            if ($shiftType == 'night') {
-                // For night shifts, we consider the "working day" to be the calendar day when the shift started
-                // So if it's before the cutoff time (e.g., 6 AM), we consider it part of the previous day's shift
-                if (now()->hour < 6) { // 6 AM cutoff for night shifts
-                    $effectiveSigninDate = now()->subDay()->toDateString();
+                
+                $signinDate = ($data['attendance_current']->signin_date) ?? now()->toDateString();
+                $now = now()->toDateTimeString();
+                $effectiveSigninDate = $signinDate;
+                if ($shiftType == 'night') {
+                    // For night shifts, we consider the "working day" to be the calendar day when the shift started
+                    // So if it's before the cutoff time (e.g., 6 AM), we consider it part of the previous day's shift
+                    if (now()->hour < 6) { // 6 AM cutoff for night shifts
+                        $effectiveSigninDate = now()->subDay()->toDateString();
+                    }
                 }
-            }
 
             $todayMinutes = Attendance::where('username', Auth::user()->username)
                 ->where(function($query) use ($effectiveSigninDate) {
@@ -278,9 +321,10 @@ class AttendanceController extends Controller{
         // Calculate hours and minutes
         $todayHours = intdiv($todayMinutes, 60);
         $todayMins  = $todayMinutes % 60;
-
+        
         $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100); // Assuming 480 = 8 hours work
+<<<<<<< HEAD
         
         /* Mission Mark Out First */
 
@@ -348,6 +392,10 @@ class AttendanceController extends Controller{
         
 
 
+=======
+
+       
+>>>>>>> jerson_eoffice_updates
         // Total working days (excluding week off days)
         $totalWorkingDays = $daysInMonth - count($weekOffDays);
         
@@ -364,7 +412,6 @@ class AttendanceController extends Controller{
             ? round(($totalMinutes / $possibleMinutes) * 100)
             : 0;
 
-        
 
         // Pass data to frontend
         $data['categories'] = $categories;
@@ -372,13 +419,7 @@ class AttendanceController extends Controller{
         $data['weekOffDays'] = $weekOffDays;
         $data['totalWorkingDays'] = $totalWorkingDays;
 
-        /* $missingReport = Attendance::where('status', 'mark-out') -> whereNotExists(function ($query) {
-            $query->select(DB::raw(1))
-                ->from('work_reports')
-                ->whereColumn('work_reports.report_date', 'attendances.signin_date')
-                ->whereColumn('work_reports.username', 'attendances.username');
-        })->first();  */
-
+    
         $missingReport = Attendance::with('employee')->where('attendances.emp_id', Auth::user()->id)
         ->leftJoin('work_reports', function ($join) {
             $join->on('work_reports.report_date', '=', 'attendances.signin_date')
@@ -468,6 +509,7 @@ class AttendanceController extends Controller{
     }
 
 
+
     /**
      * Show the form for creating a new resource.
      */
@@ -531,11 +573,23 @@ class AttendanceController extends Controller{
 
     }
 
+<<<<<<< HEAD
     /* public function markOut(Request $request) {
         
+=======
+    public function markOut(Request $request) {
+>>>>>>> jerson_eoffice_updates
         $shift = Workshift::find(Auth::user()->employee?->shift_id);
         $shiftType = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
         $data['shiftType'] = $shiftType;
+
+        $shiftStartTime     = Carbon::parse($shift->shift_start_time); 
+        $shiftEndTime       = Carbon::parse($shift->shift_end_time); 
+
+        $start = Carbon::parse($shiftStartTime)->format('H:i:s');
+        $end = Carbon::parse($shiftEndTime)->format('H:i:s');
+
+        
         
         $start = Carbon::parse($shift->shift_start_time)->format('H:i:s');
         $end = Carbon::parse($shift->shift_end_time)->format('H:i:s');
@@ -543,17 +597,32 @@ class AttendanceController extends Controller{
             
 
         if($shiftType == 'night'){
+
+            // For night shift: decide based on current time if mark-out should check today or yesterday's signin_date
+            // If it's before noon (e.g. marking out in early morning), refer to previous day's signin
+            $signinDate = now()->hour < 12 ? now()->subDay()->format('Y-m-d') : now()->format('Y-m-d');
+
             $attendance = Attendance::with('employee')->where([
                 'username' => Auth::user()->username,
-                'signin_date' => now()->subDay()->format('Y-m-d')
+                'signin_date' => $signinDate
             ])->first();
+
         }else{
-            $attendance = Attendance::with('employee')->where([
-                'username' => Auth::user()->username,
-                'signin_date' => now()->format('Y-m-d')
-            ])->first();
+            if ($start === '08:00:00' && $end === '07:55:00') {
+                $attendance = Attendance::with('employee')->where([
+                    'username' => Auth::user()->username,
+                    'signout_date' => null,
+                    'signout_time' => null
+                ])->first();
+            }else{
+                $attendance = Attendance::with('employee')->where([
+                    'username' => Auth::user()->username,
+                    'signin_date' => now()->format('Y-m-d')
+                ])->first();
+            }
         }
 
+<<<<<<< HEAD
         if ($start === '08:00:00' && $end === '07:55:00') {
             $attendance = Attendance::with('employee')->where([
                 'username' => Auth::user()->username,
@@ -561,6 +630,8 @@ class AttendanceController extends Controller{
                 'signout_time' => null,
             ])->first();
         }
+=======
+>>>>>>> jerson_eoffice_updates
 
         if (!$attendance) {
             return response()->json([
