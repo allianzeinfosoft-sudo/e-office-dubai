@@ -36,6 +36,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WorkFromHomeAttendanceController;
 use App\Http\Controllers\ConferenceHallController;
 use App\Http\Controllers\QuickNoteController;
+use App\Http\Controllers\EventCalendarController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -422,6 +423,9 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/tools/quick-note/{id}/destroy', [QuickNoteController::class, 'destroy'])->name('tools.quick-note.destroy');
     Route::get('/tools/quick-note/{quickNote}/show', [QuickNoteController::class, 'show'])->name('tools.quick-note.show');
     Route::post('/tools/quick-note/comment', [QuickNoteController::class, 'storeComment'])->name('quick-note.comment.store');
+
+    /* Tools - Quick Note */
+    Route::get('/tools/event-calendar', [EventCalendarController::class, 'index'])->name('tools.event-calendar.index');
     
 
 

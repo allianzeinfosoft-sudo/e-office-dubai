@@ -542,7 +542,7 @@ return [
             ],
             [
                 'title' => 'Event Calendar',
-                'route' =>  '#',
+                'route' =>  '/tools/event-calendar',
                 'permission' => ['view event calendar'],
             ],
             [

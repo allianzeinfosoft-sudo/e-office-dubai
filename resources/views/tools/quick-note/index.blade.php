@@ -90,7 +90,7 @@
                                             {{ $limitedDescription }}
 
                                             @if ($showReadMore)
-                                                | <a href="#" class="read-more-link text-primary" style="font-size: 12px !important;">Read More</a>
+                                                | <a href="javascript:void(0);" onclick="viewQuickNoteOffcanvas({{ $quick_note->id }})" class="read-more-link text-primary" style="font-size: 12px !important;">Read More</a>
                                             @endif
                                         </div>
                                         <div class="card-footer d-flex justify-content-between text-muted p-3">
