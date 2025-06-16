@@ -165,17 +165,23 @@ class EventCalendarController extends Controller
         'allDay' => 'nullable|boolean',
     ]);
 
-    EventCalendar::create([
-        'title' => $data['eventTitle'],
-        'label' => $data['eventLabel'] ?? null,
-        'start_date' => $data['eventStartDate'],
-        'end_date' => $data['eventEndDate'],
-        'url' => $data['eventURL'] ?? null,
-        'guests' => is_array($data['eventGuests']) ? json_encode($data['eventGuests']) : [],
-        'location' => $data['eventLocation'] ?? null,
-        'description' => $data['eventDescription'] ?? null,
-        'all_day' => $request->has('allDay') ? true : false,
-    ]);
+    EventCalendar::updateOrcreate(
+        [
+            'title' => $data['eventTitle'],
+            'label' => $data['eventLabel'] ?? null,
+            'start_date' => $data['eventStartDate'],
+        ],
+        [
+            'title' => $data['eventTitle'],
+            'label' => $data['eventLabel'] ?? null,
+            'start_date' => $data['eventStartDate'],
+            'end_date' => $data['eventEndDate'],
+            'url' => $data['eventURL'] ?? null,
+            'guests' => is_array($data['eventGuests']) ? json_encode($data['eventGuests']) : [],
+            'location' => $data['eventLocation'] ?? null,
+            'description' => $data['eventDescription'] ?? null,
+            'all_day' => $request->has('allDay') ? true : false,
+        ]);
 
     return response()->json(['success' => true, 'message' => 'Event created']);
     }
@@ -207,8 +213,16 @@ class EventCalendarController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(EventCalendar $eventCalendar)
-    {
-        //
+    public function destroy($type, $id){
+        switch ($type) {
+            case 'Personal' || 'Business' || 'Family' || 'ETC':
+                EventCalendar::findOrFail($id)->delete();
+                break;
+            // Add more cases if needed
+            default:
+                return response()->json(['error' => 'Invalid event type.'], 400);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

@@ -150,10 +150,13 @@
                               <div class="mb-3">
                                 <label class="form-label" for="eventLabel">Label</label>
                                 <select class="select2 select-event-label form-select" id="eventLabel" name="eventLabel">
+                                  <option data-label="success" value="birthdays" selected>Birthdays</option>
+                                  <option data-label="warning" value="events" selected>Events</option>
+                                  <option data-label="primary" value="appreciations" selected>Appreciations</option>
+                                  <option data-label="danger" value="Holiday">Holiday</option>
+                                  <option data-label="info" value="Personal">Personal</option>
                                   <option data-label="primary" value="Business" selected>Business</option>
-                                  <option data-label="danger" value="Personal">Personal</option>
                                   <option data-label="warning" value="Family">Family</option>
-                                  <option data-label="success" value="Holiday">Holiday</option>
                                   <option data-label="info" value="ETC">ETC</option>
                                 </select>
                               </div>
@@ -207,6 +210,7 @@
 
                               <div class="mb-3 d-flex justify-content-sm-between justify-content-start my-4">
                                 <div>
+                                  <input type="hidden" name="event_id" id="event_id">
                                   <button type="submit" class="btn btn-primary btn-add-event me-sm-3 me-1">Add</button>
                                   <button type="reset" class="btn btn-label-secondary btn-cancel me-sm-0 me-1" data-bs-dismiss="offcanvas"> Cancel</button>
                                 </div>
@@ -262,6 +266,7 @@
     events.push(...holidays);
 
     $(function (){
+      
       $('#eventFormNew').on('submit', function () {
           let formData = {
               eventTitle: $('#eventTitle').val(),
@@ -285,11 +290,45 @@
                       alert(response.message);
                       $('#eventFormNew')[0].reset();
                       $('#eventGuests').val("").trigger('change');
+                        window.location.reload();
                       // refresh calendar or data
                   }
               }
           });
       });
+
+      $('.btn-delete-event').on('click', function () {
+          const eventId = $('#event_id').val();
+          const calendarType = $('#eventLabel').val(); // e.g., "appreciation", "Holiday", etc.
+
+          if (!eventId || !calendarType) {
+              alert('Cannot delete. Missing event ID or type.');
+              return;
+          }
+
+          if (confirm('Are you sure you want to delete this event?')) {
+              $.ajax({
+                  url: `/tools/event-calendar/delete/${calendarType}/${eventId}`, // or use route() if passing via blade
+                  method: 'DELETE',
+                  data: {
+                      _token: $('meta[name="csrf-token"]').attr('content'),
+                  },
+                  success: function (response) {
+                      alert('Event deleted successfully!');
+                      // Optionally refresh your calendar here
+                      $('#eventFormNew')[0].reset();
+                      $('.btn-delete-event').addClass('d-none');
+                      $('#eventFormNew').removeData('event-id');
+                      $('#calendar').fullCalendar('refetchEvents'); // or however you're loading events
+                      window.location.reload();
+                  },
+                  error: function (xhr) {
+                      alert('Failed to delete event.');
+                  }
+              });
+          }
+      });
+
     });
 
   </script>
