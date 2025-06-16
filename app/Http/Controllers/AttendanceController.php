@@ -268,21 +268,18 @@ class AttendanceController extends Controller{
                 
                 $now = Carbon::now()->format('Y-m-d H:i:s');
                 $effectiveSigninDate = now()->format('Y-m-d'); // $now->toDateTimeString();
-
+                
                 if ($shiftType == 'night') {
                     // For night shifts, we consider the "working day" to be the calendar day when the shift started
                     // So if it's before the cutoff time (e.g., 6 AM), we consider it part of the previous day's shift
-                    if (now()->hour < 9) { // 6 AM cutoff for night shifts
+                    if (now()->hour < 12) { // 6 AM cutoff for night shifts
                         $signinDate = ($data['attendance']->signin_date);
                         $effectiveSigninDate = $signinDate; // Subtract 1 day from $signinDate;
                     }else{
-                        $signinDate = ($data['attendance']->signin_date);
+                        $signinDate = ($data['attendance_current']->signin_date);
                         $effectiveSigninDate = $signinDate;
                     }
                 }
-
-                
-                
                 $todayMinutes = Attendance::where('username', Auth::user()->username)
                 ->whereDate('signin_date', $effectiveSigninDate)
                 ->selectRaw("
