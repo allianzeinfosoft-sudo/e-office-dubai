@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EventCalendar;
 use App\Models\Employee;
 use App\Models\Event;
+use App\Models\Appreciation;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -63,10 +64,30 @@ class EventCalendarController extends Controller
 
         $data['office_events'] = $office_events;
 
-        
+        /* Appriciations */
+        $appreciations = Appreciation::with('employee','project')->get();
+        $appr_events = [];
+
+        foreach ($appreciations as $index => $result) {
+            $appr_events[] = [
+                'id' => 'appr_' . ($index + 1),
+                'url' => '', // you can later add route('appreciation.show', $result->id)
+                'title' => $result->employee?->full_name . ' appreciated',
+                'start' => $result->display_date,
+                'end' => $result->display_date,
+                'allDay' => true,
+                'extendedProps' => [
+                    'calendar' => 'appreciation',
+                    'event_id' => $result->id,
+                    'details' => $result->appreciation_details,
+                    'picture' => $result->picture,
+                ],
+            ];
+        }
+
+        $data['appr_events'] = $appr_events;
 
         return view('tools.event-calendar.index', $data);
-
     }
 
     /**
@@ -83,6 +104,31 @@ class EventCalendarController extends Controller
     public function store(Request $request)
     {
         //
+        $data = $request->validate([
+        'eventTitle' => 'required|string|max:255',
+        'eventLabel' => 'nullable|string|max:100',
+        'eventStartDate' => 'nullable|date',
+        'eventEndDate' => 'nullable|date',
+        'eventURL' => 'nullable|url',
+        'eventGuests' => 'nullable|array',
+        'eventLocation' => 'nullable|string|max:255',
+        'eventDescription' => 'nullable|string',
+        'allDay' => 'nullable|boolean',
+    ]);
+
+    Event::create([
+        'title' => $data['eventTitle'],
+        'label' => $data['eventLabel'] ?? null,
+        'start_date' => $data['eventStartDate'],
+        'end_date' => $data['eventEndDate'],
+        'url' => $data['eventURL'] ?? null,
+        'guests' => $data['eventGuests'] ?? [],
+        'location' => $data['eventLocation'] ?? null,
+        'description' => $data['eventDescription'] ?? null,
+        'all_day' => $request->has('allDay') ? true : false,
+    ]);
+
+    return response()->json(['success' => true, 'message' => 'Event created']);
     }
 
     /**

@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         birthdays: 'success',
         appriciations: 'primary',
         events: 'warning',
+        appreciation: 'danger',
         Business: 'primary',
         Holiday: 'success',
         Personal: 'danger',

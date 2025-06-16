@@ -68,19 +68,19 @@
                           
                             <div class="app-calendar-events-filter ms-3">
 
-                            <div class="form-check form-check-danger mb-2">
+                            <div class="form-check form-check-success mb-2">
                                 <input class="form-check-input input-filter" type="checkbox" id="select-birthdays" data-value="birthdays" checked />
                                 <label class="form-check-label" for="select-birthdays">Birthdays</label>
                               </div>
                             
-                              <div class="form-check mb-2">
+                              <div class="form-check form-check-warning mb-2">
                                  <input class="form-check-input input-filter" type="checkbox" id="select-events" data-value="events" checked />
                                  <label class="form-check-label" for="select-events">Events</label>
                               </div>
 
-                              <div class="form-check form-check-success mb-2">
-                                <input class="form-check-input input-filter" type="checkbox" id="select-holiday" data-value="holiday" checked />
-                                <label class="form-check-label" for="select-holiday">Holiday</label>
+                              <div class="form-check form-check-danger mb-2">
+                                <input class="form-check-input input-filter" type="checkbox" id="select-holiday" data-value="appreciation" checked />
+                                <label class="form-check-label" for="select-holiday">Appreciations</label>
                               </div>
 
                               <div class="form-check form-check-warning mb-2">
@@ -260,123 +260,45 @@
     let nextMonth = date.getMonth() === 11 ? new Date(date.getFullYear() + 1, 0, 1) : new Date(date.getFullYear(), date.getMonth() + 1, 1);
     // prettier-ignore
     let prevMonth = date.getMonth() === 11 ? new Date(date.getFullYear() - 1, 0, 1) : new Date(date.getFullYear(), date.getMonth() - 1, 1);
-    let events = [
-        /* {
-          id: 11,
-          url: '',
-          title: 'Testing Event',
-          start: '2025-06-01',
-          end: '2025-06-03',
-          allDay: true,
-          extendedProps: {  
-            calendar: 'Business'
-          }
-        },
-        {
-          id: 12,
-          url: '',
-          title: 'Meeting With Client',
-          start: new Date(date.getFullYear(), date.getMonth() + 1, -11),
-          end: new Date(date.getFullYear(), date.getMonth() + 1, -10),
-          allDay: true,
-          extendedProps: {
-            calendar: 'Business'
-          }
-        },
-        {
-          id: 3,
-          url: '',
-          title: 'Family Trip',
-          allDay: true,
-          start: new Date(date.getFullYear(), date.getMonth() + 1, -9),
-          end: new Date(date.getFullYear(), date.getMonth() + 1, -7),
-          extendedProps: {
-            calendar: 'Holiday'
-          }
-        },
-        {
-          id: 4,
-          url: '',
-          title: "Doctor's Appointment",
-          start: new Date(date.getFullYear(), date.getMonth() + 1, -11),
-          end: new Date(date.getFullYear(), date.getMonth() + 1, -10),
-          extendedProps: {
-            calendar: 'Personal'
-          }
-        },
-        {
-          id: 5,
-          url: '',
-          title: 'Dart Game?',
-          start: new Date(date.getFullYear(), date.getMonth() + 1, -13),
-          end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
-          allDay: true,
-          extendedProps: {
-            calendar: 'ETC'
-          }
-        },
-        {
-          id: 6,
-          url: '',
-          title: 'Meditation',
-          start: new Date(date.getFullYear(), date.getMonth() + 1, -13),
-          end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
-          allDay: true,
-          extendedProps: {
-            calendar: 'Personal'
-          }
-        },
-        {
-          id: 7,
-          url: '',
-          title: 'Dinner',
-          start: new Date(date.getFullYear(), date.getMonth() + 1, -13),
-          end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
-          extendedProps: {
-            calendar: 'Family'
-          }
-        },
-        {
-          id: 8,
-          url: '',
-          title: 'Product Review',
-          start: new Date(date.getFullYear(), date.getMonth() + 1, -13),
-          end: new Date(date.getFullYear(), date.getMonth() + 1, -12),
-          allDay: true,
-          extendedProps: {
-            calendar: 'Business'
-          }
-        },
-        {
-          id: 9,
-          url: '',
-          title: 'Monthly Meeting',
-          start: nextMonth,
-          end: nextMonth,
-          allDay: true,
-          extendedProps: {
-            calendar: 'Business'
-          }
-        },
-        {
-          id: 10,
-          url: '',
-          title: 'Monthly Checkup',
-          start: prevMonth,
-          end: prevMonth,
-          allDay: true,
-          extendedProps: {
-            calendar: 'Personal'
-          }
-        } */
-      ];
+    let events = [];
+    // Merge Laravel-generated birthday events
+    let birthdayEvents = @json($events_birthdays);
+    let officeEvents = @json($office_events);
+    let appreciationEvents = @json($appr_events);
+    // Add to main events list
+    events.push(...birthdayEvents);
+    events.push(...officeEvents);
+    events.push(...appreciationEvents);
 
-       // Merge Laravel-generated birthday events
-      let birthdayEvents = @json($events_birthdays);
-      let officeEvents = @json($office_events);
-      // Add to main events list
-      events.push(...birthdayEvents);
-      events.push(...officeEvents);
+    $('#eventForm').on('submit', function () {
+        let formData = {
+            eventTitle: $('#eventTitle').val(),
+            eventLabel: $('#eventLabel').val(),
+            eventStartDate: $('#eventStartDate').val(),
+            eventEndDate: $('#eventEndDate').val(),
+            allDay: $('.allDay-switch').is(':checked') ? 1 : 0,
+            eventURL: $('#eventURL').val(),
+            eventGuests: $('#eventGuests').val(),
+            eventLocation: $('#eventLocation').val(),
+            eventDescription: $('#eventDescription').val(),
+            _token: '{{ csrf_token() }}'
+        };
+
+        $.ajax({
+            url: "{{ route('events.store') }}",
+            method: "POST",
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    $('#eventForm')[0].reset();
+                    // refresh calendar or data
+                }
+            }
+        });
+    });
+
   </script>
+
   <script src="{{ asset('assets/js/app-calendar.js') }} "></script>
 @endpush
