@@ -426,6 +426,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     /* Tools - Quick Note */
     Route::get('/tools/event-calendar', [EventCalendarController::class, 'index'])->name('tools.event-calendar.index');
+    Route::post('/tools/event-calendar/store', [EventCalendarController::class, 'store'])->name('tools.event-calendar.store');
     
 
 

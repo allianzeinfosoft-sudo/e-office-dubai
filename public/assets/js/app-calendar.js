@@ -25,12 +25,11 @@ document.addEventListener('DOMContentLoaded', function () {
       appOverlay = document.querySelector('.app-overlay'),
       calendarsColor = {
         birthdays: 'success',
-        appriciations: 'primary',
         events: 'warning',
-        appreciation: 'danger',
+        appreciation: 'primary',
         Business: 'primary',
-        Holiday: 'success',
-        Personal: 'danger',
+        Holiday: 'danger',
+        Personal: 'info',
         Family: 'warning',
         ETC: 'info'
       },

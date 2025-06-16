@@ -78,32 +78,22 @@
                                  <label class="form-check-label" for="select-events">Events</label>
                               </div>
 
-                              <div class="form-check form-check-danger mb-2">
+                              <div class="form-check form-check-primary mb-2">
                                 <input class="form-check-input input-filter" type="checkbox" id="select-holiday" data-value="appreciation" checked />
                                 <label class="form-check-label" for="select-holiday">Appreciations</label>
                               </div>
 
-                              <div class="form-check form-check-warning mb-2">
-                                <input class="form-check-input input-filter" type="checkbox" id="select-family" data-value="family" checked />
-                                <label class="form-check-label" for="select-family">Family</label>
-                              </div>
-
-                              <div class="form-check form-check-success mb-2">
+                              <div class="form-check form-check-danger mb-2">
                                 <input class="form-check-input input-filter" type="checkbox" id="select-holiday" data-value="holiday" checked />
                                 <label class="form-check-label" for="select-holiday">Holiday</label>
                               </div>
-                            
-                              <div class="form-check form-check-info">
-                                <input class="form-check-input input-filter" type="checkbox" id="select-etc"  data-value="etc" checked />
-                                <label class="form-check-label" for="select-etc">ETC</label>
-                              </div>
                               
-                              <div class="form-check form-check-danger mb-2">
+                              <div class="form-check form-check-info mb-2">
                                 <input class="form-check-input input-filter" type="checkbox" id="select-personal" data-value="personal" checked />
                                 <label class="form-check-label" for="select-personal">Personal</label>
                               </div>
                             
-                              <div class="form-check mb-2">
+                              <div class="form-check form-check-primary mb-2">
                                  <input class="form-check-input input-filter" type="checkbox" id="select-business" data-value="business" checked />
                                  <label class="form-check-label" for="select-business">Business</label>
                               </div>
@@ -113,8 +103,6 @@
                                 <label class="form-check-label" for="select-family">Family</label>
                               </div>
 
-                              
-                            
                               <div class="form-check form-check-info">
                                 <input class="form-check-input input-filter" type="checkbox" id="select-etc"  data-value="etc" checked />
                                 <label class="form-check-label" for="select-etc">ETC</label>
@@ -153,7 +141,7 @@
 
                           <div class="offcanvas-body pt-0">
 
-                            <form class="event-form pt-0" id="eventForm" onsubmit="return false">
+                            <form method="POST" class="event-form pt-0" id="eventFormNew" onsubmit="return false">
                               <div class="mb-3 pt-2">
                                 <label class="form-label" for="eventTitle">Title</label>
                                 <input type="text" class="form-control" id="eventTitle" name="eventTitle" placeholder="Event Title" />
@@ -199,12 +187,11 @@
                               <div class="mb-3 select2-primary">
                                 <label class="form-label" for="eventGuests">Add Guests</label>
                                 <select class="select2 select-event-guests form-select" id="eventGuests" name="eventGuests" multiple>
-                                  <option data-avatar="1.png" value="Jane Foster">Jane Foster</option>
-                                  <option data-avatar="3.png" value="Donna Frank">Donna Frank</option>
-                                  <option data-avatar="5.png" value="Gabrielle Robertson">Gabrielle Robertson</option>
-                                  <option data-avatar="7.png" value="Lori Spears">Lori Spears</option>
-                                  <option data-avatar="9.png" value="Sandy Vega">Sandy Vega</option>
-                                  <option data-avatar="11.png" value="Cheryl May">Cheryl May</option>
+                                  @if ($employees->isNotEmpty())
+                                    @foreach($employees as $employee)
+                                      <option value="{{ $employee->full_name }}">{{ $employee->full_name }}</option>
+                                    @endforeach
+                                  @endif
                                 </select>
                               </div>
 
@@ -265,37 +252,44 @@
     let birthdayEvents = @json($events_birthdays);
     let officeEvents = @json($office_events);
     let appreciationEvents = @json($appr_events);
+    let events_posted = @json($events_posted);
+    let holidays = @json($holiday_events);
     // Add to main events list
     events.push(...birthdayEvents);
     events.push(...officeEvents);
     events.push(...appreciationEvents);
+    events.push(...events_posted);
+    events.push(...holidays);
 
-    $('#eventForm').on('submit', function () {
-        let formData = {
-            eventTitle: $('#eventTitle').val(),
-            eventLabel: $('#eventLabel').val(),
-            eventStartDate: $('#eventStartDate').val(),
-            eventEndDate: $('#eventEndDate').val(),
-            allDay: $('.allDay-switch').is(':checked') ? 1 : 0,
-            eventURL: $('#eventURL').val(),
-            eventGuests: $('#eventGuests').val(),
-            eventLocation: $('#eventLocation').val(),
-            eventDescription: $('#eventDescription').val(),
-            _token: '{{ csrf_token() }}'
-        };
-
-        $.ajax({
-            url: "{{ route('events.store') }}",
-            method: "POST",
-            data: formData,
-            success: function (response) {
-                if (response.success) {
-                    alert(response.message);
-                    $('#eventForm')[0].reset();
-                    // refresh calendar or data
-                }
-            }
-        });
+    $(function (){
+      $('#eventFormNew').on('submit', function () {
+          let formData = {
+              eventTitle: $('#eventTitle').val(),
+              eventLabel: $('#eventLabel').val(),
+              eventStartDate: $('#eventStartDate').val(),
+              eventEndDate: $('#eventEndDate').val(),
+              allDay: $('.allDay-switch').is(':checked') ? 1 : 0,
+              eventURL: $('#eventURL').val(),
+              eventGuests: $('#eventGuests').val(),
+              eventLocation: $('#eventLocation').val(),
+              eventDescription: $('#eventDescription').val(),
+              _token: '{{ csrf_token() }}'
+          };
+  
+          $.ajax({
+              url: "{{ route('tools.event-calendar.store') }}",
+              method: "POST",
+              data: formData,
+              success: function (response) {
+                  if (response.success) {
+                      alert(response.message);
+                      $('#eventFormNew')[0].reset();
+                      $('#eventGuests').val("").trigger('change');
+                      // refresh calendar or data
+                  }
+              }
+          });
+      });
     });
 
   </script>

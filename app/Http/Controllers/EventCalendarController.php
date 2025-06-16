@@ -6,8 +6,11 @@ use App\Models\EventCalendar;
 use App\Models\Employee;
 use App\Models\Event;
 use App\Models\Appreciation;
+use App\Models\Holiday;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+
 
 class EventCalendarController extends Controller
 {
@@ -87,6 +90,52 @@ class EventCalendarController extends Controller
 
         $data['appr_events'] = $appr_events;
 
+        /* Events posted */
+        $evens_form = EventCalendar::all();
+        $events_posted = [];
+
+        foreach ($evens_form as $index => $result) {
+            $events_posted[] = [
+                'id' => 'events_' . ($index + 1),
+                'url' => '', // you can later add route('appreciation.show', $result->id)
+                'title' => $result->title,
+                'start' => $result->start_date,
+                'end' => $result->end_date,
+                'allDay' => $result->all_day ? true : false,
+                'extendedProps' => [
+                    'calendar' => $result->label,
+                    'event_id' => $result->id,
+                    'details' => $result->description ?? '',
+                    'location' => $result->description ?? '',
+                ],
+            ];
+        }
+        $data['events_posted'] = $events_posted;
+
+        /* Holidays */
+        $holidayGroup = Auth::user()->employee->holidayGroup;
+        $holidays = Holiday::where('holiday_group', $holidayGroup)->get();
+        $holiday_events = [];
+
+        foreach ($holidays as $index => $holiday) {
+            $holiday_events[] = [
+                'id' => 'holiday_' . ($index + 1),
+                'url' => '', // optional: route('holidays.show', $holiday->id)
+                'title' => $holiday->name,
+                'start' => $holiday->date,
+                'end' => $holiday->date,
+                'allDay' => true,
+                'extendedProps' => [
+                    'calendar' => 'Holiday',
+                    'event_id' => $holiday->id,
+                ],
+            ];
+        }
+
+        $data['holiday_events'] = $holiday_events;
+
+        $data['employees'] = Employee::whereIn('status', [1,2,5])->get();
+
         return view('tools.event-calendar.index', $data);
     }
 
@@ -116,13 +165,13 @@ class EventCalendarController extends Controller
         'allDay' => 'nullable|boolean',
     ]);
 
-    Event::create([
+    EventCalendar::create([
         'title' => $data['eventTitle'],
         'label' => $data['eventLabel'] ?? null,
         'start_date' => $data['eventStartDate'],
         'end_date' => $data['eventEndDate'],
         'url' => $data['eventURL'] ?? null,
-        'guests' => $data['eventGuests'] ?? [],
+        'guests' => is_array($data['eventGuests']) ? json_encode($data['eventGuests']) : [],
         'location' => $data['eventLocation'] ?? null,
         'description' => $data['eventDescription'] ?? null,
         'all_day' => $request->has('allDay') ? true : false,
