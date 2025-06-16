@@ -265,10 +265,9 @@ class AttendanceController extends Controller{
                 ")
                 ->value('today_minutes') ?? 0;
         } else {
-            
                 
-                $now = now()->toDateTimeString();
-                $effectiveSigninDate = now()->toDateTimeString();
+                $now = Carbon::now()->format('Y-m-d H:i:s');
+                $effectiveSigninDate = now()->format('Y-m-d'); // $now->toDateTimeString();
 
                 if ($shiftType == 'night') {
                     // For night shifts, we consider the "working day" to be the calendar day when the shift started
@@ -282,12 +281,10 @@ class AttendanceController extends Controller{
                     }
                 }
 
-
-            $todayMinutes = Attendance::where('username', Auth::user()->username)
-                ->where(function($query) use ($effectiveSigninDate) {
-                    // Check for records matching the effective signin date (the "working day")
-                    $query->whereDate('signin_date', $effectiveSigninDate);
-                })
+                
+                
+                $todayMinutes = Attendance::where('username', Auth::user()->username)
+                ->whereDate('signin_date', $effectiveSigninDate)
                 ->selectRaw("
                     COALESCE(SUM(
                         TIMESTAMPDIFF(
@@ -300,15 +297,15 @@ class AttendanceController extends Controller{
                             END
                         )
                     ), 0) as today_minutes
-                ", [$now])
+                ", [now()->format('Y-m-d H:i:s')])
                 ->value('today_minutes') ?? 0;
-        }
+            }
 
         // Calculate hours and minutes
         $todayHours = intdiv($todayMinutes, 60);
         $todayMins  = $todayMinutes % 60;
-        
         $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
+       ;
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100); // Assuming 480 = 8 hours work
 
        
