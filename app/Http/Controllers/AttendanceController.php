@@ -276,7 +276,7 @@ class AttendanceController extends Controller{
                         $signinDate = ($data['attendance']->signin_date);
                         $effectiveSigninDate = $signinDate; // Subtract 1 day from $signinDate;
                     }else{
-                        $signinDate = ($data['attendance_current']->signin_date);
+                        $signinDate = ($data['attendance_current']?->signin_date);
                         $effectiveSigninDate = $signinDate;
                     }
                 }
