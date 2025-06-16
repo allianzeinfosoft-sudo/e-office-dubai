@@ -24,17 +24,22 @@ use DateTime;
 class CustomHelper{
 
     public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null){
-
         $timezone = 'Asia/Kolkata';
 
         try {
+            // Ensure all inputs are strings
+            $signin_date = $signin_date instanceof \Carbon\Carbon ? $signin_date->format('Y-m-d') : (string) $signin_date;
+            $signin_time = $signin_time instanceof \Carbon\Carbon ? $signin_time->format('H:i:s') : (string) $signin_time;
+            $signout_date = $signout_date instanceof \Carbon\Carbon ? $signout_date->format('Y-m-d') : (string) $signout_date;
+            $signout_time = $signout_time instanceof \Carbon\Carbon ? $signout_time->format('H:i:s') : (string) $signout_time;
+
             if (empty($signin_date) || empty($signin_time) || empty($signout_date) || empty($signout_time)) {
                 throw new \Exception("Invalid date or time values provided.");
             }
 
-            // Parse sign-in and sign-out using Carbon's flexible parsing
-            $signIn = Carbon::parse("$signin_date $signin_time", $timezone);
-            $signOut = Carbon::parse("$signout_date $signout_time", $timezone);
+            // Create Carbon datetime objects
+            $signIn = \Carbon\Carbon::parse("$signin_date $signin_time", $timezone);
+            $signOut = \Carbon\Carbon::parse("$signout_date $signout_time", $timezone);
 
             if ($signOut->lessThanOrEqualTo($signIn)) {
                 return [
@@ -44,18 +49,18 @@ class CustomHelper{
                 ];
             }
 
+            // Calculate total working seconds
             $totalSeconds = $signOut->diffInSeconds($signIn);
             $breakSeconds = 0;
 
-            // Normalize and convert break_time
+            // Handle break time
             if (!empty($break_time)) {
-                $break_time = trim($break_time);
+                $break_time = trim((string) $break_time);
 
                 if (preg_match('/\d{1,2}(:\d{2})?(:\d{2})?\s?(AM|PM)?/i', $break_time)) {
                     try {
-                        // Use Carbon just to get difference from midnight
-                        $breakCarbon = Carbon::parse($break_time);
-                        $midnight = Carbon::createFromTime(0, 0, 0);
+                        $breakCarbon = \Carbon\Carbon::parse($break_time, $timezone);
+                        $midnight = \Carbon\Carbon::createFromTime(0, 0, 0, $timezone)->setTimezone($timezone);
                         $breakSeconds = $breakCarbon->diffInSeconds($midnight);
                     } catch (\Exception $e) {
                         $breakSeconds = 3600; // fallback to 1 hour
@@ -68,10 +73,20 @@ class CustomHelper{
 
             $actualWorkSeconds = max($totalSeconds - $breakSeconds, 0);
 
+            // Format to H:i:s even if greater than 24 hours
             return [
-                'total_working_time' => gmdate("H:i:s", $actualWorkSeconds),
-                'break_time' => gmdate("H:i:s", $breakSeconds),
+                'total_working_time' => sprintf('%02d:%02d:%02d',
+                    floor($actualWorkSeconds / 3600),
+                    ($actualWorkSeconds / 60) % 60,
+                    $actualWorkSeconds % 60
+                ),
+                'break_time' => sprintf('%02d:%02d:%02d',
+                    floor($breakSeconds / 3600),
+                    ($breakSeconds / 60) % 60,
+                    $breakSeconds % 60
+                )
             ];
+
         } catch (\Exception $e) {
             return [
                 'total_working_time' => '00:00:00',
