@@ -547,7 +547,7 @@ return [
             ],
             [
                 'title' => 'KSP',
-                'route' =>  '#',
+                'route' =>  'tools/ksp',
                 'permission' => ['view KSP'],
             ],
         ]

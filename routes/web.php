@@ -37,6 +37,7 @@ use App\Http\Controllers\WorkFromHomeAttendanceController;
 use App\Http\Controllers\ConferenceHallController;
 use App\Http\Controllers\QuickNoteController;
 use App\Http\Controllers\EventCalendarController;
+use App\Http\Controllers\KspController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -428,6 +429,16 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/tools/event-calendar', [EventCalendarController::class, 'index'])->name('tools.event-calendar.index');
     Route::post('/tools/event-calendar/store', [EventCalendarController::class, 'store'])->name('tools.event-calendar.store');
     Route::delete('/tools/event-calendar/delete/{type}/{id}', [EventCalendarController::class, 'destroy'])->name('tools.event-calendar.delete');
+
+    /* Tools - KSP */
+    Route::get('/tools/ksp', [KspController::class, 'index'])->name('tools.ksp.index');
+    Route::post('/tools/ksp/store', [KspController::class, 'store'])->name('tools.ksp.store');
+    Route::get('/tools/ksp/{ksp}/edit', [KspController::class, 'edit'])->name('tools.ksp.edit');
+    Route::delete('/tools/ksp/{ksp}/destroy', [KspController::class, 'destroy'])->name('tools.ksp.destroy');
+    Route::get('/tools/ksp/{ksp}/show', [KspController::class, 'show'])->name('tools.ksp.show');
+    Route::post('/tools/ksp/store-category', [KspController::class, 'store_category'])->name('tools.ksp.store-category');
+
+    /* Tools - E-Library */
 
 
     /* Mail Testing Route */
