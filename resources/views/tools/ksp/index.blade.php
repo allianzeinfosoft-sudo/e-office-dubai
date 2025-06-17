@@ -135,7 +135,6 @@
 
 @push('js')
 <script>
-
     const quillKsp  = new Quill('#ksp-details-editor', {
         theme: 'snow',
         placeholder: 'Type event description here...',
