@@ -38,6 +38,7 @@ use App\Http\Controllers\ConferenceHallController;
 use App\Http\Controllers\QuickNoteController;
 use App\Http\Controllers\EventCalendarController;
 use App\Http\Controllers\KspController;
+use App\Http\Controllers\LibraryController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -437,8 +438,10 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::delete('/tools/ksp/{ksp}/destroy', [KspController::class, 'destroy'])->name('tools.ksp.destroy');
     Route::get('/tools/ksp/{ksp}/show', [KspController::class, 'show'])->name('tools.ksp.show');
     Route::post('/tools/ksp/store-category', [KspController::class, 'store_category'])->name('tools.ksp.store-category');
-
+    
     /* Tools - E-Library */
+    Route::get('/e-library/categories', [LibraryController::class, 'books_categories'])->name('e-library.categories');
+    Route::post('/e-library/categories/store', [LibraryController::class, 'store_category'])->name('e-library.categories.store');
 
 
     /* Mail Testing Route */

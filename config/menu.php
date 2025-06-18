@@ -553,6 +553,49 @@ return [
         ]
     ],
     [
+        'title' => 'e-Library',
+        'icon' => 'ti ti-books',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['e-library*'],
+        'permission' => ['view e-library', 'issue books'],
+        'submenu' => [
+            [
+                'title' => 'Book Issue Register',
+                'route' =>  '',
+                'permission' => ['issue books'],
+            ],
+            [
+                'title' => 'Books Categories',
+                'route' =>  '/e-library/categories',
+                'permission' => ['view books category'],
+            ],
+            [
+                'title' => 'Reports',
+                'route' =>  'javascript:void(0);',
+                'isActive' => ['reports*'],
+                'permission' => ['view e-library reports'],
+                'submenu' => [
+                    [
+                        'title' => 'Issued Books',
+                        'route' => "",
+                        'permission' => ['view issued books report'],
+                    ],
+                    [
+                        'title' => 'Pending Books',
+                        'route' => "",
+                        'permission' => ['view pending books report'],
+                    ],
+                    [
+                        'title' => 'Damaged / Lost Books',
+                        'route' => "",
+                        'permission' => ['view damage or loss report'],
+                        ''
+                    ],
+                ]
+            ],
+        ]
+    ],
+    [
         'header' => 'Settings',
     ],
     [
