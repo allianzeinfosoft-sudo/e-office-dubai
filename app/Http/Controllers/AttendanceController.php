@@ -1135,8 +1135,7 @@ class AttendanceController extends Controller{
             /* unblock user */
             $blocked_user = UserEntryBlockList::where(['user_id' => $attendance->emp_id, 'block_date' => date('Y-m-d', strtotime($attendance->signout_date))])->first();
             if ($blocked_user) {
-                $blocked_user->status = 0;
-                $blocked_user->save();
+                UserEntryBlockList::where('id', $blocked_user->id)->update(['status' => 0]);
             }
             $attendance->incomplete_approved    = 1;
             $attendance->incomplete_approved_by = Auth::id();
