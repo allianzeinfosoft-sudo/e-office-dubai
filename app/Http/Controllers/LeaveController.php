@@ -407,7 +407,7 @@ class LeaveController extends Controller
 
                      if($request->leave_type === 'half_day')
                     {
-                        $leave_days = 0.5;
+                        $leaveDays = 0.5;
                     }
                     else
                     {

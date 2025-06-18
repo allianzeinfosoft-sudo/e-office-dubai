@@ -548,16 +548,14 @@ public static function getMonthlyWorkBreakDataForBarChart($userId = null)
         $workingHours[$dateKey] = 0;
         $breakHours[$dateKey] = 0;
 
-
-
         if (isset($attendanceRecords[$dateKey])) {
             foreach ($attendanceRecords[$dateKey] as $attendance) {
 
-                $breakTime = $attendance->break_time ?? '00:00:00';
-                $breakParts = explode(':', $breakTime);
-                $hours = isset($breakParts[0]) ? (int)$breakParts[0] : 0;
-                $minutes = isset($breakParts[1]) ? (int)$breakParts[1] : 0;
-                $seconds = isset($breakParts[2]) ? (int)$breakParts[2] : 0;
+                $breakTime      = $attendance->break_time ?? '00:00:00';
+                $breakParts     = explode(':', $breakTime);
+                $hours          = isset($breakParts[0]) ? (int)$breakParts[0] : 0;
+                $minutes        = isset($breakParts[1]) ? (int)$breakParts[1] : 0;
+                $seconds        = isset($breakParts[2]) ? (int)$breakParts[2] : 0;
                 $breakDurationMinutes = ($hours * 60) + $minutes + ($seconds / 60);
 
                 $signinTime = Carbon::parse($attendance->signin_time);

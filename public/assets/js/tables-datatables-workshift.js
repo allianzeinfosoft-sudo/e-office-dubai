@@ -274,6 +274,7 @@ function openShiftOffcanvas(targetId = null) {
             type: 'GET',
             success: function (data) {
                 $('#target_id').val(data.workshift.id);
+                $('#department').val(data.workshift.department).trigger('change');
                 $('#shift_id').val(data.workshift.shift_id);
                 $('#shift_start_time').val(data.workshift.shift_start_time);
                 $('#shift_end_time').val(data.workshift.shift_end_time);

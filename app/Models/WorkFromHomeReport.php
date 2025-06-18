@@ -21,4 +21,6 @@ class WorkFromHomeReport extends Model
         'productivity_hour',
         'wfh_attendance_id',
     ];
+
+   
 }
