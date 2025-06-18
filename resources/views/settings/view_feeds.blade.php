@@ -459,6 +459,8 @@ function getAnnouncementHtml(item) {
     const title = item.title || [];
     const display_date = item.display_start_date || [];
     const created_date = item.create_date || [];
+    const picture = item.image ? `/storage/${item.image}` : '';
+
     return `
     <span class="timeline-custom timeline-indicator timeline-indicator-primary" data-aos="zoom-in" data-aos-delay="200">
         <i class="fa fa-volume-up"></i>
@@ -473,6 +475,9 @@ function getAnnouncementHtml(item) {
         <div class="card-body">
 
             <p class="mt-3 mb-2">${message}</p>
+            <div class="mb-3 text-center">
+                 ${picture ? `<img class="img-fluid" src="${picture}" alt="${title}" />` : ''}
+            </div>
 
             <div class="d-flex justify-content-between align-items-center flex-wrap">
 

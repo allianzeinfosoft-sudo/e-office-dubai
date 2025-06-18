@@ -49,7 +49,7 @@ class FeedsController extends Controller
                         'display_date' => $today->format('d-F'),
                         'title' => $announcement->name_announcement,
                         'message' => $announcement->description,
-                        // 'image' => $announcement->image ?: '/assets/img/backgrounds/announcement.png',
+                        'image' => $announcement->picture ?? '',
                         'display_start_date' => $announcement->display_start_date,
                         'create_date' =>  date('d-m-Y',strtotime($announcement->created_at))
                     ];
