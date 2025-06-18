@@ -263,10 +263,10 @@
                         <td>${row.tasks.name}</td>
                         <td>${row.comments}</td>
                         <td>${row.total_time}</td>
+                        <td>${row.total_records}</td>
                         <td>${row.productivity_hour}</td>
                         <td>${row.time_of_work}</td>
                         <td>${row.username}</td>
-                        <td>${row.total_records}</td>
                         </tr>`;
                     });
 

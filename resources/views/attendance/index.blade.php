@@ -23,28 +23,28 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-
+  
   <div class="layout-container {{ $background_class ?? 'bg-eoffice' }} ">
     
     <x-menu /> <!-- Load the menu component here -->
-
-      <!-- Layout container -->
-      <div class="layout-page">
-        <!-- Navbar -->
-
-        <x-header />
-
-        <!-- / Navbar -->
-
-        <!-- Content wrapper -->
-        <div class="content-wrapper">
-          <!-- Content -->
-
-          <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-bold py-3 mb-4 text-muted "><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
-
-            <div class="row">
-
+    
+    <!-- Layout container -->
+    <div class="layout-page">
+      <!-- Navbar -->
+      
+      <x-header />
+      
+      <!-- / Navbar -->
+      
+      <!-- Content wrapper -->
+      <div class="content-wrapper">
+        <!-- Content -->
+        
+        <div class="container-xxl flex-grow-1 container-p-y">
+          <h4 class="fw-bold py-3 mb-4 text-muted "><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
+          
+          <div class="row">
+              
                 <!-- Statistics -->
                 <div class="col-12 col-xl-12 col-lg-12">
                   <div class="row g-4 mb-4 justify-content-center">
@@ -158,14 +158,15 @@
 
                           </div>
 
-                          
+                           
+
                           <div class="row g-4">
                             <div class="col-lg-12">
-                              
+
                               @php
                                 $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                 $now              = \Carbon\Carbon::now();
-                                $isLate           = $now->gt($loginLimitTime);
+                                $isLate           = ($shiftType == 'fullday') ? false : $now->gt($loginLimitTime);
                                 $todayName        = $now->format('l'); // E.g., "Monday"
                                 $fixedWeekOffs    = ['Saturday', 'Sunday'];
                                 $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
@@ -174,33 +175,69 @@
                                 $isWeekOffToday   = in_array($todayName, $allWeekOffs);
                               @endphp
                               
-                              
-                              @if($attendance && $attendance_current)
-                             
-                              
-                                @if($shiftType == 'night')      
-                                  @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
-                                      <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                          Last punch In Time: {{ date('H:i A', strtotime($attendance_current?->signin_time)) }}
+                              @if($attendance || $attendance_current)
+                                @if($shiftType == 'night')                                
+                                    @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
+                                      <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
+                                          Last Punch In Time: {{ date('d-m-Y', strtotime($attendance_current?->signin_date)) }} {{ date('h:i A', strtotime($attendance_current?->signin_time)) }}
+                                          <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance_current?->id }}" />
                                       </div>
                                       <div class="text-center">
-                                          <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
+                                          <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100">
+                                              <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out
+                                          </button>
                                       </div>
-                                  @elseif($attendance_current?->status === 'mark-out')
-                                      <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                          <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
-                                      </div>
-                                  @else
-                                    <div class="text-center">
-                                      <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}"  {{ ($disableCustomMarkIn  || $isWeekOffToday) ? 'disabled' : '' }}>  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
-                                    </div> 
-                                  @endif
+                                    @elseif($attendance_current?->status === 'mark-out')
+                                      @php
+                                          $nextLoginTime = \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A');
+                                          $lastWorkingDate = \Carbon\Carbon::now()->subDay()->toDateString();
+                                          $prevAttendance = \App\Models\Attendance::where('username', Auth::user()->username)->where('signin_date', $lastWorkingDate)->first();
+                                      @endphp
+                                      
+                                      @if($isWeekOffToday || $isHolidayToday)
+                                          @if(!$prevAttendance || !$prevAttendance->signout_time)
+                                              <div class="badge bg-label-danger p-3 w-100 mb-3" id="last-punch-time" role="alert">
+                                                  <strong>Missed Mark-out Detected:</strong> Please contact admin to regularize yesterday's attendance.
+                                              </div>
+                                          @else
+                                              <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
+                                                  <strong>Next Login Time:</strong> {{ $nextLoginTime }} tomorrow.
+                                              </div>
+                                          @endif
+                                      @else
+                                          <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
+                                              <strong>Next Login Time:</strong> {{ $nextLoginTime }} tomorrow.
+                                          </div>
+                                      @endif
 
+                                    @elseif($attendance?->signin_date == date('Y-m-d', strtotime('-1 day')) && in_array($attendance?->status, ['mark-in', 'custom', 'emergency']))
+                                        
+                                      <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
+                                          Last Punch In Time: {{ date('d-m-Y', strtotime($attendance?->signin_date)) }} {{ date('h:i A', strtotime($attendance?->signin_time)) }}
+                                          <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance?->id }}" />
+                                      </div>
+
+                                      <div class="text-center">
+                                          <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100">
+                                              <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out
+                                          </button>
+                                      </div>
+
+                                    @else
+                                      <div class="text-center">
+                                          <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}"
+                                                  {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}>
+                                              Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i>
+                                          </button>
+                                      </div>
+                                    @endif
+                                  
                                 @else
-
+                                  {{-- day shift --}}
                                   @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-                                      <div class="badge bg-label-success p-3 w-100 mb-3" id="last-punch-time" role="alert">
-                                          Last punch In Time: {{ date('H:i A', strtotime($attendance->signin_time)) }}
+                                      <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
+                                          Last Punch In Time: {{date('d-m-Y', strtotime($attendance->signin_date))}}  {{ date('H:i A', strtotime($attendance->signin_time)) }}
+                                          <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance?->id }}" />
                                       </div>
                                       <div class="text-center">
                                           <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
@@ -215,7 +252,7 @@
 
                               @elseif(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
                                  
-                                  @if(!empty($disableCustomMarkIn))
+                                  @if($disableCustomMarkIn || $isLate || $isWeekOffToday)
                                       <div class="badge bg-label-warning p-3 w-100 mb-3">
                                           You can mark in only between {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A') : '' }}
                                           and {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->addMinutes(15)->format('h:i A') : '' }}.
@@ -454,7 +491,7 @@
       $btn.prop('disabled', true).text('Loading..');
 
       $.ajax({
-          url: '{{ route('attendance.mark-in') }}',
+          url: "{{ route('attendance.mark-in') }}",
           type: 'POST',
           headers: {
               'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -519,45 +556,43 @@
 
     /* Mark out function */
     $('#mark-out-btn').on('click', function() {
+      var attendanceId = $('#attendance_id').val();
       var $btn = $(this);
-
       // Prevent double click
       if ($btn.prop('disabled')) return;
-
       // Disable button and show loading text
       $btn.prop('disabled', true).text('Loading..');
-      
       $.ajax({
-            url: '{{ route('attendance.mark-out') }}',
+            url: "{{ route('attendance.mark-out') }}",
             type: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
             },
             contentType: 'application/json',
-            data: JSON.stringify({}),
+            data: JSON.stringify({'attendanceId' : attendanceId }),
             success: function(data) {
                 if (data.success) {
                       toastr["success"](data.message);
                       toastr.options = {
-                      "closeButton": false,
-                      "debug": false,
-                      "newestOnTop": false,
-                      "progressBar": false,
-                      "positionClass": "toast-top-right",
-                      "preventDuplicates": false,
-                      "onclick": null,
-                      "showDuration": "300",
-                      "hideDuration": "1000",
-                      "timeOut": "5000",
-                      "extendedTimeOut": "1000",
-                      "showEasing": "swing",
-                      "hideEasing": "linear",
-                      "showMethod": "fadeIn",
-                      "hideMethod": "fadeOut"
-                    }
-                    $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
-                    $('#mark-out-btn').prop('disabled', true);
-                    window.location.reload();
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": false,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                      }
+                      $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
+                      $('#mark-out-btn').prop('disabled', true);
+                      window.location.reload();
                 } else {
                     alert(data.message);
                     // Optional: re-enable button and restore text if you don't reload
