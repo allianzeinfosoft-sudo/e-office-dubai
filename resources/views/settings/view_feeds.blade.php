@@ -473,15 +473,15 @@ function getAnnouncementHtml(item) {
         <div class="card-body">
 
             <p class="mt-3 mb-2">${message}</p>
-            
+
             <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <div><button type="button" class="btn btn-primary w-100">Read More</button></div>
+
                 <div><span class="badge bg-dark">${display_date}</span></div>
             </div>
         </div>
         <div class="timeline-event-time">${display_date}</div></div>`;
 }
-
+//  <div><button type="button" class="btn btn-primary w-100">Read More</button></div>
 // <p class="text-fade">
 //                 <b>Thank You</b><br>
 //                 ${item.posted_by}
@@ -595,6 +595,13 @@ function getAppreciationHtml(item) {
         ? `/storage/appreciation_flowers/${item.image}`
         : '/assets/img/backgrounds/cng.png';
 
+    const mailtoList = employees
+        .map(emp => emp.email)
+        .filter(email => !!email)
+        .join(',');
+
+    const mailtoLink = `mailto:${mailtoList}?subject=${encodeURIComponent('Congratulations!')}&body=${encodeURIComponent('Reason: Great performance and contribution.')}`;
+
     const employeeHtml = employees.map(emp => {
         const profileImage = emp.profile_image && emp.profile_image !== '/assets/img/avatars/default.png'
             ? `/storage/${emp.profile_image}`
@@ -605,6 +612,7 @@ function getAppreciationHtml(item) {
                 <img src="${profileImage}" alt="${emp.full_name}" class="mx-auto border-theme rounded-circle w-px-75" />
                 <span class="bday-name">${emp.full_name}</span>
             </div>
+
         `;
     }).join('');
 
@@ -629,7 +637,9 @@ function getAppreciationHtml(item) {
                 </p>
                 <div class="d-flex justify-content-between align-items-center mt-5 flex-wrap">
                     <div>
-                        <button type="button" class="btn btn-primary w-100">Congratulate...</button>
+                        <a class="text-primary" href="${mailtoLink}">
+                            <button type="button" class="btn btn-primary w-100">Congratulate...</button>
+                        </a>
                     </div>
                     <div>
                         <span class="badge bg-dark">${displayDate}</span>

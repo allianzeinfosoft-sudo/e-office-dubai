@@ -73,11 +73,12 @@ class FeedsController extends Controller
                     $ids = array_filter(explode(',', $appreciation->appreciant));
 
                     if (!empty($ids)) {
-                        $employees = Employee::whereIn('user_id', $ids)->get(['id', 'full_name', 'profile_image']);
+                        $employees = Employee::with('user:id,email')->whereIn('user_id', $ids)->get(['id', 'user_id', 'full_name', 'profile_image']);
 
                         $employeeDetails = $employees->map(function ($employee) {
                             return [
                                 'full_name' => $employee->full_name,
+                                'email' => $employee->user?->email ?? '',
                                 'profile_image' => $employee->profile_image ?: '/assets/img/avatars/default.png',
                             ];
                         })->toArray();
