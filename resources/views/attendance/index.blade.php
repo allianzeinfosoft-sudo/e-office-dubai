@@ -180,6 +180,7 @@
                                     @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
                                           Last Punch In Time: {{ date('d-m-Y', strtotime($attendance_current?->signin_date)) }} {{ date('h:i A', strtotime($attendance_current?->signin_time)) }}
+                                          <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance_current?->id }}" />
                                       </div>
                                       <div class="text-center">
                                           <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100">
@@ -213,6 +214,7 @@
                                         
                                       <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
                                           Last Punch In Time: {{ date('d-m-Y', strtotime($attendance?->signin_date)) }} {{ date('h:i A', strtotime($attendance?->signin_time)) }}
+                                          <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance?->id }}" />
                                       </div>
 
                                       <div class="text-center">
@@ -235,6 +237,7 @@
                                   @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
                                           Last Punch In Time: {{date('d-m-Y', strtotime($attendance->signin_date))}}  {{ date('H:i A', strtotime($attendance->signin_time)) }}
+                                          <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance?->id }}" />
                                       </div>
                                       <div class="text-center">
                                           <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
@@ -553,6 +556,7 @@
 
     /* Mark out function */
     $('#mark-out-btn').on('click', function() {
+      var attendanceId = $('#attendance_id').val();
       var $btn = $(this);
       // Prevent double click
       if ($btn.prop('disabled')) return;
@@ -565,7 +569,7 @@
                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
             },
             contentType: 'application/json',
-            data: JSON.stringify({}),
+            data: JSON.stringify({'attendanceId' : attendanceId }),
             success: function(data) {
                 if (data.success) {
                       toastr["success"](data.message);

@@ -111,27 +111,28 @@ class AttendanceController extends Controller{
 
         
         if ($shiftType === 'night') {
-            
             $yesterday = now()->subDay()->toDateString(); // yesterday
             $dayBeforeYesterday = now()->subDays(2)->toDateString(); // day before yesterday
             $today = now()->toDateString();
-
+            
             $data['isHolidayToday'] = Holiday::where('holiday_group', $user->employee->holidayGroup)->whereDate('date', today())->exists();
-
+            
             // Get last working date from helper
             $lastWorkingDate = $getLastWorkingDate($yesterday);
-
+            
             // Fetch attendance for yesterday (mark-in date for night shift)
             $data['attendance'] = Attendance::where([
                 'username' => $user->username,
                 'signin_date' => $lastWorkingDate,
-            ])->first();
-
+                ])->first();
+                
             // Fetch today's attendance (should be today's mark-out for night shift)
             $data['attendance_current'] = Attendance::where([
                 'username' => $user->username,
                 'signin_date' => $today,
             ])->first();
+
+            
 
             // Define allowed mark-in window
             $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
@@ -142,13 +143,12 @@ class AttendanceController extends Controller{
 
             // ❗ Check if the day before yesterday's night shift was not marked out
             $missingMarkOut = Attendance::with('employee')
-                ->where([
-                    'username' => $user->username,
-                    'signin_date' => $dayBeforeYesterday,
-                    'signout_date' => null,
-                    'signout_time' => null,
-                ])
-                ->first();
+            ->where('username', $user->username)
+            ->whereDate('signin_date', '<=', $dayBeforeYesterday)
+            ->whereNull('signout_date')
+            ->whereNull('signout_time')
+            ->orderBy('signin_date', 'desc') // Optional: most recent first
+            ->first();
 
             if ($missingMarkOut) {
                 $data['meta_title'] = 'Mark Out First';
@@ -190,8 +190,6 @@ class AttendanceController extends Controller{
                 }
             }
         }
-
-         
 
         $totalMinutes = 0;
         $workedHours = [];
@@ -484,6 +482,7 @@ class AttendanceController extends Controller{
     }
 
     public function markOut(Request $request) {
+        $attendance = Attendance::find($request->attendanceId);
         $shift = Workshift::find(Auth::user()->employee?->shift_id);
         $shiftType = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
         $data['shiftType'] = $shiftType;
@@ -501,7 +500,7 @@ class AttendanceController extends Controller{
 
             
 
-        if($shiftType == 'night'){
+        /* if($shiftType == 'night'){
            
              $Singin_attendance = Attendance::where([
                     'username' => Auth::user()->username,
@@ -529,7 +528,7 @@ class AttendanceController extends Controller{
                     'signin_date' => now()->format('Y-m-d')
                 ])->first();
             }
-        }
+        } */
 
 
         if (!$attendance) {
@@ -1131,27 +1130,20 @@ class AttendanceController extends Controller{
     }
 
     public function approveIncompleteAttendance($id){
-
-    $attendance = Attendance::findOrFail($id);
-
+        $attendance = Attendance::findOrFail($id);
         if ($attendance->is_incomplete && !$attendance->incomplete_approved) {
-
             /* unblock user */
             $blocked_user = UserEntryBlockList::where(['user_id' => $attendance->emp_id, 'block_date' => date('Y-m-d', strtotime($attendance->signout_date))])->first();
-            
             if ($blocked_user) {
                 $blocked_user->status = 0;
                 $blocked_user->save();
             }
-            
-            $attendance->incomplete_approved = 1;
+            $attendance->incomplete_approved    = 1;
             $attendance->incomplete_approved_by = Auth::id();
             $attendance->incomplete_approved_at = now();
             $attendance->save();
-
             return redirect()->back()->with('success', 'Attendance approved successfully.');
         }
-
         return redirect()->back()->with('error', 'Invalid or already approved record.');
     }
 
