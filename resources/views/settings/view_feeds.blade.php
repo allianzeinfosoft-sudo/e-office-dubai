@@ -473,7 +473,7 @@ function getAnnouncementHtml(item) {
         <div class="card-body">
 
             <p class="mt-3 mb-2">${message}</p>
-
+            
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div><button type="button" class="btn btn-primary w-100">Read More</button></div>
                 <div><span class="badge bg-dark">${display_date}</span></div>
