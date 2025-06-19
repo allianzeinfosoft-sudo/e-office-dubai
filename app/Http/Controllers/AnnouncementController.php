@@ -22,6 +22,20 @@ class AnnouncementController extends Controller
                 'success' => true,
                 'message' => 'Recruitments fetched successfully',
                 'data' => $annoncement->map(function ($result, $index) {
+
+                    $readerDetails = [];
+                        if (!empty($result->readers) && is_array($result->readers)) {
+                            $readerDetails = Employee::whereIn('id', $result->readers)
+                                ->get(['full_name', 'profile_image'])
+                                ->map(function ($emp) {
+                                    return [
+                                        'full_name' => $emp->full_name,
+                                        'profile_image' => $emp->profile_image,
+                                    ];
+                                })
+                                ->toArray();
+                        }
+
                     return [
                         'row' => $index + 1,
                         'id' => $result->id,
@@ -30,6 +44,7 @@ class AnnouncementController extends Controller
                         'picture' => $result->picture ? $result->picture : '',
                         'display_start_date' => date('d-m-Y', strtotime($result->display_start_date)),
                         'display_end_date' => date('d-m-Y', strtotime($result->display_end_date)),
+                        'seeb_by' => $readerDetails,
                         'createdAt' => $result->created_at->format('d-m-Y')
                     ];
                 }),

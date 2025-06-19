@@ -56,7 +56,8 @@
                                             <th>Details</th>
                                             <th>From</th>
                                             <th>To</th>
-                                            <th>Created</th>
+                                            {{-- <th>Created</th> --}}
+                                            <th>Seen By</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -186,7 +187,30 @@
                     { data: 'description', name: 'Details' },
                     { data: 'display_start_date', name: 'From' },
                     { data: 'display_end_date', name: 'To' },
-                    { data: 'createdAt', name: 'Created' },
+                    {
+                        data: 'seeb_by',
+                        title: 'Seen By',
+                        render: function (data, type, row) {
+                            if (!Array.isArray(data) || data.length === 0) {
+                                return `<span>No Members</span>`;
+                            }
+
+                            let membersHtml = `<div class="d-flex align-items-center">
+                                <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">`;
+
+                            data.forEach(member => {
+                                membersHtml += `<li class="avatar avatar-sm pull-up" title="${member.full_name}">
+                                    <img class="rounded-circle" src="${member.profile_image ? '/storage/profile_pics/' + member.profile_image.replace(/^profile_pics\//, '') : '/assets/img/avatars/default-avatar.png'}" alt="Avatar">
+                                </li>`;
+                            });
+
+                            membersHtml += `</ul></div>`;
+                            return membersHtml;
+                        }
+                    },
+
+                    // { data: 'createdAt', name: 'Created' },
+
                     {
                         data: null,
                         title: 'Actions',
