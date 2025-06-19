@@ -27,6 +27,7 @@ class FeedsController extends Controller
                     $birthdayFeed = [
                         'type' => 'birthday',
                         'display_date' => $today->format('d-F'),
+                        'sort_date' => $today->format('Y-m-d'),
                         'employees' => $birthdayEmployees->map(function ($employee) {
                             return [
                                 'full_name' => $employee->full_name,
@@ -44,9 +45,11 @@ class FeedsController extends Controller
             $announcements = collect();
             if ($rawAnnouncements->isNotEmpty()) {
                 $announcements = $rawAnnouncements->map(function ($announcement) use ($today) {
+                     $displayDate = Carbon::parse($announcement->display_start_date);
                     return [
                         'type' => 'announcement',
                         'display_date' => $today->format('d-F'),
+                        'sort_date' => $displayDate->format('Y-m-d'),
                         'title' => $announcement->name_announcement,
                         'message' => $announcement->description,
                         'image' => $announcement->picture ?? '',
@@ -67,6 +70,7 @@ class FeedsController extends Controller
 
             if ($rawAppreciations->isNotEmpty()) {
                 $appreciations = $rawAppreciations->map(function ($appreciation) {
+                    $displayDate = Carbon::parse($appreciation->display_date);
                     $employeeDetails = [];
 
                     // Get IDs from the 'appreciant' string
@@ -87,6 +91,7 @@ class FeedsController extends Controller
                     return [
                         'type' => 'appreciation',
                         'display_date' => \Carbon\Carbon::parse($appreciation->display_date)->format('d-F'),
+                        'sort_date' => $displayDate->format('Y-m-d'),
                         'employees' => $employeeDetails,
                         'message' => $appreciation->appreciation_details,
                         'image' => $appreciation->picture,
@@ -103,18 +108,20 @@ class FeedsController extends Controller
                 $feeds->push($birthdayFeed);
             }
 
+            $feeds = $feeds->merge($announcements)->merge($appreciations);
+
             // Merge announcements if not empty
-            if ($announcements->isNotEmpty()) {
-                $feeds = $feeds->merge($announcements);
-            }
+            // if ($announcements->isNotEmpty()) {
+            //     $feeds = $feeds->merge($announcements);
+            // }
 
             // Merge appreciations if not empty
-            if ($appreciations->isNotEmpty()) {
-                $feeds = $feeds->merge($appreciations);
-            }
+            // if ($appreciations->isNotEmpty()) {
+            //     $feeds = $feeds->merge($appreciations);
+            // }
 
             // Ensure consistent ordering or re-indexing
-            $feeds = $feeds->values();
+            $feeds = $feeds->sortByDesc('sort_date')->values();
             return response()->json(['data' => $feeds]);
         }
 

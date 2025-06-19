@@ -486,57 +486,7 @@ function getAnnouncementHtml(item) {
         </div>
         <div class="timeline-event-time">${display_date}</div></div>`;
 }
-//  <div><button type="button" class="btn btn-primary w-100">Read More</button></div>
-// <p class="text-fade">
-//                 <b>Thank You</b><br>
-//                 ${item.posted_by}
-//             </p>
-// ${item.image ? `<img class="w-100" src="/storage/${item.image}" alt="${item.title}">` : ''}
 
-// function getPollHtml(item) {
-//     const {
-//         title = 'Poll Now',
-//         tag = 'General',
-//         options = [],
-//         display_date = 'N/A'
-//     } = item;
-
-//     // Generate options dynamically
-//     const optionsHtml = options.map((option, index) => `
-//         <a class="border list-group-item p-3 badge bg-white list-group-item-action mb-2"
-//            id="list-option-${index}" data-bs-toggle="list" href="#option-${index}"
-//            aria-selected="false" role="tab" tabindex="-1">${option}</a>
-//     `).join('');
-
-//     return `
-//         <span class="timeline-custom timeline-indicator timeline-indicator-primary" data-aos="zoom-in" data-aos-delay="200">
-//             <i class="fa fa-signal"></i>
-//         </span>
-//         <div class="timeline-event card-sm card p-0" data-aos="fade-left">
-//             <div class="card-header p-3 bg-black mb-4 d-flex justify-content-between align-items-center flex-wrap">
-//                 <h5 class="text-white my-1">${title}</h5>
-//                 <div class="meta my-1">
-//                     <span class="badge wrd-br bg-label-warning">${tag}</span>
-//                 </div>
-//             </div>
-//             <div class="card-body">
-//                 <div class="list-group mb-3" role="tablist">
-//                     ${optionsHtml}
-//                 </div>
-//                 <p>Select your option and click submit</p>
-//                 <div class="d-flex justify-content-between align-items-center mt-2 flex-wrap">
-//                     <div>
-//                         <button type="button" class="btn btn-primary">Submit</button>
-//                     </div>
-//                     <div>
-//                         <span class="badge bg-dark">${display_date}</span>
-//                     </div>
-//                 </div>
-//             </div>
-//             <div class="timeline-event-time">${display_date}</div>
-//         </div>
-//     `;
-// }
 
 
 function getBirthdayHtml(item) {
