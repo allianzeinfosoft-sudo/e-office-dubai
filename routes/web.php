@@ -34,6 +34,11 @@ use App\Http\Controllers\CustomAttendanceController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\WorkFromHomeAttendanceController;
+use App\Http\Controllers\ConferenceHallController;
+use App\Http\Controllers\QuickNoteController;
+use App\Http\Controllers\EventCalendarController;
+use App\Http\Controllers\KspController;
+use App\Http\Controllers\LibraryController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -411,6 +416,42 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     /* workfrom home */
     Route::post('/work-from-home-attendance/store', [WorkFromHomeAttendanceController::class, 'store'])->name('work-from-home-attendance.store');
+    Route::get('/wfs-wfh-approval-list', [WorkFromHomeAttendanceController::class, 'get_wfs_wfh_approval_list'])->name('wfs-wfh-approval-list');
+    Route::get('/wfs-wfh-approve/{id}', [WorkFromHomeAttendanceController::class, 'approval_wfs_wfh'])->name('wfs-wfh-approve');
+    Route::get('/wfs-wfh-reject/{id}', [WorkFromHomeAttendanceController::class, 'reject_wfs_wfh'])->name('wfs-wfh-reject');
+
+    /* conference hall */
+    Route::get('/conferance-hall', [ConferenceHallController::class, 'index'])->name('conferance-hall.index');
+    Route::post('/conferance-hall/store', [ConferenceHallController::class, 'store'])->name('conferance-hall.store');
+    Route::get('/conferance-hall/{conferenceHall}/edit', [ConferenceHallController::class, 'edit'])->name('conferance-hall.edit');
+    Route::delete('/conferance-hall/{conferenceHall}/distroy', [ConferenceHallController::class, 'destroy'])->name('conferance-hall.destroy');
+    Route::get('/conferance-hall/report', [ConferenceHallController::class, 'conferanceHallReport'])->name('conferance-hall.report');
+    Route::get('/conferance-hall/report-data', [ConferenceHallController::class, 'conferanceHallReportData'])->name('conferance-hall.report-data');
+
+    /* Tools - Quick Note */
+    Route::get('/tools/quick-note', [QuickNoteController::class, 'index'])->name('tools.quick-note.index');
+    Route::post('/tools/quick-note/store', [QuickNoteController::class, 'store'])->name('tools.quick-note.store');
+    Route::get('/tools/quick-note/{quickNote}/edit', [QuickNoteController::class, 'edit'])->name('tools.quick-note.edit');
+    Route::get('/tools/quick-note/{id}/destroy', [QuickNoteController::class, 'destroy'])->name('tools.quick-note.destroy');
+    Route::get('/tools/quick-note/{quickNote}/show', [QuickNoteController::class, 'show'])->name('tools.quick-note.show');
+    Route::post('/tools/quick-note/comment', [QuickNoteController::class, 'storeComment'])->name('quick-note.comment.store');
+
+    /* Tools - Quick Note */
+    Route::get('/tools/event-calendar', [EventCalendarController::class, 'index'])->name('tools.event-calendar.index');
+    Route::post('/tools/event-calendar/store', [EventCalendarController::class, 'store'])->name('tools.event-calendar.store');
+    Route::delete('/tools/event-calendar/delete/{type}/{id}', [EventCalendarController::class, 'destroy'])->name('tools.event-calendar.delete');
+
+    /* Tools - KSP */
+    Route::get('/tools/ksp', [KspController::class, 'index'])->name('tools.ksp.index');
+    Route::post('/tools/ksp/store', [KspController::class, 'store'])->name('tools.ksp.store');
+    Route::get('/tools/ksp/{ksp}/edit', [KspController::class, 'edit'])->name('tools.ksp.edit');
+    Route::delete('/tools/ksp/{ksp}/destroy', [KspController::class, 'destroy'])->name('tools.ksp.destroy');
+    Route::get('/tools/ksp/{ksp}/show', [KspController::class, 'show'])->name('tools.ksp.show');
+    Route::post('/tools/ksp/store-category', [KspController::class, 'store_category'])->name('tools.ksp.store-category');
+    
+    /* Tools - E-Library */
+    Route::get('/e-library/categories', [LibraryController::class, 'books_categories'])->name('e-library.categories');
+    Route::post('/e-library/categories/store', [LibraryController::class, 'store_category'])->name('e-library.categories.store');
 
 
     /* Mail Testing Route */

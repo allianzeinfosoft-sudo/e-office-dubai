@@ -24,9 +24,12 @@ document.addEventListener('DOMContentLoaded', function () {
       addEventSidebar = document.getElementById('addEventSidebar'),
       appOverlay = document.querySelector('.app-overlay'),
       calendarsColor = {
+        birthdays: 'success',
+        events: 'warning',
+        appreciation: 'primary',
         Business: 'primary',
-        Holiday: 'success',
-        Personal: 'danger',
+        Holiday: 'danger',
+        Personal: 'info',
         Family: 'warning',
         ETC: 'info'
       },
@@ -146,6 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    
     // Event click function
     function eventClick(info) {
       eventToUpdate = info.event;
@@ -178,6 +182,9 @@ document.addEventListener('DOMContentLoaded', function () {
         : null;
       eventToUpdate.extendedProps.description !== undefined
         ? (eventDescription.value = eventToUpdate.extendedProps.description)
+        : null;
+      eventToUpdate.extendedProps.event_id !== undefined
+        ? (event_id.value = eventToUpdate.extendedProps.event_id)
         : null;
 
       // // Call removeEvent function

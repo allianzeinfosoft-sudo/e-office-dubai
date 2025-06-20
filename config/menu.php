@@ -541,6 +541,92 @@ return [
         'permission' => ['view emails','view starred','send mail','trashed mail']
     ],
     [
+        'title' => 'Conference Hall',
+        'icon' => 'ti ti-calendar-time',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['conference-hall*'],
+        'permission' => ['view bookings', 'view conference hall report'],
+        'submenu' => [
+            [
+                'title' => 'Bookings',
+                'route' =>  '/conferance-hall',
+                'permission' => ['view bookings'],
+            ],
+            [
+                'title' => 'Reports',
+                'route' =>  '/conferance-hall/report',
+                'permission' => ['view conference hall report'],
+            ],
+        ]
+    ],
+    [
+        'title' => 'Tools',
+        'icon' => 'ti ti-tools',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['conference-hall*'],
+        'permission' => ['view quick notes', 'view conference hall report'],
+        'submenu' => [
+            [
+                'title' => 'Quick Note',
+                'route' =>  '/tools/quick-note',
+                'permission' => ['view quick notes'],
+            ],
+            [
+                'title' => 'Event Calendar',
+                'route' =>  '/tools/event-calendar',
+                'permission' => ['view event calendar'],
+            ],
+            [
+                'title' => 'KSP',
+                'route' =>  'tools/ksp',
+                'permission' => ['view KSP'],
+            ],
+        ]
+    ],
+    [
+        'title' => 'e-Library',
+        'icon' => 'ti ti-books',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['e-library*'],
+        'permission' => ['view e-library', 'issue books'],
+        'submenu' => [
+            [
+                'title' => 'Book Issue Register',
+                'route' =>  '',
+                'permission' => ['issue books'],
+            ],
+            [
+                'title' => 'Books Categories',
+                'route' =>  '/e-library/categories',
+                'permission' => ['view books category'],
+            ],
+            [
+                'title' => 'Reports',
+                'route' =>  'javascript:void(0);',
+                'isActive' => ['reports*'],
+                'permission' => ['view e-library reports'],
+                'submenu' => [
+                    [
+                        'title' => 'Issued Books',
+                        'route' => "",
+                        'permission' => ['view issued books report'],
+                    ],
+                    [
+                        'title' => 'Pending Books',
+                        'route' => "",
+                        'permission' => ['view pending books report'],
+                    ],
+                    [
+                        'title' => 'Damaged / Lost Books',
+                        'route' => "",
+                        'permission' => ['view damage or loss report'],
+                        ''
+                    ],
+                ]
+            ],
+        ]
+    ],
+    [
         'header' => 'Settings',
     ],
     [

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\WorkFromHomeAttendance;
 use App\Models\WorkFromHomeReport;
 use App\Models\Employee;
+use App\Models\Attendance;
 use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
@@ -144,6 +145,62 @@ class WorkFromHomeAttendanceController extends Controller
     public function destroy(WorkFromHomeAttendance $workFromHomeAttendance)
     {
         //
+    }
+
+    public function get_wfs_wfh_approval_list(){
+        $data['meta_title'] = 'WFS /WFS Approval List';
+        $data['wfs_wfh_pending'] = WorkFromHomeAttendance::with('employee')->where('approvel_status', 0)->get();
+        return view('wfs-wfh-attendance.approval_list', $data);
+    }
+
+    public function approval_wfs_wfh($id, Request $request){
+        $wfh = WorkFromHomeAttendance::find($id);
+        if($wfh){
+
+            
+                $attendanceData = [
+                    'username'         => $wfh->username,
+                    'emp_id'           => $wfh->emp_id,
+                    'signin_date'      => $wfh->signin_date,
+                    'signout_date'     => $wfh->signout_date,
+                    'signin_time'      => CustomHelper::formatTimeToSeconds($wfh->signin_time),
+                    'break_time'       => CustomHelper::formatTimeToSeconds($wfh->break_time),
+                    'signout_time'     => CustomHelper::formatTimeToSeconds($wfh->signout_time),
+                    'working_hours'    => CustomHelper::formatTimeToSeconds($wfh->working_hours),
+                    'signin_late_note' => $wfh->status == 'wfh'? 'wfh' : 'wfs',
+                    'signout_late_note'=> $wfh->status == 'wfh'? 'wfh' : 'wfs',
+                    'status'           => 'mark-out',
+                    'punchin_type'     => $wfh->status,
+                    'punchout_type'    => $wfh->status,
+                    'custom_status'    => '0',
+                    'ipaddress'        => $request->ip(),
+                ];
+    
+                // Insert or update attendance record
+                Attendance::updateOrCreate(
+                    [
+                        'emp_id'      => $wfh->emp_id,
+                        'signin_date' => $wfh->signin_date,
+                    ],
+                    $attendanceData
+                );
+           
+
+            $wfh->approvel_status = 1;
+            $wfh->approved_by = Auth::user()->id;
+            $wfh->save();
+        }
+        return redirect()->back()->with('success', 'Wfh / wfs approved successfully!');
+    }
+
+    public function reject_wfs_wfh($id){
+        $wfh = WorkFromHomeAttendance::find($id);
+        if($wfh){
+            $wfh->approvel_status = 2;
+            $wfh->approved_by = Auth::user()->id;
+            $wfh->save();
+        }
+        return redirect()->back()->with('success', 'Wfh / wfs rejected successfully!');
     }
     
 }

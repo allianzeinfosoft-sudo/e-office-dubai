@@ -121,14 +121,16 @@
                         <small class="text-muted mb-0">Account Settings</small>
                       </div>
                     </div>
+
                     <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                          <i class="ti ti-help fs-4"></i>
+                          <i class="ti ti-home fs-4"></i>
                         </span>
-                        <a href="pages-help-center-landing.html" class="stretched-link">Help Center</a>
-                        <small class="text-muted mb-0">FAQs & Articles</small>
+                        <a href="{{ route('wfs-wfh-approval-list') }}" class="stretched-link">WFH / WFS</a>
+                        <small class="text-muted mb-0">Approvals of WFH / WFS</small>
                       </div>
+
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-square fs-4"></i>
@@ -466,7 +468,7 @@
 
 
 
-        @push('js')
+@push('js')
         <script>
 
          $(function () {

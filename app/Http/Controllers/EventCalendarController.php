@@ -1,0 +1,228 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\EventCalendar;
+use App\Models\Employee;
+use App\Models\Event;
+use App\Models\Appreciation;
+use App\Models\Holiday;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+
+
+class EventCalendarController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+        $data['meta_title'] = 'Event Calendar';
+        $slId = 0;
+        /* Birthdays */
+        $employees = Employee::whereIn('status', [1,2,5])->get();
+        $events = [];
+        foreach ($employees as $employee) {
+            $slId++;
+            $dob = Carbon::parse($employee->dob);
+            $birthdayThisYear = Carbon::create(now()->year, $dob->month, $dob->day);
+
+            $events[] = [
+                'id' => $slId,
+                'url' => '',
+                'title' => $employee->full_name . "'s Birthday 🎂",
+                'start' => $birthdayThisYear->toDateString(),
+                'end' => $birthdayThisYear->toDateString(),
+                'allDay' => true,
+                'extendedProps' => [
+                    'calendar' => 'birthdays',
+                    'employee_id' => $employee->id,
+                ],
+            ];
+
+        }
+
+        $data['events_birthdays'] = $events;
+
+        /* events */
+        $officeEvent = Event:: all();
+        $office_events = [];
+        foreach ($officeEvent as $result) {
+            $office_events[] = [
+                'id' => $slId,
+                'url' => '',
+                'title' => $result->eventTitle,
+                'start' => $result->eventDate,
+                'end' => $result->eventDate,
+                'allDay' => true,
+                'extendedProps' => [
+                    'calendar' => 'events',
+                    'event_id' => $result->id,
+                ],
+            ];
+        }
+
+        $data['office_events'] = $office_events;
+
+        /* Appriciations */
+        $appreciations = Appreciation::with('employee','project')->get();
+        $appr_events = [];
+
+        foreach ($appreciations as $index => $result) {
+            $appr_events[] = [
+                'id' => 'appr_' . ($index + 1),
+                'url' => '', // you can later add route('appreciation.show', $result->id)
+                'title' => $result->employee?->full_name . ' appreciated',
+                'start' => $result->display_date,
+                'end' => $result->display_date,
+                'allDay' => true,
+                'extendedProps' => [
+                    'calendar' => 'appreciation',
+                    'event_id' => $result->id,
+                    'details' => $result->appreciation_details,
+                    'picture' => $result->picture,
+                ],
+            ];
+        }
+
+        $data['appr_events'] = $appr_events;
+
+        /* Events posted */
+        $evens_form = EventCalendar::all();
+        $events_posted = [];
+
+        foreach ($evens_form as $index => $result) {
+            $events_posted[] = [
+                'id' => 'events_' . ($index + 1),
+                'url' => '', // you can later add route('appreciation.show', $result->id)
+                'title' => $result->title,
+                'start' => $result->start_date,
+                'end' => $result->end_date,
+                'allDay' => $result->all_day ? true : false,
+                'extendedProps' => [
+                    'calendar' => $result->label,
+                    'event_id' => $result->id,
+                    'details' => $result->description ?? '',
+                    'location' => $result->description ?? '',
+                ],
+            ];
+        }
+        $data['events_posted'] = $events_posted;
+
+        /* Holidays */
+        $holidayGroup = Auth::user()->employee->holidayGroup;
+        $holidays = Holiday::where('holiday_group', $holidayGroup)->get();
+        $holiday_events = [];
+
+        foreach ($holidays as $index => $holiday) {
+            $holiday_events[] = [
+                'id' => 'holiday_' . ($index + 1),
+                'url' => '', // optional: route('holidays.show', $holiday->id)
+                'title' => $holiday->name,
+                'start' => $holiday->date,
+                'end' => $holiday->date,
+                'allDay' => true,
+                'extendedProps' => [
+                    'calendar' => 'Holiday',
+                    'event_id' => $holiday->id,
+                ],
+            ];
+        }
+
+        $data['holiday_events'] = $holiday_events;
+
+        $data['employees'] = Employee::whereIn('status', [1,2,5])->get();
+
+        return view('tools.event-calendar.index', $data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+        $data = $request->validate([
+        'eventTitle' => 'required|string|max:255',
+        'eventLabel' => 'nullable|string|max:100',
+        'eventStartDate' => 'nullable|date',
+        'eventEndDate' => 'nullable|date',
+        'eventURL' => 'nullable|url',
+        'eventGuests' => 'nullable|array',
+        'eventLocation' => 'nullable|string|max:255',
+        'eventDescription' => 'nullable|string',
+        'allDay' => 'nullable|boolean',
+    ]);
+
+    EventCalendar::updateOrcreate(
+        [
+            'title' => $data['eventTitle'],
+            'label' => $data['eventLabel'] ?? null,
+            'start_date' => $data['eventStartDate'],
+        ],
+        [
+            'title' => $data['eventTitle'],
+            'label' => $data['eventLabel'] ?? null,
+            'start_date' => $data['eventStartDate'],
+            'end_date' => $data['eventEndDate'],
+            'url' => $data['eventURL'] ?? null,
+            'guests' => is_array($data['eventGuests']) ? json_encode($data['eventGuests']) : [],
+            'location' => $data['eventLocation'] ?? null,
+            'description' => $data['eventDescription'] ?? null,
+            'all_day' => $request->has('allDay') ? true : false,
+        ]);
+
+    return response()->json(['success' => true, 'message' => 'Event created']);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(EventCalendar $eventCalendar)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(EventCalendar $eventCalendar)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, EventCalendar $eventCalendar)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($type, $id){
+        switch ($type) {
+            case 'Personal' || 'Business' || 'Family' || 'ETC':
+                EventCalendar::findOrFail($id)->delete();
+                break;
+            // Add more cases if needed
+            default:
+                return response()->json(['error' => 'Invalid event type.'], 400);
+        }
+
+        return response()->json(['success' => true]);
+    }
+}
