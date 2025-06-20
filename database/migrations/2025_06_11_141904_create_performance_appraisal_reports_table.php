@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('par_id');
             $table->text('question');
-            $table->enum('answer_type', ['yes_no', 'optional', 'description']);
-            $table->string('answer')->nullable();
+            $table->string('comment')->nullable();
+            $table->integer('mark')->nullable();
             $table->timestamps();
         });
     }

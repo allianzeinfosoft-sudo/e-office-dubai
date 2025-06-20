@@ -9,14 +9,9 @@ class ParQuestion extends Model
 {
 
     use HasFactory;
-    protected $casts = [
-        'options' => 'array',
-    ];
     protected $fillable = [
         'template_id',
         'question',
-        'answer_type',
-        'options',
     ];
 
     public function template()

@@ -35,8 +35,8 @@ class PerformanceAppraisalReportController extends Controller
             PerformanceAppraisalReport::create([
                 'par_id'      => $request->par_id,
                 'question'    => $entry['question_id'],
-                'answer_type' => $entry['answer_type'],
-                'answer'      => $entry['answer'] ?? null,
+                'mark'        => $entry['mark'],
+                'comment'     => $entry['comment'],
             ]);
         }
 
@@ -44,13 +44,13 @@ class PerformanceAppraisalReportController extends Controller
             if ($parAssign) {
                 $parAssign->status = 2; // Change this to your desired status value
                 $parAssign->par_submit_date = now(); // Optional: record submission date
+                $parAssign->total_score = $request->total_score ?? 0;
+                $parAssign->maximum_score = $request->maximum_score ?? 0;
+                $parAssign->score_percentage = $request->percentage ?? 0;
+                $parAssign->grade = $request->grade ?? '';
                 $parAssign->save();
             }
-
-
-
         return redirect()->back()->with('success', 'Performance Appraisal submitted successfully!');
-
     }
 
     /**

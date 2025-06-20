@@ -14,8 +14,6 @@ class SarQuestion extends Model
     protected $fillable = [
         'template_id',
         'question',
-        'answer_type',
-        'options',
     ];
 
     public function template()

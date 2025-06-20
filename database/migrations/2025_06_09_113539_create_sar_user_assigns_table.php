@@ -18,6 +18,10 @@ return new class extends Migration
             $table->date('sar_end_date');
             $table->date('sar_submit_date')->nullable();
             $table->integer('status')->default(1)->comment('1-pending,2-completed');
+            $table->integer('total_score')->nullable();
+            $table->integer('maximum_score')->nullable();
+            $table->decimal('score_percentage', 10, 2)->nullable();
+            $table->string('grade')->nullable();
             $table->timestamps();
         });
     }

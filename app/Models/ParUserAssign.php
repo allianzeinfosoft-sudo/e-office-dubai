@@ -16,7 +16,11 @@ class ParUserAssign extends Model
         'par_start_date',
         'par_end_date',
         'par_submit_date',
-        'status'
+        'status',
+        'total_score',
+        'maximum_score',
+        'score_percentage',
+        'grade',
     ];
 
     public function employee()

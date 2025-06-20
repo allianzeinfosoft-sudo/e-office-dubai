@@ -12,8 +12,8 @@ class PerformanceAppraisalReport extends Model
      protected $fillable = [
             'par_id',
             'question',
-            'answer_type',
-            'answer',
+            'comment',
+            'mark',
         ];
 
     public function parInfo()

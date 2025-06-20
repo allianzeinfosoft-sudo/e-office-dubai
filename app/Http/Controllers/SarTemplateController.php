@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Ui\Presets\React;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class SarTemplateController extends Controller
 {
     /**
@@ -41,7 +43,7 @@ class SarTemplateController extends Controller
 
         }
 
-        $data['meta_title'] = 'SAR Questions Templates';
+        $data['meta_title'] = 'SAR Questions';
         return view('sar.index',  $data);
     }
 
@@ -59,16 +61,20 @@ class SarTemplateController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'id' => 'nullable|exists:sar_templates,id',
             'template_name' => 'required|string',
             'department_id' => 'required|exists:departments,id',
             'questions' => 'required|array|min:1',
             'questions.*.question' => 'required|string',
-            'questions.*.answer_type' => 'required|in:yes_no,optional,description',
         ]);
 
         // If editing, update the existing template
         if ($request->filled('id')) {
             $template = SarTemplate::findOrFail($request->id);
+
+             if ($template->userAssignments()->exists()) {
+                return redirect()->back()->with('error', 'This template is already assigned to employees and cannot be modified.');
+            }
 
             $template->update([
                 'template_name' => $request->template_name,
@@ -90,20 +96,8 @@ class SarTemplateController extends Controller
         // Store each question under the template
         foreach ($request->questions as $q) {
 
-             $options = [];
-            if ($q['answer_type'] === 'optional') {
-                $options = array_filter([
-                    $q['option1'] ?? null,
-                    $q['option2'] ?? null,
-                    $q['option3'] ?? null,
-                    $q['option4'] ?? null,
-                ]);
-            }
-
             $template->questions()->create([
-                'question' => $q['question'],
-                'answer_type' => $q['answer_type'],
-                'options' => !empty($options) ? json_encode(array_values($options)) : null,
+                'question' => $q['question']
             ]);
         }
 
@@ -119,7 +113,17 @@ class SarTemplateController extends Controller
 
     public function edit(string $id)
     {
-        //
+        $template = SarTemplate::with(['questions', 'department_info'])->findOrFail($id);
+        // Check if this template is assigned to employees
+        $isAssigned = $template->userAssignments()->exists(); // adjust relation name accordingly
+
+        return response()->json([
+            'questions' => $template->questions,
+            'department' => $template->department_info->id ?? null,
+            'name' => $template->template_name,
+            'locked' => $isAssigned,
+        ]);
+
     }
 
 
@@ -129,9 +133,25 @@ class SarTemplateController extends Controller
     }
 
 
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $sar = SarTemplate::findOrFail($id);
+        try {
+
+             if ($sar->userAssignments()->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'This template is assigned to one or more users and cannot be deleted.',
+                ], 400);
+             }
+
+            $sar->questions()->delete(); // optional: if cascading needed
+            $sar->delete();
+
+            return response()->json(['success' => true, 'message' => 'SAR Template deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete PAR Template.'], 500);
+        }
     }
 
 
@@ -146,8 +166,6 @@ class SarTemplateController extends Controller
             'questions' => $template->questions->map(function ($q) {
                 return [
                     'question' => $q->question,
-                    'answer_type' => $q->answer_type, // Needed for rendering inputs
-                    'options' => json_decode($q->options ?? '[]') // if using custom options
                 ];
             }),
         ]);
@@ -166,8 +184,7 @@ class SarTemplateController extends Controller
                     return [
                         'question' => $q->question,
                         'question_id' => $q->id,
-                        'answer_type' => $q->answer_type, // Needed for rendering inputs
-                        'options' => json_decode($q->options ?? '[]') // if using custom options
+
                     ];
                 }),
             ]);
@@ -197,6 +214,7 @@ class SarTemplateController extends Controller
                         'sar_start_date' => $sarUsers->sar_start_date ?? '',
                         'sar_end_date' => $sarUsers->sar_end_date ?? '',
                         'created_by' => $sarUsers->assigned_user?->full_name ?? '',
+                        'status' => $sarUsers->status ?? '',
                     ];
                 });
 
@@ -242,6 +260,7 @@ class SarTemplateController extends Controller
 
      public function getTemplates($departmentId)
     {
+
         $data['templates'] = SarTemplate::select('id','template_name')->where('department_id', $departmentId)->get();
         $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
 
@@ -297,37 +316,137 @@ class SarTemplateController extends Controller
         return view('sar.user-sars',  $data);
     }
 
-   public function sarAnswerfetch($id)
+//    public function sarAnswerfetch($id)
+//     {
+//         $sar = SarUserAssign::with([
+//             'employee',
+//             'template.department_info',
+//             'template.questions',
+//             'assigned_user',
+//         ])->findOrFail($id);
+
+//         // Get all answers for this SAR
+//         $answers = SelfAppraisalReport::where('sar_id', $id)->get();
+
+//         // Optionally join with questions for enriched info
+//         $answers = $answers->map(function ($answer) {
+//             $question = SarQuestion::find($answer->question);
+//             return [
+//                 'question_id'   => $answer->question,
+//                 'question_text' => $question?->question,
+//                 // 'answer_type'   => $answer->answer_type,
+//                 'answer'        => $answer->answer,
+//                 'options'       => $question?->options,
+//             ];
+//         });
+
+//         return response()->json([
+//             'sar_info' => $sar,
+//             'answers'  => $answers,
+//         ]);
+//     }
+
+
+    public function sarAnswerfetch($id)
     {
+        // Load SAR with related data
         $sar = SarUserAssign::with([
-            'employee',
+            'employee.department',
+            'employee.designation',
             'template.department_info',
+            'template.creator',
             'template.questions',
             'assigned_user',
         ])->findOrFail($id);
 
         // Get all answers for this SAR
-        $answers = SelfAppraisalReport::where('sar_id', $id)->get();
+        $answers = SelfAppraisalReport::where('sar_id', $id)->get()->keyBy('question');
 
-        // Optionally join with questions for enriched info
-        $answers = $answers->map(function ($answer) {
-            $question = SarQuestion::find($answer->question);
+        // Combine questions with their corresponding answers
+        $questionAnswers = $sar->template->questions->map(function ($question) use ($answers) {
+            $answer = $answers->firstWhere('question', $question->id);
+
             return [
-                'question_id'   => $answer->question,
-                'question_text' => $question?->question,
-                // 'answer_type'   => $answer->answer_type,
-                'answer'        => $answer->answer,
-                'options'       => $question?->options,
+                'question_id'   => $question->id,
+                'question_text' => $question->question,
+                'answer'        => $answer?->comment ?? null,
+                'mark'          => $answer?->mark ?? null,
             ];
         });
 
+        // Calculate scores
+        $totalScore     = $sar->total_score;
+        $maximumScore   = $sar->maximum_score;
+        $averageScore   = $answers->count() > 0 ? round($totalScore / $answers->count(), 2) : 0;
+        $grade          = $sar->grade;
+        $scorePercent   = $sar->score_percentage;
+
+        // Format employee details
+        $employee = $sar->employee;
+
+        $employeeDetails = [
+            'full_name'       => $employee?->full_name,
+            'employee_code'   => $employee?->employeeID,
+            'department'      => $employee?->department?->department,
+            'designation'     => $employee?->designation?->designation,
+        ];
+
+        // SAR Dates
+        $sarDates = [
+            'start_date'  => $sar->sar_start_date,
+            'end_date'    => $sar->sar_end_date,
+            'submit_date' => $sar->sar_submit_date,
+        ];
+
         return response()->json([
-            'sar_info' => $sar,
-            'answers'  => $answers,
+            'sar_info'        => $sar,
+            'employee_details'=> $employeeDetails,
+            'sar_dates'       => $sarDates,
+            'answers'         => $questionAnswers,
+            'total_score'     => $totalScore,
+            'maximum_score'   => $maximumScore,
+            'average_score'   => $averageScore,
+            'score_percent'   => $scorePercent,
+            'grade'           => $grade,
         ]);
     }
 
 
+
+    // print sar report pdf
+    public function generatePdf($id)
+    {
+        $sar = SarUserAssign::with([
+            'employee',
+            'template.department_info',
+            'template.creator',
+            'template.questions',
+            'assigned_user',
+        ])->findOrFail($id);
+
+        $answers = SelfAppraisalReport::where('sar_id', $id)->get()->keyBy('question');
+
+        $questionAnswers = $sar->template->questions->map(function ($question) use ($answers) {
+            $answer = $answers->get($question->id);
+            return [
+                'question_id'   => $question->id,
+                'question_text' => $question->question,
+                'answer'        => $answer?->comment ?? null,
+                'mark'          => $answer?->mark ?? null,
+            ];
+        });
+
+        $data = [
+            'sar_info' => $sar,
+            'answers' => $questionAnswers,
+            'total_score' => $sar->total_score,
+            'maximum_score' => $sar->maximum_score,
+            'score_percent' => $sar->score_percentage,
+        ];
+
+        $pdf = Pdf::loadView('pdf.self_appraisal_report', $data);
+        return $pdf->download("Self_Appraisal_Report_{$id}.pdf");
+    }
 
 
 }

@@ -35,8 +35,8 @@ class SelfAppraisalReportController extends Controller
             SelfAppraisalReport::create([
                 'sar_id'      => $request->sar_id,
                 'question'    => $entry['question_id'],
-                'answer_type' => $entry['answer_type'],
-                'answer'      => $entry['answer'] ?? null,
+                'mark'        => $entry['mark'],
+                'comment'     => $entry['comment'],
             ]);
         }
 
@@ -44,6 +44,10 @@ class SelfAppraisalReportController extends Controller
             if ($sarAssign) {
                 $sarAssign->status = 2; // Change this to your desired status value
                 $sarAssign->sar_submit_date = now(); // Optional: record submission date
+                $sarAssign->total_score = $request->total_score ?? 0;
+                $sarAssign->maximum_score = $request->maximum_score ?? 0;
+                $sarAssign->score_percentage = $request->percentage ?? 0;
+                $sarAssign->grade = $request->grade ?? '';
                 $sarAssign->save();
             }
 

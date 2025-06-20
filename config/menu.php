@@ -150,29 +150,30 @@ return [
             ], */
         ]
     ],
-    // [
-    //     'title' => 'Survey',
-    //     'icon' => 'ti ti-rocket',
-    //     'route' => 'javascript:void(0);',
-    //     'permission' => ['create survey','assign survey','view surveys'],
-    //     // 'badge' => "New",
-    //     'submenu' => [
-    //         [
-    //             'title' => 'Add Survey',
-    //             'route' => '#',
-    //             'permission' => ['create survey'],
-    //         ],
-    //         [
-    //             'title' => 'Assign Survey',
-    //             'route' => '#',
-    //             'permission' => ['assign survey'],
-    //         ],
-    //         [
-    //             'title' => 'View Survey',
-    //             'route' => '#',
-    //         ],
-    //     ]
-    // ],
+    [
+        'title' => 'Survey',
+        'icon' => 'ti ti-rocket',
+        'route' => 'javascript:void(0);',
+        'permission' => ['create survey','assign survey','view surveys'],
+        // 'badge' => "New",
+        'submenu' => [
+            [
+                'title' => 'Survey`s',
+                'route' => '/user-surveys',
+            ],
+            [
+                'title' => 'Add Survey',
+                'route' => '/surveytemplate',
+                'permission' => ['create survey'],
+            ],
+            [
+                'title' => 'Assign Survey',
+                'route' => '/surveytemplate-assign',
+                'permission' => ['assign survey'],
+            ]
+
+        ]
+    ],
     [
         'title' => 'SAR',
         'icon' => 'ti ti-replace',
@@ -180,19 +181,19 @@ return [
         'permission' => ['view SARs','review SAR'],
         'submenu' => [
              [
-                'title' => 'My SAR`s',
+                'title' => 'SAR`s',
                 'route' =>  '/user-sars',
+                'permission' => ['view SARs'],
+            ],
+            [
+                'title' => 'Add SAR',
+                'route' =>  'sartemplate',
                 'permission' => ['view SARs'],
             ],
             [
                 'title' => 'Assign SAR',
                 'route' =>  '/sartemplate-assign',
                 'permission' => ['assign SAR'],
-            ],
-            [
-                'title' => 'SAR Templates',
-                'route' =>  'sartemplate',
-                'permission' => ['view SARs'],
             ]
         ]
     ],
@@ -201,21 +202,51 @@ return [
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',
         'permission' => ['view PAR','create PAR', 'assign PAR'],
-        'badge' => "New",
+        // 'badge' => "New",
         'submenu' => [
             [
-                'title' => 'MY PAR`S',
+                'title' => 'PAR`S',
                 'route' => '/user-pars',
                 'permission' => ['create PAR'],
+            ],
+            [
+                'title' => 'Add PAR',
+                'route' => '/partemplate',
             ],
             [
                 'title' => 'Assign PAR',
                 'route' => '/partemplate-assign',
                 'permission' => ['assign PAR'],
             ],
+
+
+        ]
+    ],
+     [
+        'title' => 'Feedback',
+        'icon' => 'ti ti-send',
+        'route' => 'javascript:void(0);',
+        'permission' => ['view PAR','create PAR', 'assign PAR'],
+        // 'badge' => "New",
+        'submenu' => [
             [
-                'title' => 'PAR Templates',
-                'route' => '/partemplate',
+                'title' => 'Feedback`s',
+                'route' => '/user-feedbacks',
+
+            ],
+            [
+                'title' => 'Add Feedback',
+                'route' => '/feedback',
+            ],
+            [
+                'title' => 'Assign Feedback',
+                'route' => '/feedback-assign',
+
+            ],
+            [
+                'title' => 'Feedback Report',
+                'route' => '/feedback-report',
+
             ],
 
         ]

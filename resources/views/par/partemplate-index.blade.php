@@ -24,46 +24,7 @@
         background-color: #fdfdfd;
     }
 
-    .question-box {
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        background-color: #ffffff;
-    }
 
-    .question-title {
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .form-check-label {
-        font-weight: 400;
-    }
-
-    .modal-header-custom {
-        background-color: #ff5f10;
-        color: white;
-        border-top-left-radius: 13px;
-        border-top-right-radius: 13px;
-        padding: 1.5rem;
-        text-align: center;
-    }
-
-    .modal-header-custom h3 {
-        margin-bottom: 0.25rem;
-    }
-
-    .modal-header-custom p {
-        font-size: 0.95rem;
-        margin: 0;
-        opacity: 0.9;
-    }
-
-    .form-check-input:checked {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
 
 </style>
 @stop
@@ -151,7 +112,7 @@
         <div class="modal-content p-3 p-md-4">
             <div class="modal-header-custom">
 
-                <h3 class="address-title">PAR Question Template</h3>
+                <h3 class="address-title">PAR Questions</h3>
                 <p class="  address-subtitle">Department</p>
             </div>
             <div class="modal-body">
@@ -225,43 +186,41 @@
 
     /*delete thoughts function*/
 
-    $(document).on('click', '.delete-par-template', function(e) {
+    $(document).on('click', '.delete-par-template', function (e) {
         e.preventDefault();
-        const sarTemplateId = $(this).data('id');
+        const parTemplateId = $(this).data('id');
 
         Swal.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-
-                        $.ajax({
-                        url: `/partemplate/${sarTemplateId}`,
-                        type: 'DELETE',
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-                        },
-                        success: function(response) {
-
-                            Swal.fire("Deleted!", "PAR has been deleted.", "success").then(() => {
-                                $('#datatables-par-template').DataTable().ajax.reload(); // Reload table
-                            });
-
-                        },
-                        error: function(xhr) {
-                            Swal.fire("Error!", "Something went wrong.", "error");
-                        }
+            title: "Are you sure?",
+            text: "This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/partemplate/${parTemplateId}`,
+                    type: 'POST', // Laravel requires POST + _method for DELETE
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        _method: 'DELETE'
+                    },
+                    success: function (response) {
+                        Swal.fire("Deleted!", response.message || "PAR has been deleted.", "success").then(() => {
+                            $('#datatables-par-template').DataTable().ajax.reload(); // Reload DataTable
                         });
-
+                    },
+                    error: function (xhr) {
+                        let message = xhr.responseJSON?.message || "Something went wrong.";
+                        Swal.fire("Error!", message, "error");
+                    }
+                });
             }
-
+        });
     });
-  });
+
 
 
 
@@ -282,41 +241,6 @@
                     data.questions.forEach((q, index) => {
                         questionsHtml += `<div class="question-box">
                             <p class="question-title">Q${index + 1}: ${q.question}</p>`;
-
-                       if (q.answer_type === 'optional') {
-                            const options = q.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
-
-                            questionsHtml += `<div class="row">`; // Start row
-
-                            options.forEach((opt, i) => {
-                                questionsHtml += `
-                                    <div class="col-md-6 mb-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="question_${index}" id="q${index}_opt${i}" value="${opt}">
-                                            <label class="form-check-label" for="q${index}_opt${i}">${opt}</label>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-
-                            questionsHtml += `</div>`; // End row
-                        }
-                        else if (q.answer_type === 'yes_no') {
-                            ['Yes', 'No'].forEach((opt) => {
-                                questionsHtml += `
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="question_${index}" id="q${index}_${opt}" value="${opt}">
-                                        <label class="form-check-label" for="q${index}_${opt}">${opt}</label>
-                                    </div>
-                                `;
-                            });
-                        } else if (q.answer_type === 'description') {
-                            questionsHtml += `
-                                <textarea class="form-control" name="question_${index}" rows="3" placeholder="Enter your response here..."></textarea>
-                            `;
-                        } else {
-                            questionsHtml += `<p class="text-muted">Unknown answer type</p>`;
-                        }
 
                         questionsHtml += `</div>`;
                     });
@@ -340,6 +264,7 @@
 function openParTemplateOffcanvas(targetId = null) {
     $('#par-template-form')[0].reset(); // Reset form
     $('#target_id').val(''); // Clear ID
+
     if (targetId) {
         $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Par Template</h5><span class="text-white slogan">Edit Par Template</span>`);
         $.ajax({
@@ -347,21 +272,32 @@ function openParTemplateOffcanvas(targetId = null) {
             type: 'GET',
             success: function (data) {
 
-                // let content = data.thoughts.thoughts_details;
-                // let cleanContent = content.replace(/^<p>|<\/p>$/g, '');
+                $('#target_id').val(targetId);
+                $('#template_name').val(data.name);
+                $('#department_id').val(data.department).trigger('change');
 
-                // $('#target_id').val(data.thoughts.id);
-                // $('#thoughts_title').val(data.thoughts.thoughts_title);
-                // $('#display_date').val(data.thoughts.display_date);
-                // $('#thoughts_details').val(cleanContent);
-                // // document.getElementById('thoughts-editor').textContent = cleanContent;
-                // quillEditor1.root.innerHTML = cleanContent;
+                // Check if editing is allowed
+                if (data.locked) {
+                    $('#question-container').html(`<div class="alert alert-warning">This template is assigned to employees and cannot be edited.</div>`);
+                    $('.btn-secondary').hide(); // hide add question button
+                } else {
+                    $('.btn-secondary').show();
+                    $('#question-container').empty();
+                    data.questions.forEach((q, i) => {
+                        const html = `
+                            <div class="question-block border rounded p-3 mb-3 position-relative" id="question-block-${questionIndex}">
+                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" onclick="removeQuestion(${questionIndex})">
+                                    Remove
+                                </button>
+                                <h5 class="question-title mb-2">Question ${questionIndex + 1}</h5>
+                                <input type="text" name="questions[${questionIndex}][question]" class="form-control mb-2" required value="${q.question}">
+                            </div>
+                        `;
+                        $('#question-container').append(html);
+                        questionIndex++;
+                    });
+                }
 
-                // const previewEdit = document.getElementById("PicturePreview");
-                // previewEdit.src = `/storage/${data.thoughts.picture}`;;
-                // previewEdit.style.display = "block";
-
-                // $('#picture').val('');
             }
         });
     }

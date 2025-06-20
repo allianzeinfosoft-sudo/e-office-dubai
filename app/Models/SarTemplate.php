@@ -30,5 +30,10 @@ class SarTemplate extends Model
         return $this->belongsTo(Employee::class, 'created_by','user_id');
     }
 
+    public function userAssignments()
+    {
+        return $this->hasMany(SarUserAssign::class, 'template_id');
+    }
+
 
 }

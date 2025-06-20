@@ -24,46 +24,7 @@
         background-color: #fdfdfd;
     }
 
-    .question-box {
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        background-color: #ffffff;
-    }
 
-    .question-title {
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .form-check-label {
-        font-weight: 400;
-    }
-
-    .modal-header-custom {
-        background-color: #ff5f10;
-        color: white;
-        border-top-left-radius: 13px;
-        border-top-right-radius: 13px;
-        padding: 1.5rem;
-        text-align: center;
-    }
-
-    .modal-header-custom h3 {
-        margin-bottom: 0.25rem;
-    }
-
-    .modal-header-custom p {
-        font-size: 0.95rem;
-        margin: 0;
-        opacity: 0.9;
-    }
-
-    .form-check-input:checked {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
 
 </style>
 @stop
@@ -116,15 +77,27 @@
 
 <!-- question view mode -->
    <div class="modal fade" id="par_question_view" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-simple modal-add-new-address">
+    <div class="modal-dialog modal-xl modal-simple modal-add-new-address">
         <div class="modal-content p-3 p-md-4">
             <div class="modal-header-custom">
 
-                <h3 class="address-title">PAR Question Template</h3>
+                <h3 class="address-title">PAR Questions</h3>
                 <p class="  address-subtitle">Department</p>
+
+                <div id="scoreSummary" class="mb-3" style="font-size: 15px;">
+                    <strong>Rating Scored:</strong> <span id="ratingScored">0</span> |
+                    <strong>Maximum Rating:</strong> <span id="maximumRating">0</span> |
+                    <strong>Rating Percentage:</strong> <span id="ratingPercentage">0%</span> |
+                    <strong>Rating Grade:</strong> <span id="ratingGrade">N/A</span>
+                </div>
+
             </div>
             <form id="parQuestionForm" action="{{ route('performance-appraisal.store') }}" method="post">
                 @csrf
+                <input type="hidden" name="total_score" id="totalScoreInput">
+                <input type="hidden" name="maximum_score" id="maximumScoreInput">
+                <input type="hidden" name="percentage" id="percentageInput">
+                <input type="hidden" name="grade" id="gradeInput">
                 <div class="modal-body">
                     <div id="questionContainer" class="col-12">
                         <!-- Questions will be injected here -->
@@ -146,14 +119,23 @@
 <!-- end question view model-->
 
 
-<!-- view sar answer sheet -->
+<!-- view par answer sheet -->
  <div class="modal fade" id="par_answer_view" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-simple modal-add-new-address">
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">X</button>
         <div class="modal-content p-3 p-md-4">
+
             <div class="modal-header-custom">
 
-                <h3 class="address-title">PAR Answer Sheet</h3>
-                <p class="  address-subtitle">Department</p>
+                <h3 class="address-title">Performance Appraisal Report</h3>
+                <p class="  address-subtitle"></p>
+                <div id="employeeInfo" class="text-muted small " style="font-size: 13px; font-weight: bold; color:white!important;">
+                        <!-- Employee details will be injected here -->
+                        <strong>Employee Name:</strong> <span id="empName">N/A</span> |
+                        <strong>Employee ID:</strong> <span id="empCode">N/A</span> |
+                        <strong>Department:</strong> <span id="empDept">N/A</span> |
+                        <strong>Designation:</strong> <span id="empDesig">N/A</span>
+                    </div>
             </div>
 
                 <div class="modal-body">
@@ -165,16 +147,14 @@
                     <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">
                         Close
                     </button>
-
+                <div id="printButton"></div>
                 </div>
         </div>
     </div>
 </div>
-<!--view sar question view model end -->
+<!--view par question view model end -->
 
 @stop
-
-
 @push('js')
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -280,37 +260,24 @@ function openParQuestionOffcanvas(parsId) {
 
                       questionsHtml += `<div class="question-box" data-answer-type="${q.answer_type}" data-question-id="${q.question_id}">
                                         <input type="hidden" name="answers[${index}][question_id]" value="${q.question_id}">
-                                        <input type="hidden" name="answers[${index}][answer_type]" value="${q.answer_type}">
+
                                         <p class="question-title">Q${index + 1}: ${q.question}</p>`;
 
-                        if (q.answer_type === 'optional') {
-                            const options = q.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+                          const options = {'Outstanding': 5,'Very Good': 4,'Good': 3,'Average': 2,'Poor': 1};
                             questionsHtml += `<div class="row">`;
-                            options.forEach((opt, i) => {
-                                questionsHtml += `
-                                    <div class="col-md-6 mb-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="answers[${index}][answer]" id="q${index}_opt${i}" value="${opt}">
-                                            <label class="form-check-label" for="q${index}_opt${i}">${opt}</label>
-                                        </div>
-                                    </div>`;
-                            });
+                                            Object.entries(options).forEach(([label, value], i) => {
+                                                questionsHtml += `
+                                                    <div class="col-md-2 mb-2">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="answers[${index}][mark]" id="q${index}_opt${i}" value="${value}" required>
+                                                            <label class="form-check-label" for="q${index}_opt${i}">${label}</label>
+                                                        </div>
+                                                    </div>`;
+                                            });
                             questionsHtml += `</div>`;
-                        }
-                        else if (q.answer_type === 'yes_no') {
-                            ['Yes', 'No'].forEach((opt) => {
-                                questionsHtml += `
-                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="answers[${index}][answer]" id="q${index}_${opt}" value="${opt}">
-                                        <label class="form-check-label" for="q${index}_${opt}">${opt}</label>
-                                    </div>`;
-                            });
-                        } else if (q.answer_type === 'description') {
+
                             questionsHtml += `
-                                 <textarea class="form-control" name="answers[${index}][answer]" rows="3" placeholder="Enter your response here..."></textarea>`;
-                        } else {
-                            questionsHtml += `<p class="text-muted">Unknown answer type</p>`;
-                        }
+                                 <textarea class="form-control" name="answers[${index}][comment]" rows="3" placeholder="Enter your comments here..."></textarea>`;
 
                         questionsHtml += `</div>`; // End .question-box
                     });
@@ -327,7 +294,42 @@ function openParQuestionOffcanvas(parsId) {
     }
 }
 
+$('#questionContainer').on('change', 'input[type=radio]', function () {
+    updateScores();
+});
 
+function updateScores() {
+    let total = 0;
+    let count = 0;
+    const maxPerQuestion = 5; // max value per question
+
+    $('input[type=radio]:checked').each(function () {
+        total += parseInt($(this).val());
+        count++;
+    });
+
+    const maxScore = count * maxPerQuestion;
+    const percentage = maxScore > 0 ? ((total / maxScore) * 100).toFixed(2) : 0;
+
+    let grade = 'N/A';
+    if (percentage >= 90) grade = 'Outstanding';
+    else if (percentage >= 80) grade = 'Very Good';
+    else if (percentage >= 60) grade = 'Good';
+    else if (percentage >= 40) grade = 'Average';
+    else if (percentage >= 20) grade = 'Poor';
+
+    // Update UI
+    $('#ratingScored').text(total);
+    $('#maximumRating').text(maxScore);
+    $('#ratingPercentage').text(`${percentage}%`);
+    $('#ratingGrade').text(grade);
+
+    // Update hidden inputs
+    $('#totalScoreInput').val(total);
+    $('#maximumScoreInput').val(maxScore);
+    $('#percentageInput').val(percentage);
+    $('#gradeInput').val(grade);
+}
 
 function showAnswerOffcanvas(parsId) {
     currentarId = parsId;
@@ -338,27 +340,66 @@ function showAnswerOffcanvas(parsId) {
             type: 'GET',
             success: function (data) {
                 // Set department info in subtitle
-                $('.address-subtitle').text(
-                    `Department: ${data.par_info?.template?.department_info?.name ?? 'N/A'} | Created By: ${data.par_info?.template?.creator?.name ?? 'N/A'}`
+                 $('.address-subtitle').text(
+                    `Created By: ${data.par_info?.template?.creator?.full_name ?? 'N/A'}`
                 );
 
                 let questionsHtml = '';
+                let printButton = '';
 
+                const emp = data.employee_details;
+                const dates = data.par_dates;
+                $('#empName').text(emp.full_name ?? 'N/A');
+                $('#empCode').text(emp.employee_code ?? 'N/A');
+                $('#empDept').text(emp.department ?? 'N/A');
+                $('#empDesig').text(emp.designation ?? 'N/A');
+
+                 // Score Summary
+                questionsHtml += `
+                    <div class="mb-4 p-3 bg-light border rounded">
+                        <h5>Score Summary</h5>
+                        <div class="d-flex flex-wrap gap-4">
+                            <span><strong>Total Score:</strong> ${data.total_score}</span>
+                            <span><strong>Maximum Score:</strong> ${data.maximum_score}</span>
+                            <span><strong>Score Percentage:</strong> ${data.score_percent}%</span>
+                             <span><strong>Grade:</strong> ${data.grade}</span>
+                        </div>
+                    </div>`;
+
+                 // Answers
                 if (data.answers && data.answers.length > 0) {
                     data.answers.forEach((answer, index) => {
-                        questionsHtml += `
-                            <div class="mb-4">
-                                <h6>Q${index + 1}: ${answer.question_text ?? 'No question text'}</h6>
+                    let gradeText = '';
+                    if (answer.mark !== null) {
+                        switch (answer.mark) {
+                            case 5: gradeText = 'Outstanding'; break;
+                            case 4: gradeText = 'Very Good'; break;
+                            case 3: gradeText = 'Good'; break;
+                            case 2: gradeText = 'Average'; break;
+                            case 1: gradeText = 'Poor'; break;
+                        }
+                    }
 
-                                <p><strong>Answer:</strong> ${answer.answer ?? '<span class="text-muted">No response</span>'}</p>
-                            </div>
-                            <hr>`;
-                    });
+                    questionsHtml += `
+                        <div class="mb-4">
+                            <h6>Q${index + 1}: ${answer.question_text ?? 'No question text'}</h6>
+                            ${answer.mark !== null ? `<p><strong>Grade:</strong> ${gradeText}</p>` : ''}
+                            <p><strong>Comment:</strong> ${answer.answer ?? '<span class="text-muted">No response</span>'}</p>
+                        </div>
+                        <hr>`;
+                });
                 } else {
-                    questionsHtml = '<p>No answers found.</p>';
+                    questionsHtml += '<p>No answers found.</p>';
                 }
 
+
+
                 $('#answerContainer').html(questionsHtml);
+
+                printButton += `<button type="button" class="btn btn-primary" onclick="printParReport(`+parsId+`)">
+                                    Download
+                                </button>`;
+                $('#printButton').html(printButton);
 
                 const modal = new bootstrap.Modal(document.getElementById('par_answer_view'));
                 modal.show();
@@ -369,6 +410,28 @@ function showAnswerOffcanvas(parsId) {
         });
     }
 }
+
+// print par
+function printParReport(parsId) {
+    $.ajax({
+        url: `/userpars/${parsId}/generate-pdf`,
+        type: 'GET',
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (response) {
+            const blob = new Blob([response], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = `Performance_Appraisal_Report_${parsId}.pdf`;
+            link.click();
+        },
+        error: function () {
+            alert('Failed to generate PDF.');
+        }
+    });
+}
+
 
 
 </script>

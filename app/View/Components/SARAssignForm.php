@@ -11,9 +11,6 @@ use Illuminate\View\Component;
 
 class SARAssignForm extends Component
 {
-    /**
-     * Create a new component instance.
-     */
 
     public $templates;
     public $employees;

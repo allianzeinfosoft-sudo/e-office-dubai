@@ -79,7 +79,7 @@ $(document).ready(function() {
           var departmentId = $(this).val();
           if (departmentId) {
               $.ajax({
-                url: `/branches/${departmentId}/templates`,
+                url: `/branches/${departmentId}/sar_templates`,
                   type: 'GET',
                   success: function(response) {
 
