@@ -73,8 +73,7 @@
                                                 <p class="mt-3 mb-2">
                                                     {!! $announcement->description !!}
                                                 </p>
-
-                                            </div>
+                                                <img class="img-fluid" src="{{ asset('storage/'.$announcement->picture) }}" alt="{{ $announcement->picture }}" />                                            </div>
                                         </div>
                                     </div>
                                 @endforeach
