@@ -557,12 +557,17 @@ return [
         'icon' => 'ti ti-books',
         'route' => 'javascript:void(0);',
         'isActive' => ['e-library*'],
-        'permission' => ['view e-library', 'issue books'],
+        'permission' => ['view e-library', 'issue books', 'view books'],
         'submenu' => [
             [
                 'title' => 'Book Issue Register',
-                'route' =>  '',
+                'route' =>  '/e-library/issue-register',
                 'permission' => ['issue books'],
+            ],
+            [
+                'title' => 'Books',
+                'route' =>  '/e-library/books',
+                'permission' => ['view books'],
             ],
             [
                 'title' => 'Books Categories',
