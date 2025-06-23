@@ -77,6 +77,7 @@ class AttendanceController extends Controller{
         }
 
         if($user->employee?->join_date == $today){
+            $data['attendance'] =  [];
             return view('attendance.index', $data);
         }
 
