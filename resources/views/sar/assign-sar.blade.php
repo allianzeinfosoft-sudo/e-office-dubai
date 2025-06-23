@@ -24,46 +24,7 @@
         background-color: #fdfdfd;
     }
 
-    .question-box {
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        background-color: #ffffff;
-    }
 
-    .question-title {
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .form-check-label {
-        font-weight: 400;
-    }
-
-    .modal-header-custom {
-        background-color: #ff5f10;
-        color: white;
-        border-top-left-radius: 13px;
-        border-top-right-radius: 13px;
-        padding: 1.5rem;
-        text-align: center;
-    }
-
-    .modal-header-custom h3 {
-        margin-bottom: 0.25rem;
-    }
-
-    .modal-header-custom p {
-        font-size: 0.95rem;
-        margin: 0;
-        opacity: 0.9;
-    }
-
-    .form-check-input:checked {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
 
 </style>
 @stop
@@ -89,7 +50,7 @@
 
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                    <span class="d-none d-sm-inline-block">Add New Template</span>
+                                    <span class="d-none d-sm-inline-block">Assign Template</span>
                                 </span>
                             </a>
                         </div>
@@ -104,10 +65,11 @@
                                         <th>S.No</th>
                                         <th>Template Name</th>
                                         <th>Department</th>
-                                        <th>Employees</th>
+                                        <th>Employee</th>
                                         <th>SAR Start Date</th>
                                         <th>SAR End Date</th>
                                         <th>Created By</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -168,8 +130,46 @@
         </div>
     </div>
 </div>
-
 <!-- end question view model-->
+
+
+<!-- view sar answer sheet -->
+ <div class="modal fade" id="sar_answer_view" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-simple modal-add-new-address">
+         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">X</button>
+        <div class="modal-content p-3 p-md-4">
+
+                <div class="modal-header-custom">
+                    <h3 class="address-title">Self Appraisal Report</h3>
+                    <p class="address-subtitle"></p>
+                    <div id="employeeInfo" class="text-muted small " style="font-size: 13px; font-weight: bold; color:white!important;">
+                        <!-- Employee details will be injected here -->
+                        <strong>Employee Name:</strong> <span id="empName">N/A</span> |
+                        <strong>Employee ID:</strong> <span id="empCode">N/A</span> |
+                        <strong>Department:</strong> <span id="empDept">N/A</span> |
+                        <strong>Designation:</strong> <span id="empDesig">N/A</span>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <div id="answerContainer" class="col-12">
+                        <!-- Questions will be injected here -->
+                    </div>
+                </div>
+
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">
+                    Close
+                </button>
+                 <div id="printButton">
+
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--view sar question view model end -->
+
 
 @stop
 
@@ -255,22 +255,47 @@
                         orderable: false,
                         searchable: false
                     },
+                    { data: 'employees', title: 'Employee'},
                     { data: 'template_name', title: 'Template Name' },
                     { data: 'department', title: 'Department' },
-                    { data: 'employees', title: 'Employees'},
                     { data: 'sar_start_date', title: 'SAR Start Date'},
                     { data: 'sar_end_date', title: 'SAR End Date'},
                     { data: 'created_by', title: 'Created By' },
+                    {
+                        targets: 7,
+                        render: function(data, type, full, meta){
+                            let sar_status = full['status'];
+                            let sar_id = full['id'];
+                            if(sar_status === 1){
+                                displayType = `<button class="btn btn-sm btn-warning">Pending</button>`;
+                            }
+                            else if(sar_status === 2){
+                                displayType = `<button class="btn btn-sm btn-success" onclick="showAnswerOffcanvas(${sar_id})">View Result</button>`;
+                            }
+
+                            return displayType;
+                        }
+                    },
                     {
                         data: null,
                         title: 'Actions',
                         render: function (data, type, row, full) {
                             const editUrl = "{{ route('sar_assigning.edit', ':id') }}".replace(':id', row.id);
-                            return `
 
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-sar-assign" title="edit" onclick="openSarAssignOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-sar-assign" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>
-                            `;
+                            if( row.status == 1)
+                            {
+                                return `<a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-sar-assign" title="edit" onclick="openSarAssignOffcanvas(${row.id})"><i class="ti ti-eye"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-sar-assign" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
+                            }
+                            else if(row.status  == 2)
+                            {
+                                return `<a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-sar-assign" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
+                            }
+                            else
+                            {
+                                return null;
+                            }
+
                         }
                     }
                 ]
@@ -425,5 +450,113 @@ function openSarTemplateOffcanvas(targetId = null) {
     offcanvas.show();
 }
 
+
+function showAnswerOffcanvas(sarsId) {
+    currentSarId = sarsId;
+
+    if (sarsId) {
+        $.ajax({
+            url: `/usersars/${sarsId}/saranswerfetch`,
+            type: 'GET',
+            success: function (data) {
+                // Header subtitle
+                $('.address-subtitle').text(
+                    `Created By: ${data.sar_info?.template?.creator?.full_name ?? 'N/A'}`
+                );
+
+                // $('.address-subtitle').text(
+                //     `Department: ${data.sar_info?.template?.department_info?.name ?? 'N/A'} | Created By: ${data.sar_info?.template?.creator?.name ?? 'N/A'}`
+                // );
+
+
+                let questionsHtml = '';
+                let printButton = '';
+                // Employee details
+                const emp = data.employee_details;
+                const dates = data.sar_dates;
+                $('#empName').text(emp.full_name ?? 'N/A');
+                $('#empCode').text(emp.employee_code ?? 'N/A');
+                $('#empDept').text(emp.department ?? 'N/A');
+                $('#empDesig').text(emp.designation ?? 'N/A');
+
+                // Score Summary
+                questionsHtml += `
+                    <div class="mb-4 p-3 bg-light border rounded">
+                        <h5>Score Summary</h5>
+                        <div class="d-flex flex-wrap gap-4">
+                            <span><strong>Total Score:</strong> ${data.total_score}</span>
+                            <span><strong>Maximum Score:</strong> ${data.maximum_score}</span>
+                            <span><strong>Score Percentage:</strong> ${data.score_percent}%</span>
+                             <span><strong>Grade:</strong> ${data.grade}</span>
+                        </div>
+                    </div>
+                `;
+
+                // Answers
+                if (data.answers && data.answers.length > 0) {
+                    data.answers.forEach((answer, index) => {
+                    let gradeText = '';
+                    if (answer.mark !== null) {
+                        switch (answer.mark) {
+                            case 5: gradeText = 'Outstanding'; break;
+                            case 4: gradeText = 'Very Good'; break;
+                            case 3: gradeText = 'Good'; break;
+                            case 2: gradeText = 'Average'; break;
+                            case 1: gradeText = 'Poor'; break;
+                        }
+                    }
+
+                    questionsHtml += `
+                        <div class="mb-4">
+                            <h6>Q${index + 1}: ${answer.question_text ?? 'No question text'}</h6>
+                            ${answer.mark !== null ? `<p><strong>Grade:</strong> ${gradeText}</p>` : ''}
+                            <p><strong>Comment:</strong> ${answer.answer ?? '<span class="text-muted">No response</span>'}</p>
+                        </div>
+                        <hr>`;
+                });
+                } else {
+                    questionsHtml += '<p>No answers found.</p>';
+                }
+
+                $('#answerContainer').html(questionsHtml);
+
+                 printButton += `<button type="button" class="btn btn-primary" onclick="printSarReport(`+sarsId+`)">
+                                    Download
+                                </button>`;
+                $('#printButton').html(printButton);
+
+
+
+                const modal = new bootstrap.Modal(document.getElementById('sar_answer_view'));
+                modal.show();
+            },
+            error: function () {
+                $('#answerContainer').html('<p class="text-danger">Failed to load answers.</p>');
+            }
+        });
+    }
+}
+
+
+// print sar
+function printSarReport(sarsId) {
+    $.ajax({
+        url: `/usersars/${sarsId}/generate-pdf`,
+        type: 'GET',
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function (response) {
+            const blob = new Blob([response], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = `Self_Appraisal_Report_${sarsId}.pdf`;
+            link.click();
+        },
+        error: function () {
+            alert('Failed to generate PDF.');
+        }
+    });
+}
 </script>
 @endpush

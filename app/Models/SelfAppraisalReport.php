@@ -13,8 +13,8 @@ class SelfAppraisalReport extends Model
     protected $fillable = [
             'sar_id',
             'question',
-            'answer_type',
-            'answer',
+            'mark',
+            'comment',
         ];
 
     public function sarInfo()

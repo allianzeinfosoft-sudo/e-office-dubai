@@ -48,9 +48,16 @@ use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\FeedbackReportController;
+use App\Http\Controllers\ParTemplateController;
+use App\Http\Controllers\PerformanceAppraisalReportController;
 use App\Http\Controllers\SarTemplate;
 use App\Http\Controllers\SarTemplateController;
 use App\Http\Controllers\SelfAppraisalReportController;
+use App\Http\Controllers\SurveyReportController;
+use App\Http\Controllers\SurveyTemplateController;
+use App\Models\PerformanceAppraisalReport;
 
 Route::middleware(['web'])->group(function () {
     Auth::routes();  // or your custom login routes
@@ -495,7 +502,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/sartemplate-assign', [SarTemplateController::class, 'assign_template'])->name('sar.user.assign');
     Route::post('/store-sar-assign',[SarTemplateController::class, 'store_assign_template'])->name('store.sar.assign');
 
-    Route::get('/branches/{branch}/templates', [SarTemplateController::class, 'getTemplates'])->name('branch.templates');
+    Route::get('/branches/{branch}/sar_templates', [SarTemplateController::class, 'getTemplates'])->name('branch.sar_emplates');
     Route::get('/sar-assign-edit', [SarTemplateController::class, 'sar_edit'])->name('sar_assigning.edit');
     Route::delete('/sar_assign/{id}', [SarTemplateController::class, 'destroyAssign'])->name('sar.assign.delete');
 
@@ -503,5 +510,70 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/usersars/{id}/sarfetch', [SarTemplateController::class, 'sarsfetch']);
     Route::get('/usersars/{id}/saranswerfetch', [SarTemplateController::class, 'sarAnswerfetch']);
     Route::resource('self-appraisal', SelfAppraisalReportController::class);
+
+    Route::get('/usersars/{id}/generate-pdf', [SarTemplateController::class, 'generatePdf']);
+    Route::delete('/sartemplate/{sarTemplate}', [SarTemplateController::class, 'destroy'])->name('sartemplate.destroy');
+
+
+    //PAR
+    Route::resource('partemplate', ParTemplateController::class);
+    Route::get('/partemplate/{id}/fetch', [ParTemplateController::class, 'fetch']);
+    Route::get('/partemplate-assign', [ParTemplateController::class, 'assign_template'])->name('par.user.assign');
+    Route::post('/store-par-assign',[ParTemplateController::class, 'store_assign_template'])->name('store.par.assign');
+
+    Route::get('/branches/{branch}/par_templates', [ParTemplateController::class, 'getTemplates'])->name('branch.par_templates');
+    Route::get('/par-assign-edit', [ParTemplateController::class, 'par_edit'])->name('par_assigning.edit');
+    Route::delete('/par_assign/{id}', [ParTemplateController::class, 'destroyAssign'])->name('par.assign.delete');
+
+    Route::get('/user-pars',[ParTemplateController::class, 'user_pars'])->name('user.pars');
+    Route::get('/userpars/{id}/parfetch', [ParTemplateController::class, 'parsfetch']);
+    Route::get('/userpars/{id}/paranswerfetch', [ParTemplateController::class, 'parAnswerfetch']);
+    Route::resource('performance-appraisal', PerformanceAppraisalReportController::class);
+
+    Route::get('/userpars/{id}/generate-pdf', [ParTemplateController::class, 'generatePdf']);
+    Route::delete('/partemplate/{parTemplate}', [ParTemplateController::class, 'destroy'])->name('partemplate.destroy');
+
+
+
+    //SURVEY
+    Route::resource('surveytemplate', SurveyTemplateController::class);
+    Route::get('/surveytemplate/{id}/fetch', [SurveyTemplateController::class, 'fetch']);
+    Route::get('/surveytemplate-assign', [SurveyTemplateController::class, 'assign_template'])->name('survey.user.assign');
+    Route::post('/store-survey-assign',[SurveyTemplateController::class, 'store_assign_template'])->name('store.survey.assign');
+
+    Route::get('/branches/{branch}/survey_templates', [SurveyTemplateController::class, 'getTemplates'])->name('branch.survey_templates');
+    Route::get('/survey-assign-edit', [SurveyTemplateController::class, 'survey_edit'])->name('survey_assigning.edit');
+    Route::delete('/survey_assign/{id}', [SurveyTemplateController::class, 'destroyAssign'])->name('survey.assign.delete');
+
+    Route::get('/user-surveys',[SurveyTemplateController::class, 'user_surveys'])->name('user.surveys');
+    Route::get('/usersurveys/{id}/surveyfetch', [SurveyTemplateController::class, 'surveysfetch']);
+    Route::get('/usersurveys/{id}/surveyanswerfetch', [SurveyTemplateController::class, 'surveyAnswerfetch']);
+    Route::resource('survey', SurveyReportController::class);
+
+    Route::get('/usersurveys/{id}/generate-pdf', [SurveyTemplateController::class, 'generatePdf']);
+
+
+      //FEEDBACK
+    Route::resource('feedback', FeedbackController::class);
+    Route::get('/feedback/{id}/fetch', [FeedbackController::class, 'fetch']);
+    Route::get('/feedback-assign', [FeedbackController::class, 'assign_feedback'])->name('feedback.user.assign');
+    Route::post('/store-feedback-assign',[FeedbackController::class, 'store_assign_feedback'])->name('store.feedback.assign');
+
+    Route::get('/branches/{branch}/feedbacks', [FeedbackController::class, 'getFeedbacks'])->name('branch.feedback');
+    Route::get('/feedback-assign-edit', [FeedbackController::class, 'feedback_edit'])->name('feedback_assigning.edit');
+    Route::delete('/feedback_assign/{id}', [FeedbackController::class, 'destroyAssign'])->name('feedback.assign.delete');
+
+    Route::get('/user-feedbacks',[FeedbackController::class, 'user_feedbacks'])->name('user.feedbacks');
+    Route::get('/userfeedbacks/{id}/feedbackfetch', [FeedbackController::class, 'feedbackfetch']);
+    Route::get('/userfeedbacks/{id}/feedbackanswerfetch', [FeedbackController::class, 'feedbackAnswerfetch']);
+    Route::resource('feedback_report', FeedbackReportController::class);
+
+    Route::get('/userfeedbacks/{id}/generate-pdf', [FeedbackController::class, 'generatePdf']);
+    Route::delete('/feedbacktemplate/{feedbackTemplate}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
+
+    Route::get('/feedback-report',[FeedbackReportController::class, 'feedback_report'])->name('feedback.report.list');
+
+    Route::get('/feedbacks/{id}/export', [FeedbackReportController::class, 'exportFeedbackReport'])->name('feedback.export');
+
 
 });

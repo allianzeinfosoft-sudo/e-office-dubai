@@ -24,46 +24,7 @@
         background-color: #fdfdfd;
     }
 
-    .question-box {
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        background-color: #ffffff;
-    }
 
-    .question-title {
-        font-weight: 600;
-        margin-bottom: 15px;
-    }
-
-    .form-check-label {
-        font-weight: 400;
-    }
-
-    .modal-header-custom {
-        background-color: #ff5f10;
-        color: white;
-        border-top-left-radius: 13px;
-        border-top-right-radius: 13px;
-        padding: 1.5rem;
-        text-align: center;
-    }
-
-    .modal-header-custom h3 {
-        margin-bottom: 0.25rem;
-    }
-
-    .modal-header-custom p {
-        font-size: 0.95rem;
-        margin: 0;
-        opacity: 0.9;
-    }
-
-    .form-check-input:checked {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
 
 </style>
 @stop
@@ -146,8 +107,8 @@
 
 
 <!-- question view mode -->
-   <div class="modal fade" id="sar_question_view" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-simple modal-add-new-address">
+   <div class="modal fade " id="sar_question_view" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-simple modal-add-new-address">
         <div class="modal-content p-3 p-md-4">
             <div class="modal-header-custom">
 
@@ -248,14 +209,16 @@
                         },
                         success: function(response) {
 
-                            Swal.fire("Deleted!", "SAR has been deleted.", "success").then(() => {
+                           Swal.fire("Deleted!", response.message || "PAR has been deleted.", "success").then(() => {
                                 $('#datatables-sar-template').DataTable().ajax.reload(); // Reload table
                             });
 
                         },
-                        error: function(xhr) {
-                            Swal.fire("Error!", "Something went wrong.", "error");
-                        }
+                        error: function (xhr) {
+                                let message = xhr.responseJSON?.message || "Something went wrong.";
+                                Swal.fire("Error!", message, "error");
+                            }
+
                         });
 
             }
@@ -282,42 +245,6 @@
                     data.questions.forEach((q, index) => {
                         questionsHtml += `<div class="question-box">
                             <p class="question-title">Q${index + 1}: ${q.question}</p>`;
-
-                       if (q.answer_type === 'optional') {
-                            const options = q.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
-
-                            questionsHtml += `<div class="row">`; // Start row
-
-                            options.forEach((opt, i) => {
-                                questionsHtml += `
-                                    <div class="col-md-6 mb-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="question_${index}" id="q${index}_opt${i}" value="${opt}">
-                                            <label class="form-check-label" for="q${index}_opt${i}">${opt}</label>
-                                        </div>
-                                    </div>
-                                `;
-                            });
-
-                            questionsHtml += `</div>`; // End row
-                        }
-                        else if (q.answer_type === 'yes_no') {
-                            ['Yes', 'No'].forEach((opt) => {
-                                questionsHtml += `
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="question_${index}" id="q${index}_${opt}" value="${opt}">
-                                        <label class="form-check-label" for="q${index}_${opt}">${opt}</label>
-                                    </div>
-                                `;
-                            });
-                        } else if (q.answer_type === 'description') {
-                            questionsHtml += `
-                                <textarea class="form-control" name="question_${index}" rows="3" placeholder="Enter your response here..."></textarea>
-                            `;
-                        } else {
-                            questionsHtml += `<p class="text-muted">Unknown answer type</p>`;
-                        }
-
                         questionsHtml += `</div>`;
                     });
                 } else {
@@ -340,6 +267,7 @@
 function openSarTemplateOffcanvas(targetId = null) {
     $('#sar-template-form')[0].reset(); // Reset form
     $('#target_id').val(''); // Clear ID
+
     if (targetId) {
         $('#offcanvas-title-container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Sar Template</h5><span class="text-white slogan">Edit Sar Template</span>`);
         $.ajax({
@@ -347,21 +275,32 @@ function openSarTemplateOffcanvas(targetId = null) {
             type: 'GET',
             success: function (data) {
 
-                // let content = data.thoughts.thoughts_details;
-                // let cleanContent = content.replace(/^<p>|<\/p>$/g, '');
+                $('#target_id').val(targetId);
+                $('#template_name').val(data.name);
+                $('#department_id').val(data.department).trigger('change');
 
-                // $('#target_id').val(data.thoughts.id);
-                // $('#thoughts_title').val(data.thoughts.thoughts_title);
-                // $('#display_date').val(data.thoughts.display_date);
-                // $('#thoughts_details').val(cleanContent);
-                // // document.getElementById('thoughts-editor').textContent = cleanContent;
-                // quillEditor1.root.innerHTML = cleanContent;
+                // Check if editing is allowed
+                if (data.locked) {
+                    $('#question-container').html(`<div class="alert alert-warning">This template is assigned to employees and cannot be edited.</div>`);
+                    $('.btn-secondary').hide(); // hide add question button
+                } else {
+                    $('.btn-secondary').show();
+                    $('#question-container').empty();
+                    data.questions.forEach((q, i) => {
+                        const html = `
+                            <div class="question-block border rounded p-3 mb-3 position-relative" id="question-block-${questionIndex}">
+                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" onclick="removeQuestion(${questionIndex})">
+                                    Remove
+                                </button>
+                                <h5 class="question-title mb-2">Question ${questionIndex + 1}</h5>
+                                <input type="text" name="questions[${questionIndex}][question]" class="form-control mb-2" required value="${q.question}">
+                            </div>
+                        `;
+                        $('#question-container').append(html);
+                        questionIndex++;
+                    });
+                }
 
-                // const previewEdit = document.getElementById("PicturePreview");
-                // previewEdit.src = `/storage/${data.thoughts.picture}`;;
-                // previewEdit.style.display = "block";
-
-                // $('#picture').val('');
             }
         });
     }

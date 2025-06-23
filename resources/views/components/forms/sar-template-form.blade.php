@@ -40,23 +40,6 @@
 </form>
 @push('js')
     <script>
-        function previewImage(event) {
-
-        const input = event.target;
-        const preview = document.getElementById("PicturePreview");
-
-        if (input.files && input.files[0]) {
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = "block";
-        };
-
-        reader.readAsDataURL(input.files[0]);
-        }
-    }
-
 
     // add questions
 
@@ -68,24 +51,8 @@
                 <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" onclick="removeQuestion(${questionIndex})">
                     Remove
                 </button>
-
                 <h5 class="question-title mb-2">Question</h5>
-
                 <input type="text" name="questions[${questionIndex}][question]" class="form-control mb-2" required>
-
-                <label>Answer Type</label>
-                <select name="questions[${questionIndex}][answer_type]" class="form-control mb-2" onchange="toggleOptions(this, ${questionIndex})">
-                    <option value="yes_no">Yes / No</option>
-                    <option value="optional">Optional (4 options)</option>
-                    <option value="description">Description</option>
-                </select>
-
-                <div id="options-${questionIndex}" class="options-container" style="display:none;">
-                    <input type="text" name="questions[${questionIndex}][option1]" placeholder="Option 1" class="form-control mb-1">
-                    <input type="text" name="questions[${questionIndex}][option2]" placeholder="Option 2" class="form-control mb-1">
-                    <input type="text" name="questions[${questionIndex}][option3]" placeholder="Option 3" class="form-control mb-1">
-                    <input type="text" name="questions[${questionIndex}][option4]" placeholder="Option 4" class="form-control mb-1">
-                </div>
             </div>
             `;
 

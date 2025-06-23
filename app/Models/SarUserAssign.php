@@ -17,7 +17,11 @@ class SarUserAssign extends Model
         'sar_start_date',
         'sar_end_date',
         'sar_submit_date',
-        'status'
+        'status',
+        'total_score',
+        'maximum_score',
+        'score_percentage',
+        'grade',
     ];
 
     public function employee()
