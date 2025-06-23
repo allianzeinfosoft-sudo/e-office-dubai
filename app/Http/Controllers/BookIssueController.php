@@ -6,6 +6,7 @@ use App\Models\BookIssue;
 use App\Models\Books;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use App\Helpers\CustomHelper;
 
 class BookIssueController extends Controller
 {
@@ -67,8 +68,35 @@ class BookIssueController extends Controller
         $book = Books::find($data['book_id']);
         $book->status = 1; // mark as issued
         $book->save();
-        BookIssue::create($data);
-        return redirect()->route('e-library.book-issues.index')->with('success', 'Book issued successfully.');
+        BookIssue::updateOrcreate(
+            [
+                'book_id' => $data['book_id'],
+                'issued_to' => $data['issued_to'],
+                'issue_date' => $data['issue_date'],
+            ],
+            $data);
+
+        // Send Notification Email
+        $employee = Employee::with('user')->find($data['issued_to']);
+        if ($employee && $employee->user?->email) {
+            $subject = "Book Issued From E-Library : {$book->title}";
+            $mail['mail_title'] = $subject;
+            $mail['mail_to'] = $employee->full_name;
+            $mail['book_title'] = $book->title;
+            $mail['author'] = $book->author;
+            $mail['issue_date'] = $request->issue_date;
+
+            $htmlBody = view('emails.book_issue_notification', $mail)->render();
+            CustomHelper::sendNotificationMail(
+                $employee->user?->email,
+                $subject,
+                $htmlBody);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Book issued successfully.',
+        ]);
+        //return redirect()->route('e-library.book-issues.index')->with('success', 'Book issued successfully.');
     }
 
     public function return($id){
@@ -79,6 +107,24 @@ class BookIssueController extends Controller
         $book = Books::find($issue->book_id);
         $book->status = 0; // mark as available
         $book->save();
+
+         // Send Notification Email
+        $employee = Employee::with('user')->find($issue['issued_to']);
+        if ($employee && $employee->user?->email) {
+            $subject = "Book Received the book : {$book->title}";
+            $mail['mail_title'] = $subject;
+            $mail['mail_to'] = $employee->full_name;
+            $mail['book_title'] = $book->title;
+            $mail['author'] = $book->author;
+            $mail['issue_date'] = $issue->issue_date;
+            $mail['return_date'] = date('d-m-Y');
+
+            $htmlBody = view('emails.book_return_notification', $mail)->render();
+            CustomHelper::sendNotificationMail(
+                $employee->user?->email,
+                $subject,
+                $htmlBody);
+        }
 
         return redirect()->back()->with('success', 'Book returned successfully.');
     }
