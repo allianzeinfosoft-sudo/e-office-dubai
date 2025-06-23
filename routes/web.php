@@ -297,6 +297,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::delete('/others/announcements/{announcement}/destroy', [AnnouncementController::class, 'destroy'])->name('others.announcements.destroy');
     Route::get('/announcement_view', [AnnouncementController::class, 'view_announcement'])->name('announcement_view');
 
+    Route::post('/check-announcement', [AnnouncementController::class, 'checkAnnouncement']);
+    Route::post('/mark-announcement-read', [AnnouncementController::class, 'markAsRead']);
     /* Others/Events */
     Route::get('/others/events', [EventController::class, 'index'])->name('others.events.index');
     Route::post('/others/events/store', [EventController::class, 'store'])->name('others.events.store');

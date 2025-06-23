@@ -22,6 +22,20 @@ class AnnouncementController extends Controller
                 'success' => true,
                 'message' => 'Recruitments fetched successfully',
                 'data' => $annoncement->map(function ($result, $index) {
+
+                    $readerDetails = [];
+                        if (!empty($result->readers) && is_array($result->readers)) {
+                            $readerDetails = Employee::whereIn('id', $result->readers)
+                                ->get(['full_name', 'profile_image'])
+                                ->map(function ($emp) {
+                                    return [
+                                        'full_name' => $emp->full_name,
+                                        'profile_image' => $emp->profile_image,
+                                    ];
+                                })
+                                ->toArray();
+                        }
+
                     return [
                         'row' => $index + 1,
                         'id' => $result->id,
@@ -30,6 +44,7 @@ class AnnouncementController extends Controller
                         'picture' => $result->picture ? $result->picture : '',
                         'display_start_date' => date('d-m-Y', strtotime($result->display_start_date)),
                         'display_end_date' => date('d-m-Y', strtotime($result->display_end_date)),
+                        'seeb_by' => $readerDetails,
                         'createdAt' => $result->created_at->format('d-m-Y')
                     ];
                 }),
@@ -161,4 +176,51 @@ class AnnouncementController extends Controller
 
         return view('views.announcement', ['announcementsByMonth' => $grouped]);
     }
+
+
+    public function checkAnnouncement(Request $request)
+    {
+
+       $userId = auth()->user()->employee->id;
+
+      $announcements = Announcement::where(function ($query) use ($userId) {
+        $query->whereNull('readers') // readers is null
+            ->orWhereJsonLength('readers', 0) // readers is []
+            ->orWhereRaw("JSON_CONTAINS(readers, '\"$userId\"') = 0"); // user NOT in readers
+        })
+        ->orderBy('display_start_date', 'asc')
+        ->get();
+
+        if ($announcements->isNotEmpty()) {
+            return response()->json([
+                'found' => true,
+                'already_read' => false,
+                'announcements' => $announcements,
+            ]);
+        }
+
+        return response()->json([
+            'found' => false,
+        ]);
+
+
+    }
+
+
+    public function markAsRead(Request $request)
+    {
+        $announcement = Announcement::findOrFail($request->announcement_id);
+        $employeeId = (string) auth()->user()->employee->id;
+
+        $readers = $announcement->readers ?? [];
+        if (!in_array($employeeId, $readers)) {
+            $readers[] = $employeeId;
+            $announcement->readers = $readers;
+            $announcement->save();
+        }
+
+        return response()->json(['status' => 'success']);
+    }
+
+
 }
