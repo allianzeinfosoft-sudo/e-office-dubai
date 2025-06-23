@@ -234,6 +234,7 @@
 
                                 @else
                                   {{-- day shift --}}
+                                  
                                   @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
                                           Last Punch In Time: {{date('d-m-Y', strtotime($attendance->signin_date))}}  {{ date('H:i A', strtotime($attendance->signin_time)) }}
