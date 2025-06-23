@@ -582,17 +582,17 @@ return [
                 'submenu' => [
                     [
                         'title' => 'Issued Books',
-                        'route' => "",
+                        'route' => "/e-library/reports/issue",
                         'permission' => ['view issued books report'],
                     ],
                     [
                         'title' => 'Pending Books',
-                        'route' => "",
+                        'route' => "/e-library/reports/pending",
                         'permission' => ['view pending books report'],
                     ],
                     [
                         'title' => 'Damaged / Lost Books',
-                        'route' => "",
+                        'route' => "/e-library/reports/damaged-lost",
                         'permission' => ['view damage or loss report'],
                         ''
                     ],

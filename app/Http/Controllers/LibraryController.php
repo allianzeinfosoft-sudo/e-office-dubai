@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BooksCategory;
 use App\Models\Books;
+use App\Models\BookIssue;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Storage;
 
 class LibraryController extends Controller
@@ -189,4 +191,156 @@ class LibraryController extends Controller
             'data' => $book
         ]);
     }
+
+    /* Reports */
+
+    public function issueReport(){
+        $data['meta_title'] = 'Issue Report';
+        $data['books'] = Books::all();
+        $data['employees'] = Employee::all();
+        return view('library.reports.issue', $data);
+    }
+
+    public function issueReportData(Request $request)
+    {
+        $query = BookIssue::with('book', 'employee');
+
+        if ($request->from_date) {
+            $query->whereDate('issue_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('issue_date', '<=', $request->to_date);
+        }
+
+        if ($request->book_id) {
+            $query->where('book_id', $request->book_id);
+        }
+
+        if ($request->author) {
+            $query->whereHas('book', function($q) use ($request) {
+                $q->where('author', 'like', '%' . $request->author . '%');
+            });
+        }
+
+        if ($request->employee_id) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        $issues = $query->orderBy('id', 'desc')->get();
+
+        $data = $issues->map(function ($issue, $index) {
+            return [
+                'row' => $index + 1,
+                'book_title' => $issue->book->title ?? '',
+                'book_author' => $issue->book->author ?? '',
+                'employee_name' => $issue->employee->full_name ?? '',
+                'issue_date' => optional($issue->issue_date)->format('d-m-Y'),
+                'return_date' => $issue->return_date ? date('d-m-Y', strtotime($issue->return_date)) : '-',
+                'status_label' => $issue->status == 0
+                    ? '<span class="badge bg-warning">Pending</span>'
+                    : '<span class="badge bg-success">Returned</span>',
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Issue report loaded successfully.',
+            'data' => $data
+        ]);
+    }
+
+    public function pendingReport(){
+        $data['meta_title'] = 'Pending Books';
+        $data['books'] = Books::with('category');
+        $data['employees'] = Employee::all();
+        return view('library.reports.pending', $data);
+    }
+
+    public function pendingReportData(Request $request){
+        $query = BookIssue::with('book', 'employee')->where('status', 0);
+
+        if ($request->from_date) {
+            $query->whereDate('issue_date', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('issue_date', '<=', $request->to_date);
+        }
+
+        if ($request->book_id) {
+            $query->where('book_id', $request->book_id);
+        }
+
+        if ($request->employee_id) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        $issues = $query->orderBy('id', 'desc')->get();
+
+        $data = $issues->map(function ($issue, $index) {
+            return [
+                'row' => $index + 1,
+                'book_title' => $issue->book->title ?? '',
+                'book_author' => $issue->book->author ?? '',
+                'employee_name' => $issue->employee->full_name ?? '',
+                'issue_date' => optional($issue->issue_date)->format('d-m-Y'),
+                'return_date' => $issue->return_date ? date('d-m-Y', strtotime($issue->return_date)) : '-',
+                'status_label' => '<span class="badge bg-warning">Pending</span>',
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pending report loaded successfully.',
+            'data' => $data
+        ]);
+    }
+
+   public function damagedLostReport(){
+        $data['meta_title'] = 'Damaged/Lost Books';
+        $data['books'] = Books::all();
+        return view('library.reports.damaged-lost-report', $data);
+    }
+
+    public function damagedLostReportData(Request $request){
+        $query = Books::whereIn('status', [2, 3]); // 2 = Damaged, 3 = Lost
+
+        if ($request->from_date) {
+            $query->whereDate('updated_at', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('updated_at', '<=', $request->to_date);
+        }
+
+        if ($request->book_id) {
+            $query->where('id', $request->book_id);
+        }
+
+        $books = $query->orderBy('updated_at', 'desc')->get();
+
+        $data = $books->map(function ($book, $index) {
+            $statusLabel = match ($book->status) {
+                2 => '<span class="badge bg-danger">Damaged</span>',
+                3 => '<span class="badge bg-dark">Lost</span>',
+                default => '<span class="badge bg-secondary">Unknown</span>',
+            };
+
+            return [
+                'row' => $index + 1,
+                'title' => $book->title,
+                'author' => $book->author,
+                'status_label' => $statusLabel,
+                'updated_at' => optional($book->updated_at)->format('d-m-Y H:i'),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Damaged/Lost report loaded successfully.',
+            'data' => $data
+        ]);
+    }
+
 }
