@@ -92,7 +92,7 @@ class LibraryController extends Controller
     public function edit_category(Request $request){
         $category = BooksCategory::find($request->id);
         return response()->json([
-            'data' => $category
+            'category' => $category
         ]);
     }
     
@@ -100,3 +100,4 @@ class LibraryController extends Controller
         $category = BooksCategory::find($request->id);
         $category->delete();   
     }
+}
