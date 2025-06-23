@@ -560,6 +560,12 @@ return [
         ]
     ],
     [
+        'title' => 'Jobs',
+        'icon' => 'ti ti-mail-forward',
+        'route' => '/jobs',
+        'permission' => ['view quick notes']
+    ],
+    [
         'title' => 'Tools',
         'icon' => 'ti ti-tools',
         'route' => 'javascript:void(0);',

@@ -49,6 +49,7 @@ use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FeedbackReportController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\ParTemplateController;
 use App\Http\Controllers\PerformanceAppraisalReportController;
 use App\Http\Controllers\SarTemplate;
@@ -448,7 +449,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::delete('/tools/ksp/{ksp}/destroy', [KspController::class, 'destroy'])->name('tools.ksp.destroy');
     Route::get('/tools/ksp/{ksp}/show', [KspController::class, 'show'])->name('tools.ksp.show');
     Route::post('/tools/ksp/store-category', [KspController::class, 'store_category'])->name('tools.ksp.store-category');
-    
+
     /* Tools - E-Library */
     Route::get('/e-library/categories', [LibraryController::class, 'books_categories'])->name('e-library.categories');
     Route::post('/e-library/categories/store', [LibraryController::class, 'store_category'])->name('e-library.categories.store');
@@ -549,5 +550,12 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     Route::get('/feedbacks/{id}/export', [FeedbackReportController::class, 'exportFeedbackReport'])->name('feedback.export');
 
+    /* Jobs */
+    Route::get('/jobs', [JobController::class, 'index'])->name('job.index');
+    Route::post('/job/store', [JobController::class, 'store'])->name('job.store');
+    Route::get('/job/{job}/edit', [JobController::class, 'edit'])->name('job.edit');
+    Route::get('/job/{id}/destroy', [JobController::class, 'destroy'])->name('jobs.destroy');
+    Route::get('/job/{job}/show', [JobController::class, 'show'])->name('job.show');
+    Route::post('/job/comment', [JobController::class, 'storeComment'])->name('job.comment.store');
 
 });

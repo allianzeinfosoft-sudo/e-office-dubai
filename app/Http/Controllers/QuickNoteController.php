@@ -22,7 +22,7 @@ class QuickNoteController extends Controller
             $query->where('created_by', Auth::id())
                 ->orWhere('assigned_to', Auth::id());
         })->orderBy('created_at', 'desc')
-        ->get();        
+        ->get();
         return view('tools.quick-note.index', $data);
     }
 
@@ -94,7 +94,6 @@ class QuickNoteController extends Controller
      */
     public function destroy($id)
     {
-        //
         $quickNote = QuickNote::find($id);
         $quickNote->delete();
         QuickNoteComments::where('quick_note_id', $id)->delete();
