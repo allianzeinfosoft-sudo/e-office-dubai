@@ -63,7 +63,7 @@ class UserController extends Controller
         $departments = Department::all();
         $employees = Employee::all();
         $positions = Position::all();
-        $lastEmployeeId = Employee::orderBy('id', 'desc')->value('employeeID');
+        $lastEmployeeId = Employee::orderBy('employeeID', 'desc')->value('employeeID');
 
         if ($lastEmployeeId) {
 
