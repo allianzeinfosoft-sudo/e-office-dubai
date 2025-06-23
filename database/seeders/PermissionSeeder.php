@@ -73,7 +73,8 @@ class PermissionSeeder extends Seeder
                 'approve job applications','shortlist candidates', 'schedule interviews'
             ],
             'E-Library Management' => [
-                'view e-library', 'add books', 'edit books', 'delete books','issue books'
+                'view e-library', 'add books', 'edit books', 'delete books','issue books', 'view e-library', 
+                'view books category', 'view e-library reports','view issued books report', 'view pending books report', 'view damage or loss report',
             ],
             'Thought Management' => [
                 'create thought', 'view thought','edit thought', 'delete thought', 'publish thought'

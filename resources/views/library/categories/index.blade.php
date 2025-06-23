@@ -36,116 +36,74 @@
                                 </span>
                             </a>
                         </div>
-                        
-                            <div class="col-xl-3 col-md-4 mb-4">
-                                <div class="card card-bg h-100">
-                                    <div class="card-header d-flex justify-content-between">
-                                    <div class="card-title mb-0">
-                                        <h5 class="mb-0">Novels</h5>
+                            @if($categories->count() > 0)
+                                @foreach($categories as $category)
+                                    <div class="col-xl-3 col-md-4 mb-4">
+                                        <div class="card card-bg h-100">
+                                            <div class="card-header d-flex justify-content-between">
+                                                <div class="card-title mb-0">
+                                                    <h5 class="mb-0"> {{ $category->name ?? 'N/A'}} </h5>
+                                                </div>
+                                                <div class="dropdown">
+                                                    <button class="btn p-0" type="button" id="earningReportsId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="ti ti-dots-vertical ti-sm text-muted"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="earningReportsId" style="">
+                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="openOffcanvas('{{ $category->name }}')"><i class="ti ti-pencil me-1 ti-sm"></i> Edit</a>
+                                                    <a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-trash me-1 ti-sm text-danger"></i> Delete</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                            <ul class="p-0 m-0">
+                                                <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
+                                                <div class="badge bg-label-success rounded p-2"><i class="ti ti-books ti-sm"></i></div>
+                                                <div class="d-flex justify-content-between w-100 flex-wrap">
+                                                    <h6 class="mb-0 ms-3">Total Books</h6>
+                                                    <div class="d-flex">
+                                                    <p class="mb-0 fw-semibold">12,346</p>
+                                                    <p class="ms-3 text-success mb-0">Nos</p>
+                                                    </div>
+                                                </div>
+                                                </li>
+                                                <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
+                                                <div class="badge bg-label-info rounded p-2"><i class="ti ti-book ti-sm"></i></div>
+                                                <div class="d-flex justify-content-between w-100 flex-wrap">
+                                                    <h6 class="mb-0 ms-3">Issued</h6>
+                                                    <div class="d-flex">
+                                                    <p class="mb-0 fw-semibold">8,734</p>
+                                                    <p class="ms-3 text-success mb-0">Nos</p>
+                                                    </div>
+                                                </div>
+                                                </li>
+                                                <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
+                                                <div class="badge bg-label-warning rounded p-2"><i class="ti ti-bookmark ti-sm"></i></div>
+                                                <div class="d-flex justify-content-between w-100 flex-wrap">
+                                                    <h6 class="mb-0 ms-3">Damage/Lost</h6>
+                                                    <div class="d-flex">
+                                                    <p class="mb-0 fw-semibold">967</p>
+                                                    <p class="ms-3 text-success mb-0">Nos.</p>
+                                                    </div>
+                                                </div>
+                                                </li>
+                                                <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
+                                                <div class="badge bg-label-primary rounded p-2"><i class="ti ti-archive ti-sm"></i></div>
+                                                <div class="d-flex justify-content-between w-100 flex-wrap">
+                                                    <h6 class="mb-0 ms-3">Stock</h6>
+                                                    <div class="d-flex">
+                                                    <p class="mb-0 fw-semibold">345</p>
+                                                    <p class="ms-3 text-success mb-0">Nos</p>
+                                                    </div>
+                                                </div>
+                                                </li>
+                                            </ul>
+                                            </div>
+                                        </div>
                                     </div>
-                                    </div>
-                                    <div class="card-body">
-                                    <ul class="p-0 m-0">
-                                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
-                                        <div class="badge bg-label-success rounded p-2"><i class="ti ti-books ti-sm"></i></div>
-                                        <div class="d-flex justify-content-between w-100 flex-wrap">
-                                            <h6 class="mb-0 ms-3">Total Books</h6>
-                                            <div class="d-flex">
-                                            <p class="mb-0 fw-semibold">12,346</p>
-                                            <p class="ms-3 text-success mb-0">Nos</p>
-                                            </div>
-                                        </div>
-                                        </li>
-                                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
-                                        <div class="badge bg-label-info rounded p-2"><i class="ti ti-book ti-sm"></i></div>
-                                        <div class="d-flex justify-content-between w-100 flex-wrap">
-                                            <h6 class="mb-0 ms-3">Issued</h6>
-                                            <div class="d-flex">
-                                            <p class="mb-0 fw-semibold">8,734</p>
-                                            <p class="ms-3 text-success mb-0">Nos</p>
-                                            </div>
-                                        </div>
-                                        </li>
-                                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
-                                        <div class="badge bg-label-warning rounded p-2"><i class="ti ti-bookmark ti-sm"></i></div>
-                                        <div class="d-flex justify-content-between w-100 flex-wrap">
-                                            <h6 class="mb-0 ms-3">Damage/Lost</h6>
-                                            <div class="d-flex">
-                                            <p class="mb-0 fw-semibold">967</p>
-                                            <p class="ms-3 text-success mb-0">Nos.</p>
-                                            </div>
-                                        </div>
-                                        </li>
-                                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
-                                        <div class="badge bg-label-primary rounded p-2"><i class="ti ti-archive ti-sm"></i></div>
-                                        <div class="d-flex justify-content-between w-100 flex-wrap">
-                                            <h6 class="mb-0 ms-3">Stock</h6>
-                                            <div class="d-flex">
-                                            <p class="mb-0 fw-semibold">345</p>
-                                            <p class="ms-3 text-success mb-0">Nos</p>
-                                            </div>
-                                        </div>
-                                        </li>
-                                    </ul>
-                                    </div>
-                                </div>
-                            </div>
+                                @endforeach
+                            @endif
 
-                            <div class="col-xl-3 col-md-4 mb-4">
-                                <div class="card card-bg h-100">
-                                    <div class="card-header d-flex justify-content-between">
-                                    <div class="card-title mb-0">
-                                        <h5 class="mb-0">Novels</h5>
-                                    </div>
-                                    </div>
-                                    <div class="card-body">
-                                    <ul class="p-0 m-0">
-                                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
-                                        <div class="badge bg-label-success rounded p-2"><i class="ti ti-books ti-sm"></i></div>
-                                        <div class="d-flex justify-content-between w-100 flex-wrap">
-                                            <h6 class="mb-0 ms-3">Total Books</h6>
-                                            <div class="d-flex">
-                                            <p class="mb-0 fw-semibold">12,346</p>
-                                            <p class="ms-3 text-success mb-0">Nos</p>
-                                            </div>
-                                        </div>
-                                        </li>
-                                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
-                                        <div class="badge bg-label-info rounded p-2"><i class="ti ti-book ti-sm"></i></div>
-                                        <div class="d-flex justify-content-between w-100 flex-wrap">
-                                            <h6 class="mb-0 ms-3">Issued</h6>
-                                            <div class="d-flex">
-                                            <p class="mb-0 fw-semibold">8,734</p>
-                                            <p class="ms-3 text-success mb-0">Nos</p>
-                                            </div>
-                                        </div>
-                                        </li>
-                                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
-                                        <div class="badge bg-label-warning rounded p-2"><i class="ti ti-bookmark ti-sm"></i></div>
-                                        <div class="d-flex justify-content-between w-100 flex-wrap">
-                                            <h6 class="mb-0 ms-3">Damage/Lost</h6>
-                                            <div class="d-flex">
-                                            <p class="mb-0 fw-semibold">967</p>
-                                            <p class="ms-3 text-success mb-0">Nos.</p>
-                                            </div>
-                                        </div>
-                                        </li>
-                                        <li class="mb-4 pb-1 d-flex justify-content-between align-items-center">
-                                        <div class="badge bg-label-primary rounded p-2"><i class="ti ti-archive ti-sm"></i></div>
-                                        <div class="d-flex justify-content-between w-100 flex-wrap">
-                                            <h6 class="mb-0 ms-3">Stock</h6>
-                                            <div class="d-flex">
-                                            <p class="mb-0 fw-semibold">345</p>
-                                            <p class="ms-3 text-success mb-0">Nos</p>
-                                            </div>
-                                        </div>
-                                        </li>
-                                    </ul>
-                                    </div>
-                                </div>
-                            </div>
-                           
-
+                            
                     </div>
                 </div>
 
@@ -158,7 +116,7 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="ksp_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="category_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i> 
@@ -229,10 +187,6 @@
         
         $('#books-category-form').on('submit', function (e) {
             e.preventDefault();
-            
-            const kspDetailsInput = document.getElementById('ksp_description');
-            kspDetailsInput.value = quillKsp.root.innerHTML;
-
             const form = $(this);
             const formData = new FormData(this);
             const url = form.attr('action');
@@ -249,8 +203,7 @@
                 success: function (response) {
                     toastr["success"](response.message);
                     form.trigger('reset');
-                    quillKsp.root.innerHTML = ''; 
-                    const offcanvasElement = document.getElementById('ksp_offcanvas');
+                    const offcanvasElement = document.getElementById('category_offcanvas');
                     const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                     if (offcanvas) offcanvas.hide();
                     window.location.reload();
@@ -278,7 +231,7 @@
         $('#target_id').val('');
         $('#ksp-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Create KSP</h5><span class="text-white slogan">Create New Knowledge Sharing Program</span>`);
 
-        const offcanvasElement = $('#ksp_offcanvas');
+        const offcanvasElement = $('#category_offcanvas');
 
         if (offcanvasElement.length) {
             const offcanvas = new bootstrap.Offcanvas(offcanvasElement[0]);

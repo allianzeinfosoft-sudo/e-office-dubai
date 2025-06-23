@@ -445,6 +445,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     /* Tools - E-Library */
     Route::get('/e-library/categories', [LibraryController::class, 'books_categories'])->name('e-library.categories');
     Route::post('/e-library/categories/store', [LibraryController::class, 'store_category'])->name('e-library.categories.store');
+    Route::get('/e-library/categories/edit/{id}', [LibraryController::class, 'edit_category'])->name('e-library.categories.edit');
 
 
     /* Mail Testing Route */

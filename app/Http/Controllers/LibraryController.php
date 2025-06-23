@@ -14,6 +14,7 @@ class LibraryController extends Controller
     {
         //
         $data['meta_title'] = 'E-Library';
+        
         return view('library.index', $data);
     }
 
@@ -68,8 +69,10 @@ class LibraryController extends Controller
     public function books_categories(){
         //
         $data['meta_title'] = 'Books Categories';
+        $data['categories'] = BooksCategory::all();
         return view('library.categories.index', $data);
     }
+
     public function store_category(Request $request){
         $validate = $request->validate([
             'name' => 'required|string|max:50',
@@ -85,5 +88,15 @@ class LibraryController extends Controller
            'message' => 'Category saved successfully!',
             'data' => $category
         ]);
-    }   
-}
+    }
+    public function edit_category(Request $request){
+        $category = BooksCategory::find($request->id);
+        return response()->json([
+            'data' => $category
+        ]);
+    }
+    
+    public function delete_category(Request $request){
+        $category = BooksCategory::find($request->id);
+        $category->delete();   
+    }

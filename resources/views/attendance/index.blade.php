@@ -557,6 +557,7 @@
 
     /* Mark out function */
     $('#mark-out-btn').on('click', function() {
+    
       var attendanceId = $('#attendance_id').val();
       var $btn = $(this);
       // Prevent double click
