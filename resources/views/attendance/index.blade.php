@@ -235,7 +235,6 @@
                                 @else
                                   {{-- day shift --}}
                                   @if(isset($attendance))
-
                                     @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
                                         <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
                                             Last Punch In Time: {{date('d-m-Y', strtotime($attendance->signin_date))}}  {{ date('H:i A', strtotime($attendance->signin_time)) }}
@@ -258,10 +257,10 @@
                                         </button>
                                     </div>
                                   @endif
-                                  
+
                                 @endif
 
-                              @elseif(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
+                              @elseif(!isset($attendance) || !$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
 
                                   @if($disableCustomMarkIn || $isLate || $isWeekOffToday)
                                       <div class="badge bg-label-warning p-3 w-100 mb-3">
