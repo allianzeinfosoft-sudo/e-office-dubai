@@ -39,6 +39,7 @@ use App\Http\Controllers\QuickNoteController;
 use App\Http\Controllers\EventCalendarController;
 use App\Http\Controllers\KspController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\BookIssueController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -450,6 +451,16 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/e-library/categories/edit/{id}', [LibraryController::class, 'edit_category'])->name('e-library.categories.edit');
     Route::delete('/e-library/categories/category-destroy/{id}', [LibraryController::class, 'delete_category'])->name('e-library.categories.destroy');
 
+    
+    Route::get('/e-library/books', [LibraryController::class, 'books'])->name('e-library.books');
+    Route::get('/e-library/books/edit/{id}', [LibraryController::class, 'edit_book'])->name('e-library.edit');
+    Route::post('/e-library/book/save', [LibraryController::class, 'save_book'])->name('e-library.book.save');
+    Route::delete('/e-library/books/book-destroy/{id}', [LibraryController::class, 'book_destroy'])->name('e-library.book-destroy');
+
+    Route::get('/e-library/issue-register', [BookIssueController::class, 'index'])->name('e-library.book-issues.index');
+    Route::get('/e-library/issue-book', [BookIssueController::class, 'create'])->name('e-library.book-issues.create');
+    Route::post('/e-library/issue-book', [BookIssueController::class, 'store'])->name('e-library.book-issues.store');
+    Route::post('/e-library/return-book/{id}', [BookIssueController::class, 'return'])->name('e-library.book-issues.return');
 
     /* Mail Testing Route */
     Route::get('/test-mail', function () {
