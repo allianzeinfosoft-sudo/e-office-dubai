@@ -12,6 +12,10 @@
         padding: 28px 10px;
         border-radius: 0px;
     }
+    .offcanvas-body {
+        overflow-y: auto; /* Adds scrollbars when content overflows vertically */
+        height: 100%; /* Ensure the height is set to the available space */
+    }
 </style>
 @stop
 
@@ -39,7 +43,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Book</th>
-                                            <th>User</th>
+                                            <th>Employee</th>
                                             <th>Issue Date</th>
                                             <th>Return Date</th>
                                             <th>Status</th>
@@ -77,6 +81,7 @@
             <div class="mb-3">
                 <label for="book_id" class="form-label">Book</label>
                 <select name="book_id" id="book_id" class="form-control select2" required>
+                    <option value="">-- Select Book --</option>
                     @foreach($books as $book)
                         <option value="{{ $book->id }}">{{ $book->title }} ({{ $book->reg_no }})</option>
                     @endforeach
@@ -85,6 +90,7 @@
             <div class="mb-3">
                 <label for="issued_to" class="form-label">User</label>
                 <select name="issued_to" id="issued_to" class="form-control select2" required>
+                    <option value="">-- Select Employee --</option>
                     @foreach($users as $user)
                         <option value="{{ $user->user_id }}">{{ $user->full_name }}</option>
                     @endforeach
@@ -105,13 +111,13 @@
 <div class="offcanvas offcanvas-end w-35" data-bs-backdrop="static" tabindex="-1" id="return_offcanvas">
     <div class="offcanvas-header bg-warning p-3">
         <span class="d-flex align-items-center gap-2">
-            <i class="ti ti-backspace fs-2 text-dark"></i>
+            <i class="ti ti-books fs-2 text-dark"></i>
             <span>
                 <h5 class="offcanvas-title text-dark">Return Book</h5>
                 <span class="text-dark slogan">Mark this book as returned</span>
             </span>
         </span>
-        <button type="button" class="btn btn-dark offcanvas-close" data-bs-dismiss="offcanvas"><i class="fa fa-close"></i></button>
+        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas"><i class="fa fa-close"></i></button>
     </div>
     <div class="offcanvas-body text-center">
         <p>Are you sure you want to return this book?</p>
@@ -133,23 +139,67 @@
     let bookTable;
 
     $(function() {
-        bookTable = $('.datatable-book-issues').DataTable({
-            ajax: "{{ route('e-library.book-issues.index') }}",
+        $('#issue_date').flatpickr({
+            monthSelectorType: 'static',
+            altInput: true,
+            altFormat: 'd-m-Y',
+            dateFormat: 'd-m-Y'
+        });
+
+        const assetBaseUrl = "{{ asset('storage/books') }}";
+
+        const bookTable = $('.datatable-book-issues').DataTable({
+            processing: false,
+            serverSide: false,
+            ajax: {
+                type: "GET",
+                url: "{{ route('e-library.book-issues.index') }}",
+                dataType: "json",
+                dataSrc: "data"
+            },
             columns: [
-                { data: 'id' },
-                { data: 'book.title' },
-                { data: 'user.name' },
-                { data: 'issue_date' },
-                { data: 'return_date', defaultContent: '-' },
-                { data: 'status' },
+                { data: 'row', name: 'No' },
+                {
+                    data: 'book',
+                    name: 'Book Title',
+                    render: function (data) {
+                        return data?.title ? `<strong>${data.title}</strong>` : '-';
+                    }
+                },
+                {
+                    data: 'employee',
+                    name: 'Issued To',
+                    render: function (data) {
+                        return data?.full_name || '-';
+                    }
+                },
+                {
+                    data: 'issue_date',
+                    name: 'Issue Date'
+                },
+                {
+                    data: 'return_date',
+                    name: 'Return Date',
+                    render: function (data) {
+                        return data ? `<span class="text-success">${data}</span>` : `<span class="badge bg-warning">Pending</span>`;
+                    }
+                },
+                {
+                    data: 'status',
+                    name: 'Status'
+                },
                 {
                     data: null,
-                    render: function(data) {
-                        let btn = '';
-                        if (data.status === 'issued') {
-                            btn += `<button class="btn btn-sm btn-success" onclick="openReturnOffcanvas(${data.id})"><i class="ti ti-rotate"></i></button>`;
-                        }
-                        return btn;
+                    name: 'Actions',
+                    render: function (data, type, row) {
+                        return `
+                            ${row.current_status === 0 ? `
+                            <a href="javascript:void(0)" onclick="openReturnOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary">
+                                <i class="ti ti-rotate"></i>
+                            </a>` : ''}
+                            <button type="button" class="btn btn-sm btn-icon btn-danger" onclick="deleteIssue(${row.id})">
+                                <i class="ti ti-trash"></i>
+                            </button>`;
                     }
                 }
             ]
@@ -200,5 +250,28 @@
             }
         });
     }
+
+    function deleteIssue(id) {
+    if (confirm('Are you sure you want to delete this book issue?')) {
+        $.ajax({
+            url: "{{ route('e-library.book-issues.destroy', ':id') }}".replace(':id', id),
+            type: "DELETE",
+            data: {
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(response) {
+                toastr["success"](response.message || "Issue deleted successfully.");
+                $('.datatable-book-issues').DataTable().ajax.reload();
+            },
+            error: function(xhr) {
+                let errorMessage = "Error deleting book issue. Please try again.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                toastr["error"](errorMessage);
+            }
+        });
+    }
+}
 </script>
 @endpush

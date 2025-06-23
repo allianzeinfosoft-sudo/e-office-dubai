@@ -69,9 +69,19 @@ class LibraryController extends Controller
     }
 
     public function books_categories(){
-        //
         $data['meta_title'] = 'Books Categories';
-        $data['categories'] = BooksCategory::all();
+        $data['categories'] = BooksCategory::withCount([
+            'books as total_books',
+            'books as issued_books' => function ($query) {
+                $query->where('status', 1); // Issued
+            },
+            'books as damaged_books' => function ($query) {
+                $query->whereIn('status', [2, 3]); // Damaged or Lost
+            },
+            'books as available_books' => function ($query) {
+                $query->where('status', 0); // Available / In Stock
+            },
+        ])->get();
         return view('library.categories.index', $data);
     }
 

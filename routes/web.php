@@ -461,6 +461,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/e-library/issue-book', [BookIssueController::class, 'create'])->name('e-library.book-issues.create');
     Route::post('/e-library/issue-book', [BookIssueController::class, 'store'])->name('e-library.book-issues.store');
     Route::post('/e-library/return-book/{id}', [BookIssueController::class, 'return'])->name('e-library.book-issues.return');
+    Route::delete('/e-library/book-issues/{id}', [BookIssueController::class, 'destroy'])->name('e-library.book-issues.destroy');
 
     /* Mail Testing Route */
     Route::get('/test-mail', function () {

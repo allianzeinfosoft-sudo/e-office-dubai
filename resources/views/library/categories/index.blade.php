@@ -61,7 +61,7 @@
                                                 <div class="d-flex justify-content-between w-100 flex-wrap">
                                                     <h6 class="mb-0 ms-3">Total Books</h6>
                                                     <div class="d-flex">
-                                                    <p class="mb-0 fw-semibold">12,346</p>
+                                                    <p class="mb-0 fw-semibold">{{ $category->total_books }}</p>
                                                     <p class="ms-3 text-success mb-0">Nos</p>
                                                     </div>
                                                 </div>
@@ -71,7 +71,7 @@
                                                 <div class="d-flex justify-content-between w-100 flex-wrap">
                                                     <h6 class="mb-0 ms-3">Issued</h6>
                                                     <div class="d-flex">
-                                                    <p class="mb-0 fw-semibold">8,734</p>
+                                                    <p class="mb-0 fw-semibold">{{ $category->issued_books }}</p>
                                                     <p class="ms-3 text-success mb-0">Nos</p>
                                                     </div>
                                                 </div>
@@ -81,7 +81,7 @@
                                                 <div class="d-flex justify-content-between w-100 flex-wrap">
                                                     <h6 class="mb-0 ms-3">Damage/Lost</h6>
                                                     <div class="d-flex">
-                                                    <p class="mb-0 fw-semibold">967</p>
+                                                    <p class="mb-0 fw-semibold">{{ $category->damaged_books }}</p>
                                                     <p class="ms-3 text-success mb-0">Nos.</p>
                                                     </div>
                                                 </div>
@@ -91,7 +91,7 @@
                                                 <div class="d-flex justify-content-between w-100 flex-wrap">
                                                     <h6 class="mb-0 ms-3">Stock</h6>
                                                     <div class="d-flex">
-                                                    <p class="mb-0 fw-semibold">345</p>
+                                                    <p class="mb-0 fw-semibold">{{ $category->available_books }}</p>
                                                     <p class="ms-3 text-success mb-0">Nos</p>
                                                     </div>
                                                 </div>
