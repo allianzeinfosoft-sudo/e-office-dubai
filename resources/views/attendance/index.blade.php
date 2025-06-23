@@ -23,28 +23,28 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-  
+
   <div class="layout-container {{ $background_class ?? 'bg-eoffice' }} ">
-    
+
     <x-menu /> <!-- Load the menu component here -->
-    
+
     <!-- Layout container -->
     <div class="layout-page">
       <!-- Navbar -->
-      
+
       <x-header />
-      
+
       <!-- / Navbar -->
-      
+
       <!-- Content wrapper -->
       <div class="content-wrapper">
         <!-- Content -->
-        
+
         <div class="container-xxl flex-grow-1 container-p-y">
           <h4 class="fw-bold py-3 mb-4 text-muted "><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
-          
+
           <div class="row">
-              
+
                 <!-- Statistics -->
                 <div class="col-12 col-xl-12 col-lg-12">
                   <div class="row g-4 mb-4 justify-content-center">
@@ -55,7 +55,7 @@
                           <div class="d-flex align-items-start justify-content-between">
                             <div class="content-left">
                               <div class="d-flex align-items-center my-1">
-                                <h4 class="mb-0 me-2">{{ $days_of_worked ?? '0' }}</h4>                               
+                                <h4 class="mb-0 me-2">{{ $days_of_worked ?? '0' }}</h4>
                               </div>
                               <span>No of Working Days</span>
                             </div>
@@ -105,19 +105,19 @@
 
                   </div>
                 </div>
-                <!--/ Statistics -->                
-             
+                <!--/ Statistics -->
+
                 <div class="col-12 col-xl-12 col-lg-12 ">
                   <div class="row g-4 mb-4 align-items-center">
-                  
+
                     <!-- Markin module -->
                     <div class="col-12 col-xl-8 col-lg-8">
                       <div class="card card-sm">
                         <div class="card-header">
                             <h4 class="card-title mb-1"> <i class="ti ti-user ti-sm"></i> {{ ucfirst(Auth::user()->employee?->full_name ?? 'N/A') }} </h4>
                         </div>
-                        
-                        <div class="card-body">                     
+
+                        <div class="card-body">
                           <div class="row mb-4 g-4">
 
                             <div class="col-sm-6 col-xl-6">
@@ -126,7 +126,7 @@
                                   <div class="d-flex align-items-start justify-content-between">
                                     <div class="content-left">
                                       <div class="d-flex align-items-center my-1">
-                                        <h4 class="mb-0 me-2">{{ date('d-m-Y') }}</h4>                               
+                                        <h4 class="mb-0 me-2">{{ date('d-m-Y') }}</h4>
                                       </div>
                                       <span>{{ date('l') }}</span>
                                     </div>
@@ -158,7 +158,7 @@
 
                           </div>
 
-                           
+
 
                           <div class="row g-4">
                             <div class="col-lg-12">
@@ -174,9 +174,9 @@
                                 $allWeekOffs      = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
                                 $isWeekOffToday   = in_array($todayName, $allWeekOffs);
                               @endphp
-                              
+
                               @if($attendance || $attendance_current)
-                                @if($shiftType == 'night')                                
+                                @if($shiftType == 'night')
                                     @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
                                           Last Punch In Time: {{ date('d-m-Y', strtotime($attendance_current?->signin_date)) }} {{ date('h:i A', strtotime($attendance_current?->signin_time)) }}
@@ -193,7 +193,7 @@
                                           $lastWorkingDate = \Carbon\Carbon::now()->subDay()->toDateString();
                                           $prevAttendance = \App\Models\Attendance::where('username', Auth::user()->username)->where('signin_date', $lastWorkingDate)->first();
                                       @endphp
-                                      
+
                                       @if($isWeekOffToday || $isHolidayToday)
                                           @if(!$prevAttendance || !$prevAttendance->signout_time)
                                               <div class="badge bg-label-danger p-3 w-100 mb-3" id="last-punch-time" role="alert">
@@ -211,7 +211,7 @@
                                       @endif
 
                                     @elseif($attendance?->signin_date == date('Y-m-d', strtotime('-1 day')) && in_array($attendance?->status, ['mark-in', 'custom', 'emergency']))
-                                        
+
                                       <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
                                           Last Punch In Time: {{ date('d-m-Y', strtotime($attendance?->signin_date)) }} {{ date('h:i A', strtotime($attendance?->signin_time)) }}
                                           <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance?->id }}" />
@@ -231,7 +231,7 @@
                                           </button>
                                       </div>
                                     @endif
-                                  
+
                                 @else
                                   {{-- day shift --}}
                                   @if(in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
@@ -247,11 +247,11 @@
                                           <strong>Next Punchin Tomorrow:</strong> Please Co-operate.
                                       </div>
                                   @endif
-                                  
+
                                 @endif
 
                               @elseif(!$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
-                                 
+
                                   @if($disableCustomMarkIn || $isLate || $isWeekOffToday)
                                       <div class="badge bg-label-warning p-3 w-100 mb-3">
                                           You can mark in only between {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A') : '' }}
@@ -276,9 +276,9 @@
                               @endif
 
                             </div>
-  
+
                             <div class="text-center d-grid gap-2 col-lg-12">
-                              
+
                             </div>
 
                           </div>
@@ -287,7 +287,7 @@
                       </div>
                     </div>
                     <!--/ Markin module -->
-                    
+
                     <!-- Custom module -->
                     <div class="col-12 col-xl-4  col-lg-4">
                       <div class="card card-bg pt-3">
@@ -295,24 +295,24 @@
                           <!-- custom -->
                           <div class="col-12 col-md-6 col-xl-12 col-lg-12 pt-2">
                             <button type="button" class="btn p-3 btn-info w-100" onclick="customModal()" >Custom <i class="mx-1 ti ti-arrow-big-right-lines ti-sm"></i></button>
-                          </div>  
+                          </div>
                           <!--/ custom -->
 
                           <!-- emergency -->
-                          <div class="col-12 col-md-6 col-xl-12 col-lg-12"> 
+                          <div class="col-12 col-md-6 col-xl-12 col-lg-12">
                             <button type="button" class="btn p-3 btn-warning w-100" onclick="emergencyModal()">Emergency <i class="mx-1 ti ti-bolt ti-sm"></i></button>
                           </div>
                           <!--/ emergency -->
                           <hr style ="margin: 1rem 0;" />
-                          <!-- work from home -->                           
+                          <!-- work from home -->
                             <div class="col-6 col-md-6 col-xl-6 col-lg-6">
                               <button type="button" class="btn btn-primary w-100" onclick="wfh_attendance()">Work From Home</button>
                             </div>
-                            
+
                             <div class="col-6 col-md-6 col-xl-6 col-lg-6">
                               <button type="button" class="btn btn-danger w-100" onclick="wos_attendance()">Work On Site</button>
                             </div>
-                          <!--/ work from home --> 
+                          <!--/ work from home -->
 
                           <div class="col-12 col-xl-12 col-lg-12 pb-4">
                             <div class="card badge bg-label-dark w-100 pt-3 pb-3">
@@ -337,26 +337,26 @@
                         </div>
                       </div>
                     </div>
-                    
+
                     <!-- Custom module -->
 
                   </div>
                 </div>
-              </div>  
+              </div>
 
-           
+
           </div>
           <!-- / Content -->
 
           <!-- Footer -->
-          <x-footer /> 
+          <x-footer />
           <!-- / Footer -->
 
           <div class="content-backdrop fade"> </div>
 
           <!-- Overlay -->
           <div class="layout-overlay layout-menu-toggle"></div>
-      
+
           <!-- Drag Target Area To SlideIn Menu On Small Screens -->
           <div class="drag-target"></div>
 
@@ -387,13 +387,13 @@
               <label for="signin_date" class="form-label">Date</label>
               <input type="text" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Date" disabled readonly />
             </div>
-  
+
             <div class="col-12 mb-3">
               <label for="signin_time" class="form-label">Time</label>
               <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ \Carbon\Carbon::now('Asia/Kolkata')->format('H:i') }}"  placeholder="Time" />
               <input type="hidden" id="signin_date" name="signin_date" class="form-control" value="{{ date('Y-m-d') }}"  placeholder="Time" />
             </div>
-  
+
             <div class="col-12 mb-3">
               <label for="signin_late_note" class="form-label">Reason</label>
               <textarea id="signin_late_note" name="signin_late_note" class="form-control"  placeholder="Reason" rows="5"></textarea>
@@ -427,7 +427,7 @@
               <label for="emergency_signin_late_note" class="form-label">Reason</label>
               <textarea id="emergency_signin_late_note" name="signin_late_note" class="form-control" placeholder="Reason" rows="5"></textarea>
             </div>
-  
+
             <div class="col-12 mb-3">
               <label for="time_in_out" class="form-label">Time</label>
               <input type="time" id="time_in_out" name="time_in_out" class="form-control" value="{{ \Carbon\Carbon::now('Asia/Kolkata')->format('H:i') }}" placeholder="Time" />
@@ -473,12 +473,34 @@
   <div class="offcanvas-footer"></div>
 </div>
 
+
+{{-- marks as read --}}
+<div class="modal fade" id="announcementModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-gray text-white">
+        <h5 class="modal-title" style="color: white">Important Announcement</h5>
+      </div>
+      <div class="modal-body">
+        <h6 id="announcement-title"></h6>
+        <p id="announcement-message"></p>
+         <div id="announcement-image" class="text-center mt-3"></div>
+        <input type="hidden" id="announcement-id" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="mark-as-read-btn">Mark as Read</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 @endsection
 
 
 @section('js')
 <script>
-  
+
   $(function(){
     /* Mark in function */
     $('#mark-in-btn').on('click', function(e) {
@@ -501,7 +523,7 @@
           data: JSON.stringify({}),
           success: function(data) {
             if (data.success) {
-                
+
                 toastr["success"](data.message);
                 toastr.options = {
                   "closeButton": false,
@@ -557,64 +579,156 @@
 
     /* Mark out function */
     $('#mark-out-btn').on('click', function() {
+    
       var attendanceId = $('#attendance_id').val();
       var $btn = $(this);
       // Prevent double click
       if ($btn.prop('disabled')) return;
       // Disable button and show loading text
       $btn.prop('disabled', true).text('Loading..');
-      $.ajax({
-            url: "{{ route('attendance.mark-out') }}",
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            contentType: 'application/json',
-            data: JSON.stringify({'attendanceId' : attendanceId }),
-            success: function(data) {
-                if (data.success) {
-                      toastr["success"](data.message);
-                      toastr.options = {
-                        "closeButton": false,
-                        "debug": false,
-                        "newestOnTop": false,
-                        "progressBar": false,
-                        "positionClass": "toast-top-right",
-                        "preventDuplicates": false,
-                        "onclick": null,
-                        "showDuration": "300",
-                        "hideDuration": "1000",
-                        "timeOut": "5000",
-                        "extendedTimeOut": "1000",
-                        "showEasing": "swing",
-                        "hideEasing": "linear",
-                        "showMethod": "fadeIn",
-                        "hideMethod": "fadeOut"
-                      }
-                      $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
-                      $('#mark-out-btn').prop('disabled', true);
-                      window.location.reload();
-                } else {
-                    alert(data.message);
-                    // Optional: re-enable button and restore text if you don't reload
-                    $btn.prop('disabled', false).text('Mark Out');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                // Re-enable on error
-                $btn.prop('disabled', false).text('Mark Out');
-            }
-        });
+
+      check_announcement(function (canProceed) {
+
+        if (canProceed) {
+                $.ajax({
+                    url: "{{ route('attendance.mark-out') }}",
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    contentType: 'application/json',
+                    data: JSON.stringify({'attendanceId' : attendanceId }),
+                    success: function(data) {
+                        if (data.success) {
+                            toastr["success"](data.message);
+                            toastr.options = {
+                                "closeButton": false,
+                                "debug": false,
+                                "newestOnTop": false,
+                                "progressBar": false,
+                                "positionClass": "toast-top-right",
+                                "preventDuplicates": false,
+                                "onclick": null,
+                                "showDuration": "300",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
+                            $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
+                            $('#mark-out-btn').prop('disabled', true);
+                            window.location.reload();
+                        } else {
+                            alert(data.message);
+                            // Optional: re-enable button and restore text if you don't reload
+                            $btn.prop('disabled', false).text('Mark Out');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        // Re-enable on error
+                        $btn.prop('disabled', false).text('Mark Out');
+                    }
+                });
+
+        }
+      });
+
     });
 
 
     $('.card-reload').on('click', function (e) {
       window.location.reload();
-    });  
+    });
 
   });
 
+
+function check_announcement(callback) {
+    $.ajax({
+        url: '/check-announcement',
+        type: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+        },
+        success: function (res) {
+             if (res.found && res.announcements && res.announcements.length > 0) {
+                console.log("Unread announcements found.");
+                handleMultipleAnnouncements(res.announcements, 0, function () {
+                    console.log("All announcements handled.");
+                    callback(true);
+                });
+            } else {
+                console.log("No unread announcements.");
+                callback(true);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Error checking announcement:', error);
+            $btn.prop('disabled', false).text('Mark Out');
+        }
+    });
+}
+
+function handleMultipleAnnouncements(announcements, index, doneCallback) {
+    if (index >= announcements.length) {
+        console.log("No more announcements to show.");
+        doneCallback(); // All done, proceed
+        return;
+    }
+
+    const current = announcements[index];
+
+    $('#announcement-title').text(current.name_announcement);
+    $('#announcement-message').html(current.description);
+
+    if (current.picture) {
+        const imagePath = `/storage/${current.picture}`;
+        $('#announcement-image').html(`<img src="${imagePath}" alt="Announcement Image" class="img-fluid rounded">`);
+    } else {
+        $('#announcement-image').empty(); // Clear if no image
+    }
+
+    $('#announcement-id').val(current.id);
+    $('#announcementModal').modal('show');
+
+    $('#mark-as-read-btn').off('click').on('click', function () {
+        markAsRead(current.id).then(() => {
+            $('#announcementModal').modal('hide');
+
+            // Wait for modal to hide before next
+            $('#announcementModal').on('hidden.bs.modal', function () {
+                $('#announcementModal').off('hidden.bs.modal');
+                handleMultipleAnnouncements(announcements, index + 1, doneCallback);
+            });
+        });
+    });
+}
+
+
+
+function markAsRead(announcementId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/mark-announcement-read',
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            data: { announcement_id: announcementId },
+            success: function (res) {
+                if (res.status === 'success') resolve();
+                else reject('Failed to mark as read');
+            },
+            error: function () {
+                reject('Error marking as read');
+            }
+        });
+    });
+}
 
 
   function customModal(){

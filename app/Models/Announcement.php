@@ -13,6 +13,13 @@ class Announcement extends Model
         'display_start_date',
         'display_end_date',
         'description',
-        'picture'
+        'picture',
+        'readers'
     ];
+
+     protected $casts = [
+        'readers' => 'array', // 👈 Ensure JSON casting
+    ];
+
+
 }

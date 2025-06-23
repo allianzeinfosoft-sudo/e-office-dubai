@@ -39,6 +39,7 @@ use App\Http\Controllers\QuickNoteController;
 use App\Http\Controllers\EventCalendarController;
 use App\Http\Controllers\KspController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\BookIssueController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -305,6 +306,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::delete('/others/announcements/{announcement}/destroy', [AnnouncementController::class, 'destroy'])->name('others.announcements.destroy');
     Route::get('/announcement_view', [AnnouncementController::class, 'view_announcement'])->name('announcement_view');
 
+    Route::post('/check-announcement', [AnnouncementController::class, 'checkAnnouncement']);
+    Route::post('/mark-announcement-read', [AnnouncementController::class, 'markAsRead']);
     /* Others/Events */
     Route::get('/others/events', [EventController::class, 'index'])->name('others.events.index');
     Route::post('/others/events/store', [EventController::class, 'store'])->name('others.events.store');
@@ -450,9 +453,32 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/tools/ksp/{ksp}/show', [KspController::class, 'show'])->name('tools.ksp.show');
     Route::post('/tools/ksp/store-category', [KspController::class, 'store_category'])->name('tools.ksp.store-category');
 
-    /* Tools - E-Library */
+    /* Library */
     Route::get('/e-library/categories', [LibraryController::class, 'books_categories'])->name('e-library.categories');
     Route::post('/e-library/categories/store', [LibraryController::class, 'store_category'])->name('e-library.categories.store');
+    Route::get('/e-library/categories/edit/{id}', [LibraryController::class, 'edit_category'])->name('e-library.categories.edit');
+    Route::delete('/e-library/categories/category-destroy/{id}', [LibraryController::class, 'delete_category'])->name('e-library.categories.destroy');
+
+
+    Route::get('/e-library/books', [LibraryController::class, 'books'])->name('e-library.books');
+    Route::get('/e-library/books/edit/{id}', [LibraryController::class, 'edit_book'])->name('e-library.edit');
+    Route::post('/e-library/book/save', [LibraryController::class, 'save_book'])->name('e-library.book.save');
+    Route::delete('/e-library/books/book-destroy/{id}', [LibraryController::class, 'book_destroy'])->name('e-library.book-destroy');
+
+    Route::get('/e-library/reports/issue', [LibraryController::class, 'issueReport'])->name('e-library.reports.issue');
+    Route::get('/e-library/reports/issue-report-data', [LibraryController::class, 'issueReportData'])->name('e-library.reports.issue-report-data');
+    Route::get('/e-library/reports/pending', [LibraryController::class, 'pendingReport'])->name('e-library.reports.pending');
+    Route::get('/e-library/reports/pending-report-data', [LibraryController::class, 'pendingReportData'])->name('e-library.reports.pending-report-data');
+    Route::get('/e-library/reports/damaged-lost', [LibraryController::class, 'damagedLostReport'])->name('e-library.reports.damaged_lost');
+    Route::get('e-library/reports/damaged-lost-report-data', [LibraryController::class, 'damagedLostReportData'])->name('e-library.reports.damaged-lost-report-data');
+
+    /* Book Issue */
+    Route::get('/e-library/issue-register', [BookIssueController::class, 'index'])->name('e-library.book-issues.index');
+    Route::get('/e-library/issue-book', [BookIssueController::class, 'create'])->name('e-library.book-issues.create');
+    Route::post('/e-library/issue-book', [BookIssueController::class, 'store'])->name('e-library.book-issues.store');
+    Route::post('/e-library/return-book/{id}', [BookIssueController::class, 'return'])->name('e-library.book-issues.return');
+    Route::delete('/e-library/book-issues/{id}', [BookIssueController::class, 'destroy'])->name('e-library.book-issues.destroy');
+
 
 
     /* Mail Testing Route */
