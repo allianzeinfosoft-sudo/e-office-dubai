@@ -58,6 +58,7 @@ use App\Http\Controllers\SarTemplateController;
 use App\Http\Controllers\SelfAppraisalReportController;
 use App\Http\Controllers\SurveyReportController;
 use App\Http\Controllers\SurveyTemplateController;
+use App\Http\Controllers\TicketRaisingController;
 use App\Models\PerformanceAppraisalReport;
 
 Route::middleware(['web'])->group(function () {
@@ -583,5 +584,14 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/job/{id}/destroy', [JobController::class, 'destroy'])->name('jobs.destroy');
     Route::get('/job/{job}/show', [JobController::class, 'show'])->name('job.show');
     Route::post('/job/comment', [JobController::class, 'storeComment'])->name('job.comment.store');
+
+     /*Ticket Raising*/
+    Route::resource('tickets',TicketRaisingController::class);
+    Route::get('/tickets/{ticket}/edit', [TicketRaisingController::class, 'edit'])->name('tickets.edit');
+    Route::post('/tickets/{ticket}/update', [TicketRaisingController::class, 'update'])->name('tickets.update');
+    Route::get('/tickets_view', [TicketRaisingController::class, 'view_tickets'])->name('tickets.view');
+
+    Route::post('/tickets/{id}/close', [TicketRaisingController::class, 'close'])->name('tickets.close');
+
 
 });

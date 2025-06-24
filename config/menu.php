@@ -638,6 +638,11 @@ return [
         ]
     ],
     [
+        'title' => 'Ticket Raising',
+        'icon' => 'ti ti-icons',
+        'route' => 'tickets',
+    ],
+    [
         'header' => 'Settings',
     ],
     [
