@@ -40,6 +40,7 @@ use App\Http\Controllers\EventCalendarController;
 use App\Http\Controllers\KspController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\BookIssueController;
+use App\Http\Controllers\DBBackupController;
 
 use App\Models\Appearence;
 use App\Models\Appreciation;
@@ -478,7 +479,13 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/e-library/return-book/{id}', [BookIssueController::class, 'return'])->name('e-library.book-issues.return');
     Route::delete('/e-library/book-issues/{id}', [BookIssueController::class, 'destroy'])->name('e-library.book-issues.destroy');
 
-    
+    /* DB Backup */
+    Route::get('/db-backup', [DBBackupController::class, 'index'])->name('db.backup.index');
+    Route::post('/db-backup/generate', [DBBackupController::class, 'generate'])->name('db-backup.generate');
+    Route::get('/db-backup/download/{file}', [DBBackupController::class, 'download'])->name('db.backup.download');
+    Route::delete('/db-backup/delete/{file}', [DBBackupController::class, 'delete'])->name('db.backup.delete');
+
+
 
     /* Mail Testing Route */
     Route::get('/test-mail', function () {
