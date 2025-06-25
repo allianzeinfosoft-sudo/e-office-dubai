@@ -85,10 +85,8 @@ class AssetCategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AssetCategory $assetCategory)
-    {
-        //
-        AssetCategory::find($id)?->delete();
+    public function destroy(AssetCategory $assetCategory){
+        $assetCategory->delete();
         return response()->json(['success' => true, 'message' => 'Category deleted']);
     }
 }
