@@ -42,8 +42,8 @@
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Book</th>
-                                            <th>Employee</th>
+                                            <th>Book Title</th>
+                                            <th>Issued To</th>
                                             <th>Issue Date</th>
                                             <th>Return Date</th>
                                             <th>Status</th>
