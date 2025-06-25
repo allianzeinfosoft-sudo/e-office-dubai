@@ -81,7 +81,7 @@
         <div class="modal-content p-3 p-md-4">
             <div class="modal-header-custom">
 
-                <h3 class="address-title">Survey Question</h3>
+                <h3 class="address-title">Survey</h3>
                 <p class="  address-subtitle">Department</p>
             </div>
             <form id="surveyQuestionForm" action="{{ route('survey.store') }}" method="post">
@@ -149,7 +149,9 @@
             let errors = [];
 
             // Check if at least one question is answered
-            const inputs = form.querySelectorAll('input[type="radio"]:checked, textarea');
+            const inputs = form.querySelectorAll(
+    'input[type="radio"]:checked, textarea:not(:placeholder-shown), input[type="hidden"][name^="answers"][value]:not([value=""])'
+);
             if (inputs.length === 0) {
                 errors.push("Please answer at least one question before submitting.");
             }
@@ -271,6 +273,18 @@ function openSurveyQuestionOffcanvas(surveysId) {
                             });
                             questionsHtml += `</div>`;
                         }
+                        else if (q.answer_type === 'rating') {
+                                 questionsHtml += `
+                                    <div class="col-sm-12 mb-3">
+                                        <label class="form-label d-block mb-2">Rating:</label>
+                                        <div class="star-rating d-flex gap-1 align-items-center" data-question-index="${index}">
+                                            ${[1, 2, 3, 4, 5].map(i => `
+                                                <i class="fa fa-star" data-value="${i}" data-question="${index}" style="font-size: 24px; color: #ccc; cursor: pointer;"></i>
+                                            `).join('')}
+                                        </div>
+                                        <input type="hidden" name="answers[${index}][answer]" id="rating-value-${index}" required>
+                                    </div>`;
+                            }
                         else if (q.answer_type === 'yes_no') {
                             ['Yes', 'No'].forEach((opt) => {
                                 questionsHtml += `
@@ -331,10 +345,22 @@ function showAnswerOffcanvas(surveysId) {
                     data.answers.forEach((answer, index) => {
                         questionsHtml += `
                             <div class="mb-4">
-                                <h6>Q${index + 1}: ${answer.question_text ?? 'No question text'}</h6>
+                                <h6>Q${index + 1}: ${answer.question_text ?? 'No question text'}</h6>`
 
-                                <p><strong>Answer:</strong> ${answer.answer ?? '<span class="text-muted">No response</span>'}</p>
-                            </div>
+                                if (answer.answer_type === 'rating') {
+                                    const stars = parseInt(answer.answer) || 0;
+                                    let starHtml = '';
+
+                                    for (let i = 1; i <= 5; i++) {
+                                        starHtml += `<i class="fa fa-star${i <= stars ? ' text-warning' : ' text-muted'}"></i>`;
+                                    }
+
+                                    questionsHtml += `<p><strong>Answer:</strong> ${starHtml}</p>`;
+                                } else {
+                                    questionsHtml += `<p><strong>Answer:</strong> ${answer.answer ?? '<span class="text-muted">No response</span>'}</p>`;
+                                }
+
+                            `</div>
                             <hr>`;
                     });
                 } else {
@@ -378,5 +404,20 @@ function printSuveyReport(surveyId) {
         }
     });
 }
+
+
+$(document).on('click', '.star-rating i', function () {
+    const rating = $(this).data('value');
+    const index = $(this).data('question');
+
+    // Highlight selected stars
+    $(`.star-rating[data-question-index="${index}"] i`).each(function () {
+        const starValue = $(this).data('value');
+        $(this).css('color', starValue <= rating ? '#ffc107' : '#ccc');
+    });
+
+    // Store value in hidden input
+    $(`#rating-value-${index}`).val(rating);
+});
 </script>
 @endpush

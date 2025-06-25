@@ -88,7 +88,18 @@
         @foreach ($answers as $index => $qa)
             <div class="question-block">
                 <h5>Q{{ $index + 1 }}: {{ $qa['question_text'] }}</h5>
-                <p><strong>Answer:</strong> {{ $qa['answer'] ?? 'No response' }}</p>
+                @if($qa['answer_type'] === 'rating')
+                        @php
+                           $stars = (int) $qa['answer'];
+                            $starOutput = '';
+                            for ($i = 1; $i <= 5; $i++) {
+                                $starOutput .= $i <= $stars ? '<b> * </b>' : '';
+                            }
+                        @endphp
+                       <p><strong>Answer:</strong> {!! $qa['answer'] ? $starOutput : '<span class="text-muted">No response</span>' !!}</p>
+                @else
+                    <p><strong>Answer:</strong> {{ $qa['answer'] ?? 'No response' }}</p>
+                @endif
             </div>
         @endforeach
     </div>

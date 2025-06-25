@@ -553,7 +553,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::resource('survey', SurveyReportController::class);
 
     Route::get('/usersurveys/{id}/generate-pdf', [SurveyTemplateController::class, 'generatePdf']);
-
+    Route::get('/survey-report',[SurveyReportController::class, 'survey_report'])->name('survey.report.list');
+    Route::get('/survey/{id}/export', [SurveyReportController::class, 'exportSurveyReport'])->name('survey.export');
 
       //FEEDBACK
     Route::resource('feedback', FeedbackController::class);

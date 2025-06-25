@@ -170,7 +170,12 @@ return [
                 'title' => 'Assign Survey',
                 'route' => '/surveytemplate-assign',
                 'permission' => ['assign survey'],
-            ]
+            ],
+            [
+                'title' => 'Survey Report',
+                'route' => '/survey-report',
+            ],
+
 
         ]
     ],

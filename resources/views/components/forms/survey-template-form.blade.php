@@ -29,12 +29,13 @@
                 </select>
             </div>
         </div>
-
+        <hr>
         <div id="question-container"></div>
-        <button type="button" class="btn btn-secondary mb-3" onclick="addQuestion()">+ Add Question</button>
-
-        <div class="col-sm-12 mb-3">
-            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;  Save</button>
+        <div class="col-sm-12 mb-3 d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" onclick="addQuestion()">+ Add Question</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save"></i>&nbsp;&nbsp; Save
+            </button>
         </div>
     </div>
 </form>
@@ -62,6 +63,7 @@
                 <select name="questions[${questionIndex}][answer_type]" class="form-control mb-2" onchange="toggleOptions(this, ${questionIndex})">
                     <option value="yes_no">Yes / No</option>
                     <option value="optional">Optional (4 options)</option>
+                     <option value="rating">Rating</option>
                     <option value="description">Description</option>
                 </select>
 

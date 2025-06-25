@@ -2,18 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SurveyReportExport;
 use App\Models\SurveyReport;
 use App\Models\SurveyUserAssign;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SurveyReportController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+
+    public function survey_report(Request $request)
     {
-        //
+
+        if ($request->ajax()) {
+
+            $surveyUsers = SurveyUserAssign::with([
+                    'template.department_info',
+                    'employee',
+                    'assigned_user'
+                ])
+                ->get()
+                ->map(function ($surveyUsers) {
+                    return [
+                        'id' => $surveyUsers->id,
+                        'survey_title' => $surveyUsers->template?->template_name ?? '',
+                        'survey_id' => $surveyUsers->template_id ?? '',
+                        'department' => $surveyUsers->template?->department_info?->department ?? '',
+                        'employees' => $surveyUsers->employee?->full_name ?? '',
+                        'survey_start_date' => $surveyUsers->feedback_start_date ?? '',
+                        'survey_end_date' => $surveyUsers->feedback_end_date ?? '',
+                        'created_by' => $surveyUsers->assigned_user?->full_name ?? '',
+                        'status' => $surveyUsers->status ?? '',
+                    ];
+                });
+
+
+
+            return response()->json([
+                'data' => $surveyUsers
+            ]);
+
+        }
+
+         $data['meta_title'] = 'Survey Report';
+         return view('survey.survey_report',  $data);
     }
 
     /**
@@ -29,7 +62,9 @@ class SurveyReportController extends Controller
      */
     public function store(Request $request)
     {
-         foreach ($request->answers as $entry) {
+
+        foreach ($request->answers as $entry) {
+
             SurveyReport::create([
                 'survey_id'      => $request->survey_id,
                 'question'    => $entry['question_id'],
@@ -81,4 +116,10 @@ class SurveyReportController extends Controller
     {
         //
     }
+
+    public function exportSurveyReport($surveyId)
+    {
+        return Excel::download(new SurveyReportExport($surveyId), 'survey_reports.xlsx');
+    }
+
 }

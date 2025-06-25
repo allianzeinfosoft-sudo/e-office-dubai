@@ -262,6 +262,19 @@
 
                             questionsHtml += `</div>`; // End row
                         }
+                        else if (q.answer_type === 'rating') {
+                            questionsHtml += `
+                                <div class="rating-container mb-3" data-question-index="${index}">
+                                    <label class="form-label d-block mb-2">Rating:</label>
+                                    <div class="star-rating" id="rating-${index}">
+                                        ${[1, 2, 3, 4, 5].map(i => `
+                                            <i class="fa fa-star" data-value="${i}" data-question="${index}" style="font-size: 24px; color: #ccc; cursor: pointer; margin-right: 5px;"></i>
+                                        `).join('')}
+                                    </div>
+                                    <input type="hidden" name="question_${index}" id="rating-value-${index}" />
+                                </div>
+                            `;
+                        }
                         else if (q.answer_type === 'yes_no') {
                             ['Yes', 'No'].forEach((opt) => {
                                 questionsHtml += `
@@ -295,6 +308,19 @@
 }
 
 
+$(document).on('click', '.star-rating i', function () {
+    const rating = $(this).data('value');
+    const questionIndex = $(this).data('question');
+
+    // Highlight stars
+    $(`#rating-${questionIndex} i`).each(function () {
+        const starValue = $(this).data('value');
+        $(this).css('color', starValue <= rating ? '#ffc107' : '#ccc');
+    });
+
+    // Set hidden input value
+    $(`#rating-value-${questionIndex}`).val(rating);
+});
 
 
 function openSurveyTemplateOffcanvas(targetId = null) {

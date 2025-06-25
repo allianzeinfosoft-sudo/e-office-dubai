@@ -52,12 +52,13 @@ class SurveyTemplateController extends Controller
      */
    public function store(Request $request)
     {
+
         $validated = $request->validate([
             'template_name' => 'required|string',
             'department_id' => 'required|exists:departments,id',
             'questions' => 'required|array|min:1',
             'questions.*.question' => 'required|string',
-            'questions.*.answer_type' => 'required|in:yes_no,optional,description',
+            'questions.*.answer_type' => 'required|in:yes_no,optional,rating,description',
         ]);
 
         // If editing, update the existing template
@@ -325,7 +326,7 @@ class SurveyTemplateController extends Controller
             return [
                 'question_id'   => $answer->question,
                 'question_text' => $question?->question,
-                // 'answer_type'   => $answer->answer_type,
+                'answer_type'   => $answer->answer_type,
                 'answer'        => $answer->answer,
                 'options'       => $question?->options,
             ];
@@ -355,6 +356,7 @@ class SurveyTemplateController extends Controller
             return [
                 'question_id'   => $question->id,
                 'question_text' => $question->question,
+                'answer_type' => $question->answer_type,
                 'answer'        => $answer?->answer ?? null,
 
             ];
