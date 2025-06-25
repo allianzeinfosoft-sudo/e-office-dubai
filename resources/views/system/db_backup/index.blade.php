@@ -29,7 +29,7 @@
 
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
-                            <button class="btn btn-primary" onclick="startBackup()">Generate Backup</button>
+                            <button class="btn btn-primary" onclick="startBackup()"> <i class="ti ti-database-export"></i> &nbsp; &nbsp; Generate Backup</button>
                         </div>
 
                         <div class="card">

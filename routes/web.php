@@ -41,7 +41,8 @@ use App\Http\Controllers\KspController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\BookIssueController;
 use App\Http\Controllers\DBBackupController;
-
+use App\Http\Controllers\AssetClassificationController;
+use App\Http\Controllers\AssetCategoryController;
 use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -582,5 +583,16 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     Route::get('/feedbacks/{id}/export', [FeedbackReportController::class, 'exportFeedbackReport'])->name('feedback.export');
 
+    /* Asset classification */
+    Route::get('/classification', [AssetClassificationController::class, 'index'])->name('classification.index');
+    Route::post('/classification', [AssetClassificationController::class, 'store'])->name('classification.store');
+    Route::get('/classification/{assetClassification}/edit', [AssetClassificationController::class, 'edit'])->name('classification.edit');
+    Route::delete('/classification/{assetClassification}', [AssetClassificationController::class, 'destroy'])->name('classification.destroy');
+
+    /* Asset Categoty*/
+    Route::get('/category', [AssetCategoryController::class, 'index'])->name('category.index');
+    Route::post('/category', [AssetCategoryController::class, 'store'])->name('category.store');
+    Route::get('/category/{assetCategory}/edit', [AssetCategoryController::class, 'edit'])->name('category.edit');
+    Route::delete('/category/{assetCategory}', [AssetCategoryController::class, 'destroy'])->name('category.destroy');
 
 });

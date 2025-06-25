@@ -540,6 +540,30 @@ return [
         ]
     ],
     [
+        'title' => 'Assets',
+        'icon' => 'ti ti-apps',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['e-library*'],
+        'permission' => ['view assets'],
+        'submenu' => [
+            [
+                'title' => 'Asset Register',
+                'route' =>  '',
+                'permission' => ['view assets'],
+            ],
+            [
+                'title' => 'Classifications',
+                'route' =>  '/classification',
+                'permission' => ['view assets classification'],
+            ],
+            [
+                'title' => 'Categories',
+                'route' =>  '/category',
+                'permission' => ['view asset category'],
+            ],
+        ]
+    ],
+    [
         'header' => 'Settings',
     ],
     [
