@@ -140,7 +140,7 @@
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td>Auto Break</td>
-                                                            <td><button type="button" class="btn btn-sm btn-icon btn-success waves-effect" onclick="update_brake_time({{ $missingReport->id }})"><i class="fa fa-save"></i></button></td>
+                                                            <td><button type="button" class="btn btn-sm  btn-success waves-effect" onclick="update_brake_time({{ $missingReport->id }})"><i class="fa fa-save me-2"></i> Update </button></td>
                                                         </tr>
                                                         @endif
 

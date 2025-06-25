@@ -405,7 +405,7 @@ class LeaveController extends Controller
                     $endDate = Carbon::parse($leave->leave_to);
 
 
-                     if($request->leave_type === 'half_day')
+                     if($leave->leave_type === 'half_day')
                     {
                         $leaveDays = 0.5;
                     }
@@ -415,7 +415,7 @@ class LeaveController extends Controller
 
                     }
 
-                    if($request->leave_type != 'off_day')
+                    if($leave->leave_type != 'off_day')
                     {
                         LeaveAllocation::where('user_id', $leave->user_id)
                             ->update([
@@ -440,7 +440,7 @@ class LeaveController extends Controller
                         'leave_reason' => strip_tags($leave->reason),
                         'employee_name' =>  $leave->employee->full_name,
                         'employeeID' => $leave->employee->employeeID,
-                        'leave_type' => $request->leave_type,
+                        'leave_type' => $leave->leave_type,
                         'days_count' => $leave->leave_day_count,
 
                     ];
@@ -502,7 +502,7 @@ class LeaveController extends Controller
                     'leave_reason' => strip_tags($leave->reason),
                     'employee_name' =>  $leave->employee->full_name,
                     'employeeID' => $leave->employee->employeeID,
-                    'leave_type' => $request->leave_type,
+                    'leave_type' => $leave->leave_type,
                     'days_count' => $leave->leave_day_count,
 
                 ];

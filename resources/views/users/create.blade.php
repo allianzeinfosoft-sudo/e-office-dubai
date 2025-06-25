@@ -43,7 +43,7 @@
                     <div class="col-md-4 mb-3">
                       <label for="employee_id" class="form-label">Employoee ID:</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" class="form-control" name="employeeID" id="employeeID" value="{{ $nextEmployeeId ?? '' }}" placeholder="Enter username" aria-describedby="employeeID" />
+                        <input type="text" class="form-control" name="employeeID" id="employeeID" value="{{ $nextEmployeeId ?? '' }}" placeholder="Enter username" aria-describedby="employeeID" readonly/>
                       </div>
                     </div>
                     <div class="col-md-4 mb-3">

@@ -141,12 +141,12 @@
                                                             <td><strong>Break time</strong></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
-                                                            <td><input class="form-control" type="text" name="break_time" id="break_time" value="{{ ($attendance->break_time) ?? $user_shift->mini_break_time }}"></td>
+                                                            <td><input class="form-control" type="text" name="break_time" id="break_time"  value="{{ ($attendance->break_time) ?? $user_shift->mini_break_time }}"></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td>Auto Break</td>
-                                                            <td><button type="button" class="btn btn-sm btn-icon btn-warning waves-effect" onclick="update_brake_time({{ $attendance->id }})"><i class="fa fa-save"></i></button></td>
+                                                            <td><button type="button" class="btn btn-sm btn-warning waves-effect" onclick="update_brake_time({{ $attendance->id }})"><i class="fa fa-save"></i> Update</button></td>
                                                         </tr>
                                                         @endif
 

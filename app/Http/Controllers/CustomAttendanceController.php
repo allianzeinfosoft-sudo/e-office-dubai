@@ -106,7 +106,7 @@ class CustomAttendanceController extends Controller
                         'break_time'        => '01:00:00',
                         'punchin_type'      => 'Custom',
                         'ipaddress'         => $request->ip(),
-                        'status'            => 'custom',
+                        'status'            => 'mark-in',
                         'custom_status'     => '1'
                     ]
                 ); 

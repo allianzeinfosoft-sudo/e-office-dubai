@@ -77,6 +77,12 @@ class AttendanceController extends Controller{
         }
 
         if($user->employee?->join_date == $today){
+            $data['attendance'] = Attendance::where([ 'username' => $user->username, 'signout_date' => null, 'signout_time' => null, ])->first();
+            $data['attendance_current'] = $data['attendance'];
+            $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
+            $latestMarkIn = $shiftStartTime->copy()->addMinutes(15);
+            $now = now();
+            $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn);
             return view('attendance.index', $data);
         }
 
