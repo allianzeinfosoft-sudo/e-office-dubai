@@ -75,7 +75,7 @@
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-plus fs-2 text-white"></i> 
-            <span class="">
+            <span id="project_title_container">
                 <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Create Project</h5>
                 <span class="text-white slogan">Create New Project</span>
             </span>
@@ -168,6 +168,7 @@
         var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
         offcanvas.show();
         if(projectId){
+            $('#project_title_container').html(`<h5 class="offcanvas-title text-white" id="staticBackdropLabel"> Edit Project</h5><span class="text-white slogan">Edit Project</span>`);
             var editUrl = "{{ route('project.edit', ':id') }}".replace(':id', projectId);
             $.ajax({
                 type: "get",
