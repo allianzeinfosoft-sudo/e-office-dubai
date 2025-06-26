@@ -3,7 +3,7 @@
     @if(strtolower($method) !== 'post')
         @method($method)
     @endif
-
+    <input type="hidden" name="id" id="target_id" />
     <div class="row">
         <div class="col-sm-12 mb-3">
             <div class="form-group">

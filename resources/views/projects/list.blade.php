@@ -130,7 +130,7 @@
                         searchable: false,
                         render: function (data, type, row) {
                             return `
-                                <a href="javascript:void(0)" onclick="editProject(${data})" class="btn btn-sm btn-icon btn-primary edit-project">
+                                <a href="javascript:void(0)" onclick="addProject(${data})" class="btn btn-sm btn-icon btn-primary edit-project">
                                     <i class="ti ti-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProject(${data})" data-id="${data}">
@@ -163,48 +163,33 @@
         }
     }
 
-    function addProject() {
+    function addProject(projectId = null) {
         var offcanvasElement = $('#add_projects_offcanvas');
         var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
         offcanvas.show();
-    }
-
-    function editProject(projectId) {
-        var offcanvasElement = $('#edit_projects_offcanvas');
-        var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
-        offcanvas.show();
-
-        var editUrl = "{{ route('project.edit', ':id') }}".replace(':id', projectId);
-        $.ajax({
-            type: "get",
-            url: editUrl,
-            dataType: "json",
-            success: function (response) {
-                let updateUrl = "{{ route('project.update', ':project') }}".replace(':project', response.project.id);
-                offcanvasElement.find('input[name="project_name"]').val(response.project.project_name);
-                offcanvasElement.find('select[name="project_add_person"]').val(response.project.project_add_person).trigger('change');
-                offcanvasElement.find('select[name="department_id"]').val(response.project.department_id).trigger('change');
-                // offcanvasElement.find('input[name="start_date"]').val(response.project.start_date);
-                offcanvasElement.find('#start_date').flatpickr({ 
-                    monthSelectorType: 'static',
-                    altInput: true,
-                    altFormat: 'd-m-Y',
-                    dateFormat: 'd-m-Y',
-                    defaultDate : response.project.start_date
-                });
-
-                offcanvasElement.find('#end_date').flatpickr({ 
-                    monthSelectorType: 'static',
-                    altInput: true,
-                    altFormat: 'd-m-Y',
-                    dateFormat: 'd-m-Y',
-                    defaultDate : response.project.start_date
-                });
-                offcanvasElement.find('input[name="total_hours"]').val(response.project.total_hours);
-                offcanvasElement.find('input[name="total_day"]').val(response.project.total_day);
-                offcanvasElement.find('#project-form').attr('action', updateUrl);
-            }
-        });
+        if(projectId){
+            var editUrl = "{{ route('project.edit', ':id') }}".replace(':id', projectId);
+            $.ajax({
+                type: "get",
+                url: editUrl,
+                dataType: "json",
+                success: function (response) {
+                    offcanvasElement.find('input[name="project_name"]').val(response.project.project_name);
+                    offcanvasElement.find('select[name="project_add_person"]').val(response.project.project_add_person).trigger('change');
+                    offcanvasElement.find('select[name="task_name[]"]').val(response.tasks).trigger('change');
+                    offcanvasElement.find('select[name="reporting_to"]').val(response.reporting_to).trigger('change');
+                    offcanvasElement.find('select[name="department_id"]').val(response.project.department_id).trigger('change');
+                    offcanvasElement.find('input[name="start_date"]').val(response.project.start_date).trigger('change');
+                    offcanvasElement.find('input[name="end_date"]').val(response.project.end_date).trigger('change');
+                    offcanvasElement.find('input[name="id"]').val(response.project.id);
+                    offcanvasElement.find('input[name="total_hours"]').val(response.project.total_hours);
+                    offcanvasElement.find('input[name="total_day"]').val(response.project.total_day);
+                    setTimeout(() => {
+                        offcanvasElement.find('select[name="members[]"]').val(response.members).trigger('change');
+                    }, 300);
+                }
+            });
+        }
     }
 
     function getMembers(value) {

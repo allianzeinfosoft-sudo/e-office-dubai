@@ -54,6 +54,7 @@ class ProjectController extends Controller
 
      public function store(Request $request){
         $request->validate([
+            'id'                  => 'nullable|integer|exists:projects,id',
             'project_name'        => 'required|string',
             'project_add_person'  => 'required|integer|exists:users,id',
             'department_id'       => 'required|integer|exists:departments,id',
@@ -68,18 +69,26 @@ class ProjectController extends Controller
             'members.*'           => 'nullable|integer|exists:users,id',
         ]);
 
-        // Save Project
-        $project = Project::create([
-            'project_name'        => $request->project_name,
-            'project_add_person'  => $request->project_add_person,
-            'department_id'       => $request->department_id,
-            'start_date'          => $request->start_date,
-            'end_date'            => $request->end_date,
-            'total_hours'         => $request->total_hours ?? 0,
-            'total_day'           => $request->total_day ?? 0,
-        ]);
+        // Create or Update Project
+        $project = Project::updateOrCreate(
+            ['id' => $request->id], // condition
+            [
+                'project_name'        => $request->project_name,
+                'project_add_person'  => $request->project_add_person,
+                'department_id'       => $request->department_id,
+                'start_date'          => $request->start_date,
+                'end_date'            => $request->end_date,
+                'total_hours'         => $request->total_hours ?? 0,
+                'total_day'           => $request->total_day ?? 0,
+            ]
+        );
 
-        // Save Tasks
+        // Remove old tasks if updating (optional cleanup)
+        if ($request->id) {
+            ProjectTask::where('project_id', $project->id)->delete();
+        }
+
+        // Create new tasks
         if (!empty($request->task_name)) {
             foreach ($request->task_name as $taskName) {
                 ProjectTask::create([
@@ -91,7 +100,9 @@ class ProjectController extends Controller
             }
         }
 
-        return redirect()->route('projects.index')->with('success', 'Project and tasks created successfully.');
+        $message = $request->id ? 'Project updated successfully.' : 'Project created successfully.';
+
+        return redirect()->route('projects.index')->with('success', $message);
     }
 
     /* public function store(Request $request){
@@ -129,13 +140,27 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(project $project){
+    public function edit(Project $project){
         $data['project'] = $project;
         $data['meta_title'] = 'Edit Project';
         $data['users'] = User::all();
         $data['departments'] = Department::all();
+
+        // Get all task names under this project
+        $data['tasks'] = $project->tasks()->pluck('task_name')->toArray();
+
+        // Get the first reporting_to value from project's tasks
+        $data['reporting_to'] = $project->tasks()->value('reporting_to');
+
+        // Get unique member IDs from comma-separated strings
+        $memberIds = $project->tasks()->pluck('members')->flatMap(function ($memberString) {
+            return array_map('trim', explode(',', $memberString));
+        })->unique()->values()->toArray();
+
+        $data['members'] = $memberIds;
+
         return response()->json($data);
-        //return view('projects.edit', $data);
+        // return view('projects.edit', $data);
     }
 
     /**
