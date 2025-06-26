@@ -25,7 +25,7 @@ class AssetCategoryController extends Controller
             return response()->json(['data' => $data]);
         }
         $data['meta_title'] = 'Asset Categories';
-        return view('properties.category.index', $data);
+        return view('company-assets.settings.category.index', $data);
     }
 
     /**
@@ -43,12 +43,10 @@ class AssetCategoryController extends Controller
     {
         //
         $request->validate(['name' => 'required|string|max:255']);
-
         $category = AssetCategory::updateOrCreate(
             ['id' => $request->id],
             ['name' => $request->name]
         );
-
         return response()->json(['success' => true, 'message' => 'Category saved successfully']);
     }
 
@@ -66,11 +64,10 @@ class AssetCategoryController extends Controller
     public function edit(AssetCategory $assetCategory)
     {
         //
-         $category = $assetCategory;
+        $category = $assetCategory;
         if ($category) {
             return response()->json(['success' => true, 'data' => $category]);
         }
-
         return response()->json(['success' => false, 'message' => 'Category not found']);
     }
 

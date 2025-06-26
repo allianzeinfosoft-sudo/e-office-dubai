@@ -43,6 +43,7 @@ use App\Http\Controllers\BookIssueController;
 use App\Http\Controllers\DBBackupController;
 use App\Http\Controllers\AssetClassificationController;
 use App\Http\Controllers\AssetCategoryController;
+use App\Http\Controllers\AssetVendorsController;
 use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -607,13 +608,13 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/tickets/{id}/close', [TicketRaisingController::class, 'close'])->name('tickets.close');
 
     /* Asset classification */
-    Route::get('/classification', [AssetClassificationController::class, 'index'])->name('classification.index');
+    Route::get('/assets/classification', [AssetClassificationController::class, 'index'])->name('classification.index');
     Route::post('/classification', [AssetClassificationController::class, 'store'])->name('classification.store');
     Route::get('/classification/{assetClassification}/edit', [AssetClassificationController::class, 'edit'])->name('classification.edit');
     Route::delete('/classification/{assetClassification}', [AssetClassificationController::class, 'destroy'])->name('classification.destroy');
 
     /* Asset Categoty*/
-    Route::get('/category', [AssetCategoryController::class, 'index'])->name('category.index');
+    Route::get('assets/category', [AssetCategoryController::class, 'index'])->name('category.index');
     Route::post('/category', [AssetCategoryController::class, 'store'])->name('category.store');
     Route::get('/category/{assetCategory}/edit', [AssetCategoryController::class, 'edit'])->name('category.edit');
     Route::delete('/category/{assetCategory}', [AssetCategoryController::class, 'destroy'])->name('category.destroy');
@@ -622,6 +623,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::prefix('assets')->name('assets.')->group(function () {
         Route::resource('type', AssetTypeController::class)->names('type');
         Route::resource('location', AssetLocationController::class)->names('location');
+        Route::resource('vendors', AssetVendorsController::class)->names('vendors');
+        Route::post('store-vendor-category', [AssetVendorsController::class, 'store_category'])->name('store-vendor-category');
     });
 
 

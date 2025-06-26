@@ -559,7 +559,6 @@ return [
         'title' => 'Assets',
         'icon' => 'ti ti-apps',
         'route' => 'javascript:void(0);',
-        'isActive' => ['e-library*'],
         'permission' => ['view assets'],
         'submenu' => [
             [
@@ -568,22 +567,27 @@ return [
                 'permission' => ['view assets'],
             ],
             [
+                'title' => 'Vendors',
+                'route' =>  '/assets/vendors',
+                'permission' => ['view assets'],
+            ],
+            [
                 'title' => 'Asset Settings',
                 'route' => 'javascript:void(0);',
-
+                'permission' => ['view assets'],
                 'submenu' =>[
 
                     [
                         'title' => 'Classifications',
-                        'route' =>  '/classification',
+                        'route' =>  '/assets/classification',
                         'permission' => ['view assets'],
                     ],
                     [
                         'title' => 'Categories',
-                        'route' =>  '/category',
+                        'route' =>  '/assets/category',
                         'permission' => ['view assets'],
                     ],
-                     [
+                    [
                         'title' => 'Types',
                         'route' =>  '/assets/type',
                         'permission' => ['view assets'],
@@ -592,7 +596,7 @@ return [
                         'title' => 'Locations',
                         'route' =>  '/assets/location',
                         'permission' => ['view assets'],
-                    ],
+                    ]
                 ]
             ],
 

@@ -29,7 +29,7 @@ class AssetClassificationController extends Controller
         }
 
         $data['meta_title'] = 'Classifications';
-        return view('properties.classifications.index', $data);
+        return view('company-assets.settings.classifications.index', $data);
     }
 
     /**
