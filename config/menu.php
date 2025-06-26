@@ -564,19 +564,38 @@ return [
         'submenu' => [
             [
                 'title' => 'Asset Register',
-                'route' =>  '',
+                'route' =>  '/assets/store',
                 'permission' => ['view assets'],
             ],
             [
-                'title' => 'Classifications',
-                'route' =>  '/classification',
-                'permission' => ['view assets classification'],
+                'title' => 'Asset Settings',
+                'route' => 'javascript:void(0);',
+
+                'submenu' =>[
+
+                    [
+                        'title' => 'Classifications',
+                        'route' =>  '/classification',
+                        'permission' => ['view assets'],
+                    ],
+                    [
+                        'title' => 'Categories',
+                        'route' =>  '/category',
+                        'permission' => ['view assets'],
+                    ],
+                     [
+                        'title' => 'Types',
+                        'route' =>  '/assets/type',
+                        'permission' => ['view assets'],
+                    ],
+                    [
+                        'title' => 'Locations',
+                        'route' =>  '/assets/location',
+                        'permission' => ['view assets'],
+                    ],
+                ]
             ],
-            [
-                'title' => 'Categories',
-                'route' =>  '/category',
-                'permission' => ['view asset category'],
-            ],
+
         ]
     ],
     [
