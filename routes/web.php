@@ -50,6 +50,8 @@ use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
+use App\Http\Controllers\AssetLocationController;
+use App\Http\Controllers\AssetTypeController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FeedbackReportController;
 use App\Http\Controllers\JobController;
@@ -61,6 +63,8 @@ use App\Http\Controllers\SelfAppraisalReportController;
 use App\Http\Controllers\SurveyReportController;
 use App\Http\Controllers\SurveyTemplateController;
 use App\Http\Controllers\TicketRaisingController;
+use App\Models\AssetLocation;
+use App\Models\AssetType;
 use App\Models\PerformanceAppraisalReport;
 
 Route::middleware(['web'])->group(function () {
@@ -613,5 +617,12 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/category', [AssetCategoryController::class, 'store'])->name('category.store');
     Route::get('/category/{assetCategory}/edit', [AssetCategoryController::class, 'edit'])->name('category.edit');
     Route::delete('/category/{assetCategory}', [AssetCategoryController::class, 'destroy'])->name('category.destroy');
+
+    /* Asset Type*/
+    Route::prefix('assets')->name('assets.')->group(function () {
+        Route::resource('type', AssetTypeController::class)->names('type');
+        Route::resource('location', AssetLocationController::class)->names('location');
+    });
+
 
 });
