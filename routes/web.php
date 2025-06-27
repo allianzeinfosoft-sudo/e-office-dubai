@@ -52,6 +52,7 @@ use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
+use App\Http\Controllers\AssetItemMasterController;
 use App\Http\Controllers\AssetLocationController;
 use App\Http\Controllers\AssetTypeController;
 use App\Http\Controllers\FeedbackController;
@@ -65,6 +66,7 @@ use App\Http\Controllers\SelfAppraisalReportController;
 use App\Http\Controllers\SurveyReportController;
 use App\Http\Controllers\SurveyTemplateController;
 use App\Http\Controllers\TicketRaisingController;
+use App\Models\AssetItemMaster;
 use App\Models\AssetLocation;
 use App\Models\AssetType;
 use App\Models\PerformanceAppraisalReport;
@@ -627,6 +629,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::resource('vendors', AssetVendorsController::class)->names('vendors');
         Route::resource('register', AssetRegisterController::class)->names('register');
         Route::post('store-vendor-category', [AssetVendorsController::class, 'store_category'])->name('store-vendor-category');
+        Route::resource('itemmaster', AssetItemMasterController::class)->names('itemmaster');
     });
 
 

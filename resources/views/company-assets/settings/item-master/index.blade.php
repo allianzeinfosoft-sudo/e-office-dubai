@@ -31,12 +31,15 @@
                         <div class="col-sm-7">
                             <div class="card">
                                 <div class="card-datatable table-mom">
-                                    <table class="datatables-basic datatable-type table border-top table-hover table-striped">
+                                    <table class="datatables-basic datatable-item-master table border-top table-hover table-striped">
                                         <thead>
                                             <tr>
-                                                <th width="8%">No.</th>
-                                                <th>Type</th>
-                                                <th>Category</th>
+                                                <th width="8%">Sl.No</th>
+                                                <th>Item Code</th>
+                                                <th>Item Name</th>
+                                                <th>Brand</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
                                                 <th width="15%">Actions</th>
                                             </tr>
                                         </thead>
@@ -48,25 +51,33 @@
                         <div class="col-sm-5">
                             <div class="card card-bg">
                                 <div class="card-header">
-                                    <h5 class="card-title" id="form-title">Add New Type</h5>
+                                    <h5 class="card-title" id="form-title">Add New Item</h5>
                                 </div>
                                 <div class="card-body">
-                                    <form action="{{ route('assets.type.store') }}" method="POST" enctype="multipart/form-data" id="type-form">
+                                    <form action="{{ route('assets.itemmaster.store') }}" method="POST" enctype="multipart/form-data" id="item-master-form">
                                         @csrf
                                         <input type="hidden" name="id" id="target_id">
+
                                         <div class="mb-3">
-                                            <label for="name" class="form-label">Category</label>
-                                            <select class="form-control select2" name="asset_category_id" id="asset_category_id" data-placeholder="Select category" required>
-                                                <option value=""></option>
-                                                @foreach ($categories as $category)
-                                                      <option value="{{ $category->id }}"> {{ $category->name ?? '' }} </option>
-                                                @endforeach
-                                            </select>
+                                            <label for="item_code" class="form-label">Item Code</label>
+                                            <input type="text" class="form-control" id="item_code" name="item_code" required>
                                         </div>
-                                        <div class="mb-3">
-                                            <label for="name" class="form-label">Type</label>
+
+                                         <div class="mb-3">
+                                            <label for="name" class="form-label">Name</label>
                                             <input type="text" class="form-control" id="name" name="name" required>
                                         </div>
+
+                                         <div class="mb-3">
+                                            <label for="brand" class="form-label">Brand</label>
+                                            <input type="text" class="form-control" id="brand" name="brand" required>
+                                        </div>
+
+                                         <div class="mb-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <textarea class="form-control" id="description" name="description"></textarea>
+                                        </div>
+
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </form>
                                 </div>
@@ -90,28 +101,31 @@
 @push('js')
 <script>
     $(function() {
-        $('.datatable-type').DataTable({
+        $('.datatable-item-master').DataTable({
             processing: true,
             serverSide: false,
             ajax: {
                 type: "GET",
-                url: "{{ route('assets.type.index') }}",
+                url: "{{ route('assets.itemmaster.index') }}",
                 dataType: "json",
                 dataSrc: "data"
             },
             columns: [
                 { data: 'row', name: 'No' },
-                { data: 'name', name: 'Type' },
-                { data: 'category', name: 'Category' },
+                { data: 'item_code', name: 'Item Code' },
+                { data: 'name', name: 'Item Name' },
+                { data: 'brand', name: 'Brand'},
+                { data: 'description', name: 'Description'},
+                { data: 'status', name: 'Status'},
                 {
                     data: null,
                     title: 'Actions',
                     render: function (data, type, row) {
                         return `
-                            <a href="javascript:void(0)" onclick="editType(${row.id})" class="btn btn-sm btn-icon btn-primary">
+                            <a href="javascript:void(0)" onclick="editItemMaster(${row.id})" class="btn btn-sm btn-icon btn-primary">
                                 <i class="ti ti-edit"></i>
                             </a>
-                            <button type="button" class="btn btn-sm btn-icon btn-danger" onclick="deleteType(${row.id})">
+                            <button type="button" class="btn btn-sm btn-icon btn-danger" onclick="deleteItemMaster(${row.id})">
                                 <i class="ti ti-trash"></i>
                             </button>`;
                     }
@@ -119,7 +133,7 @@
             ]
         });
 
-        $('#type-form').submit(function(e) {
+        $('#item-master-form').submit(function(e) {
             e.preventDefault();
             var form = $(this);
             var formData = new FormData(this);
@@ -135,8 +149,8 @@
                     if (response.success) {
                         toastr["success"](response.message);
                         form.trigger('reset');
-                        $('#form-title').text('Add New Type');
-                        $('.datatable-type').DataTable().ajax.reload();
+                        $('#form-title').text('Add New Item');
+                        $('.datatable-item-master').DataTable().ajax.reload();
                         $('#target_id').val('');
                     } else {
                         toastr["error"] (response.message);
@@ -150,19 +164,21 @@
         });
     });
 
-    function editType(id) {
+    function editItemMaster(id) {
 
-        const url = "{{ route('assets.type.edit', ':assetType') }}".replace(':assetType', id);
+        const url = "{{ route('assets.itemmaster.edit', ':assetItemMaster') }}".replace(':assetItemMaster', id);
         $.ajax({
             url: url,
             type: 'GET',
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    $('#form-title').text('Edit Type');
+                    $('#form-title').text('Edit Item Master');
                     $('#target_id').val(response.data.id);
+                    $('#item_code').val(response.data.item_code);
                     $('#name').val(response.data.name);
-                    $('#asset_category_id').val(response.data.asset_category_id).trigger('change');
+                    $('#brand').val(response.data.brand);
+                    $('#description').val(response.data.description);
                 } else {
                     alert(response.message);
                 }
@@ -173,18 +189,18 @@
         });
     }
 
-    function deleteType(id) {
-        if (confirm('Are you sure you want to delete this type?')) {
+    function deleteItemMaster(id) {
+        if (confirm('Are you sure you want to delete this item?')) {
             $.ajax({
-                url: "{{ route('assets.type.destroy', ':assetType') }}".replace(':assetType', id),
+                url: "{{ route('assets.itemmaster.destroy', ':assetItemMaster') }}".replace(':assetItemMaster', id),
                 type: "DELETE",
                 data: { _token: "{{ csrf_token() }}" },
                 success: function(response) {
                     toastr["error"](response.message);
-                    $('.datatable-type').DataTable().ajax.reload();
+                    $('.datatable-item-master').DataTable().ajax.reload();
                 },
                 error: function() {
-                    alert("Error deleting type. Please try again.");
+                    alert("Error deleting Item. Please try again.");
                 }
             });
         }
