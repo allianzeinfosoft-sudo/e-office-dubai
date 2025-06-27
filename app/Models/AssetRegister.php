@@ -19,4 +19,13 @@ class AssetRegister extends Model
         'upload_invoice',
         'remarks',
     ];
+
+    public function vendor()
+    {
+        return $this->belongsTo(AssetVendors::class);
+    }
+    public function items()
+    {
+        return $this->hasMany(AssetItemLine::class, 'asset_register_id', 'id');
+    }
 }

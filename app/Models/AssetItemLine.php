@@ -19,5 +19,11 @@ class AssetItemLine extends Model
         'asset_quantity',
         'asset_price',
         'asset_total',
+        'serial_number',
+        'warranty',
     ];
+    public function asset_register()
+    {
+        return $this->belongsTo(AssetRegister::class, 'asset_register_id', 'id');
+    }
 }

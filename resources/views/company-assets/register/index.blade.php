@@ -12,6 +12,26 @@
         padding: 28px 10px;
         border-radius: 0px;
     }
+    
+    #item-line-table th {
+        text-transform: uppercase;
+        font-size: 0.6125rem !important;
+        letter-spacing: 1px;
+        padding-top: 0.68rem;
+        padding-bottom: 0.68rem;
+    }
+
+    #item-line-table > :not(caption) > * > * {
+    padding: 0.20rem 0.20rem;
+    background-color: var(--bs-table-bg);
+    border-bottom-width: 1px;
+    box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
+    }
+    #item-line-table .form-control{
+        border-radius: 0.2rem !important;
+        font-size: 0.6125rem !important;
+    }
+    
 </style>
 @stop
 
@@ -44,11 +64,12 @@
                                         <thead>
                                             <tr>
                                                 <th>No.</th>
-                                                <th>Reg_No</th>
+                                                <th>Reg. No.</th>
                                                 <th>Date</th>
-                                                <th>Category</th>
-                                                <th>Contact Person</th>
-                                                <th>Contact Number</th>
+                                                <th>Vendor</th>
+                                                <th>Invoice</th>
+                                                <th>Amount</th>
+                                                <th>Doc</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -69,13 +90,13 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i> 
             <span id="vendor-offcanvas-title">
-                <h5 class="offcanvas-title text-white">Create Vendor</h5>
-                <span class="text-white slogan">Create New Asset Vendor</span>
+                <h5 class="offcanvas-title text-white">Create Asset Register</h5>
+                <span class="text-white slogan">Add new Asset Register</span>
             </span>
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i></button>
@@ -83,41 +104,12 @@
     <div class="offcanvas-body">
         <div class="row">
             <div class="col-sm-12">
-                <x-vendor-form />
+                <x-asset-register-from />
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- Modal -->
-<div class="modal fade" id="category-modal" tabindex="-1" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title" id="exampleModalLabel1">Create Vendor Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('assets.store-vendor-category') }}" method="post" id="vendor-category-form">
-                    @csrf
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Vendor Category <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="name" id="name" placeholder="vendor Category" required />
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" form="vendor-category-form" class="btn btn-primary waves-effect"> <i class="fa fa-save me-2"></i> Save</button>
-                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
 @stop
 
 
@@ -174,10 +166,11 @@
         });
 
         /* Store vendot */
-        $('#vendor-form').submit(function (e) {
+        $('#register-form').submit(function (e) {
+            let url = $(this).attr('action');
             e.preventDefault();
             $.ajax({
-                url: "{{ route('assets.vendors.store') }}",
+                url: url,
                 type: "POST",
                 data: $(this).serialize(),
                 success: function (response) {
@@ -216,10 +209,10 @@
     }
 
     function openOffcanvas(id = null) {
-        const $form = $('#vendor-form');
+        const $form = $('#register-form');
         $form[0].reset();
         $('#target_id').val('');
-        $('#vendor-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Create Vendor</h5><span class="text-white slogan">Create New Asset Vendor</span>`);
+        $('#vendor-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Create Asset Register</h5><span class="text-white slogan">Create New Asset Register</span>`);
 
         const offcanvasElement = $('#vendor_offcanvas');
 
@@ -261,7 +254,10 @@
         $('#category-modal').modal('show');
         $('#vendor-category-form')[0].reset();
     }
+    
 
+    
+    
     
 </script>
 @endpush
