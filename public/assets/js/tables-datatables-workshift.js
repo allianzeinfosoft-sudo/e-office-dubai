@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           (offCanvasElement.querySelector('.dt-shift_id').value = ''),
           (offCanvasElement.querySelector('.dt-shift-start').value = ''),
           (offCanvasElement.querySelector('.dt-shift-end').value = ''),
+          (offCanvasElement.querySelector('.dt-login-limited-time').value = ''),
           (offCanvasElement.querySelector('.dt-min-break').value = ''),
           (offCanvasElement.querySelector('.dt-max-break').value = '') ;
           // Open offCanvas with form
@@ -51,6 +52,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
           validators: {
             notEmpty: {
               message: 'Shift end time is required'
+            }
+          }
+        },
+        login_limited_time: {
+          validators: {
+            notEmpty: {
+              message: 'Login limited time is required'
             }
           }
         },
@@ -117,9 +125,9 @@ $(function () {
       columns: [
         { data: 'id' },
         { data: 'shift_id'},
-        { data: 'department'},
         { data: 'shift_start_time' },
         { data: 'shift_end_time' },
+        { data: 'login_limited_time'},
         { data: 'mini_break_time' },
         { data: 'max_break_time' },
         { data: '' }
@@ -145,17 +153,10 @@ $(function () {
              return "<span class='text-truncate d-flex align-items-center'>" + $ShiftId + '</span>';
            }
         },
+
         {
            // User Role
            targets: 2,
-           render: function (data, type, full, meta) {
-             let $department = full['department'];
-             return "<span class='text-truncate d-flex align-items-center'>" + $department + '</span>';
-           }
-        },
-        {
-           // User Role
-           targets: 3,
            render: function (data, type, full, meta) {
              let $shiftStartTime = full['shift_start_time'];
              return "<span class='text-truncate d-flex align-items-center'>" + $shiftStartTime + '</span>';
@@ -163,10 +164,18 @@ $(function () {
         },
         {
            // User Role
-           targets: 4,
+           targets: 3,
            render: function (data, type, full, meta) {
              let $shiftEndTime = full['shift_end_time'];
              return "<span class='text-truncate d-flex align-items-center'>" + $shiftEndTime + '</span>';
+           }
+        },
+        {
+           // login limited time
+           targets: 4,
+           render: function (data, type, full, meta) {
+             let $login_limited_time = full['login_limited_time'];
+             return "<span class='text-truncate d-flex align-items-center'>" + $login_limited_time + '</span>';
            }
         },
         {
@@ -274,10 +283,11 @@ function openShiftOffcanvas(targetId = null) {
             type: 'GET',
             success: function (data) {
                 $('#target_id').val(data.workshift.id);
-                $('#department').val(data.workshift.department).trigger('change');
+                // $('#department').val(data.workshift.department).trigger('change');
                 $('#shift_id').val(data.workshift.shift_id);
                 $('#shift_start_time').val(data.workshift.shift_start_time);
                 $('#shift_end_time').val(data.workshift.shift_end_time);
+                $('#login_limited_time').val(data.workshift.login_limited_time);
                 $('#mini_break_time').val(data.workshift.mini_break_time);
                 $('#max_break_time').val(data.workshift.max_break_time);
              }

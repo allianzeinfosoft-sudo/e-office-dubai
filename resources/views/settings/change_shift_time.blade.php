@@ -55,7 +55,7 @@
                                         <th>Name</th>
                                         <th>Username</th>
                                         <th>Shift Time</th>
-                                        <th>Wildcard Entry</th>
+                                        <th>Login Limited Time</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -74,7 +74,7 @@
 </div>
 
 <!-- Add Banner -->
-<div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="change_shift_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-35" data-bs-backdrop="static" tabindex="-1" id="change_shift_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-plus fs-2 text-white"></i>
@@ -201,7 +201,7 @@
                             return row.shift_start_time + ' - ' + row.shift_end_time;
                         }
                     },
-                    { data: 'wildcard_entry', title: 'Wildcard Entry'},
+                    { data: 'wildcard_entry', title: 'Login Limited Time'},
 
                 ]
             });

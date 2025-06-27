@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\CustomHelper;
+use Illuminate\Queue\Worker;
 
 class SettingsController extends Controller
 {
@@ -31,6 +32,7 @@ class SettingsController extends Controller
                         'department' => $workshifts->shift_department ? $workshifts->shift_department->department : '',
                         'shift_start_time' => $workshifts->shift_start_time,
                         'shift_end_time' => $workshifts->shift_end_time,
+                        'login_limited_time' => $workshifts->login_limited_time ?? '-',
                         'mini_break_time' => $workshifts->mini_break_time,
                         'max_break_time' => $workshifts->max_break_time,
 
@@ -115,18 +117,29 @@ class SettingsController extends Controller
 
     public function update_user_shift(Request $request)
     {
+        $shift_id = $request->shift;
+        $user_ids = $request->user; // now an array of user IDs
 
-        $limitTime = LoginLimitedTime::where('id', $request->login_limited_time)->first();
-        $updated = Employee::where('user_id', $request->user)
-        ->update([
-            'shift_id' => $request->shift,
-            'login_limited_time' => $limitTime->limited_time
-        ]);
+        $shift = Workshift::find($shift_id);
+
+        if (!$shift) {
+            return back()->with('error', 'Shift does not exist.');
+        }
+
+        // Update shift_id and login_limited_time for each selected user
+        $updated = Employee::whereIn('user_id', $user_ids)
+            ->update([
+                'shift_id' => $shift->id,
+                'login_limited_time' => $shift->login_limited_time,
+            ]);
 
         if ($updated) {
-            return back()->with('success', 'Shift time updated successfully.');
+            return back()->with('success', 'Shift updated for selected user(s).');
+        } else {
+            return back()->with('error', 'Failed to update shift.');
         }
     }
+
 
     public function list_user_status()
     {
