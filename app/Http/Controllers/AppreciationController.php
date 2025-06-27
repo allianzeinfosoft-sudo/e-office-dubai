@@ -30,6 +30,8 @@ class AppreciationController extends Controller
                     'appreciant' => $appreciantNames, // send array of names
                     'display_date' => $appreciation->display_date
                         ? \Carbon\Carbon::parse($appreciation->display_date)->format('d-m-Y') : '',
+                    'display_end_date' => $appreciation->display_end_date
+                        ? \Carbon\Carbon::parse($appreciation->display_end_date)->format('d-m-Y') : '',
                     'appreciation_details' => $appreciation->appreciation_details ?? '',
                     'picture' => $appreciation->picture ?? '',
                     'created_at' => $appreciation->created_at
@@ -66,6 +68,7 @@ class AppreciationController extends Controller
                                             : $request->appreciant,
                 'project'              => $request->project,
                 'display_date'         => $request->display_date,
+                'display_end_date'         => $request->display_end_date,
                 'appreciation_details' => $request->appreciation_details,
                 'picture'              => $request->picture,
             ]
@@ -118,6 +121,7 @@ class AppreciationController extends Controller
 
             return [
                 'display_date' => $item->display_date,
+                'display_end_date' => $item->display_end_date,
                 'employees' => $employees,
                 'image' => $item->picture,
                 'message' => $item->appreciation_details,
