@@ -176,8 +176,8 @@
                               @endphp
 
                               @if(isset($attendance) || isset($attendance_current))
-                                @if($shiftType == 'night')
-                                    @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
+                              @if($shiftType == 'night')
+                              @if($attendance_current?->signin_date == date('Y-m-d') && in_array($attendance_current?->status, ['mark-in', 'custom', 'emergency']))
                                       <div class="badge bg-label-success p-3 w-100 mb-3 text-dark" id="last-punch-time" role="alert">
                                           Last Punch In Time: {{ date('d-m-Y', strtotime($attendance_current?->signin_date)) }} {{ date('h:i A', strtotime($attendance_current?->signin_time)) }}
                                           <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance_current?->id }}" />

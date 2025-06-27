@@ -1156,7 +1156,16 @@ class AttendanceController extends Controller{
     {
         $attendance = Attendance::find($id);
         if ($attendance) {
+            
+            $workingTime = CustomHelper::calculateTotalWorkingTime(
+                $attendance->signin_date,
+                $attendance->signin_time,
+                date('Y-m-d', strtotime($attendance->signout_date)),
+                $attendance->signout_time,
+                $request->input('break_time')
+            );
             $attendance->break_time = $request->input('break_time');
+            $attendance->working_hours = $workingTime['total_working_time'];
             $attendance->save();
             return response()->json(['status' => 'success', 'message' => 'Break time updated successfully.']);
         } else {
