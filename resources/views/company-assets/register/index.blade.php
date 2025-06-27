@@ -32,7 +32,7 @@
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                    <span class="d-none d-sm-inline-block"> New Vendor</span>
+                                    <span class="d-none d-sm-inline-block"> Add New</span>
                                 </span>
                             </a>
                         </div>
@@ -40,7 +40,7 @@
                         <div class="card">
                             <div class="card-datatable table-mom">
                                 <div class="card-datatable table-responsive">
-                                    <table class="table table-bordered table-striped" id="vendor-table">
+                                    <table class="table table-bordered table-striped" id="vendor-table" style="font-size: 12px;">
                                         <thead>
                                             <tr>
                                                 <th>No.</th>
@@ -183,6 +183,7 @@
                 success: function (response) {
                     toastr["success"](response.message);
                     $('#vendor-table').DataTable().ajax.reload();
+
                     const offcanvasEl = document.getElementById('vendor_offcanvas');
                     const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
                     if (offcanvas) {

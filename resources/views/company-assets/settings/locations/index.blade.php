@@ -126,6 +126,7 @@
                         form.trigger('reset');
                         $('#form-title').text('Add New Location');
                         $('.datatable-location').DataTable().ajax.reload();
+                        $('#target_id').val('');
                     } else {
                         toastr["error"] (response.message);
                     }

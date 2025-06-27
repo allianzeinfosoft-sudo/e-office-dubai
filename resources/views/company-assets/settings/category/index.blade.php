@@ -121,6 +121,7 @@
                         form.trigger('reset');
                         $('#form-title').text('Add New Category');
                         $('.datatable-category').DataTable().ajax.reload();
+                        $('#target_id').val('');
                     } else {
                         toastr["error"](response.message);
                     }

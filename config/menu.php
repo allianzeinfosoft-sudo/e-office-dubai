@@ -563,7 +563,7 @@ return [
         'submenu' => [
             [
                 'title' => 'Asset Register',
-                'route' =>  '/assets/store',
+                'route' =>  '/assets/register',
                 'permission' => ['view assets'],
             ],
             [

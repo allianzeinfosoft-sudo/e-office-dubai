@@ -44,6 +44,7 @@ use App\Http\Controllers\DBBackupController;
 use App\Http\Controllers\AssetClassificationController;
 use App\Http\Controllers\AssetCategoryController;
 use App\Http\Controllers\AssetVendorsController;
+use App\Http\Controllers\AssetRegisterController;
 use App\Models\Appearence;
 use App\Models\Appreciation;
 use App\Models\Designation;
@@ -624,6 +625,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::resource('type', AssetTypeController::class)->names('type');
         Route::resource('location', AssetLocationController::class)->names('location');
         Route::resource('vendors', AssetVendorsController::class)->names('vendors');
+        Route::resource('register', AssetRegisterController::class)->names('register');
         Route::post('store-vendor-category', [AssetVendorsController::class, 'store_category'])->name('store-vendor-category');
     });
 

@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class AssetItemLine extends Model
+{
+    use HasFactory;
+    protected $fillable = [
+        'asset_register_id',
+        'asset_item_id',
+        'item_model',
+        'asset_description',
+        'asset_classification_id',
+        'asset_category_id',
+        'asset_type_id',
+        'asset_quantity',
+        'asset_price',
+        'asset_total',
+    ];
+}

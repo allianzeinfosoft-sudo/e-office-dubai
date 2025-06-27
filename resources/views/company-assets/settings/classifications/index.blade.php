@@ -126,6 +126,7 @@
                         form.trigger('reset');
                         $('#form-title').text('Add New Classification');
                         $('.datatable-classification').DataTable().ajax.reload();
+                        $('#target_id').val('');
                     } else {
                         toastr["error"] (response.message);
                     }
