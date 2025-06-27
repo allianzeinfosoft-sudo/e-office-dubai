@@ -44,8 +44,8 @@
                                         <thead>
                                             <tr>
                                                 <th>No.</th>
-                                                <th>Vendor Code</th>
-                                                <th>Vendor Name</th>
+                                                <th>Reg_No</th>
+                                                <th>Date</th>
                                                 <th>Category</th>
                                                 <th>Contact Person</th>
                                                 <th>Contact Number</th>
