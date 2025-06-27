@@ -137,6 +137,7 @@
                         form.trigger('reset');
                         $('#form-title').text('Add New Type');
                         $('.datatable-type').DataTable().ajax.reload();
+                        $('#target_id').val('');
                     } else {
                         toastr["error"] (response.message);
                     }

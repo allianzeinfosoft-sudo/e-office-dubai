@@ -593,6 +593,11 @@ return [
                         'route' =>  '/assets/location',
                         'permission' => ['view assets'],
                     ],
+                    [
+                        'title' => 'Item Master',
+                        'route' =>  '/assets/itemmaster',
+                        'permission' => ['view assets'],
+                    ],
                 ]
             ],
 
