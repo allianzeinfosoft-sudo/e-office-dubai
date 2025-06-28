@@ -60,7 +60,7 @@
                         <div class="card">
                             <div class="card-datatable table-mom">
                                 <div class="card-datatable table-responsive">
-                                    <table class="table table-bordered table-striped" id="vendor-table" style="font-size: 12px;">
+                                    <table class="table table-bordered table-striped" id="asset-register-table" style="font-size: 12px;">
                                         <thead>
                                             <tr>
                                                 <th>No.</th>
@@ -116,20 +116,21 @@
 @push('js')
 <script>
     $(function () {
-        const vendorTable = $('#vendor-table');
+        const assetRegisterTable = $('#asset-register-table');
 
-        if(vendorTable.length) {            
-            vendorTable.DataTable({
+        if(assetRegisterTable.length) {            
+            assetRegisterTable.DataTable({
             processing: true,
             serverSide: false, // set to true if using server-side pagination
-            ajax: '{{ route("assets.vendors.index") }}', // your route
+            ajax: '{{ route("assets.register.index") }}', // your route
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                { data: 'vendor_code', name: 'vendor_code' },
-                { data: 'vendor_name', name: 'vendor_name' },
-                { data: 'vendor_category', name: 'vendor_category' },
-                { data: 'contact_person', name: 'contact_person' },
-                { data: 'contact_number', name: 'contact_number' },
+                { data: 'asset_number', name: 'Reg. No.' },
+                { data: 'purchase_date', name: 'Date' },
+                { data: 'vendor_name', name: 'Vendor' },
+                { data: 'invoice_number', name: 'Invoice No.' },
+                { data: 'total_amount', name: 'Amount' },
+                { data: 'upload_invoice', name: 'Doc' },
                 {
                     data: 'id',
                     name: 'action',
@@ -222,12 +223,11 @@
         }
 
         if (id) {
-            const url = "{{ route('assets.vendors.edit', ':assetVendors') }}".replace(':assetVendors', id);
             $('#target_id').val(id);
-            $('#vendor-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Edit Vendor</h5><span class="text-white slogan">Edit Asset Vendor</span>`);
+            $('#vendor-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Edit Asset Register</h5><span class="text-white slogan">Edit Asset Vendor</span>`);
             $('#current-attachment').remove();
             $.ajax({
-                url: url,
+                url: $form.attr('action'),
                 dataType: 'json',
                 type: 'GET',
                 success: function (response) {

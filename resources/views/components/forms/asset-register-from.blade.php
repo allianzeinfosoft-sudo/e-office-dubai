@@ -29,15 +29,15 @@
 
             <div class="col-sm-4 mb-3">
                 <div class="form-group">
-                    <label for="asset_date">Purchase Date <span class="text-danger">*</span></label>
-                    <input type="text" name="asset_date" id="asset_date" class="form-control" placeholder="Date" required />
+                    <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
+                    <input type="text" name="purchase_date" id="purchase_date" class="form-control" placeholder="Date" required />
                 </div>
             </div>
 
             <div class="col-sm-4 mb-3">
                 <div class="form-group">
-                    <label for="asset_date">Invoice No <span class="text-danger">*</span></label>
-                    <input type="text" name="asset_date" id="asset_date" class="form-control" placeholder="Date" required />
+                    <label for="invoice_number">Invoice No <span class="text-danger">*</span></label>
+                    <input type="text" name="invoice_number" id="invoice_number" class="form-control" placeholder="Invoice No" required />
                 </div>
             </div>
 
@@ -112,7 +112,7 @@
 
 @push('js')
 <script>
-    $('#asset_date').flatpickr({
+    $('#purchase_date').flatpickr({
         altInput: true,
         altFormat: 'd-m-Y',
         dateFormat: 'd-m-Y'
@@ -129,36 +129,36 @@
         let html = `
             <tr>
                 <td>
-                    <select name="items[]" id="item_${itemLineLength}" class="form-control select2">
+                    <select name="asset_item_id[]" id="item_${itemLineLength}" class="form-control select2">
                         <option value="">Select Item</option>
                         ${assetItems.map(item => `<option value="${item.id}">${item.name} [${item.item_code} - ${item.brand}]</option>`).join('')}
                     </select>
                 </td>
-                <td><input class="form-control" type="text" name="model[]"></td>
-                <td><input class="form-control" type="text" name="serial[]"></td>
-                <td><input class="form-control" type="text" name="warenty[]"></td>
+                <td><input class="form-control" type="text" name="asset_model[]"></td>
+                <td><input class="form-control" type="text" name="serial_number[]"></td>
+                <td><input class="form-control" type="text" name="warranty[]"></td>
                 <td>
-                    <select name="classification[]" id="classification_${itemLineLength}" class="form-control select2">
+                    <select name="asset_classification_id[]" id="classification_${itemLineLength}" class="form-control select2">
                         <option value="">Select Classification</option>
                         ${assetClassifications.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
                     </select>
                 </td>
                 <td>
-                    <select name="category[]" id="category_${itemLineLength}" onchange="getAssetTypes(this.value, '${itemLineLength}')" class="form-control select2">
+                    <select name="asset_category_id[]" id="category_${itemLineLength}" onchange="getAssetTypes(this.value, '${itemLineLength}')" class="form-control select2">
                         <option value="">Select Category</option>
                         ${assetCategories.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
                     </select>
                 </td>
                 <td>
-                    <select name="type[]" id="type_${itemLineLength}" class="form-control select2">
+                    <select name="asset_type_id[]" id="type_${itemLineLength}" class="form-control select2">
                         <option value="">Select Type</option>
                         ${assetTypes.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
                     </select>
                 </td>
-                <td><input class="form-control" type="text" name="unit[]" value=""></td>
-                <td><input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="qty[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
-                <td><input class="form-control text-right" type="text" id="price_${itemLineLength}" name="price[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
-                <td><input class="form-control text-right" type="text" id="amount_${itemLineLength}" name="Amount[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
+                <td><input class="form-control" type="text" name="asset_unit[]" value=""></td>
+                <td><input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
+                <td><input class="form-control text-right" type="text" id="price_${itemLineLength}" name="asset_price[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
+                <td><input class="form-control text-right" type="text" id="amount_${itemLineLength}" name="asset_total[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
                 <td>
                     <button type="button" class="btn btn-icon btn-xs btn-danger waves-effect" onclick="$(this).closest('tr').remove();">
                         <i class="ti ti-minus"></i>
@@ -201,7 +201,7 @@
     function calculateGrandTotal() {
         var total = 0;
         $('#item-line-container tr').each(function() {
-            var amount = $(this).find('input[name="Amount[]"]').val();
+            var amount = $(this).find('input[name="asset_total[]"]').val();
             total += parseFloat(amount);
         });
         $('#total_amount').text(total.toFixed(2));

@@ -17,11 +17,37 @@ class AssetRegisterController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if($request->ajax()) {
+            $asset = AssetRegister::with('vendor')
+                ->select('id', 'asset_date', 'asset_number', 'company_name', 'purchase_date', 'invoice_number', 'vendor_id', 'total_amount', 'upload_invoice', 'remarks')
+                ->get();
+
+            $data = $asset->map(function($item, $index) {
+
+                    return [
+                        'DT_RowIndex'       => $index + 1,
+                        'id'                => $item->id,
+                        'asset_date'        => date('Y-m-d', strtotime($item->asset_date)), //$item->asset_date,
+                        'asset_number'      => $item->asset_number,
+                        'company_name'      => $item->company_name,
+                        'purchase_date'     => date('Y-m-d', strtotime($item->purchase_date)), //$item->purchase_date,
+                        'invoice_number'    => $item->invoice_number,
+                        'vendor_name'         => $item->vendor->vendor_name,
+                        'total_amount'      => $item->total_amount,
+                        'upload_invoice'      => $item->upload_invoice,
+                        'remarks'           => $item->remarks
+                    ];
+
+                });
+                
+           
+
+            return response()->json(['data' => $data]);
+        }
         //
         $data['meta_title'] = 'Asset Register';
-
         $data['vendors'] = AssetVendors::all();
         $data['assetItems'] = AssetItemMaster::all();
         $data['assetClassifications'] = AssetClassification::all();
@@ -45,26 +71,18 @@ class AssetRegisterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'asset_number' => 'required|string',
+            'asset_number' => 'required',
             'company_name' => 'required|string',
-            'asset_date' => 'required|date',
-            'purchase_date' => 'required|date',
-            'invoice_number' => 'required|string',
-            'vendor_id' => 'required|exists:vendors,id',
-            'remarks' => 'nullable|string',
+            'purchase_date' => 'required',
+            'invoice_number' => 'required',
+            'vendor_id' => 'required',
+            'remarks' => 'nullable',
             'upload_invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
 
             'asset_item_id' => 'required|array',
-            'asset_model' => 'required|array',
-            'asset_description' => 'required|array',
-            'asset_classification_id' => 'required|array',
-            'asset_category_id' => 'required|array',
-            'asset_type_id' => 'required|array',
             'asset_quantity' => 'required|array',
             'asset_price' => 'required|array',
-            'asset_total' => 'required|array',
-            'serial_number' => 'required|array',
-            'warranty' => 'required|array',
+            'asset_total' => 'required|array',            
         ]);
 
         // Upload invoice
@@ -79,10 +97,10 @@ class AssetRegisterController extends Controller
         $asset = AssetRegister::updateOrCreate(
             ['id' => $request->id],
             [
-                'asset_date'     => $request->asset_date,
+                'asset_date'     => date('Y-m-d'),
                 'asset_number'   => $request->asset_number,
                 'company_name'   => $request->company_name,
-                'purchase_date'  => $request->purchase_date,
+                'purchase_date'  => date('Y-m-d', strtotime($request->purchase_date)), //$request->purchase_date,
                 'invoice_number' => $request->invoice_number,
                 'vendor_id'      => $request->vendor_id,
                 'total_amount'   => $totalAmount,
@@ -92,14 +110,14 @@ class AssetRegisterController extends Controller
         );
 
         // Delete old item lines if editing
-        $asset->itemLines()->delete();
+        $asset->items()->delete();
 
         // Save asset item lines
         foreach ($request->asset_item_id as $index => $itemId) {
-            $asset->itemLines()->create([
+            $asset->items()->create([
                 'asset_item_id'           => $itemId,
                 'item_model'              => $request->asset_model[$index],
-                'asset_description'       => $request->asset_description[$index],
+                'asset_description'       => $request->asset_unit[$index],  // Forgot to add unit column so I added to this field
                 'asset_classification_id' => $request->asset_classification_id[$index],
                 'asset_category_id'       => $request->asset_category_id[$index],
                 'asset_type_id'           => $request->asset_type_id[$index],
@@ -110,8 +128,11 @@ class AssetRegisterController extends Controller
                 'warranty'                => $request->warranty[$index],
             ]);
         }
-
-        return redirect()->back()->with('success', 'Asset register saved successfully.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset register saved successfully.',  
+        ]);
+        //return redirect()->back()->with('success', 'Asset register saved successfully.');
     }
     /**
      * Display the specified resource.
