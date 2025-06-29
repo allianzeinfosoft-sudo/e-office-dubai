@@ -224,27 +224,82 @@
 
         if (id) {
             $('#target_id').val(id);
-            $('#vendor-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Edit Asset Register</h5><span class="text-white slogan">Edit Asset Vendor</span>`);
+            $('#vendor-offcanvas-title').html(`
+                <h5 class="offcanvas-title text-white">Edit Asset Register</h5>
+                <span class="text-white slogan">Edit Asset Vendor</span>
+            `);
             $('#current-attachment').remove();
+            url = "{{ route('assets.register.edit', ':id') }}".replace(':id', id);
             $.ajax({
-                url: $form.attr('action'),
-                dataType: 'json',
+                url: url,
                 type: 'GET',
-                success: function (response) {
-                    vendor = response.data;
-                    $('#target_id').val(vendor.id);
-                    $('#vendor_code').val(vendor.vendor_code);
-                    $('#vendor_category').val(vendor.category.id).trigger('change');
-                    $('#vendor_name').val(vendor.vendor_name);
-                    $('#contact_person').val(vendor.contact_person);
-                    $('#contact_number').val(vendor.contact_number);
-                    $('#vendor_address').val(vendor.vendor_address);
-                    $('#email').val(vendor.email);
-                    $('#website').val(vendor.website);
-                    $('#mobile_number').val(vendor.mobile_number);  
+                dataType: 'json',
+                success: function(response) {
+                    let data = response.data;
+
+                    // Main form values
+                    $('#asset_number').val(data.asset_number);
+                    $('#company_name').val(data.company_name).trigger('change');
+                    $('#purchase_date').val(data.purchase_date).trigger('change');
+                    $('#invoice_number').val(data.invoice_number);
+                    $('#vendor_id').val(data.vendor_id).trigger('change');
+                    $('#remarks').val(data.remarks);
+                    $('#grand_total').val(data.total_amount);
+                    $('#total_amount').html(parseFloat(data.total_amount).toFixed(2));
+
+                    // Clear existing line items
+                    $('#item-line-container').empty();  
+
+                    // Loop through line items and append rows
+                    data.items.forEach(function(item, index) {
+                        let row = `
+                            <tr>
+                                <td>
+                                    <select name="asset_item_id[${index}][asset_item_id]" class="form-control select2">
+                                        @foreach($assetItems as $key => $label)
+                                            <option value="{{ $key }}" ${item.asset_item_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td><input type="text" name="asset_items[${index}][item_model]" class="form-control" value="${item.item_model ?? ''}"></td>
+                                <td><input type="text" name="asset_items[${index}][serial_number]" class="form-control" value="${item.serial_number ?? ''}"></td>
+                                <td><input type="text" name="asset_items[${index}][warranty]" class="form-control" value="${item.warranty ?? ''}"></td>
+                                <td>
+                                    <select name="asset_items[${index}][asset_classification_id]" class="form-control select2">
+                                        @foreach($assetClassifications as $key => $label)
+                                            <option value="{{ $key }}" ${item.asset_classification_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="asset_items[${index}][asset_category_id]" class="form-control select2">
+                                        @foreach($assetCategories as $key => $label)
+                                            <option value="{{ $key }}" ${item.asset_category_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="asset_items[${index}][asset_type_id]" class="form-control select2">
+                                        @foreach($assetTypes as $key => $label)
+                                            <option value="{{ $key }}" ${item.asset_type_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td><input type="text" class="form-control" readonly value="Unit"></td>
+                                <td><input type="number" name="asset_items[${index}][asset_quantity]" class="form-control quantity" value="${item.asset_quantity}"></td>
+                                <td><input type="number" name="asset_items[${index}][asset_price]" class="form-control price" value="${item.asset_price}"></td>
+                                <td><input type="text" name="asset_items[${index}][asset_total]" class="form-control total" readonly value="${item.asset_total}"></td>
+                                <td><button type="button" class="btn btn-danger btn-sm" onclick="removeItemRow(this)"><i class="ti ti-trash"></i></button></td>
+                            </tr>
+                        `;
+                        $('#item-line-container').append(row);
+                    });
+
+                    // Re-initialize select2 for dynamically added fields
+                    $('.select2').select2();
                 },
-                error: function () {
-                    alert('Failed to load MOM data.');
+                error: function() {
+                    alert('Failed to load Asset Register data.');
                 }
             });
         }

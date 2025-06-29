@@ -26,4 +26,8 @@ class AssetItemLine extends Model
     {
         return $this->belongsTo(AssetRegister::class, 'asset_register_id', 'id');
     }
+    public function asset_item()
+    {
+        return $this->belongsTo(AssetItemMaster::class, 'asset_item_id', 'id');
+    }
 }

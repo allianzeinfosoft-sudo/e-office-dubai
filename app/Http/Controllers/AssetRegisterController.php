@@ -145,9 +145,13 @@ class AssetRegisterController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(AssetRegister $assetRegister)
+    public function edit($id)
     {
         //
+         $register = AssetRegister::with('items')->findOrFail($id);
+        return response()->json([
+            'data' => $register
+        ]);
     }
 
     /**
