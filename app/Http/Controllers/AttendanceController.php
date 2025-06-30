@@ -102,10 +102,10 @@ class AttendanceController extends Controller{
 
         foreach ($attendancesWorkinghours as $wh) {
             if (!$wh || !str_contains($wh, ':')) continue;
-
             list($h, $m, $s) = explode(':', $wh);
             $totalMinutes += ((int)$h * 60) + (int)$m; // ignore seconds
         }
+        
 
         $data['totalWorkedHours'] = sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
         
