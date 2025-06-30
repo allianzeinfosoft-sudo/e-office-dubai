@@ -10,6 +10,7 @@ use App\Models\Employee;
 use App\Models\Workshift;
 use App\Models\UserEntryBlockList;
 use App\Models\Holiday;
+use App\Models\Leave;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +36,8 @@ class AttendanceController extends Controller{
         $today              = now()->format('Y-m-d');
         $yesterday          = now()->subDay()->format('Y-m-d');
         $currentMonth       = now()->format('Y-m');
+        $currentMon         = now()->month;
+        $currentYear        = now()->year;
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
         $shift              = Workshift::find($user->employee?->shift_id);
@@ -43,7 +46,70 @@ class AttendanceController extends Controller{
         $data['meta_title']     = 'Attendance';
         $data['shiftType']      = $shiftType;
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
-        $data['days_of_worked'] = Attendance::where('username', Auth::user()->username)->whereMonth('signin_date', now()->month)->count();
+
+        // Get all attendances for the current month
+        $attendancesCurrent = Attendance::where('username', $user->username)->where('signin_date', 'like', "$currentMonth%")->get();
+
+        $fullDays = 0;
+        $halfDays = 0;
+
+        foreach ($attendancesCurrent as $result) {
+            $wh = $result->working_hours;
+            if (strpos($wh, ':') !== false) {
+                list($hours, $minutes) = explode(':', $wh);
+
+                // Convert to integers to avoid string math issues
+                $hours = (int) $hours;
+                $minutes = (int) $minutes;
+                $totalMinutes = ($hours * 60) + $minutes;
+
+                if ($totalMinutes >= 420) {
+                    $fullDays++;
+                } elseif ($totalMinutes > 210 && $totalMinutes < 420) {
+                    $halfDays++;
+                }
+            }
+        }
+        
+        // Approved half day leaves
+        $halfDayLeaves = Leave::where('user_id', $user->id)
+            ->where('leave_type', 'Half Day') // Adjust if your system uses a different label
+            ->whereMonth('leave_from', $currentMonth)
+            ->whereYear('leave_from', $currentYear)
+            ->where('initial_approve_status', 'Approved') // Adjust if needed
+            ->count();
+       
+        $data['days_of_worked'] = $fullDays + ($halfDays * 0.5) - ($halfDayLeaves * 0.5);
+
+        // Get all attendances with working_hours for this month
+        // Use SQL to sum working time in seconds and convert to minutes
+        $attendances = Attendance::where('username', $user->username)
+            ->where('signin_date', 'like', "$currentMonth%")
+            ->pluck('working_hours');
+        
+        $totalMinutes = 0;
+
+        foreach ($attendances as $wh) {
+            if (!$wh || !str_contains($wh, ':')) continue;
+
+            list($h, $m, $s) = explode(':', $wh);
+            $totalMinutes += ((int)$h * 60) + (int)$m; // ignore seconds
+        }
+
+        $data['totalWorkedHours'] = sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
+        
+        // Calculate average worked hours per day
+        if ($data['days_of_worked'] > 0) {
+            $avgMinutes = round($totalMinutes / $data['days_of_worked']);
+            $avgHours = floor($avgMinutes / 60);
+            $avgMins = $avgMinutes % 60;
+            $data['avgWorkedHours'] = sprintf('%02d:%02d', $avgHours, $avgMins);
+            $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
+        } else {
+            $data['avgWorkedHours'] = '00:00';
+            $data['avgProgressPercentage'] = 0;
+        }
+
 
         $shiftStartTime     = Carbon::parse($data['employee']?->workshift?->shift_start_time); 
         $shiftEndTime       = Carbon::parse($data['employee']?->workshift?->shift_end_time); 
@@ -55,7 +121,7 @@ class AttendanceController extends Controller{
         $isHolidayOrWeekOff = function ($date) {
             $carbonDate = Carbon::parse($date);
             $isWeekend = $carbonDate->isWeekend(); // true if Saturday or Sunday
-            $holidays = ['2025-06-12']; // sample holiday list
+            $holidays = []; // sample holiday list
             return $isWeekend || in_array($carbonDate->format('Y-m-d'), $holidays);
         };
 
@@ -195,63 +261,6 @@ class AttendanceController extends Controller{
                     return view('attendance.no_action_from', $data);
                 }
             }
-        }
-
-        $totalMinutes = 0;
-        $workedHours = [];
-        $categories = [];
-        $weekOffDays = [];
-        $workedDays = 0;
-
-        for ($day = 1; $day <= now()->day; $day++) {
-            $date = now()->format('Y-m-') . str_pad($day, 2, '0', STR_PAD_LEFT);
-            $dayOfWeek = date('w', strtotime($date)); // 0 = Sunday, 6 = Saturday
-
-            if ($dayOfWeek == 0 || $dayOfWeek == 6) {
-                $weekOffDays[] = $day;
-                continue;
-            }
-
-            // Sum working_hours field by converting time string to seconds → then to minutes
-            $minutes = Attendance::where('username', Auth::user()->username)
-                ->where('signin_date', $date)
-                ->selectRaw("
-                    IFNULL(
-                        SUM(
-                            TIME_TO_SEC(STR_TO_DATE(working_hours, '%H:%i:%s')) / 60
-                        ), 0
-                    ) as worked_minutes
-                ")
-                ->value('worked_minutes') ?? 0;
-                if ($minutes > 0) {
-                    $workedDays++;
-                }
-                
-                $totalMinutes += $minutes;
-                
-                // Format to HH:MM
-                $hours = floor($minutes / 60);
-                $mins = $minutes % 60;
-                
-                $workedHours[] = sprintf('%02d:%02d', $hours, $mins);
-                $categories[] = $day;
-                
-        }
-
-        // Convert totalMinutes to HH:MM
-        $totalWorkedHours = sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
-        $data['totalWorkedHours'] = $totalWorkedHours;
-        
-        // Calculate average worked hours per day
-        if ($workedDays > 0) {
-            $avgMinutes = round($totalMinutes / $workedDays);
-            $avgHours = floor($avgMinutes / 60);
-            $avgMins = $avgMinutes % 60;
-            $data['avgWorkedHours'] = sprintf('%02d:%02d', $avgHours, $avgMins);
-            $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
-        } else {
-            $data['avgWorkedHours'] = '00:00';
-            $data['avgProgressPercentage'] = 0;
         }
        
         if (!empty($data['attendance_current']->signout_time)) {
