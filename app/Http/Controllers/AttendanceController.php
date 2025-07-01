@@ -170,8 +170,87 @@ class AttendanceController extends Controller{
 
 /* ================================================================================================== */
 
+// Get the last attendance date with both signin and signout
+$lastAttendance = Attendance::where('username', $user->username)
+    ->whereNotNull('signin_time')
+    ->whereNotNull('signout_time')
+    ->where('status', 'mark-out')
+    ->orderByDesc('signin_date')
+    ->first();
 
-        // Fetch all holidays in the current month
+if ($lastAttendance) {
+    $lastWorkingDate = Carbon::parse($lastAttendance->signin_date);
+    $today = Carbon::today();
+
+    // Setup loop range
+    $startDate = $lastWorkingDate->copy()->addDay();
+    $endDate = $today;
+
+    $currentMonth = $today->format('Y-m');
+    $daysInMonth = $today->daysInMonth;
+
+    // Get holidays of this month
+    $holidays = DB::table('holidays')
+        ->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])
+        ->pluck('date')
+        ->toArray();
+
+    // Get attendance dates of user this month
+    $attendanceDays = Attendance::where('username', $user->username)
+        ->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])
+        ->pluck('signin_date')
+        ->toArray();
+
+    // Loop each date from last worked day to today
+    for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+        $formattedDate = $date->format('Y-m-d');
+        $dayOfWeek = $date->dayOfWeek; // 0 (Sunday) to 6 (Saturday)
+        $isWeekOff = in_array($dayOfWeek, $weekOffDays);
+        $isHoliday = in_array($formattedDate, $holidays);
+        $hasAttendance = in_array($formattedDate, $attendanceDays);
+
+        if (!$isWeekOff && !$isHoliday && !$hasAttendance) {
+            $leaveExists = DB::table('leaves')
+                ->where('user_id', $user->id)
+                ->whereDate('leave_from', '<=', $formattedDate)
+                ->whereDate('leave_to', '>=', $formattedDate)
+                ->exists();
+
+            if (!$leaveExists) {
+                $data['date'] = $formattedDate;
+                $data['error'] = "You missed work on " . $date->format('d-m-Y') . " without applying for leave. Please click here to 
+                    <a class='btn btn-xs btn-primary' href='" . route('leaves.create', ['date' => $formattedDate]) . "'>Apply Leave</a>";
+                return view('attendance.no_action_from', $data);
+            }
+        }
+    }
+
+    $attendanceRecords = Attendance::where('username', $user->username)
+        ->whereBetween('signin_date', [$startDate, $endDate])
+        ->get();
+
+    foreach ($attendanceRecords as $record) {
+        $workingHours = $record->working_hours; // e.g., "06:45:00"
+
+        if ($workingHours) {
+            // Convert to seconds
+            list($hours, $minutes, $seconds) = explode(':', $workingHours);
+            $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+
+            // Check if less than 7 hours (25200 seconds)
+            if ($totalSeconds < 25200) {
+                $date = $record->signin_date;
+                $data['date'] = $date;
+                $data['error'] = "You worked less than 7 hours on " . date('d-m-Y', strtotime($date)) . ". Please apply for half-day leave. 
+                    <a class='btn btn-xs btn-warning' href='" . route('leaves.create', ['date' => $date]) . "'>Apply Leave</a>";
+                return view('attendance.no_action_from', $data);
+            }
+        }
+    }
+}
+
+
+        /* // Fetch all holidays in the current month
         $holidays = DB::table('holidays')->whereBetween('date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('date')->toArray();
         // Fetch all attendance records for the user in this month
         $attendanceDays = Attendance::where('username', $user->username)->whereBetween('signin_date', ["$currentMonth-01", "$currentMonth-$daysInMonth"])->pluck('signin_date')->toArray();
@@ -198,7 +277,7 @@ class AttendanceController extends Controller{
                     return view('attendance.no_action_from', $data);
                 }
             }
-        }
+        } */
 
         
         if ($shiftType === 'night') {
