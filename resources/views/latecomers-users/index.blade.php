@@ -53,14 +53,14 @@
                             </div>
 
                              <!-- Filter Result  -->   
-                            <table class="datatables-basic datatables-late-comers table border-top table-stripedc table-hover table-striped">
+                            <table class="datatables-basic datatables-late-comers table border-top table-hover table-striped">
                                 <thead>
                                     <tr>
                                         <th width="8%">Sl. No.</th>
                                         <th><i class="ti ti-users"></i></th>
                                         <th>Fullname</th>
                                         <th>Count</th>
-                                        <th>Actions</th>
+                                       <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -109,78 +109,78 @@
 
 @push('js')
 <script>
-    $(function(){
-        $('#from_date, #to_date').flatpickr({
-            monthSelectorType: 'static',
-            altInput: true,
-            altFormat: 'd-m-Y',
-            dateFormat: 'd-m-Y'
-        });
-
-        lateComersList();
-        
+   $(function () {
+    // Initialize datepickers
+    $('#from_date, #to_date').flatpickr({
+        altInput: true,
+        altFormat: 'd-m-Y',
+        dateFormat: 'd-m-Y'
     });
 
-    function lateComersList() {
+    // Initial load
+    lateComersList();
+});
+
+function lateComersList() {
     const fromDate = $('#from_date').val();
     const toDate = $('#to_date').val();
 
-    $('.datatables-late-comers').DataTable().destroy();
+    // Destroy existing DataTable if exists
+    if ($.fn.DataTable.isDataTable('.datatables-late-comers')) {
+        $('.datatables-late-comers').DataTable().clear().destroy();
+    }
 
     $('.datatables-late-comers').DataTable({
-        processing: false,
+        processing: true,
         serverSide: false,
+        responsive: true,
         dom: 'Bfrtip',
         ajax: {
             url: "{{ route('list-of-latecomers-data') }}",
             type: "GET",
             data: {
                 from_date: fromDate,
-                to_date: toDate,
+                to_date: toDate
             }
         },
         buttons: [
-            { extend: 'excelHtml5', title: 'Late Comers User Report'},
-            { extend: 'pdfHtml5', title: 'Late Comers User Report', orientation: 'landscape', pageSize: 'A4'},
-            { extend: 'print', title: 'Late Comers User Report'}
+            { extend: 'excelHtml5', title: 'Late Comers User Report' },
+            { extend: 'pdfHtml5', title: 'Late Comers User Report', orientation: 'landscape', pageSize: 'A4' },
+            { extend: 'print', title: 'Late Comers User Report' }
         ],
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-            { data: 'user', name: 'user' },
+            { data: 'user', name: 'user', orderable: false, searchable: false },
             { data: 'fullname', name: 'fullname' },
             { data: 'count', name: 'count' },
-            { data: 'action', name: 'action' },
-        ],
-        columnDefs: [
-            { orderable: false, targets: [1, 4] },
-            { searchable: false, targets: [1, 4] }
+            { data: 'action', name: 'action', orderable: false, searchable: false }
         ]
     });
 }
 
-function viewMoreModal(id) {
-    const fromDate = $('#from_date').val();
-    const toDate = $('#to_date').val();
+    function viewMoreModal(id) {
+        const fromDate = $('#from_date').val();
+        const toDate = $('#to_date').val();
 
-    const url = "{{ route('user-latecomers-list') }}";
-    $.ajax({
-        url: url,
-        data: {
-            id: id,
-            from_date: fromDate,
-            to_date: toDate
-        },
-        type: 'GET',
-        success: function (data) {
-            $('#viewMoreDetails .modal-body').html(data.html);
-            $('.modal-title').text(data.meta_title);
-            $('#viewMoreDetails').modal('show');
-            $('#target_id').val(id);
-        },
-        error: function () {
-            alert('Failed to load MOM data.');
-        }
-    });
-}
+        const url = "{{ route('user-latecomers-list') }}";
+        $.ajax({
+            url: url,
+            data: {
+                id: id,
+                from_date: fromDate,
+                to_date: toDate
+            },
+            type: 'GET',
+            success: function (data) {
+                $('#viewMoreDetails .modal-body').html(data.html);
+                $('.modal-title').text(data.meta_title);
+                $('#viewMoreDetails').modal('show');
+                $('#target_id').val(id);
+            },
+            error: function () {
+                alert('Failed to load MOM data.');
+            }
+        });
+    }
 </script>
 @endpush

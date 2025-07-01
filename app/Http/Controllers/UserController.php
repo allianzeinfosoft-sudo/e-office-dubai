@@ -957,61 +957,67 @@ public function checkAccountNumber(Request $request)
         $data['meta_title'] = 'Latecomers';
         return view('latecomers-users.index', $data);
     }
-    public function lateOfComersData(Request $request){
+    public function lateOfComersData(Request $request)
+{
+    $fromDate = $request->input('from_date')
+        ? date('Y-m-d', strtotime($request->input('from_date')))
+        : date('Y-m-d');
 
-        $fromDate = date('Y-m-d', strtotime($request->input('from_date'))) ??  date('Y-m-d');
-        $toDate =  date('Y-m-d', strtotime($request->input('to_date'))) ?? date('Y-m-d');
+    $toDate = $request->input('to_date')
+        ? date('Y-m-d', strtotime($request->input('to_date')))
+        : date('Y-m-d');
 
-        $employees = Employee::with('workshift')->whereNotIn('status', ['4'])->get();
+    $employees = Employee::with('workshift')->whereNotIn('status', ['4'])->get();
 
-        $data['employees'] = $employees->map(function ($employee, $index) use ($fromDate, $toDate) {
-            $shift = $employee->workshift;
+    $data = $employees->map(function ($employee, $index) use ($fromDate, $toDate) {
+        $shift = $employee->workshift;
 
-            if (!$shift) return null;
+        if (!$shift) return null;
 
-             // Get list of leave dates (with off_type) for this employee
-            $leaveDates = Leave::where('user_id', $employee->user_id)
-                ->where('leave_type', 'off_type')
-                ->where(function ($query) use ($fromDate, $toDate) {
-                    $query->whereBetween('leave_from', [$fromDate, $toDate])
-                        ->orWhereBetween('leave_to', [$fromDate, $toDate])
-                        ->orWhere(function ($q) use ($fromDate, $toDate) {
-                            $q->where('leave_from', '<=', $fromDate)
-                                ->where('leave_to', '>=', $toDate);
-                        });
-                })
-                ->get()
-                ->flatMap(function ($leave) {
-                    return \Carbon\CarbonPeriod::create($leave->leave_from, $leave->leave_to)->toArray();
-                })
-                ->map(function ($date) {
-                    return $date->format('Y-m-d');
-                })
-                ->toArray();
+        // Get list of leave dates (with off_type) for this employee
+        $leaveDates = Leave::where('user_id', $employee->user_id)
+            ->where('leave_type', 'off_type')
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('leave_from', [$fromDate, $toDate])
+                    ->orWhereBetween('leave_to', [$fromDate, $toDate])
+                    ->orWhere(function ($q) use ($fromDate, $toDate) {
+                        $q->where('leave_from', '<=', $fromDate)
+                            ->where('leave_to', '>=', $toDate);
+                    });
+            })
+            ->get()
+            ->flatMap(function ($leave) {
+                return \Carbon\CarbonPeriod::create($leave->leave_from, $leave->leave_to)->toArray();
+            })
+            ->map(function ($date) {
+                return $date->format('Y-m-d');
+            })
+            ->toArray();
 
-            $lateCount = Attendance::where('emp_id', $employee->user_id)
-                ->whereBetween('signin_date', [$fromDate, $toDate])
-                ->whereTime('signin_time', '>', $shift->shift_start_time)
-                ->whereNotIn('signin_date', $leaveDates)
-                ->count();
+        $lateCount = Attendance::where('emp_id', $employee->user_id)
+            ->whereBetween('signin_date', [$fromDate, $toDate])
+            ->whereTime('signin_time', '>', $shift->shift_start_time)
+            ->whereNotIn('signin_date', $leaveDates)
+            ->count();
 
-            return [
-                'DT_RowIndex' => $index + 1,
-                'id' => $employee->id,
-                'user' => $employee->profile_image
-                    ? '<img src="' . asset('storage/' . $employee->profile_image) . '" alt="Avatar" class="rounded-circle" width="40" height="40" />'
-                    : '<img src="' . asset('assets/img/avatars/default-avatar.png') . '" alt="Avatar" class="rounded-circle" width="40" height="40" />',
-                'fullname' => $employee->full_name,
-                'count' => $lateCount,
+        return [
+            'DT_RowIndex' => $index + 1,
+            'id' => $employee->id,
+            'user' => $employee->profile_image
+                ? '<img src="' . asset('storage/' . $employee->profile_image) . '" alt="Avatar" class="rounded-circle" width="40" height="40" />'
+                : '<img src="' . asset('assets/img/avatars/default-avatar.png') . '" alt="Avatar" class="rounded-circle" width="40" height="40" />',
+            'fullname' => $employee->full_name,
+            'count' => $lateCount,
+            'action' => $lateCount > 0
+                ? '<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View More" onclick="viewMoreModal(' . $employee->id . ')"> More Details </a>'
+                : '<a href="javascript:void(0);" class="btn btn-sm btn-secondary disabled" title="No Details Available"> More Details </a>',
+        ];
+    })->filter()->values(); // Remove null and reindex
 
-                'action' => $lateCount > 0
-                    ? '<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="Unlock User" onclick="viewMoreModal(' . $employee->id . ')"> More Details </i></a>'
-                    : '<a href="javascript:void(0);" class="btn btn-sm btn-secondary desabled" desabled title="Unlock User"> More Details </i></a>',
-            ];
-        })->filter(); // Remove null values for employees without shifts
-
-        return response()->json(['data' => $data['employees']]);
-    }
+    return response()->json([
+        'data' => $data
+    ]);
+}
 
 
     public function userLateCommers(Request $request){
