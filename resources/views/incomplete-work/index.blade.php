@@ -127,9 +127,9 @@
             }
         },
         buttons: [
-            { extend: 'excelHtml5', title: 'Incomplete Working Hours Report'},
-            { extend: 'pdfHtml5', title: 'Incomplete Working Hours Report', orientation: 'landscape', pageSize: 'A4'},
-            { extend: 'print', title: 'Incomplete Working Hours Report'}
+            { extend: 'excelHtml5', title: 'Incomplete Working Hours Report of ' + month + ' ' + year },
+            { extend: 'pdfHtml5', title: 'Incomplete Working Hours Report of ' + month + " " + year, orientation: 'landscape', pageSize: 'A4'},
+            { extend: 'print', title: 'Incomplete Working Hours Report of ' + month + ' ' + year }
         ],
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex' },
