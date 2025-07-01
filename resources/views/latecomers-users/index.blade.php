@@ -128,7 +128,7 @@
     $('.datatables-late-comers').DataTable().destroy();
 
     $('.datatables-late-comers').DataTable({
-        processing: true,
+        processing: false,
         serverSide: false,
         dom: 'Bfrtip',
         ajax: {
