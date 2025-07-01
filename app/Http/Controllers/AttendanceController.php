@@ -223,30 +223,32 @@ if ($lastAttendance) {
                 return view('attendance.no_action_from', $data);
             }
         }
-    }
 
-    $attendanceRecords = Attendance::where('username', $user->username)
-        ->whereBetween('signin_date', [$startDate, $endDate])
-        ->get();
+        $attendanceRecords = Attendance::where('username', $user->username)
+            ->whereBetween('signin_date', [$formattedDate, $endDate])
+            ->get();
 
-    foreach ($attendanceRecords as $record) {
-        $workingHours = $record->working_hours; // e.g., "06:45:00"
-
-        if ($workingHours) {
-            // Convert to seconds
-            list($hours, $minutes, $seconds) = explode(':', $workingHours);
-            $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
-
-            // Check if less than 7 hours (25200 seconds)
-            if ($totalSeconds < 25200) {
-                $date = $record->signin_date;
-                $data['date'] = $date;
-                $data['error'] = "You worked less than 7 hours on " . date('d-m-Y', strtotime($date)) . ". Please apply for half-day leave. 
-                    <a class='btn btn-xs btn-warning' href='" . route('leaves.create', ['date' => $date]) . "'>Apply Leave</a>";
-                return view('attendance.no_action_from', $data);
+        foreach ($attendanceRecords as $record) {
+            $workingHours = $record->working_hours; // e.g., "06:45:00"
+    
+            if ($workingHours) {
+                // Convert to seconds
+                list($hours, $minutes, $seconds) = explode(':', $workingHours);
+                $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+    
+                // Check if less than 7 hours (25200 seconds)
+                if ($totalSeconds < 25200) {
+                    $date = $record->signin_date;
+                    $data['date'] = $date;
+                    $data['error'] = "You worked less than 7 hours on " . date('d-m-Y', strtotime($date)) . ". Please apply for half-day leave. 
+                        <a class='btn btn-xs btn-warning' href='" . route('leaves.create', ['date' => $date]) . "'>Apply Leave</a>";
+                    return view('attendance.no_action_from', $data);
+                }
             }
         }
+
     }
+
 }
 
 
