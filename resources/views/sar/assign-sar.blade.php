@@ -63,9 +63,10 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
+                                         <th>Employee</th>
                                         <th>Template Name</th>
+                                        <th>SAR Name</th>
                                         <th>Department</th>
-                                        <th>Employee</th>
                                         <th>SAR Start Date</th>
                                         <th>SAR End Date</th>
                                         <th>Created By</th>
@@ -184,6 +185,7 @@
 
         const department = document.getElementById('department')?.value.trim();
         const template = document.getElementById('template')?.value.trim();
+        const sar_name =  document.getElementById('sar_name')?.value.trim();
         const employeeSelect = document.getElementById('employee');
         const employees = Array.from(employeeSelect.selectedOptions).map(option => option.value);
         const sar_start_date = document.getElementById('sar_start_date')?.value.trim();
@@ -193,6 +195,10 @@
 
         if (!template) {
             errors.push("Template is required.");
+        }
+
+        if (!sar_name) {
+            errors.push("SAR Name is required.");
         }
 
         if (!employees.length) {
@@ -257,6 +263,7 @@
                     },
                     { data: 'employees', title: 'Employee'},
                     { data: 'template_name', title: 'Template Name' },
+                    { data: 'sar_name', title: 'SAR Name'},
                     { data: 'department', title: 'Department' },
                     { data: 'sar_start_date', title: 'SAR Start Date'},
                     { data: 'sar_end_date', title: 'SAR End Date'},

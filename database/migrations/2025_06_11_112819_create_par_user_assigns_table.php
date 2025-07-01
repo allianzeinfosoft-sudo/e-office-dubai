@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('template_id');
+            $table->string('par_name')->nullable();
+            $table->string('par_code');
             $table->unsignedBigInteger('assigned_by');
             $table->date('par_start_date');
             $table->date('par_end_date');

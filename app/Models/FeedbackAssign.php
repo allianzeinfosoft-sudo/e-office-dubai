@@ -12,6 +12,8 @@ class FeedbackAssign extends Model
     protected $fillable = [
         'user_id',
         'feedback_id',
+        'feedback_name',
+        'feedback_code',
         'assigned_by',
         'feedback_start_date',
         'feedback_end_date',
@@ -36,4 +38,10 @@ class FeedbackAssign extends Model
     {
         return $this->belongsTo(Employee::class, 'assigned_by','user_id');
     }
+
+    public function feedback_report()
+    {
+        return $this->hasMany(FeedbackReport::class, 'feedback_assign_id','id');
+    }
+
 }

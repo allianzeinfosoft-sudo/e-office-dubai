@@ -46,15 +46,15 @@
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <table class="hover_effect datatables-basic datatables-survey-report table border-top table-stripedc" id="datatables-feedback-assign">
+                            <table class="hover_effect datatables-basic datatables-par-report table border-top table-stripedc" id="datatables-par-report">
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Survey Title</th>
-                                        <th>Survey Name</th>
+                                        <th>PAR Title</th>
+                                        <th>PAR Name</th>
                                         <th>Department</th>
-                                        <th>Survey Start Date</th>
-                                        <th>Survey End Date</th>
+                                        <th>PAR Start Date</th>
+                                        <th>PAR End Date</th>
                                         <th>Created By</th>
                                         <th>Response</th>
                                         <th>Actions</th>
@@ -83,14 +83,15 @@
 <script>
 
     $(function() {
-        var surveyTemplateTable = $('.datatables-survey-report'),
-        select2 = $('.select2');
-        if (surveyTemplateTable.length) {
+        var parTemplateTable = $('.datatables-par-report'),
 
-            surveyTemplateTable.DataTable({
+        select2 = $('.select2');
+        if (parTemplateTable.length) {
+
+            parTemplateTable.DataTable({
                 ajax: {
                     type: "GET",
-                    url: "{{ route('survey.report.list') }}", // Fixed syntax
+                    url: "{{ route('par.report.list') }}", // Fixed syntax
                     dataType: "json",
                     dataSrc: "data"
                 },
@@ -104,11 +105,11 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'survey_title', title: 'Survey Title' },
-                    { data: 'survey_name', title: 'Survey Name' },
+                    { data: 'par_title', title: 'PAR Title' },
+                    { data: 'par_name', title: 'PAR Name' },
                     { data: 'department', title: 'Department' },
-                    { data: 'survey_start_date', title: 'Survey Start Date'},
-                    { data: 'survey_end_date', title: 'Survey End Date'},
+                    { data: 'par_start_date', title: 'PAR Start Date'},
+                    { data: 'par_end_date', title: 'PAR End Date'},
                     { data: 'created_by', title: 'Created By' },
                     {
                         data: 'null',
@@ -124,7 +125,7 @@
                         data: null,
                         title: 'Actions',
                         render: function (data, type, row, full) {
-                            const reportUrl = "{{ route('survey.export', ':id') }}".replace(':id', row.survey_id);
+                            const reportUrl = "{{ route('par.export', ':id') }}".replace(':id', row.par_id);
                                 return `<a href="${reportUrl}" class="btn btn-sm btn-icon btn-success" title="Download Report">
                                             <i class="ti ti-download"></i></a>`;
 

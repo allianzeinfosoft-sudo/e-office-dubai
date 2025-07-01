@@ -51,10 +51,12 @@
                                     <tr>
                                         <th>S.No</th>
                                         <th>Feedback Title</th>
+                                        <th>Feedback Name</th>
                                         <th>Department</th>
                                         <th>Feedback Start Date</th>
                                         <th>Feedback End Date</th>
                                         <th>Created By</th>
+                                        <th>Response</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -103,11 +105,21 @@
                         searchable: false
                     },
                     { data: 'feedback_title', title: 'Feedback Title' },
+                    { data: 'feedback_name', title: 'Feedback Name'},
                     { data: 'department', title: 'Department' },
                     { data: 'feedback_start_date', title: 'Feedback Start Date'},
                     { data: 'feedback_end_date', title: 'Feedback End Date'},
                     { data: 'created_by', title: 'Created By' },
-
+                    {
+                        data: 'null',
+                        title: 'Response',
+                        render: function(data, type, row, full){
+                                return `<div>
+                                            <strong>${row.attended_users ?? 0}</strong> /
+                                            <strong>${row.total_users ?? 0}</strong>
+                                        </div>`;
+                        },
+                    },
                     {
                         data: null,
                         title: 'Actions',

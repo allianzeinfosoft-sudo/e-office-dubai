@@ -28,8 +28,6 @@
 
 </style>
 @stop
-
-
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
@@ -46,15 +44,15 @@
 
                     <div class="card">
                         <div class="card-datatable table-responsive">
-                            <table class="hover_effect datatables-basic datatables-survey-report table border-top table-stripedc" id="datatables-feedback-assign">
+                            <table class="hover_effect datatables-basic datatables-sar-report table border-top table-stripedc" id="datatables-sar-assign">
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Survey Title</th>
-                                        <th>Survey Name</th>
+                                        <th>SAR Title</th>
+                                        <th>SAR Name</th>
                                         <th>Department</th>
-                                        <th>Survey Start Date</th>
-                                        <th>Survey End Date</th>
+                                        <th>SAR Start Date</th>
+                                        <th>SAR End Date</th>
                                         <th>Created By</th>
                                         <th>Response</th>
                                         <th>Actions</th>
@@ -83,14 +81,14 @@
 <script>
 
     $(function() {
-        var surveyTemplateTable = $('.datatables-survey-report'),
+        var sarTemplateTable = $('.datatables-sar-report'),
         select2 = $('.select2');
-        if (surveyTemplateTable.length) {
+        if (sarTemplateTable.length) {
 
-            surveyTemplateTable.DataTable({
+            sarTemplateTable.DataTable({
                 ajax: {
                     type: "GET",
-                    url: "{{ route('survey.report.list') }}", // Fixed syntax
+                    url: "{{ route('sar.report.list') }}", // Fixed syntax
                     dataType: "json",
                     dataSrc: "data"
                 },
@@ -104,11 +102,11 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'survey_title', title: 'Survey Title' },
-                    { data: 'survey_name', title: 'Survey Name' },
+                    { data: 'sar_title', title: 'SAR Title' },
+                    { data: 'sar_name', title: 'SAR Name'},
                     { data: 'department', title: 'Department' },
-                    { data: 'survey_start_date', title: 'Survey Start Date'},
-                    { data: 'survey_end_date', title: 'Survey End Date'},
+                    { data: 'sar_start_date', title: 'SAR Start Date'},
+                    { data: 'sar_end_date', title: 'SAR End Date'},
                     { data: 'created_by', title: 'Created By' },
                     {
                         data: 'null',
@@ -124,7 +122,7 @@
                         data: null,
                         title: 'Actions',
                         render: function (data, type, row, full) {
-                            const reportUrl = "{{ route('survey.export', ':id') }}".replace(':id', row.survey_id);
+                            const reportUrl = "{{ route('sar.export', ':id') }}".replace(':id', row.sar_id);
                                 return `<a href="${reportUrl}" class="btn btn-sm btn-icon btn-success" title="Download Report">
                                             <i class="ti ti-download"></i></a>`;
 

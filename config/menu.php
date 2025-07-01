@@ -191,7 +191,11 @@ return [
                 'title' => 'Assign SAR',
                 'route' =>  '/sartemplate-assign',
                 'permission' => ['assign SAR'],
-            ]
+            ],
+             [
+                'title' => 'SAR Report',
+                'route' => '/sar-report',
+            ],
         ]
     ],
     [
@@ -213,6 +217,10 @@ return [
                 'title' => 'Assign PAR',
                 'route' => '/partemplate-assign',
                 'permission' => ['assign PAR'],
+            ],
+            [
+                'title' => 'PAR Report',
+                'route' => '/par-report',
             ],
 
 

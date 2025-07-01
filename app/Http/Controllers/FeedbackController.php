@@ -196,7 +196,8 @@ class FeedbackController extends Controller
                 ->map(function ($feedbackUsers) {
                     return [
                         'id' => $feedbackUsers->id,
-                        'feedback_title' => $feedbackUsers->feedback?->feedback_title ?? '',
+                        'feedback_title' => $feedbackUsers->feedback?->feedback_title ?? '-',
+                        'feedback_name' => $feedbackUsers->feedback_name ?? '-',
                         'department' => $feedbackUsers->feedback?->department_info?->department ?? '',
                         'employees' => $feedbackUsers->employee?->full_name ?? '',
                         'feedback_start_date' => $feedbackUsers->feedback_start_date ?? '',
@@ -217,7 +218,9 @@ class FeedbackController extends Controller
 
     public function store_assign_feedback(Request $request)
     {
-
+        $department = $request->input('department');
+        $selectedEmployees = $request->input('employee');
+        $feedback_name = $request->input('feedback_name');
         $templateId = $request->input('template');
         $startDate = $request->input('feedback_start_date');
         $endDate = $request->input('feedback_end_date');
@@ -225,10 +228,31 @@ class FeedbackController extends Controller
         $status = 1; // 1 = pending
         $submitDate = null; // initially null
 
-        foreach ($request->employee as $userId) {
+        if (in_array(0, $selectedEmployees)) {
+            if($department == 0)
+            {
+                $employeeIds = Employee::pluck('user_id')
+                                ->toArray();
+            }else{
+                $employeeIds = Employee::where('department_id', $department)
+                                ->pluck('user_id')
+                                ->toArray();
+            }
+
+        } else {
+            $employeeIds = $selectedEmployees;
+        }
+
+         do{
+            $feedback_code = 'FEED-' . mt_rand(100000, 999999);
+        }   while (FeedbackAssign::where('feedback_code', $feedback_code)->exists());
+
+        foreach ($employeeIds as $userId) {
             FeedbackAssign::create([
                 'user_id'        => $userId,
                 'feedback_id'    => $templateId,
+                'feedback_name'  => $feedback_name,
+                'feedback_code'  => $feedback_code,
                 'assigned_by'    => $assignedBy,
                 'feedback_start_date' => $startDate,
                 'feedback_end_date'   => $endDate,
@@ -243,10 +267,16 @@ class FeedbackController extends Controller
 
     public function getFeedbacks($departmentId)
     {
-
-        $data['templates'] = Feedback::select('id','feedback_title')->where('department_id', $departmentId)->get();
-        $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
-
+        if($departmentId == 0)
+        {
+            $data['templates'] = Feedback::select('id','feedback_title')->get();
+            $data['employees'] = Employee::select('user_id','full_name')->get();
+        }
+        else
+        {
+            $data['templates'] = Feedback::select('id','feedback_title')->where('department_id', $departmentId)->get();
+            $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
+        }
         return response()->json($data);
     }
 
@@ -278,6 +308,7 @@ class FeedbackController extends Controller
                     return [
                         'id' => $feedbackUsers->id,
                         'feedback_title' => $feedbackUsers->feedback?->feedback_title ?? '',
+                        'feedback_name' => $feedbackUsers->feedback?->feedback_name ?? '',
                         'feedback_id' => $feedbackUsers->feedback_id ?? '',
                         'department' => $feedbackUsers->feedback?->department_info?->department ?? '',
                         'employees' => $feedbackUsers->employee?->full_name ?? '',

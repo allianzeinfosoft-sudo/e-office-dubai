@@ -17,6 +17,7 @@
                     <label for="template">Department <span class="text-danger">*</span></label>
                     <select name="department" id="department" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select departments">
                         <option value=""></option>
+                        <option value="0">All</option>
                         @foreach ($departments as $department)
                             <option value="{{ $department->id }}"
                                 {{ auth()->user()->employee?->department_id == $department->id ? 'selected' : '' }}>
@@ -28,15 +29,23 @@
             </div>
         @endif
 
+
         <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="template">Template <span class="text-danger">*</span></label>
+                <label for="template">SAR Template <span class="text-danger">*</span></label>
                 <select name="template" id="template" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select template">
                     <option value=""></option>
                     @foreach ($templates as $template)
                         <option value="{{ $template->id }}">{{ $template->template_name ?? '' }}</option>
                     @endforeach
                 </select>
+            </div>
+        </div>
+
+         <div class="col-sm-12 mb-3">
+            <div class="form-group">
+                <label for="sar_name">SAR Name <span class="text-danger">*</span></label>
+                <input type="text" name="sar_name" id="sar_name" class="form-control" placeholder="SAR Name" require />
             </div>
         </div>
 
@@ -96,9 +105,14 @@ $(document).ready(function() {
 
                     $('#employee').empty().append('<option value="">Select</option>');
                         if (response.employees.length > 0) {
+
+                            let $employeeSelect = $('#employee');
+                            $employeeSelect.empty();
+                            let optionsHtml = '<option value="0">All</option>';
                             $.each(response.employees, function(index, employee) {
-                                $('#employee').append('<option value="' + employee.user_id + '">' + employee.full_name + '</option>');
+                                optionsHtml += '<option value="' + employee.user_id + '">' + employee.full_name + '</option>';
                             });
+                            $employeeSelect.append(optionsHtml);
                         }
 
 

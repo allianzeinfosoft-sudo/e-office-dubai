@@ -20,27 +20,43 @@ class SurveyReportController extends Controller
             $surveyUsers = SurveyUserAssign::with([
                     'template.department_info',
                     'employee',
-                    'assigned_user'
+                    'assigned_user',
+                    'survey_report',
                 ])
-                ->get()
-                ->map(function ($surveyUsers) {
+                ->get();
+                $grouped = $surveyUsers->groupBy('survey_code');
+
+                 $reportData = $grouped->map(function ($group) {
+                    $first = $group->first();
+
+                    // Users who have SAR reports
+                   $totalUsers = $group->count();
+
+                    // Users who completed (assuming status = 1 or reports exist)
+                    $attendedUsers = $group->filter(function ($assign) {
+                        return  $assign->survey_report->isNotEmpty();
+                    })->count();
+
                     return [
-                        'id' => $surveyUsers->id,
-                        'survey_title' => $surveyUsers->template?->template_name ?? '',
-                        'survey_id' => $surveyUsers->template_id ?? '',
-                        'department' => $surveyUsers->template?->department_info?->department ?? '',
-                        'employees' => $surveyUsers->employee?->full_name ?? '',
-                        'survey_start_date' => $surveyUsers->feedback_start_date ?? '',
-                        'survey_end_date' => $surveyUsers->feedback_end_date ?? '',
-                        'created_by' => $surveyUsers->assigned_user?->full_name ?? '',
-                        'status' => $surveyUsers->status ?? '',
+                        'id' => $first->id,
+                        'survey_title' => $first->template?->template_name ?? '-',
+                        'survey_name' => $first->survey_name ?? '-',
+                        'survey_id' => $first->template_id ?? '',
+                        'department' => $first->template?->department_info?->department ?? '',
+                        'employees' => $first->employee?->full_name ?? '',
+                        'survey_start_date' => $first->survey_start_date ?? '',
+                        'survey_end_date' => $first->survey_end_date ?? '',
+                        'created_by' => $first->assigned_user?->full_name ?? '',
+                        'total_users' => $totalUsers,
+                        'attended_users' => $attendedUsers,
+                        'status' => $first->status ?? '',
                     ];
-                });
+                })->values();
 
 
 
             return response()->json([
-                'data' => $surveyUsers
+                'data' => $reportData
             ]);
 
         }

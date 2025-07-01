@@ -195,6 +195,7 @@ class ParTemplateController extends Controller
                     return [
                         'id' => $parUsers->id,
                         'template_name' => $parUsers->template?->template_name ?? '',
+                        'par_name' => $parUsers->par_name ?? '',
                         'department' => $parUsers->template?->department_info?->department ?? '',
                         'employees' => $parUsers->employee?->full_name ?? '',
                         'par_start_date' => $parUsers->par_start_date ?? '',
@@ -220,7 +221,9 @@ class ParTemplateController extends Controller
 
     public function store_assign_template(Request $request)
     {
-
+        $department = $request->input('department');
+        $selectedEmployees = $request->input('employee');
+        $par_name = $request->input('par_name');
         $templateId = $request->input('template');
         $startDate = $request->input('par_start_date');
         $endDate = $request->input('par_end_date');
@@ -228,10 +231,30 @@ class ParTemplateController extends Controller
         $status = 1; // 1 = pending
         $submitDate = null; // initially null
 
-        foreach ($request->employee as $userId) {
+        if (in_array(0, $selectedEmployees)) {
+            if($department == 0)
+            {
+                $employeeIds = Employee::pluck('user_id')
+                                ->toArray();
+            }else{
+                $employeeIds = Employee::where('department_id', $department)
+                                ->pluck('user_id')
+                                ->toArray();
+            }
+
+        } else {
+            $employeeIds = $selectedEmployees;
+        }
+
+        do{
+            $par_code = 'PAR-' . mt_rand(100000, 999999);
+        }   while (ParUserAssign::where('par_code', $par_code)->exists());
+        foreach ($employeeIds as $userId) {
             ParUserAssign::create([
                 'user_id'        => $userId,
                 'template_id'    => $templateId,
+                'par_name'       => $par_name,
+                'par_code'       => $par_code,
                 'assigned_by'    => $assignedBy,
                 'par_start_date' => $startDate,
                 'par_end_date'   => $endDate,
@@ -246,8 +269,16 @@ class ParTemplateController extends Controller
 
      public function getTemplates($departmentId)
     {
-        $data['templates'] = ParTemplate::select('id','template_name')->where('department_id', $departmentId)->get();
-        $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
+        if($departmentId == 0)
+        {
+            $data['templates'] = ParTemplate::select('id','template_name')->get();
+            $data['employees'] = Employee::select('user_id','full_name')->get();
+        }
+        else
+        {
+            $data['templates'] = ParTemplate::select('id','template_name')->where('department_id', $departmentId)->get();
+            $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
+        }
 
         return response()->json($data);
     }
@@ -281,6 +312,7 @@ class ParTemplateController extends Controller
                     return [
                         'id' => $parUsers->id,
                         'template_name' => $parUsers->template?->template_name ?? '',
+                        'par_name' => $parUsers->par_name ?? '',
                         'template_id' => $parUsers->template_id ?? '',
                         'department' => $parUsers->template?->department_info?->department ?? '',
                         'employees' => $parUsers->employee?->full_name ?? '',

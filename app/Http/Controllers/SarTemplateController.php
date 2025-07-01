@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Ui\Presets\React;
+use Illuminate\Support\Str;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -209,6 +210,7 @@ class SarTemplateController extends Controller
                     return [
                         'id' => $sarUsers->id,
                         'template_name' => $sarUsers->template?->template_name ?? '',
+                        'sar_name' => $sarUsers->sar_name ?? '',
                         'department' => $sarUsers->template?->department_info?->department ?? '',
                         'employees' => $sarUsers->employee?->full_name ?? '',
                         'sar_start_date' => $sarUsers->sar_start_date ?? '',
@@ -234,18 +236,41 @@ class SarTemplateController extends Controller
 
     public function store_assign_template(Request $request)
     {
-
+        $department = $request->input('department');
+        $selectedEmployees = $request->input('employee');
+        $sar_name = $request->input('sar_name');
         $templateId = $request->input('template');
         $startDate = $request->input('sar_start_date');
         $endDate = $request->input('sar_end_date');
-        $assignedBy = Auth::user()->id; // current user
-        $status = 1; // 1 = pending
-        $submitDate = null; // initially null
+        $assignedBy = Auth::user()->id;
+        $status = 1;
+        $submitDate = null;
 
-        foreach ($request->employee as $userId) {
+        if (in_array(0, $selectedEmployees)) {
+            if($department == 0)
+            {
+                $employeeIds = Employee::pluck('user_id')
+                                ->toArray();
+            }else{
+                $employeeIds = Employee::where('department_id', $department)
+                                ->pluck('user_id')
+                                ->toArray();
+            }
+
+        } else {
+            $employeeIds = $selectedEmployees;
+        }
+
+        do{
+            $sar_code = 'SAR-' . mt_rand(100000, 999999);
+        }   while (SarUserAssign::where('sar_code', $sar_code)->exists());
+
+        foreach ($employeeIds as $userId) {
             SarUserAssign::create([
                 'user_id'        => $userId,
                 'template_id'    => $templateId,
+                'sar_name'       => $sar_name,
+                'sar_code'       => $sar_code,
                 'assigned_by'    => $assignedBy,
                 'sar_start_date' => $startDate,
                 'sar_end_date'   => $endDate,
@@ -261,8 +286,16 @@ class SarTemplateController extends Controller
      public function getTemplates($departmentId)
     {
 
-        $data['templates'] = SarTemplate::select('id','template_name')->where('department_id', $departmentId)->get();
-        $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
+         if($departmentId == 0)
+        {
+            $data['templates'] = SarTemplate::select('id','template_name')->get();
+            $data['employees'] = Employee::select('user_id','full_name')->get();
+        }
+        else
+        {
+            $data['templates'] = SarTemplate::select('id','template_name')->where('department_id', $departmentId)->get();
+            $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
+        }
 
         return response()->json($data);
     }
@@ -297,6 +330,7 @@ class SarTemplateController extends Controller
                     return [
                         'id' => $sarUsers->id,
                         'template_name' => $sarUsers->template?->template_name ?? '',
+                        'sar_name' => $sarUsers->sar_name ?? '',
                         'template_id' => $sarUsers->template_id ?? '',
                         'department' => $sarUsers->template?->department_info?->department ?? '',
                         'employees' => $sarUsers->employee?->full_name ?? '',
