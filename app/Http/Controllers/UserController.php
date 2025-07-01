@@ -1092,41 +1092,67 @@ public function checkAccountNumber(Request $request)
         $month = $request->input('month') ?? date('m');  // Default to current month
         $year = $request->input('year') ?? date('Y');    // Default to current year
 
-        // Calculate start and end date of the given month-year
         $fromDate = date('Y-m-d', strtotime("$year-$month-01"));
         $toDate = date('Y-m-t', strtotime($fromDate));  // t = last day of the month
+        $weekOffDays = [0, 6]; // Sunday, Saturday
 
-        $attendances = Attendance::with('employee')
-            ->where('is_incomplete', 1)
-            ->whereBetween('signin_date', [$fromDate, $toDate])
-            ->get();
+        $employees = Employee::with('user')->whereIn('status', [1, 2, 5])->get();
 
-        $data = $attendances->map(function ($attendance, $index) {
-            $employee = $attendance->employee;
+        $data = $employees->map(function ($employee , $index) use ($fromDate, $toDate, $weekOffDays) {
+            $workingDays = $this->getTotalWorkingDays($fromDate, $toDate, $weekOffDays);
+            $expectedSeconds = ($workingDays * 8); // 8 hours per day
 
-            $avatar = $employee && $employee->profile_image
-                ? asset('storage/' . $employee->profile_image)
-                : asset('/assets/img/avatars/default-avatar.png');
+            $attendanceRecords = Attendance::where('emp_id', $employee->user_id)
+                ->whereBetween('signin_date', [$fromDate, $toDate])
+                ->get();
 
-            $avatarImg = '<img src="' . $avatar . '" alt="Avatar" class="rounded-circle" width="40" height="40" />';
+            $totalSeconds = 0;
 
-            $workingHours = $attendance->working_hours ?? '0.00';
-
-            // Convert to float and compare
-            $badgeClass = (float)$workingHours < 4.30 ? 'bg-warning' : 'bg-danger';
+            foreach ($attendanceRecords as $attendance) {
+                if ($attendance->working_hours) {
+                    $parts = explode(':', $attendance->working_hours);
+                    if (count($parts) === 3) {
+                        $hours = (int)$parts[0];
+                        $minutes = (int)$parts[1];
+                        $seconds = (int)$parts[2];
+                        $totalSeconds += ($hours * 3600) + ($minutes * 60) + $seconds;
+                    }
+                }
+            }
 
             return [
-                'DT_RowIndex'   => $index + 1,
-                'avatar'        => $avatarImg,
-                'fullname'      => $employee->full_name ?? 'N/A',
-                'username'      => $attendance->username,
-                'working_hours' => '<span class="badge ' . $badgeClass . '">' . $attendance->working_hours . '</span>',
-                'signin_date'   => $attendance->signin_date  ? '<span class="badge bg-primary" >' . Carbon::parse($attendance->signin_date)->format('d-m-Y') . '</span>' : 'N/A',
+                'DT_RowIndex' => $index + 1,
+                'id' => $employee->id,
+                'fullname' => $employee->full_name,
+                'username' => $employee->user->username ?? '',
+                'profile_image' => '<img src="' . asset('storage/' . $employee->profile_image) . '" alt="Profile Image" class="rounded-circle" width="40" height="40" />' ?? '',
+                'total_working_hours' => $expectedSeconds . ' : 00',
+                'total_worked_hours' => floor( $totalSeconds / 3600) . ' : '. floor($totalSeconds % 3600)/60 ,
+                'status' => (int) $totalSeconds/3600 <= (int) $expectedSeconds ? '<span class="badge bg-label-danger">Incomplete</span>' : '<span class="badge bg-label-success">Completed</span>',
             ];
         });
 
         return response()->json(['data' => $data]);
     }
+
+    public function getTotalWorkingDays($fromDate, $toDate, $weekOffDays = [0, 6]){
+        $from = Carbon::parse($fromDate);
+        $to = Carbon::parse($toDate);
+        $workingDays = 0;
+        $holidays = DB::table('holidays')
+            ->whereBetween('date', [$fromDate, $toDate])
+            ->pluck('date')
+            ->toArray();
+        while ($from->lte($to)) {
+            $dateStr = $from->toDateString();
+            if (!in_array($from->dayOfWeek, $weekOffDays) && !in_array($dateStr, $holidays)) {
+                $workingDays++;
+            }
+            $from->addDay();
+        }
+        return $workingDays;
+    }
+
 
 
     public function getUserDetails($userId)
