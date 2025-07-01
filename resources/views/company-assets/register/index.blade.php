@@ -151,32 +151,23 @@
             });
         }
 
-        /* Create vendor category */
-        $('#vendor-category-form').submit(function (e) {
-            e.preventDefault();
-            $.ajax({
-                url: "{{ route('assets.store-vendor-category') }}",
-                type: "POST",
-                data: $(this).serialize(),
-                success: function (response) {
-                    toastr["success"](response.message);
-                    $('#category-modal').modal('hide');
-                    $('#vendor_category').append(`<option value="${response.data.id}" selected>${response.data.name}</option>`).trigger('change');
-                }
-            });
-        });
-
-        /* Store vendot */
+        /* Store Items */
         $('#register-form').submit(function (e) {
             let url = $(this).attr('action');
             e.preventDefault();
+            
+            let form = this;
+            let formData = new FormData(form);
+
             $.ajax({
                 url: url,
                 type: "POST",
-                data: $(this).serialize(),
+                data: formData,
+                contentType: false,   // MUST be false
+                processData: false,   // MUST be false
                 success: function (response) {
                     toastr["success"](response.message);
-                    $('#vendor-table').DataTable().ajax.reload();
+                    $('#asset-register-table').DataTable().ajax.reload();
 
                     const offcanvasEl = document.getElementById('vendor_offcanvas');
                     const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
@@ -211,6 +202,9 @@
 
     function openOffcanvas(id = null) {
         const $form = $('#register-form');
+        $('#item-line-container').empty();
+        calculateGrandTotal();
+        $('#company_name, #vendor_id').val('').trigger('change');
         $form[0].reset();
         $('#target_id').val('');
         $('#vendor-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Create Asset Register</h5><span class="text-white slogan">Create New Asset Register</span>`);
@@ -240,7 +234,7 @@
                     // Main form values
                     $('#asset_number').val(data.asset_number);
                     $('#company_name').val(data.company_name).trigger('change');
-                    $('#purchase_date').val(data.purchase_date).trigger('change');
+                    $('#purchase_date').flatpickr().setDate(data.purchase_date);
                     $('#invoice_number').val(data.invoice_number);
                     $('#vendor_id').val(data.vendor_id).trigger('change');
                     $('#remarks').val(data.remarks);
@@ -255,41 +249,41 @@
                         let row = `
                             <tr>
                                 <td>
-                                    <select name="asset_item_id[${index}][asset_item_id]" class="form-control select2">
+                                    <select name="asset_item_id[${index}]" class="form-control select2">
                                         @foreach($assetItems as $key => $label)
                                             <option value="{{ $key }}" ${item.asset_item_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
-                                <td><input type="text" name="asset_items[${index}][item_model]" class="form-control" value="${item.item_model ?? ''}"></td>
-                                <td><input type="text" name="asset_items[${index}][serial_number]" class="form-control" value="${item.serial_number ?? ''}"></td>
-                                <td><input type="text" name="asset_items[${index}][warranty]" class="form-control" value="${item.warranty ?? ''}"></td>
+                                <td><input type="text" name="asset_model[${index}]" class="form-control" value="${item.item_model ?? ''}"></td>
+                                <td><input type="text" name="serial_number[${index}]" class="form-control" value="${item.serial_number ?? ''}"></td>
+                                <td><input type="text" name="warranty[${index}]" class="form-control" value="${item.warranty ?? ''}"></td>
                                 <td>
-                                    <select name="asset_items[${index}][asset_classification_id]" class="form-control select2">
+                                    <select name="asset_classification_id[${index}]" class="form-control select2">
                                         @foreach($assetClassifications as $key => $label)
                                             <option value="{{ $key }}" ${item.asset_classification_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="asset_items[${index}][asset_category_id]" class="form-control select2">
+                                    <select name="asset_category_id[${index}]" class="form-control select2">
                                         @foreach($assetCategories as $key => $label)
                                             <option value="{{ $key }}" ${item.asset_category_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="asset_items[${index}][asset_type_id]" class="form-control select2">
+                                    <select name="asset_type_id[${index}]" class="form-control select2">
                                         @foreach($assetTypes as $key => $label)
                                             <option value="{{ $key }}" ${item.asset_type_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
-                                <td><input type="text" class="form-control" readonly value="Unit"></td>
-                                <td><input type="number" name="asset_items[${index}][asset_quantity]" class="form-control quantity" value="${item.asset_quantity}"></td>
-                                <td><input type="number" name="asset_items[${index}][asset_price]" class="form-control price" value="${item.asset_price}"></td>
-                                <td><input type="text" name="asset_items[${index}][asset_total]" class="form-control total" readonly value="${item.asset_total}"></td>
-                                <td><button type="button" class="btn btn-danger btn-sm" onclick="removeItemRow(this)"><i class="ti ti-trash"></i></button></td>
+                                <td><input type="text" name="asset_unit[${index}]" class="form-control"  readonly value="${item.asset_description}"></td>
+                                <td><input type="number" name="asset_quantity[${index}]" class="form-control quantity" onchange="calculateAmount('${index}')" id="qty_${index}" value="${item.asset_quantity}"></td>
+                                <td><input type="number" name="asset_price[${index}]" class="form-control price" onchange="calculateAmount('${index}')" id="price_${index}" value="${item.asset_price}"></td>
+                                <td><input type="text" name="asset_total[${index}]" class="form-control total" onchange="calculateAmount('${index}')" id="amount_${index}" readonly value="${item.asset_total}"></td>
+                                <td><button type="button" class="btn btn-xs btn-icon btn-danger" onclick="$(this).closest('tr').remove(); calculateGrandTotal();"><i class="ti ti-minus"></i></button></td>
                             </tr>
                         `;
                         $('#item-line-container').append(row);
@@ -309,10 +303,6 @@
         $('#category-modal').modal('show');
         $('#vendor-category-form')[0].reset();
     }
-    
 
-    
-    
-    
 </script>
 @endpush

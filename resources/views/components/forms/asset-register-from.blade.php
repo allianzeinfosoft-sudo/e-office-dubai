@@ -55,8 +55,8 @@
 
             <div class="col-sm-4 mb-3">
                 <div class="form-group">
-                    <label for="attachments">Upload Invoice</label>
-                    <input type="file" name="attachments" id="attachments" class="form-control">
+                    <label for="upload_invoice">Upload Invoice</label>
+                    <input type="file" name="upload_invoice" id="upload_invoice" class="form-control">
                 </div>
             </div>
 
@@ -129,36 +129,36 @@
         let html = `
             <tr>
                 <td>
-                    <select name="asset_item_id[]" id="item_${itemLineLength}" class="form-control select2">
+                    <select name="asset_item_id[${itemLineLength}]" id="item_${itemLineLength}" class="form-control select2">
                         <option value="">Select Item</option>
                         ${assetItems.map(item => `<option value="${item.id}">${item.name} [${item.item_code} - ${item.brand}]</option>`).join('')}
                     </select>
                 </td>
-                <td><input class="form-control" type="text" name="asset_model[]"></td>
-                <td><input class="form-control" type="text" name="serial_number[]"></td>
-                <td><input class="form-control" type="text" name="warranty[]"></td>
+                <td><input class="form-control" type="text" name="asset_model[${itemLineLength}]"></td>
+                <td><input class="form-control" type="text" name="serial_number[${itemLineLength}]"></td>
+                <td><input class="form-control" type="text" name="warranty[${itemLineLength}]"></td>
                 <td>
-                    <select name="asset_classification_id[]" id="classification_${itemLineLength}" class="form-control select2">
+                    <select name="asset_classification_id[${itemLineLength}]" id="classification_${itemLineLength}" class="form-control select2">
                         <option value="">Select Classification</option>
                         ${assetClassifications.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
                     </select>
                 </td>
                 <td>
-                    <select name="asset_category_id[]" id="category_${itemLineLength}" onchange="getAssetTypes(this.value, '${itemLineLength}')" class="form-control select2">
+                    <select name="asset_category_id[${itemLineLength}]" id="category_${itemLineLength}" onchange="getAssetTypes(this.value, '${itemLineLength}')" class="form-control select2">
                         <option value="">Select Category</option>
                         ${assetCategories.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
                     </select>
                 </td>
                 <td>
-                    <select name="asset_type_id[]" id="type_${itemLineLength}" class="form-control select2">
+                    <select name="asset_type_id[${itemLineLength}]" id="type_${itemLineLength}" class="form-control select2">
                         <option value="">Select Type</option>
                         ${assetTypes.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
                     </select>
                 </td>
-                <td><input class="form-control" type="text" name="asset_unit[]" value=""></td>
-                <td><input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
-                <td><input class="form-control text-right" type="text" id="price_${itemLineLength}" name="asset_price[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
-                <td><input class="form-control text-right" type="text" id="amount_${itemLineLength}" name="asset_total[]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
+                <td><input class="form-control" type="text" name="asset_unit[${itemLineLength}]" value=""></td>
+                <td><input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
+                <td><input class="form-control text-right" type="text" id="price_${itemLineLength}" name="asset_price[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
+                <td><input class="form-control text-right" type="text" id="amount_${itemLineLength}" name="asset_total[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
                 <td>
                     <button type="button" class="btn btn-icon btn-xs btn-danger waves-effect" onclick="$(this).closest('tr').remove();">
                         <i class="ti ti-minus"></i>
@@ -201,8 +201,10 @@
     function calculateGrandTotal() {
         var total = 0;
         $('#item-line-container tr').each(function() {
-            var amount = $(this).find('input[name="asset_total[]"]').val();
-            total += parseFloat(amount);
+            var amount = $(this).find('input[name^="asset_total["]').val();
+            if (!isNaN(parseFloat(amount))) {
+                total += parseFloat(amount);
+            }
         });
         $('#total_amount').text(total.toFixed(2));
         $('#grand_total').val(total.toFixed(2));

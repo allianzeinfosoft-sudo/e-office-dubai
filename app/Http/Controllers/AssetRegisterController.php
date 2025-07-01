@@ -29,14 +29,14 @@ class AssetRegisterController extends Controller
                     return [
                         'DT_RowIndex'       => $index + 1,
                         'id'                => $item->id,
-                        'asset_date'        => date('Y-m-d', strtotime($item->asset_date)), //$item->asset_date,
+                        'asset_date'        => date('d-m-Y', strtotime($item->asset_date)), //$item->asset_date,
                         'asset_number'      => $item->asset_number,
                         'company_name'      => $item->company_name,
-                        'purchase_date'     => date('Y-m-d', strtotime($item->purchase_date)), //$item->purchase_date,
+                        'purchase_date'     => date('d-m-Y', strtotime($item->purchase_date)), //$item->purchase_date,
                         'invoice_number'    => $item->invoice_number,
                         'vendor_name'         => $item->vendor->vendor_name,
                         'total_amount'      => $item->total_amount,
-                        'upload_invoice'      => $item->upload_invoice,
+                        'upload_invoice'    => '<a href="' . asset('storage/' . $item->upload_invoice) . '" target="_blank"><i class="fa fa-file"></i></a>', 
                         'remarks'           => $item->remarks
                     ];
 
@@ -77,7 +77,7 @@ class AssetRegisterController extends Controller
             'invoice_number' => 'required',
             'vendor_id' => 'required',
             'remarks' => 'nullable',
-            'upload_invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'upload_invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
 
             'asset_item_id' => 'required|array',
             'asset_quantity' => 'required|array',
@@ -90,6 +90,8 @@ class AssetRegisterController extends Controller
         if ($request->hasFile('upload_invoice')) {
             $filePath = $request->file('upload_invoice')->store('invoices', 'public');
         }
+       
+
 
         $totalAmount = array_sum($request->asset_total);
 
@@ -97,7 +99,7 @@ class AssetRegisterController extends Controller
         $asset = AssetRegister::updateOrCreate(
             ['id' => $request->id],
             [
-                'asset_date'     => date('Y-m-d'),
+                'asset_date'     => date('Y-m-d', strtotime($request->purchase_date)),
                 'asset_number'   => $request->asset_number,
                 'company_name'   => $request->company_name,
                 'purchase_date'  => date('Y-m-d', strtotime($request->purchase_date)), //$request->purchase_date,
@@ -148,7 +150,7 @@ class AssetRegisterController extends Controller
     public function edit($id)
     {
         //
-         $register = AssetRegister::with('items')->findOrFail($id);
+        $register = AssetRegister::with('items')->findOrFail($id);
         return response()->json([
             'data' => $register
         ]);
