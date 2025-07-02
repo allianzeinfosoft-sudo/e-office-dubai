@@ -61,9 +61,9 @@ class FeedsController extends Controller
 
 
             // Get all appreciations for today
-            $today = now();
-            $rawAppreciations = Appreciation::whereMonth('display_date', $today->month)
-                ->whereDay('display_date', $today->day)
+
+            $rawAppreciations = Appreciation::whereDate('display_date', '<=', $today)
+                ->whereDate('display_end_date', '>=', $today)
                 ->get();
 
             $appreciations = collect();

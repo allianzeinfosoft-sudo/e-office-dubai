@@ -28,9 +28,9 @@
                   <tr>
                     <th>S.No</th>
                     <th>Shift ID</th>
-                    <th>Department</th>
                     <th>Shift Start Time</th>
                     <th>Shift End Time</th>
+                    <th>Login Limited</th>
                     <th>Min Break Time</th>
                     <th>Max Break Time </th>
                     <th>Action</th>
@@ -88,7 +88,7 @@
 @push('js')
 <script>
 
-  $('#shift_start_time, #shift_end_time, #mini_break_time, #max_break_time').flatpickr({
+  $('#shift_start_time, #shift_end_time, #login_limited_time, #mini_break_time, #max_break_time').flatpickr({
             enableTime: true,
             noCalendar: true,
             dateFormat: 'H:i:S',

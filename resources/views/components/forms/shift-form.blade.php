@@ -2,7 +2,7 @@
                     @csrf
                     <input type="hidden" name="target_id" id="target_id">
 
-                    <div class="col-sm-12">
+                    {{-- <div class="col-sm-12">
                     <label class="form-label" for="shift_id">Department</label>
                         <select name="department" id="department" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select department">
                             <option value=""></option>
@@ -11,7 +11,7 @@
                                  <option value="{{ $department->id }}">{{ $department->department ?? '' }}</option>
                             @endforeach
                          </select>
-                  </div>
+                  </div> --}}
 
                   <div class="col-sm-12">
                     <label class="form-label" for="shift_id">Shitf ID</label>
@@ -38,6 +38,15 @@
                       <input type="text" id="shift_end_time" name="shift_end_time" class="form-control dt-shift-end"  />
                     </div>
                   </div>
+
+                   <div class="col-sm-12">
+                    <label class="form-label" for="login_limited_time">Login Limited Time</label>
+                    <div class="input-group input-group-merge">
+                      <span id="basicPost2" class="input-group-text"><i class="ti ti-clock"></i></span>
+                      <input type="text" id="login_limited_time" name="login_limited_time" class="form-control dt-login-limited-time"  />
+                    </div>
+                  </div>
+
 
                 <div class="col-sm-12">
                   <label class="form-label" for="mini_break_time">Mini Break Time</label>

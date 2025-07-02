@@ -425,6 +425,7 @@ class LeaveController extends Controller
                     }
 
 
+
                     // $recipients = [(string) $leave->user_id];
                     // $message = 'Leave application approved';
 

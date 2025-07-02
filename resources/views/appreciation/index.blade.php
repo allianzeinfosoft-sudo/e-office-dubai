@@ -57,7 +57,7 @@
                                         <th>Appreciants</th>
                                         <th>Details</th>
                                         <th>Display Date</th>
-                                        <th>Create Date</th>
+                                        <th>Display End Date</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -125,6 +125,7 @@
 
             const appreciant = document.getElementById('appreciant').value.trim();
             const display_date = document.getElementById('display_date').value.trim();
+            const display_end_date = document.getElementById('display_end_date').value.trim();
             const picture = document.querySelector('input[name="picture"]:checked');
             const appreciation_details = quillAppreciation1.root.innerText.trim();
             const hiddenAppreciation_details = document.getElementById('appreciation_details');
@@ -142,6 +143,13 @@
             } else if (isNaN(Date.parse(display_date))) {
                 errors.push("Display date must be a valid date.");
             }
+
+             if (!display_end_date) {
+                errors.push("Display end date is required.");
+            } else if (isNaN(Date.parse(display_end_date))) {
+                errors.push("Display end date must be a valid date.");
+            }
+
 
             if (!picture) {
                 errors.push("Picture is required.");
@@ -214,7 +222,7 @@
                     },
                     { data: 'appreciation_details', title: 'Details' },
                     { data: 'display_date', title: 'Display Date' },
-                    { data: 'created_at', title: 'Create Date'},
+                    { data: 'display_end_date', title: 'Display End Date' },
                     {
                         data: null,
                         title: 'Actions',
@@ -295,6 +303,7 @@
                 $('#target_id').val(appreciation.id);
                 $('#appreciant').val(appreciantIds).trigger('change');
                 $('#display_date').val(appreciation.display_date);
+                $('#display_end_date').val(appreciation.display_end_date);
                 $('#appreciation_details').val(cleanContent);
                 $('#picture').val([appreciation.picture]);
                 $('input[name="picture"][value="' + appreciation.picture + '"]').prop('checked', true);

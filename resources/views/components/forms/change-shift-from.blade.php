@@ -14,7 +14,7 @@
         <div class="col-sm-12 mb-3">
             <div class="form-group">
                 <label for="user">Select User</label>
-                <select name="user" id="user" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select User">
+                <select name="user[]" id="user" class="select2 form-select form-select-lg" multiple data-allow-clear="true" data-placeholder="Select User">
                     <option value=""></option>
                     @foreach ($users as $user)
                         <option value="{{ $user->user_id  ?? '' }}">{{ $user->full_name ?? '' }}</option>
@@ -29,13 +29,13 @@
                 <select name="shift" id="shift" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select Shift">
                     <option value=""></option>
                     @foreach ($shifts as $shift)
-                        <option value="{{ $shift->id  ?? '' }}">{{ $shift->shift_id ?? '' }} [ {{ $shift->shift_start_time ?? '' }} - {{ $shift->shift_end_time ?? '' }} ( {{ $shift->shift_department ? $shift->shift_department->department : '' }}) ] </option>
+                        <option value="{{ $shift->id  ?? '' }}">{{ $shift->shift_id ?? '' }} [ {{ $shift->shift_start_time ?? '' }} - {{ $shift->shift_end_time ?? '' }}  ] </option>
                     @endforeach
                 </select>
             </div>
         </div>
 
-        <div class="col-sm-12 mb-3">
+        {{-- <div class="col-sm-12 mb-3">
             <div class="form-group">
                 <label for="login_limited_time">Login Limited Time</label>
                 <button type="button" class="btn btn-icon btn-xs btn-outline-primary waves-effect" data-bs-toggle="modal" data-bs-target="#addLoginLimitedTimeModal">
@@ -48,7 +48,7 @@
                     @endforeach
                 </select>
             </div>
-        </div>
+        </div> --}}
         <div class="col-sm-12 mb-3">
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;  Save</button>
         </div>
@@ -91,32 +91,31 @@
 @push('js')
 
 <script>
-$(document).ready(function() {
-    $('#user').on('change', function() {
-        let userId = $(this).val();
-        $('#shift').html('<option value="">Loading...</option>');
+// $(document).ready(function() {
+//     $('#user').on('change', function() {
+//         let userId = $(this).val();
+//         $('#shift').html('<option value="">Loading...</option>');
 
-        if (userId) {
-            $.ajax({
-                url: '/get-user-shifts/' + userId,
-                method: 'GET',
-                success: function(shifts) {
-                    let options = '<option value=""></option>';
-                    shifts.forEach(function(shift) {
-                        options += `<option value="${shift.id}">${shift.shift_id} [ ${shift.shift_start_time} - ${shift.shift_end_time} ]</option>`;
-                    });
-                    $('#shift').html(options);
-                },
-                error: function() {
-                    $('#shift').html('<option value="">Error loading shifts</option>');
-                }
-            });
-        } else {
-            $('#shift').html('<option value="">Select User First</option>');
-        }
-    });
-});
+//         if (userId) {
+//             $.ajax({
+//                 url: '/get-user-shifts/' + userId,
+//                 method: 'GET',
+//                 success: function(shifts) {
+//                     let options = '<option value=""></option>';
+//                     shifts.forEach(function(shift) {
+//                         options += `<option value="${shift.id}">${shift.shift_id} [ ${shift.shift_start_time} - ${shift.shift_end_time} ]</option>`;
+//                     });
+//                     $('#shift').html(options);
+//                 },
+//                 error: function() {
+//                     $('#shift').html('<option value="">Error loading shifts</option>');
+//                 }
+//             });
+//         } else {
+//             $('#shift').html('<option value="">Select User First</option>');
+//         }
+//     });
+// });
 </script>
-d
 
 @endpush

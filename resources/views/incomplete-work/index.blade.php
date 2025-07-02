@@ -70,8 +70,9 @@
                                         <th><i class="ti ti-users"></i></th>
                                         <th>Fullname</th>
                                         <th>Username</th>
-                                        <th>Working Hours</th>
-                                        <th>Signin Date</th>
+                                        <th>Total Work Hrs.</th>
+                                        <th>Worked Hours</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -126,17 +127,18 @@
             }
         },
         buttons: [
-            { extend: 'excelHtml5', title: 'Incomplete Working Hours Report'},
-            { extend: 'pdfHtml5', title: 'Incomplete Working Hours Report', orientation: 'landscape', pageSize: 'A4'},
-            { extend: 'print', title: 'Incomplete Working Hours Report'}
+            { extend: 'excelHtml5', title: 'Incomplete Working Hours Report of ' + month + ' ' + year },
+            { extend: 'pdfHtml5', title: 'Incomplete Working Hours Report of ' + month + " " + year, orientation: 'landscape', pageSize: 'A4'},
+            { extend: 'print', title: 'Incomplete Working Hours Report of ' + month + ' ' + year }
         ],
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-            { data: 'avatar', name: 'user' },
+            { data: 'profile_image', name: 'user' },
             { data: 'fullname', name: 'fullname' },
             { data: 'username', name: 'User Name' },
-            { data: 'working_hours', name: 'Working Hours' },
-            { data: 'signin_date', name: 'Signin Date' },
+            { data: 'total_working_hours', name: 'Total Work Hrs' },
+            { data: 'total_worked_hours', name: 'Worked Hours' },
+            { data: 'status', name: 'Status' },
         ],
         columnDefs: [
             { orderable: false, targets: [1, 4] },

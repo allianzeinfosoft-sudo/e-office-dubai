@@ -30,4 +30,8 @@ class Project extends Model
         return $this->belongsTo(User::class, 'project_add_person'); // Adjust if 'project_add_person' is the foreign key
     }
 
+    public function tasks(){
+        return $this->hasMany(ProjectTask::class, 'project_id', 'id');
+    }
+
 }

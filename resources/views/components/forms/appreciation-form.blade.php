@@ -23,7 +23,16 @@
             </div>
         </div>
 
-
+        <div class="col-sm-6 mb-3">
+            <div class="form-group">
+                <label for="project">Project</label>
+                <select class="form-control" name="project" id="project" >
+                    @foreach ($projects as $project)
+                        <option value="{{ $project->id }}" {{ (old('project') == $project) ? 'selected' : '' }} >{{ $project->project_name ?? ''}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
@@ -32,17 +41,15 @@
             </div>
         </div>
 
-
-        <div class="col-sm-12 mb-3">
+        <div class="col-sm-6 mb-3">
             <div class="form-group">
-                <label for="display_date">Project</label>
-                <select class="form-control" name="project" id="project" >
-                    @foreach ($projects as $project)
-                        <option value="{{ $project->id }}" {{ (old('project') == $project) ? 'selected' : '' }} >{{ $project->project_name ?? ''}}</option>
-                    @endforeach
-                </select>
+                <label for="display_end_date">Display End Date <span class="text-danger">*</span></label>
+                <input type="date" name="display_end_date" id="display_end_date" class="form-control" placeholder="Display End Date" required />
             </div>
         </div>
+
+
+
 
 
         <div class="col-sm-12 mb-3">

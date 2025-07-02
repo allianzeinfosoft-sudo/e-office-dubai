@@ -9,7 +9,7 @@ class Appreciation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['appreciant','project','display_date','appreciation_details','picture'];
+    protected $fillable = ['appreciant','project','display_date','display_end_date','appreciation_details','picture'];
 
 
     public function employee()
