@@ -11,6 +11,7 @@ use App\Models\AssetClassification;
 use App\Models\AssetCategory;
 use App\Models\AssetType;
 use App\Models\AssetItemLine;
+use Illuminate\Support\Facades\Storage;
 
 class AssetRegisterController extends Controller
 {
@@ -167,8 +168,19 @@ class AssetRegisterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AssetRegister $assetRegister)
+    public function destroy($id)
     {
         //
+        $register = AssetRegister::findOrFail($id);
+        $register->delete();
+
+        // Delete related items
+        $register->items()->delete();
+        Storage::disk('public')->delete($register->upload_invoice);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset register deleted successfully.'
+        ]);
     }
 }

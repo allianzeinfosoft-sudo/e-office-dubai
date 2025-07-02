@@ -4,6 +4,7 @@
 <style>
     .w-35 { width: 35% !important; }
     .w-45 { width: 45% !important; }
+    .w-90 { width: 90% !important; }
     .offcanvas-close {
         position: absolute;
         top: 0px;
@@ -90,7 +91,7 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-90" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i> 
@@ -141,7 +142,7 @@
                             <a href="javascript:void(0)" onclick="openOffcanvas(${data})" class="btn btn-sm btn-icon btn-primary">
                                 <i class="ti ti-edit"></i>
                             </a>
-                            <a href="javascript:void(0)" onclick="deleteVendor(${data})" class="btn btn-sm btn-icon btn-danger">
+                            <a href="javascript:void(0)" onclick="deleteAssetRegister(${data})" class="btn btn-sm btn-icon btn-danger">
                                 <i class="ti ti-trash"></i>
                             </a>
                         `;
@@ -180,10 +181,10 @@
 
     });
 
-    function deleteVendor(id) {
-        if (confirm('Are you sure you want to delete this vendor?')) {
+    function deleteAssetRegister(id) {
+        if (confirm('Are you sure you want to delete this Asset Entry?')) {
             $.ajax({
-                url: "{{ route('assets.vendors.destroy', ':id') }}".replace(':id', id),
+                url: "{{ route('assets.register.destroy', ':id') }}".replace(':id', id),
                 type: "POST",
                 data: {
                     _token: "{{ csrf_token() }}",
@@ -191,7 +192,7 @@
                 },
                 success: function (response) {
                     toastr["error"](response.message);
-                    $('#vendor-table').DataTable().ajax.reload();
+                    $('#asset-register-table').DataTable().ajax.reload();
                 },
                 error: function (xhr) {
                     toastr["error"]("Failed to delete vendor.");
