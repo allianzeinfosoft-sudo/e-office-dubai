@@ -203,6 +203,7 @@ class SurveyTemplateController extends Controller
                     return [
                         'id' => $surveyUsers->id,
                         'template_name' => $surveyUsers->template?->template_name ?? '',
+                        'survey_name' => $surveyUsers->survey_name ?? '-',
                         'department' => $surveyUsers->template?->department_info?->department ?? '',
                         'employees' => $surveyUsers->employee?->full_name ?? '',
                         'survey_start_date' => $surveyUsers->survey_start_date ?? '',
@@ -228,7 +229,9 @@ class SurveyTemplateController extends Controller
 
     public function store_assign_template(Request $request)
     {
-
+         $department = $request->input('department');
+        $selectedEmployees = $request->input('employee');
+        $surveyName = $request->input('survey_name');
         $templateId = $request->input('template');
         $startDate = $request->input('survey_start_date');
         $endDate = $request->input('survey_end_date');
@@ -236,10 +239,33 @@ class SurveyTemplateController extends Controller
         $status = 1; // 1 = pending
         $submitDate = null; // initially null
 
-        foreach ($request->employee as $userId) {
+        if (in_array(0, $selectedEmployees)) {
+            if($department == 0)
+            {
+                $employeeIds = Employee::pluck('user_id')
+                                ->toArray();
+            }else{
+                $employeeIds = Employee::where('department_id', $department)
+                                ->pluck('user_id')
+                                ->toArray();
+            }
+
+        } else {
+            $employeeIds = $selectedEmployees;
+        }
+
+
+         do{
+            $survey_code = 'SURVEY-' . mt_rand(100000, 999999);
+        }   while (SurveyUserAssign::where('survey_code', $survey_code)->exists());
+
+
+         foreach ($employeeIds as $userId) {
             SurveyUserAssign::create([
                 'user_id'        => $userId,
                 'template_id'    => $templateId,
+                'survey_name'    => $surveyName,
+                'survey_code'    => $survey_code,
                 'assigned_by'    => $assignedBy,
                 'survey_start_date' => $startDate,
                 'survey_end_date'   => $endDate,
@@ -254,8 +280,17 @@ class SurveyTemplateController extends Controller
 
      public function getTemplates($departmentId)
     {
-        $data['templates'] = SurveyTemplate::select('id','template_name')->where('department_id', $departmentId)->get();
-        $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
+         if($departmentId == 0)
+        {
+            $data['templates'] = SurveyTemplate::select('id','template_name')->get();
+            $data['employees'] = Employee::select('user_id','full_name')->get();
+        }
+        else
+        {
+            $data['templates'] = SurveyTemplate::select('id','template_name')->where('department_id', $departmentId)->get();
+            $data['employees'] = Employee::select('user_id','full_name')->where('department_id', $departmentId)->get();
+        }
+
 
         return response()->json($data);
     }
@@ -289,6 +324,7 @@ class SurveyTemplateController extends Controller
                     return [
                         'id' => $surveyUsers->id,
                         'template_name' => $surveyUsers->template?->template_name ?? '',
+                        'survey_name' => $surveyUsers->survey_name ?? '-',
                         'template_id' => $surveyUsers->template_id ?? '',
                         'department' => $surveyUsers->template?->department_info?->department ?? '',
                         'employees' => $surveyUsers->employee?->full_name ?? '',

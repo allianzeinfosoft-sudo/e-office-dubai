@@ -12,6 +12,8 @@ class ParUserAssign extends Model
     protected $fillable = [
         'user_id',
         'template_id',
+        'par_name',
+        'par_code',
         'assigned_by',
         'par_start_date',
         'par_end_date',
@@ -35,5 +37,10 @@ class ParUserAssign extends Model
     public function assigned_user()
     {
         return $this->belongsTo(Employee::class, 'assigned_by','user_id');
+    }
+
+     public function par_report()
+    {
+        return $this->hasMany(PerformanceAppraisalReport::class, 'par_id','id');
     }
 }

@@ -154,7 +154,7 @@ return [
                 'route' => '/user-surveys',
             ],
             [
-                'title' => 'Add Survey',
+                'title' => 'Questions Templates',
                 'route' => '/surveytemplate',
                 'permission' => ['create survey'],
             ],
@@ -183,7 +183,7 @@ return [
                 'permission' => ['view SARs'],
             ],
             [
-                'title' => 'Add SAR',
+                'title' => 'Questions Templates',
                 'route' =>  'sartemplate',
                 'permission' => ['view SARs'],
             ],
@@ -191,7 +191,11 @@ return [
                 'title' => 'Assign SAR',
                 'route' =>  '/sartemplate-assign',
                 'permission' => ['assign SAR'],
-            ]
+            ],
+             [
+                'title' => 'SAR Report',
+                'route' => '/sar-report',
+            ],
         ]
     ],
     [
@@ -206,13 +210,17 @@ return [
                 'permission' => ['create PAR'],
             ],
             [
-                'title' => 'Add PAR',
+                'title' => 'Questions Templates',
                 'route' => '/partemplate',
             ],
             [
                 'title' => 'Assign PAR',
                 'route' => '/partemplate-assign',
                 'permission' => ['assign PAR'],
+            ],
+            [
+                'title' => 'PAR Report',
+                'route' => '/par-report',
             ],
 
 
@@ -230,7 +238,7 @@ return [
 
             ],
             [
-                'title' => 'Add Feedback',
+                'title' => 'Questions Templates',
                 'route' => '/feedback',
             ],
             [

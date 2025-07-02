@@ -63,6 +63,7 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
+                                        <th>Survey Template</th>
                                         <th>Survey Name</th>
                                         <th>Department</th>
                                         <th>Employees</th>
@@ -171,6 +172,7 @@
 
         const department = document.getElementById('department')?.value.trim();
         const template = document.getElementById('template')?.value.trim();
+        const survey_name = document.getElementById('survey_name')?.value.trim();
         const employeeSelect = document.getElementById('employee');
         const employees = Array.from(employeeSelect.selectedOptions).map(option => option.value);
         const survey_start_date = document.getElementById('survey_start_date')?.value.trim();
@@ -180,6 +182,10 @@
 
         if (!template) {
             errors.push("Survey is required.");
+        }
+
+        if (!survey_name) {
+            errors.push("Survey Name is required.");
         }
 
         if (!employees.length) {
@@ -242,7 +248,8 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'template_name', title: 'Survey Name' },
+                    { data: 'template_name', title: 'Survey Template' },
+                    { data: 'survey_name', title: 'Survey Name'},
                     { data: 'department', title: 'Department' },
                     { data: 'employees', title: 'Employees'},
                     { data: 'survey_start_date', title: 'Survey Start Date'},
@@ -269,8 +276,6 @@
                         render: function (data, type, row, full) {
                             const editUrl = "{{ route('survey_assigning.edit', ':id') }}".replace(':id', row.id);
                             return `
-
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-survey-assign" title="edit" onclick="openSurveyAssignOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
                                 <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-survey-assign" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>
                             `;
                         }

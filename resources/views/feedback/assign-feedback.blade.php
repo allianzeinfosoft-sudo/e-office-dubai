@@ -63,9 +63,10 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Feedback Title</th>
-                                        <th>Department</th>
                                         <th>Employee</th>
+                                        <th>Feedback Template</th>
+                                        <th>Feedback Name</th>
+                                        <th>Department</th>
                                         <th>Feedback Start Date</th>
                                         <th>Feedback End Date</th>
                                         <th>Created By</th>
@@ -253,8 +254,9 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'employees', title: 'Employee'},
-                    { data: 'feedback_title', title: 'Feedback Title' },
+                    { data: 'employees', title: 'Employee' },
+                    { data: 'feedback_title', title: 'Feedback Template' },
+                    { data: 'feedback_name', title: 'Feedback Name' },
                     { data: 'department', title: 'Department' },
                     { data: 'feedback_start_date', title: 'Feedback Start Date'},
                     { data: 'feedback_end_date', title: 'Feedback End Date'},

@@ -13,6 +13,8 @@ class SarUserAssign extends Model
     protected $fillable = [
         'user_id',
         'template_id',
+        'sar_name',
+        'sar_code',
         'assigned_by',
         'sar_start_date',
         'sar_end_date',
@@ -36,5 +38,10 @@ class SarUserAssign extends Model
     public function assigned_user()
     {
         return $this->belongsTo(Employee::class, 'assigned_by','user_id');
+    }
+
+    public function sar_report()
+    {
+        return $this->hasMany(SelfAppraisalReport::class, 'sar_id','id');
     }
 }

@@ -21,25 +21,43 @@ class FeedbackReportController extends Controller
             $feedbackUsers = FeedbackAssign::with([
                     'feedback.department_info',
                     'employee',
-                    'assigned_user'
+                    'assigned_user',
+                    'feedback_report'
                 ])
-                ->get()
-                ->map(function ($feedbackUsers) {
+                ->get();
+                 $grouped = $feedbackUsers->groupBy('feedback_code');
+
+                  $reportData = $grouped->map(function ($group) {
+
+                    $first = $group->first();
+
+                    // Users who have SAR reports
+                   $totalUsers = $group->count();
+
+                    // Users who completed (assuming status = 1 or reports exist)
+                    $attendedUsers = $group->filter(function ($assign) {
+                        return  $assign->feedback_report->isNotEmpty();
+                    })->count();
+
                     return [
-                        'id' => $feedbackUsers->id,
-                        'feedback_title' => $feedbackUsers->feedback?->feedback_title ?? '',
-                        'feedback_id' => $feedbackUsers->feedback_id ?? '',
-                        'department' => $feedbackUsers->feedback?->department_info?->department ?? '',
-                        'employees' => $feedbackUsers->employee?->full_name ?? '',
-                        'feedback_start_date' => $feedbackUsers->feedback_start_date ?? '',
-                        'feedback_end_date' => $feedbackUsers->feedback_end_date ?? '',
-                        'created_by' => $feedbackUsers->assigned_user?->full_name ?? '',
-                        'status' => $feedbackUsers->status ?? '',
+                        'id' => $first->id,
+                        'feedback_title' => $first->feedback?->feedback_title ?? '',
+                        'feedback_name' => $first->feedback_name ?? '-',
+                        'feedback_id' => $first->feedback_id ?? '',
+                        'department' => $first->feedback?->department_info?->department ?? '',
+                        'employees' => $first->employee?->full_name ?? '',
+                        'feedback_start_date' => $first->feedback_start_date ?? '',
+                        'feedback_end_date' => $first->feedback_end_date ?? '',
+                        'created_by' => $first->assigned_user?->full_name ?? '',
+                        'total_users' => $totalUsers,
+                        'attended_users' => $attendedUsers,
+                        'status' => $first->status ?? '',
                     ];
-                });
+                })->values();
+
 
             return response()->json([
-                'data' => $feedbackUsers
+                'data' => $reportData
             ]);
 
         }
@@ -60,7 +78,7 @@ class FeedbackReportController extends Controller
 
         foreach ($request->answers as $entry) {
             FeedbackReport::create([
-                'feedback_id'      => $request->feedback_id,
+                'feedback_assign_id'      => $request->feedback_id,
                 'question'    => $entry['question_id'],
                 'mark'        => $entry['mark'],
                 'comment'     => $entry['comment'],

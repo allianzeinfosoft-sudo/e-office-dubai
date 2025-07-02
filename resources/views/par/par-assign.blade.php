@@ -63,9 +63,10 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Template Name</th>
-                                        <th>Department</th>
                                         <th>Employees</th>
+                                        <th>Template Name</th>
+                                        <th>PAR Name</th>
+                                        <th>Department</th>
                                         <th>PAR Start Date</th>
                                         <th>PAR End Date</th>
                                         <th>Created By</th>
@@ -178,6 +179,7 @@
 
         const department = document.getElementById('department')?.value.trim();
         const template = document.getElementById('template')?.value.trim();
+        const par_name =  document.getElementById('par_name')?.value.trim();
         const employeeSelect = document.getElementById('employee');
         const employees = Array.from(employeeSelect.selectedOptions).map(option => option.value);
         const par_start_date = document.getElementById('par_start_date')?.value.trim();
@@ -188,6 +190,11 @@
         if (!template) {
             errors.push("Template is required.");
         }
+
+        if (!par_name) {
+            errors.push("PAR Name is required.");
+        }
+
 
         if (!employees.length) {
             errors.push("At least one employee must be selected.");
@@ -249,9 +256,10 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'template_name', title: 'Template Name' },
-                    { data: 'department', title: 'Department' },
                     { data: 'employees', title: 'Employees'},
+                    { data: 'template_name', title: 'Template Name' },
+                    { data: 'par_name', title: 'PAR Name'},
+                    { data: 'department', title: 'Department' },
                     { data: 'par_start_date', title: 'PAR Start Date'},
                     { data: 'par_end_date', title: 'PAR End Date'},
                     { data: 'created_by', title: 'Created By' },

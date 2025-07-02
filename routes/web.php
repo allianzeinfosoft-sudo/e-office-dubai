@@ -532,6 +532,9 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/usersars/{id}/generate-pdf', [SarTemplateController::class, 'generatePdf']);
     Route::delete('/sartemplate/{sarTemplate}', [SarTemplateController::class, 'destroy'])->name('sartemplate.destroy');
 
+    Route::get('/sar-report',[SelfAppraisalReportController::class, 'sar_report'])->name('sar.report.list');
+    Route::get('/usersars/{id}/export', [SelfAppraisalReportController::class, 'exportSarReport'])->name('sar.export');
+
 
     //PAR
     Route::resource('partemplate', ParTemplateController::class);
@@ -551,6 +554,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/userpars/{id}/generate-pdf', [ParTemplateController::class, 'generatePdf']);
     Route::delete('/partemplate/{parTemplate}', [ParTemplateController::class, 'destroy'])->name('partemplate.destroy');
 
+    Route::get('/par-report',[PerformanceAppraisalReportController::class, 'par_report'])->name('par.report.list');
+    Route::get('/userpars/{id}/export', [PerformanceAppraisalReportController::class, 'exportParReport'])->name('par.export');
 
 
     //SURVEY

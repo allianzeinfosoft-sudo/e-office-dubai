@@ -15,6 +15,8 @@ return new class extends Migration
              $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('feedback_id');
+            $table->string('feedback_name')->nullable();
+            $table->string('feedback_code');
             $table->unsignedBigInteger('assigned_by');
             $table->date('feedback_start_date');
             $table->date('feedback_end_date');

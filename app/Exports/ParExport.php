@@ -2,35 +2,33 @@
 
 namespace App\Exports;
 
-use App\Models\SurveyQuestion;
-use App\Models\SurveyReport;
-use App\Models\SurveyUserAssign;
+use App\Models\ParQuestion;
+use App\Models\ParUserAssign;
+use App\Models\PerformanceAppraisalReport;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class SurveyReportExport implements FromCollection, WithHeadings
+class ParExport implements FromCollection, WithHeadings
 {
-
-    protected $surveyId;
+    protected $parId;
     protected $questions;
 
-    public function __construct($surveyId)
-        {
-            $this->surveyId = $surveyId;
-
-            $this->questions = SurveyQuestion::where('template_id', $surveyId)->get();
-        }
-
-     public function collection()
+     public function __construct($parId)
     {
+        $this->parId = $parId;
+        $this->questions = ParQuestion::where('template_id', $parId)->get();
+    }
 
-         return SurveyUserAssign::with(['employee.department', 'employee.user'])
-            ->where('template_id', $this->surveyId)
+
+    public function collection()
+    {
+        return ParUserAssign::with(['employee.department', 'employee.user'])
+            ->where('template_id', $this->parId)
             ->where('status',2)
             ->get()
             ->map(function ($assignment) {
                 // Get related answers
-                $reports = SurveyReport::where('survey_id', $assignment->id)->get()->keyBy('question');
+                $reports = PerformanceAppraisalReport::where('par_id', $assignment->id)->get()->keyBy('question');
 
                 $row = [
                     $assignment->employee->full_name ?? 'N/A',
@@ -41,21 +39,30 @@ class SurveyReportExport implements FromCollection, WithHeadings
                 // Map answers to question columns
                 foreach ($this->questions as $question) {
                     $report = $reports->get($question->id);
-                    $row[] = $report ? "{$report->answer}" : 'N/A';
+                    $row[] = $report ? "{$report->mark}" : 'N/A';
                 }
+
+                $row[] = $assignment->total_score;
+                $row[] = $assignment->maximum_score;
+                $row[] = $assignment->score_percentage;
+
                 return $row;
             });
     }
 
     public function headings(): array
     {
-        $headings = ['Employee Name', 'Email ID', 'Department'];
+         $headings = ['Employee Name', 'Email ID', 'Department'];
 
         // Add dynamic question headings
         foreach ($this->questions as $index => $question) {
-            // $headings[] = "Question " . ($index + 1);
             $headings[] = "Q" . ($index + 1).") ".$question->question;
         }
+
+        $headings[] = 'Total Score';
+        $headings[] = 'Maximum Score';
+        $headings[] = 'Score Percentage';
+
         return $headings;
     }
 }

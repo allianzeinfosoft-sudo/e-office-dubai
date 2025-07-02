@@ -12,6 +12,8 @@ class SurveyUserAssign extends Model
     protected $fillable = [
         'user_id',
         'template_id',
+        'survey_name',
+        'survey_code',
         'assigned_by',
         'survey_start_date',
         'survey_end_date',
@@ -32,4 +34,10 @@ class SurveyUserAssign extends Model
     {
         return $this->belongsTo(Employee::class, 'assigned_by','user_id');
     }
+
+     public function survey_report()
+    {
+        return $this->hasMany(SurveyReport::class, 'survey_id','id');
+    }
+
 }

@@ -50,6 +50,7 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
+                                        <th>Survey Template</th>
                                         <th>Survey Name</th>
                                         <th>Survey Start Date</th>
                                         <th>Survey End Date</th>
@@ -197,7 +198,8 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'template_name', title: 'Survey Name' },
+                    { data: 'template_name', title: 'Survey Template' },
+                    { data: 'survey_name', title: 'Survey Name' },
                     { data: 'survey_start_date', title: 'Survey Start Date'},
                     { data: 'survey_end_date', title: 'Survey End Date'},
                     { data: 'created_by', title: 'Created By' },

@@ -2,32 +2,76 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SarExport;
 use App\Models\SarQuestion;
 use App\Models\SarUserAssign;
 use App\Models\SelfAppraisalReport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SelfAppraisalReportController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
+    public function sar_report(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $sarUsers = SarUserAssign::with([
+                    'template.department_info',
+                    'employee',
+                    'assigned_user',
+                    'sar_report'
+                ])
+                ->get();
+                $grouped = $sarUsers->groupBy('sar_code');
+                 // ->map(function ($sarUsers) {
+                    $reportData = $grouped->map(function ($group) {
+                    $first = $group->first();
+
+                    // Users who have SAR reports
+                    $totalUsers = $group->count();
+
+                    // Users who completed (assuming status = 1 or reports exist)
+                    $attendedUsers = $group->filter(function ($assign) {
+                        return  $assign->sar_report->isNotEmpty();
+                    })->count();
+
+                    return [
+                        'id' => $first->id,
+                        'sar_title' => $first->template?->template_name ?? '',
+                        'sar_name' => $first->sar_name ?? '-',
+                        'sar_id' => $first->template_id ?? '',
+                        'department' => $first->template?->department_info?->department ?? '',
+                        'employees' => $first->employee?->full_name ?? '',
+                        'sar_start_date' => $first->sar_start_date ?? '',
+                        'sar_end_date' => $first->sar_end_date ?? '',
+                        'created_by' => $first->assigned_user?->full_name ?? '',
+                        'total_users' => $totalUsers,
+                        'attended_users' => $attendedUsers,
+                        'status' => $first->status ?? '',
+                    ];
+                })->values();
+
+            return response()->json([
+                'data' => $reportData
+            ]);
+
+        }
+
+         $data['meta_title'] = 'Sar Report';
+         return view('sar.sar_report',  $data);
+    }
+
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
 
@@ -87,5 +131,10 @@ class SelfAppraisalReportController extends Controller
     public function destroy(SelfAppraisalReport $selfAppraisalReport)
     {
         //
+    }
+
+     public function exportSarReport($sarId)
+    {
+        return Excel::download(new SarExport($sarId), 'sar_reports.xlsx');
     }
 }
