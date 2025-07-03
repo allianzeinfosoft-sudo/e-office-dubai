@@ -341,8 +341,9 @@ class CustomHelper{
         $thisMonthLeaves = Leave::where('user_id', $userId)
             ->whereMonth('leave_from', $currentMonth)
             ->whereYear('leave_from', $currentYear)
+            ->where('leave_type', '!=', 'off_day')
             ->where('status', 2)
-            ->count();
+            ->sum('leave_day_count');
 
         $totalLeavesTaken = Leave::where('user_id', $userId)
             ->where('status', 2)
@@ -351,7 +352,7 @@ class CustomHelper{
         $pastYearLeaves = Leave::where('user_id', $userId)
             ->whereYear('leave_from', $pastYear)
             ->where('status', 2)
-            ->count();
+            ->sum('leave_day_count');
 
         $pendingLeaves = Leave::where('user_id', $userId)
             ->where('status', 1)
@@ -361,7 +362,7 @@ class CustomHelper{
         $paidLeaves = Leave::where('user_id', $userId)
             ->where('leave_type', 'Paid')
             ->where('status', 'Approved')
-            ->count();
+            ->sum('leave_day_count');
 
         // Category wise current year
         $categoryWise = Leave::select('leave_type')

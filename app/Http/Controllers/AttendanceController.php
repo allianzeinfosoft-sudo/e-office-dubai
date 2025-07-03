@@ -962,7 +962,7 @@ class AttendanceController extends Controller{
                     'signin_date' => $signinDate,
                     'signin_time' => $time,
                     'punchin_type' => 'emergency',
-                    'break_time' => '00:30:00',
+                    'break_time' => '01:00:00',
                     'signin_late_note' => $lateNote,
                 ]);
 
@@ -1123,6 +1123,7 @@ class AttendanceController extends Controller{
                 'signin_time' => $signinTime,
                 'signin_late_note' => $request->signin_late_note ?? null,
                 'punchin_type' => 'Custom',
+                'break_time' => '01:00:00',
                 'ipaddress' => $request->ip(),
                 'status' => 'custom',
                 'custom_status' => '1'
