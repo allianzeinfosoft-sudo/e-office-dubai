@@ -162,12 +162,7 @@ class CustomHelper{
                 ->whereYear('leave_from', $year)
                 ->whereMonth('leave_from', $month)
                 ->where('status', 2)
-                ->get()
-                ->sum(function ($leave) {
-                    $from = Carbon::parse($leave->leave_from);
-                    $to = Carbon::parse($leave->leave_to);
-                    return $from->diffInDaysFiltered(fn(Carbon $date) => $date->isWeekday(), $to) + 1;
-                });
+                ->sum('leave_day_count');
 
             $report[] = [
                 'month' => Carbon::create()->month($month)->format('F'),
@@ -342,17 +337,18 @@ class CustomHelper{
         $thisMonthLeaves = Leave::where('user_id', $userId)
             ->whereMonth('leave_from', $currentMonth)
             ->whereYear('leave_from', $currentYear)
+            ->where('leave_type', '!=', 'off_day')
             ->where('status', 2)
-            ->count();
+            ->sum('leave_day_count');
 
         $totalLeavesTaken = Leave::where('user_id', $userId)
             ->where('status', 2)
-            ->count();
+            ->sum('leave_day_count');
 
         $pastYearLeaves = Leave::where('user_id', $userId)
             ->whereYear('leave_from', $pastYear)
             ->where('status', 2)
-            ->count();
+            ->sum('leave_day_count');
 
         $pendingLeaves = Leave::where('user_id', $userId)
             ->where('status', 1)
@@ -362,7 +358,7 @@ class CustomHelper{
         $paidLeaves = Leave::where('user_id', $userId)
             ->where('leave_type', 'Paid')
             ->where('status', 'Approved')
-            ->count();
+            ->sum('leave_day_count');
 
         // Category wise current year
         $categoryWise = Leave::select('leave_type')

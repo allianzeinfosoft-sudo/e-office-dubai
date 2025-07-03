@@ -957,61 +957,67 @@ public function checkAccountNumber(Request $request)
         $data['meta_title'] = 'Latecomers';
         return view('latecomers-users.index', $data);
     }
-    public function lateOfComersData(Request $request){
+    public function lateOfComersData(Request $request)
+{
+    $fromDate = $request->input('from_date')
+        ? date('Y-m-d', strtotime($request->input('from_date')))
+        : date('Y-m-d');
 
-        $fromDate = date('Y-m-d', strtotime($request->input('from_date'))) ??  date('Y-m-d');
-        $toDate =  date('Y-m-d', strtotime($request->input('to_date'))) ?? date('Y-m-d');
+    $toDate = $request->input('to_date')
+        ? date('Y-m-d', strtotime($request->input('to_date')))
+        : date('Y-m-d');
 
-        $employees = Employee::with('workshift')->whereNotIn('status', ['4'])->get();
+    $employees = Employee::with('workshift')->whereNotIn('status', ['4'])->get();
 
-        $data['employees'] = $employees->map(function ($employee, $index) use ($fromDate, $toDate) {
-            $shift = $employee->workshift;
+    $data = $employees->map(function ($employee, $index) use ($fromDate, $toDate) {
+        $shift = $employee->workshift;
 
-            if (!$shift) return null;
+        if (!$shift) return null;
 
-             // Get list of leave dates (with off_type) for this employee
-            $leaveDates = Leave::where('user_id', $employee->user_id)
-                ->where('leave_type', 'off_type')
-                ->where(function ($query) use ($fromDate, $toDate) {
-                    $query->whereBetween('leave_from', [$fromDate, $toDate])
-                        ->orWhereBetween('leave_to', [$fromDate, $toDate])
-                        ->orWhere(function ($q) use ($fromDate, $toDate) {
-                            $q->where('leave_from', '<=', $fromDate)
-                                ->where('leave_to', '>=', $toDate);
-                        });
-                })
-                ->get()
-                ->flatMap(function ($leave) {
-                    return \Carbon\CarbonPeriod::create($leave->leave_from, $leave->leave_to)->toArray();
-                })
-                ->map(function ($date) {
-                    return $date->format('Y-m-d');
-                })
-                ->toArray();
+        // Get list of leave dates (with off_type) for this employee
+        $leaveDates = Leave::where('user_id', $employee->user_id)
+            ->where('leave_type', 'off_type')
+            ->where(function ($query) use ($fromDate, $toDate) {
+                $query->whereBetween('leave_from', [$fromDate, $toDate])
+                    ->orWhereBetween('leave_to', [$fromDate, $toDate])
+                    ->orWhere(function ($q) use ($fromDate, $toDate) {
+                        $q->where('leave_from', '<=', $fromDate)
+                            ->where('leave_to', '>=', $toDate);
+                    });
+            })
+            ->get()
+            ->flatMap(function ($leave) {
+                return \Carbon\CarbonPeriod::create($leave->leave_from, $leave->leave_to)->toArray();
+            })
+            ->map(function ($date) {
+                return $date->format('Y-m-d');
+            })
+            ->toArray();
 
-            $lateCount = Attendance::where('emp_id', $employee->user_id)
-                ->whereBetween('signin_date', [$fromDate, $toDate])
-                ->whereTime('signin_time', '>', $shift->shift_start_time)
-                ->whereNotIn('signin_date', $leaveDates)
-                ->count();
+        $lateCount = Attendance::where('emp_id', $employee->user_id)
+            ->whereBetween('signin_date', [$fromDate, $toDate])
+            ->whereTime('signin_time', '>', $shift->shift_start_time)
+            ->whereNotIn('signin_date', $leaveDates)
+            ->count();
 
-            return [
-                'DT_RowIndex' => $index + 1,
-                'id' => $employee->id,
-                'user' => $employee->profile_image
-                    ? '<img src="' . asset('storage/' . $employee->profile_image) . '" alt="Avatar" class="rounded-circle" width="40" height="40" />'
-                    : '<img src="' . asset('assets/img/avatars/default-avatar.png') . '" alt="Avatar" class="rounded-circle" width="40" height="40" />',
-                'fullname' => $employee->full_name,
-                'count' => $lateCount,
+        return [
+            'DT_RowIndex' => $index + 1,
+            'id' => $employee->id,
+            'user' => $employee->profile_image
+                ? '<img src="' . asset('storage/' . $employee->profile_image) . '" alt="Avatar" class="rounded-circle" width="40" height="40" />'
+                : '<img src="' . asset('assets/img/avatars/default-avatar.png') . '" alt="Avatar" class="rounded-circle" width="40" height="40" />',
+            'fullname' => $employee->full_name,
+            'count' => $lateCount,
+            'action' => $lateCount > 0
+                ? '<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="View More" onclick="viewMoreModal(' . $employee->id . ')"> More Details </a>'
+                : '<a href="javascript:void(0);" class="btn btn-sm btn-secondary disabled" title="No Details Available"> More Details </a>',
+        ];
+    })->filter()->values(); // Remove null and reindex
 
-                'action' => $lateCount > 0
-                    ? '<a href="javascript:void(0);" class="btn btn-sm btn-primary" title="Unlock User" onclick="viewMoreModal(' . $employee->id . ')"> More Details </i></a>'
-                    : '<a href="javascript:void(0);" class="btn btn-sm btn-secondary desabled" desabled title="Unlock User"> More Details </i></a>',
-            ];
-        })->filter(); // Remove null values for employees without shifts
-
-        return response()->json(['data' => $data['employees']]);
-    }
+    return response()->json([
+        'data' => $data
+    ]);
+}
 
 
     public function userLateCommers(Request $request){
@@ -1086,41 +1092,67 @@ public function checkAccountNumber(Request $request)
         $month = $request->input('month') ?? date('m');  // Default to current month
         $year = $request->input('year') ?? date('Y');    // Default to current year
 
-        // Calculate start and end date of the given month-year
         $fromDate = date('Y-m-d', strtotime("$year-$month-01"));
         $toDate = date('Y-m-t', strtotime($fromDate));  // t = last day of the month
+        $weekOffDays = [0, 6]; // Sunday, Saturday
 
-        $attendances = Attendance::with('employee')
-            ->where('is_incomplete', 1)
-            ->whereBetween('signin_date', [$fromDate, $toDate])
-            ->get();
+        $employees = Employee::with('user')->whereIn('status', [1, 2, 5])->get();
 
-        $data = $attendances->map(function ($attendance, $index) {
-            $employee = $attendance->employee;
+        $data = $employees->map(function ($employee , $index) use ($fromDate, $toDate, $weekOffDays) {
+            $workingDays = $this->getTotalWorkingDays($fromDate, $toDate, $weekOffDays);
+            $expectedSeconds = ($workingDays * 8); // 8 hours per day
 
-            $avatar = $employee && $employee->profile_image
-                ? asset('storage/' . $employee->profile_image)
-                : asset('/assets/img/avatars/default-avatar.png');
+            $attendanceRecords = Attendance::where('emp_id', $employee->user_id)
+                ->whereBetween('signin_date', [$fromDate, $toDate])
+                ->get();
 
-            $avatarImg = '<img src="' . $avatar . '" alt="Avatar" class="rounded-circle" width="40" height="40" />';
+            $totalSeconds = 0;
 
-            $workingHours = $attendance->working_hours ?? '0.00';
-
-            // Convert to float and compare
-            $badgeClass = (float)$workingHours < 4.30 ? 'bg-warning' : 'bg-danger';
+            foreach ($attendanceRecords as $attendance) {
+                if ($attendance->working_hours) {
+                    $parts = explode(':', $attendance->working_hours);
+                    if (count($parts) === 3) {
+                        $hours = (int)$parts[0];
+                        $minutes = (int)$parts[1];
+                        $seconds = (int)$parts[2];
+                        $totalSeconds += ($hours * 3600) + ($minutes * 60) + $seconds;
+                    }
+                }
+            }
 
             return [
-                'DT_RowIndex'   => $index + 1,
-                'avatar'        => $avatarImg,
-                'fullname'      => $employee->full_name ?? 'N/A',
-                'username'      => $attendance->username,
-                'working_hours' => '<span class="badge ' . $badgeClass . '">' . $attendance->working_hours . '</span>',
-                'signin_date'   => $attendance->signin_date  ? '<span class="badge bg-primary" >' . Carbon::parse($attendance->signin_date)->format('d-m-Y') . '</span>' : 'N/A',
+                'DT_RowIndex' => $index + 1,
+                'id' => $employee->id,
+                'fullname' => $employee->full_name,
+                'username' => $employee->user->username ?? '',
+                'profile_image' => '<img src="' . asset('storage/' . $employee->profile_image) . '" alt="Profile Image" class="rounded-circle" width="40" height="40" />' ?? '',
+                'total_working_hours' => $expectedSeconds . ' : 00',
+                'total_worked_hours' => floor( $totalSeconds / 3600) . ' : '. floor($totalSeconds % 3600)/60 ,
+                'status' => (int) $totalSeconds/3600 <= (int) $expectedSeconds ? '<span class="badge bg-label-danger">Incomplete</span>' : '<span class="badge bg-label-success">Completed</span>',
             ];
         });
 
         return response()->json(['data' => $data]);
     }
+
+    public function getTotalWorkingDays($fromDate, $toDate, $weekOffDays = [0, 6]){
+        $from = Carbon::parse($fromDate);
+        $to = Carbon::parse($toDate);
+        $workingDays = 0;
+        $holidays = DB::table('holidays')
+            ->whereBetween('date', [$fromDate, $toDate])
+            ->pluck('date')
+            ->toArray();
+        while ($from->lte($to)) {
+            $dateStr = $from->toDateString();
+            if (!in_array($from->dayOfWeek, $weekOffDays) && !in_array($dateStr, $holidays)) {
+                $workingDays++;
+            }
+            $from->addDay();
+        }
+        return $workingDays;
+    }
+
 
 
     public function getUserDetails($userId)

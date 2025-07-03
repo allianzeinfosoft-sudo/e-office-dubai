@@ -262,7 +262,7 @@ class ReportController extends Controller
         // Attendance + Leave
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user);
         $data['leave_stats']          = CustomHelper::getEmployeeLeaveStats($selected_user, $selected_year);
-
+        
         // Other info
         $data['current_user'] = Employee::where('user_id', $selected_user)->first();
         $data['employees']    = Employee::all();
@@ -316,7 +316,7 @@ class ReportController extends Controller
                         ->orWhereBetween('leave_to', [$startDate, $endDate]);
                 })
                 ->where('status', 2)
-                ->count();
+                ->sum('leave_day_count');
 
             $totalSeconds = $attendances->sum(function ($a) {
                 $time = $a->working_hours;
