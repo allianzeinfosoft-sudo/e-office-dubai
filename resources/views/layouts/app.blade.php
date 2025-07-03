@@ -76,8 +76,52 @@
         }
     </style>
     @yield('css')
+
+
+    <style>
+        #page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 99999;
+            width: 100%;
+            height: 100%;
+            background: #ffffff38;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        body.loading {
+            pointer-events: none;
+            overflow: hidden;
+        }
+    </style>
+
+
 </head>
-<body>
+<body class="loading">
+    <div id="page-loader">
+        <div class="spinner"></div>
+    </div>
+
     <div id="app">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -204,5 +248,15 @@
     @stack('js')
     @yield('js')
 
+    <script>
+        window.addEventListener('load', function () {
+            const loader = document.getElementById('page-loader');
+            loader.style.opacity = 0;
+            setTimeout(() => {
+                loader.style.display = 'none';
+                document.body.classList.remove('loading');
+            }, 500);
+        });
+    </script>
 </body>
 </html>
