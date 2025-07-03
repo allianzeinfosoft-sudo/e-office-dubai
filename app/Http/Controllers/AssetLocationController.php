@@ -30,17 +30,6 @@ class AssetLocationController extends Controller
         return view('company-assets.settings.locations.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -59,17 +48,6 @@ class AssetLocationController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(AssetLocation $assetLocation)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($assetLocation)
     {
       $data = AssetLocation::findOrFail($assetLocation);
@@ -79,17 +57,6 @@ class AssetLocationController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, AssetLocation $assetLocation)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($assetLocation)
     {
        $assetType = AssetLocation::findOrFail($assetLocation);
@@ -98,5 +65,11 @@ class AssetLocationController extends Controller
             'success' => true,
             'message' => 'Type deleted successfully!',
         ]);
+    }
+
+    public function getAllLocations()
+    {
+         $locations = AssetLocation::pluck('name', 'id');
+        return response()->json($locations);
     }
 }

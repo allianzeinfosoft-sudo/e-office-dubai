@@ -575,8 +575,8 @@ return [
                 'permission' => ['view assets'],
             ],
             [
-                'title' => 'Vendors',
-                'route' =>  '/assets/vendors',
+                'title' => 'Asset Allocation',
+                'route' =>  '/assets/allocation',
                 'permission' => ['view assets'],
             ],
             [
@@ -610,6 +610,11 @@ return [
                         'route' =>  '/assets/itemmaster',
                         'permission' => ['view assets'],
                     ],
+                    [
+                        'title' => 'Vendors',
+                        'route' =>  '/assets/vendors',
+                        'permission' => ['view assets'],
+                    ]
                 ]
             ],
 

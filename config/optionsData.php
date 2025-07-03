@@ -147,6 +147,13 @@ return [
     ],
     'companies' => [
         '1' => 'AIS/ABS',
+    ],
+
+    'asset_users' => [
+        'employee' => 'Employee',
+        'location' => 'Location',
+        'scrap' => 'Scrap',
+        'repair' => 'Repair'
     ]
 
 ];

@@ -1189,4 +1189,10 @@ public function checkAccountNumber(Request $request)
         return back()->with('success', 'Password changed successfully.');
     }
 
+   public function getAllEmployees()
+    {
+        $employees = Employee::pluck('full_name', 'id');
+        return response()->json($employees);
+    }
+
 }

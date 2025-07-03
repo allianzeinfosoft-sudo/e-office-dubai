@@ -52,6 +52,7 @@ use App\Models\Reminder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
+use App\Http\Controllers\AssetAllocationController;
 use App\Http\Controllers\AssetItemMasterController;
 use App\Http\Controllers\AssetLocationController;
 use App\Http\Controllers\AssetTypeController;
@@ -66,6 +67,7 @@ use App\Http\Controllers\SelfAppraisalReportController;
 use App\Http\Controllers\SurveyReportController;
 use App\Http\Controllers\SurveyTemplateController;
 use App\Http\Controllers\TicketRaisingController;
+use App\Models\AssetAllocation;
 use App\Models\AssetItemMaster;
 use App\Models\AssetLocation;
 use App\Models\AssetType;
@@ -172,6 +174,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/get-user-details/{userId}', [UserController::class, 'getUserDetails'])->name('get-user-details');
     Route::post('/change-user-password', [UserController::class, 'ChangeUserPassword'])->name('user_change_password');
 
+    Route::get('/get-all-employees', [UserController::class, 'getAllEmployees']);
 
     /* department */
     Route::resource('departments',DepartmentController::class);
@@ -635,7 +638,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::resource('register', AssetRegisterController::class)->names('register');
         Route::post('store-vendor-category', [AssetVendorsController::class, 'store_category'])->name('store-vendor-category');
         Route::resource('itemmaster', AssetItemMasterController::class)->names('itemmaster');
+        Route::resource('allocation', AssetAllocationController::class)->names('allocation');
     });
-
+    Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
 
 });
