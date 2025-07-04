@@ -11,7 +11,7 @@ use App\Models\AssetItemMaster;
 use App\Models\AssetClassification;
 use App\Models\AssetCategory;
 use App\Models\AssetType;
-use App\Models\AssetItemLine;
+use App\Models\AssetMapping;
 use Illuminate\Support\Facades\Storage;
 
 class AssetRegisterController extends Controller
@@ -112,7 +112,13 @@ class AssetRegisterController extends Controller
             ]
         );
 
-        // Delete old item lines if editing
+        // Get all line item IDs
+        $lineItemIds = $asset->items()->pluck('id');
+
+        // Delete related mappings
+        AssetMapping::whereIn('register_lineitem_id', $lineItemIds)->delete();
+
+        // Now delete line items
         $asset->items()->delete();
 
         // Save asset item lines
@@ -132,10 +138,6 @@ class AssetRegisterController extends Controller
                 'warranty'                => $request->warranty[$index],
             ]);
 
-            $dataAsset['master_item_id']        = $itemId;
-            $dataAsset['register_lineitem_id']  = $LineItems->id;
-            $dataAsset['asset_quantity']        = $request->asset_quantity[$index];
-
             CustomHelper::updateOrCreateAssetMapping([
                 'master_item_id'        => $itemId,
                 'register_lineitem_id'  => $LineItems->id,
@@ -145,7 +147,7 @@ class AssetRegisterController extends Controller
             ]);
 
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Asset register saved successfully.',  
@@ -190,8 +192,16 @@ class AssetRegisterController extends Controller
         $register->delete();
 
         // Delete related items
+        // Get all line item IDs
+        $lineItemIds = $register->items()->pluck('id');
+
+        // Delete related mappings
+        AssetMapping::whereIn('register_lineitem_id', $lineItemIds)->delete();
+
         $register->items()->delete();
-        Storage::disk('public')->delete($register->upload_invoice);
+        if (!empty($register->upload_invoice) && Storage::disk('public')->exists($register->upload_invoice)) {
+            Storage::disk('public')->delete($register->upload_invoice);
+        }
 
         return response()->json([
             'success' => true,

@@ -828,22 +828,29 @@ public static function getWorkRatingAnalysisMonthly($empId)
     }
 
     public static function updateOrCreateAssetMapping(array $dataAsset){
-        // Delete previous mappings for this line item
+        // Delete existing mappings for the same line item
         AssetMapping::where('register_lineitem_id', $dataAsset['register_lineitem_id'])->delete();
-        /*  */
-        $lastCount = AssetMapping::where(['master_item_id'=> $dataAsset['master_item_id'], 'model'=> $dataAsset['model'], 'serial_number'=> $dataAsset['moserial_numberdel']])->count();
-        // Create new mappings based on quantity
+
+        // Count previous mappings for the same item-model-serial combo to continue item_number sequence
+        $lastCount = AssetMapping::where([
+            'master_item_id'  => $dataAsset['master_item_id'],
+            'model'           => $dataAsset['model'],
+            'serial_number'   => $dataAsset['serial_number']
+        ])->count();
+
+        // Set the starting item number
+        $startNumber = $lastCount;
+
+        // Create new mappings based on asset_quantity
         $quantity = (int) $dataAsset['asset_quantity'];
 
         for ($i = 1; $i <= $quantity; $i++) {
             AssetMapping::create([
-                'master_item_id'        => $dataAsset['master_item_id'],
-                'register_lineitem_id'  => $dataAsset['register_lineitem_id'],
-                'model'                 => $dataAsset['model'],
-                'serial_number'         => $dataAsset['serial_number'],
-                'item_number'           => $i,
-                'allocation_status'     => null,
-                'status'                => 'active',
+                'master_item_id'       => $dataAsset['master_item_id'],
+                'register_lineitem_id' => $dataAsset['register_lineitem_id'],
+                'model'                => $dataAsset['model'],
+                'serial_number'        => $dataAsset['serial_number'],
+                'item_number'          => $startNumber + $i,
             ]);
         }
     }

@@ -11,6 +11,8 @@ class AssetMapping extends Model
     protected $fillable = [
         'master_item_id',
         'register_lineitem_id', 
+        'model',
+        'serial_number',
         'item_number', 
         'allocation_id', 
         'scrap_id', 

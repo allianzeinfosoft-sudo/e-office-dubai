@@ -252,7 +252,7 @@
                                 <td>
                                     <select name="asset_item_id[${index}]" class="form-control select2">
                                         @foreach($assetItems as $key => $label)
-                                            <option value="{{ $key }}" ${item.asset_item_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                            <option value="{{ $label['id'] }}" ${item.asset_item_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
@@ -262,21 +262,21 @@
                                 <td>
                                     <select name="asset_classification_id[${index}]" class="form-control select2">
                                         @foreach($assetClassifications as $key => $label)
-                                            <option value="{{ $key }}" ${item.asset_classification_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                            <option value="{{ $label['id'] }}" ${item.asset_classification_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td>
                                     <select name="asset_category_id[${index}]" class="form-control select2">
                                         @foreach($assetCategories as $key => $label)
-                                            <option value="{{ $key }}" ${item.asset_category_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                            <option value="{{ $label['id'] }}" ${item.asset_category_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td>
                                     <select name="asset_type_id[${index}]" class="form-control select2">
                                         @foreach($assetTypes as $key => $label)
-                                            <option value="{{ $key }}" ${item.asset_type_id == {{ $key }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                            <option value="{{ $label['id'] }}" ${item.asset_type_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
@@ -291,7 +291,9 @@
                     });
 
                     // Re-initialize select2 for dynamically added fields
-                    $('.select2').select2();
+                    $('#item-line-container').find('select.select2').select2({
+                        dropdownParent: $('#vendor_offcanvas') // replace this ID with your actual offcanvas container ID
+                    });
                 },
                 error: function() {
                     alert('Failed to load Asset Register data.');
