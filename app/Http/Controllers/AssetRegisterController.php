@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CustomHelper;
 use App\Models\AssetRegister;
 use Illuminate\Http\Request;
 
@@ -79,7 +80,6 @@ class AssetRegisterController extends Controller
             'vendor_id' => 'required',
             'remarks' => 'nullable',
             'upload_invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-
             'asset_item_id' => 'required|array',
             'asset_quantity' => 'required|array',
             'asset_price' => 'required|array',
@@ -117,7 +117,8 @@ class AssetRegisterController extends Controller
 
         // Save asset item lines
         foreach ($request->asset_item_id as $index => $itemId) {
-            $asset->items()->create([
+
+            $LineItems = $asset->items()->create([
                 'asset_item_id'           => $itemId,
                 'item_model'              => $request->asset_model[$index],
                 'asset_description'       => $request->asset_unit[$index],  // Forgot to add unit column so I added to this field
@@ -130,7 +131,21 @@ class AssetRegisterController extends Controller
                 'serial_number'           => $request->serial_number[$index],
                 'warranty'                => $request->warranty[$index],
             ]);
+
+            $dataAsset['master_item_id']        = $itemId;
+            $dataAsset['register_lineitem_id']  = $LineItems->id;
+            $dataAsset['asset_quantity']        = $request->asset_quantity[$index];
+
+            CustomHelper::updateOrCreateAssetMapping([
+                'master_item_id'        => $itemId,
+                'register_lineitem_id'  => $LineItems->id,
+                'asset_quantity'        => $request->asset_quantity[$index],
+                'model'                 => $request->asset_model[$index],
+                'serial_number'         => $request->serial_number[$index],
+            ]);
+
         }
+        
         return response()->json([
             'success' => true,
             'message' => 'Asset register saved successfully.',  
