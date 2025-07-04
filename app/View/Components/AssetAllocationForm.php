@@ -7,6 +7,7 @@ use App\Models\AssetClassification;
 use App\Models\AssetItemMaster;
 use App\Models\AssetType;
 use App\Models\AssetVendors;
+use App\Models\Project;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -19,14 +20,16 @@ class AssetAllocationForm extends Component
     public $assetClassifications;
     public $assetCategories;
     public $assetTypes;
+    public $projects;
 
     public function __construct()
     {
         $this->vendors = AssetVendors::all();
-        $this->assetItems = AssetItemMaster::all();
+        $this->assetItems = AssetItemMaster::with('asset_items')->get();
         $this->assetClassifications = AssetClassification::all();
         $this->assetCategories = AssetCategory::all();
         $this->assetTypes = AssetType::all();
+        $this->projects = Project::all();
     }
 
     /**

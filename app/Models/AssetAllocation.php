@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class AssetAllocation extends Model
 {
     use HasFactory;
+    protected $fillable = ['user_type','user','department','remarks','status'];
 }

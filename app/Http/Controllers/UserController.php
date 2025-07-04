@@ -1191,8 +1191,27 @@ public function checkAccountNumber(Request $request)
 
    public function getAllEmployees()
     {
-        $employees = Employee::pluck('full_name', 'id');
+        $employees = Employee::pluck('full_name', 'user_id');
         return response()->json($employees);
+    }
+
+    public function getEmployeeDepartment(Request $request)
+    {
+        $employee = Employee::with('department')
+                ->where('user_id', $request->employee_id)
+                ->first();
+
+        if (!$employee || !$employee->department) {
+            return response()->json([
+                'department' => '',
+                'department_id' => ''
+            ]);
+        }
+
+        return response()->json([
+            'department' => $employee->department->department, // or 'name' based on your column
+            'department_id' => $employee->department->id,
+        ]);
     }
 
 }

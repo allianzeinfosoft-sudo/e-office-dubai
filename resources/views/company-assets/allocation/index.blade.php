@@ -140,7 +140,7 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-90" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i>
