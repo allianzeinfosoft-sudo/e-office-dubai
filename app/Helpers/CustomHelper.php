@@ -11,6 +11,8 @@ use App\Models\UserEntryBlockList;
 use App\Models\CustomAttendance;
 use App\Models\MailBox;
 use App\Models\User;
+use App\Models\AssetMapping;
+use App\Models\AssetItemLine;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -341,8 +343,9 @@ class CustomHelper{
         $thisMonthLeaves = Leave::where('user_id', $userId)
             ->whereMonth('leave_from', $currentMonth)
             ->whereYear('leave_from', $currentYear)
+            ->where('leave_type', '!=', 'off_day')
             ->where('status', 2)
-            ->count();
+            ->sum('leave_day_count');
 
         $totalLeavesTaken = Leave::where('user_id', $userId)
             ->where('status', 2)
@@ -351,7 +354,7 @@ class CustomHelper{
         $pastYearLeaves = Leave::where('user_id', $userId)
             ->whereYear('leave_from', $pastYear)
             ->where('status', 2)
-            ->count();
+            ->sum('leave_day_count');
 
         $pendingLeaves = Leave::where('user_id', $userId)
             ->where('status', 1)
@@ -361,7 +364,7 @@ class CustomHelper{
         $paidLeaves = Leave::where('user_id', $userId)
             ->where('leave_type', 'Paid')
             ->where('status', 'Approved')
-            ->count();
+            ->sum('leave_day_count');
 
         // Category wise current year
         $categoryWise = Leave::select('leave_type')
@@ -821,6 +824,27 @@ public static function getWorkRatingAnalysisMonthly($empId)
             return $time->diffForHumans(); // Example: "2 hours ago"
         } catch (\Exception $e) {
             return null;
+        }
+    }
+
+    public static function updateOrCreateAssetMapping(array $dataAsset){
+        // Delete previous mappings for this line item
+        AssetMapping::where('register_lineitem_id', $dataAsset['register_lineitem_id'])->delete();
+        /*  */
+        $lastCount = AssetMapping::where(['master_item_id'=> $dataAsset['master_item_id'], 'model'=> $dataAsset['model'], 'serial_number'=> $dataAsset['moserial_numberdel']])->count();
+        // Create new mappings based on quantity
+        $quantity = (int) $dataAsset['asset_quantity'];
+
+        for ($i = 1; $i <= $quantity; $i++) {
+            AssetMapping::create([
+                'master_item_id'        => $dataAsset['master_item_id'],
+                'register_lineitem_id'  => $dataAsset['register_lineitem_id'],
+                'model'                 => $dataAsset['model'],
+                'serial_number'         => $dataAsset['serial_number'],
+                'item_number'           => $i,
+                'allocation_status'     => null,
+                'status'                => 'active',
+            ]);
         }
     }
 }

@@ -72,6 +72,7 @@ use App\Models\AssetItemMaster;
 use App\Models\AssetLocation;
 use App\Models\AssetType;
 use App\Models\PerformanceAppraisalReport;
+use App\Http\Controllers\ScrapRegisterController;
 
 Route::middleware(['web'])->group(function () {
     Auth::routes();  // or your custom login routes
@@ -640,6 +641,9 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::post('store-vendor-category', [AssetVendorsController::class, 'store_category'])->name('store-vendor-category');
         Route::resource('itemmaster', AssetItemMasterController::class)->names('itemmaster');
         Route::resource('allocation', AssetAllocationController::class)->names('allocation');
+        Route::resource('scrap-register', ScrapRegisterController::class)->names('scrap-register');
+        Route::post('scrap-register/get-item-serials', [ScrapRegisterController::class, 'getItemSerial'])->name('scrap-register.get-item-serials');
+        Route::post('scrap-register/get-model-no', [ScrapRegisterController::class, 'getItemModel'])->name('scrap-register.get-model-no');
     });
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
 
