@@ -641,6 +641,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::resource('itemmaster', AssetItemMasterController::class)->names('itemmaster');
         Route::resource('allocation', AssetAllocationController::class)->names('allocation');
         Route::resource('scrap-register', ScrapRegisterController::class)->names('scrap-register');
+        Route::post('scrap-register/get-item-serials', [ScrapRegisterController::class, 'getItemSerial'])->name('scrap-register.get-item-serials');
+        Route::post('scrap-register/get-model-no', [ScrapRegisterController::class, 'getItemModel'])->name('scrap-register.get-model-no');
     });
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
 

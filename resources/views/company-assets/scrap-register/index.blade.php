@@ -2,6 +2,8 @@
 
 @section('css')
 <style>
+    .w-35 { width: 35% !important; }
+    .w-45 { width: 45% !important; }
     .w-90 { width: 90% !important; }
     .offcanvas-close {
         position: absolute;
@@ -9,6 +11,26 @@
         left: -32px;
         z-index: 1055;
         padding: 28px 10px;
+        border-radius: 0px;
+    }
+     #scrap-register-form th {
+        text-transform: uppercase;
+        font-size: 0.7125rem !important;
+        letter-spacing: 1px;
+        padding-top: 0.58rem;
+        padding-bottom: 0.58rem;
+    }
+    
+    #item-line-table > :not(caption) > * > * {
+        padding: 0.5rem 0.5rem !important;
+        background-color: var(--bs-table-bg);
+        border-bottom-width: 1px;
+        box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
+    }
+    #item-line-table .form-control{
+        border-radius: 0.2rem !important;
+        padding: 0.40rem 0.40rem !important;
+        font-size: 0.7125rem !important;
     }
 </style>
 @stop
@@ -23,11 +45,11 @@
 
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Scrap /</span> Register</h4>
+                    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> ScrapRegister</h4>
 
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
-                            <a class="btn btn-primary" href="javascript:void(0);" onclick="openScrapOffcanvas()">
+                            <a class="btn btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <i class="ti ti-plus"></i> Add Scrap
                             </a>
                         </div>
@@ -61,26 +83,38 @@
 </div>
 
 <!-- Scrap Offcanvas -->
-<div class="offcanvas offcanvas-end w-90" data-bs-backdrop="static" tabindex="-1" id="scrap_offcanvas">
-    <div class="offcanvas-header bg-primary text-white">
-        <h5 class="offcanvas-title">Scrap Entry</h5>
-        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas">
-            <i class="fa fa-close"></i>
-        </button>
+
+<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="scrap_offcanvas" aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas-header bg-primary p-3">
+        <span class="d-flex justify-content-between align-items-center gap-2">
+            <i class="ti ti-file-description fs-2 text-white"></i> 
+            <span id="scrap_offcanvas-title">
+                <h5 class="offcanvas-title text-white">Create Scrap Register</h5>
+                <span class="text-white slogan">Add new Scrap Register</span>
+            </span>
+        </span>
+        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i></button>
     </div>
     <div class="offcanvas-body">
-        @include('scrap._form')
+        <div class="row">
+            <div class="col-sm-12">
+                <x-scrap-register-form />
+            </div>
+        </div>
     </div>
 </div>
+
 @stop
 
 @push('js')
 <script>
     $(function () {
+
         const scrapTable = $('#scrap-register-table').DataTable({
-            processing: true,
+            processing: false,
             serverSide: false,
-            ajax: '{{ route("scrap.index") }}',
+            ajax: '{{ route("assets.scrap-register.index") }}',
+            dataSrc: 'data',
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
                 { data: 'scrap_no' },
@@ -93,18 +127,17 @@
                     data: 'id',
                     render: function (data) {
                         return `
-                            <button onclick="editScrap(${data})" class="btn btn-sm btn-primary"><i class="ti ti-edit"></i></button>
-                            <button onclick="deleteScrap(${data})" class="btn btn-sm btn-danger"><i class="ti ti-trash"></i></button>
+                            <button class="btn btn-sm btn-primary"><i class="ti ti-edit"></i></button>
+                            <button class="btn btn-sm btn-danger"><i class="ti ti-trash"></i></button>
                         `;
                     }
                 }
             ]
         });
 
-        $('#scrap-form').submit(function (e) {
+        $('#scrap-register-form').submit(function (e) {
             e.preventDefault();
             let formData = new FormData(this);
-
             $.ajax({
                 url: $(this).attr('action'),
                 method: 'POST',
@@ -120,35 +153,26 @@
                 }
             });
         });
+        
     });
 
-    function openScrapOffcanvas() {
-        $('#scrap_id').val('');
-        $('#scrap-form')[0].reset();
+    function openOffcanvas( $id = null) {
+        if($id) {
+            $('#target_id').val($id);
+            $('#scrap_offcanvas-title').html(`<h5 class="offcanvas-title text-white">Edit Scrap Register</h5><span class="text-white slogan">Update Scrap Register</span>`);   
+        }
+        $('#scrap-register-form')[0].reset();
+        $('#scrap-register-form').find('select').val('').trigger('change');
         $('#item-line-container').empty();
+        $('#scrap_offcanvas-title').html(`<h5 class="offcanvas-title text-white">Create Scrap Register</h5><span class="text-white slogan">Create Scrap Register</span>`);
         new bootstrap.Offcanvas('#scrap_offcanvas').show();
     }
 
-    function editScrap(id) {
-        $.get("{{ url('scrap') }}/" + id + "/edit", function (res) {
-            Object.keys(res.data).forEach(key => {
-                $(`[name="${key}"]`).val(res.data[key]);
-            });
-
-            $('#item-line-container').empty();
-            res.data.items.forEach((item, index) => {
-                appendItemLine(index, item);
-            });
-
-            $('#scrap_id').val(id);
-            new bootstrap.Offcanvas('#scrap_offcanvas').show();
-        });
-    }
-
+    
     function deleteScrap(id) {
         if (confirm('Delete this scrap entry?')) {
             $.ajax({
-                url: `{{ url('scrap') }}/${id}`,
+                url: `{{ url('assets.scrap-register') }}/${id}`,
                 type: 'POST',
                 data: {
                     _method: 'DELETE',
