@@ -56,8 +56,6 @@
                             <th>Model</th>
                             <th>Serial Number</th>
                             <th>Project</th>
-                            <th>Check Asset ID</th>
-                            <th>Asset ID</th>
                             <th>Available Qty</th>
                             <th>Qty</th>
                             <th>Specification</th>
@@ -69,7 +67,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                             <th colspan="9" class="text-right"></th>
+                             <th colspan="8" class="text-right"></th>
                             <th><button type="button" class="btn btn-xs btn-icon btn-success waves-effect" onclick="addItemLine()"><i class="ti ti-plus"></i></button></th>
                         </tr>
                     </tfoot>
@@ -123,13 +121,15 @@
                                 <option value="">Select Model</option>
                             </select>
                         </td>
+
                         <td>
                             <select name="asset_serialnumber[${itemLineLength}]" id="asset_serialnumber_${itemLineLength}" class="form-control
                             select2 asset-serial-select" data-row="${itemLineLength}"">
                                 <option value="">Select Serial</option>
-                                ${assetTypes.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
+
                             </select>
                         </td>
+
                         <td>
                              <select name="asset_project_id[${itemLineLength}]" id="asset_project_${itemLineLength}" class="form-control
                              select2" data-row="${itemLineLength}">
@@ -137,18 +137,7 @@
                                 ${assetProjects.map(item => `<option value="${item.id}">${item.project_name}</option>`).join('')}
                             </select>
                         </td>
-                        <td style="text-align:center;">
-                            <input class="form-check-input" type="checkbox" name="check_box_${itemLineLength}"
-                            id="check_box_${itemLineLength}" onchange="toggleAssetInput(${itemLineLength})" checked>
-                            <label class="form-check-label" for="check_box_${itemLineLength}">
-                                Asset ID
-                            </label>
-                        </td>
 
-                        <td>
-                            <input class="form-control text-center" type="text" id="asset_id_${itemLineLength}"
-                            name="asset_id[${itemLineLength}]" >
-                        </td>
 
                         <td>
                             <input class="form-control text-center" type="text" id="available_qty_${itemLineLength}" name="asset_available_quantity[${itemLineLength}]" value="0.00">
@@ -250,8 +239,6 @@
             }
 
         });
-
-
     });
 
 
@@ -362,14 +349,6 @@
             $serialSelect.html('<option value="">Select Serial</option>');
         }
     });
-
-    // disable asset id
-
-    function toggleAssetInput(index) {
-        const checkbox = document.getElementById(`check_box_${index}`);
-        const input = document.getElementById(`asset_id_${index}`);
-        input.disabled = !checkbox.checked;
-    }
 
 </script>
 

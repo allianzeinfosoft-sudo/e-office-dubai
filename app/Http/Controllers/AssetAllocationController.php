@@ -7,6 +7,7 @@ use App\Models\AssetCategory;
 use App\Models\AssetClassification;
 use App\Models\AssetItemLine;
 use App\Models\AssetItemMaster;
+use App\Models\AssetMapping;
 use App\Models\AssetType;
 use App\Models\AssetVendors;
 use Illuminate\Http\Request;
@@ -45,6 +46,8 @@ class AssetAllocationController extends Controller
         $totalQty = AssetItemLine::where('asset_item_id', $request->item_id)
             ->where('item_model', $request->item_model)
             ->sum('asset_quantity'); // or use 'qty' if that's your column name
+
+
 
 
         return response()->json([

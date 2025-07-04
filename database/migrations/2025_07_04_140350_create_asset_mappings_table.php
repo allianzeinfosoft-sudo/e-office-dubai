@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('allocation_id')->nullable();
             $table->integer('scrap_id')->nullable();
             $table->integer('repair_id')->nullable();
-            $table->integer('allocation_status')->default(1)->comment('0-store,1-allocated,2-repair,3-scrap');
+            $table->integer('allocation_status')->default(0)->comment('0-store,1-allocated,2-repair,3-scrap');
             $table->integer('status')->default(1);
             $table->timestamps();
         });
