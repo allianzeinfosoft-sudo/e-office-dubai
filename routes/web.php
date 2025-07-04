@@ -175,6 +175,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/change-user-password', [UserController::class, 'ChangeUserPassword'])->name('user_change_password');
 
     Route::get('/get-all-employees', [UserController::class, 'getAllEmployees']);
+    Route::get('/get-employee-department',[UserController::class, 'getEmployeeDepartment']);
 
     /* department */
     Route::resource('departments',DepartmentController::class);
@@ -641,5 +642,9 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::resource('allocation', AssetAllocationController::class)->names('allocation');
     });
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
+
+    Route::get('/get-asset-models', [AssetAllocationController::class, 'getModels']);
+    Route::get('/get-asset-serials', [AssetAllocationController::class, 'getSerialsNaqty']);
+
 
 });

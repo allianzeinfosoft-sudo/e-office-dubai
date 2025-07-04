@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('asset_allocations', function (Blueprint $table) {
             $table->id();
+            $table->string('user_type');
+            $table->string('user');
+            $table->string('department')->nullable();
+            $table->text('remarks')->nullable();
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

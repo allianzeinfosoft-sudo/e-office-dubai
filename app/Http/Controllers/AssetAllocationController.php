@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AssetAllocation;
 use App\Models\AssetCategory;
 use App\Models\AssetClassification;
+use App\Models\AssetItemLine;
 use App\Models\AssetItemMaster;
 use App\Models\AssetType;
 use App\Models\AssetVendors;
@@ -25,6 +26,34 @@ class AssetAllocationController extends Controller
         $data['meta_title'] = 'Allocation Location';
         return view('company-assets.allocation.index', $data);
     }
+
+    public function getModels(Request $request)
+    {
+        $models = AssetItemLine::where('asset_item_id', $request->item_id)->get(['id', 'item_model']);
+        return response()->json($models);
+    }
+
+    public function getSerialsNaqty(Request $request)
+    {
+
+         // Fetch serials for the selected item and model
+        $serials = AssetItemLine::where('asset_item_id', $request->item_id)
+            ->where('item_model', $request->item_model)
+            ->get(['id', 'serial_number']);
+
+        // Calculate total quantity for this model under the selected item
+        $totalQty = AssetItemLine::where('asset_item_id', $request->item_id)
+            ->where('item_model', $request->item_model)
+            ->sum('asset_quantity'); // or use 'qty' if that's your column name
+
+
+        return response()->json([
+            'serials' => $serials,
+            'total_quantity' => $totalQty,
+        ]);
+    }
+
+
 
     public function create()
     {
