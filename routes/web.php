@@ -649,7 +649,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
 
     Route::get('/get-asset-models', [AssetAllocationController::class, 'getModels']);
-    Route::get('/get-asset-serials', [AssetAllocationController::class, 'getSerialsNaqty']);
-
+    Route::get('/get-asset-serials', [AssetAllocationController::class, 'getSerials']);
+    Route::get('/get-asset-qty', [AssetAllocationController::class, 'getQty']);
+    Route::get('/get-asset-ids', [AssetAllocationController::class, 'getAssetId']);
 
 });

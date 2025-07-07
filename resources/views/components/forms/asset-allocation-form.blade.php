@@ -55,9 +55,8 @@
                             <th>Item</th>
                             <th>Model</th>
                             <th>Serial Number</th>
-                            <th>Project</th>
-                            <th>Check Asset ID</th>
                             <th>Asset ID</th>
+                            <th>Project</th>
                             <th>Available Qty</th>
                             <th>Qty</th>
                             <th>Specification</th>
@@ -69,7 +68,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                             <th colspan="9" class="text-right"></th>
+                             <th colspan="8" class="text-right"></th>
                             <th><button type="button" class="btn btn-xs btn-icon btn-success waves-effect" onclick="addItemLine()"><i class="ti ti-plus"></i></button></th>
                         </tr>
                     </tfoot>
@@ -102,7 +101,6 @@
 
     function addItemLine() {
         var itemLineLength = $('#item-line-container tr').length + 1;
-
         var assetItems = {!! json_encode($assetItems) !!};
         var assetClassifications = {!! json_encode($assetClassifications) !!};
         var assetCategories = {!! json_encode($assetCategories) !!};
@@ -123,13 +121,22 @@
                                 <option value="">Select Model</option>
                             </select>
                         </td>
+
                         <td>
                             <select name="asset_serialnumber[${itemLineLength}]" id="asset_serialnumber_${itemLineLength}" class="form-control
                             select2 asset-serial-select" data-row="${itemLineLength}"">
                                 <option value="">Select Serial</option>
-                                ${assetTypes.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
+
                             </select>
                         </td>
+
+                         <td>
+                            <select name="asset_id[${itemLineLength}]" id="asset_id_${itemLineLength}" class="form-control
+                            select2 asset-id-select" data-row="${itemLineLength}"" data-placeholder="Select Asset ID">
+                                <option value="">Select ID</option>
+                            </select>
+                        </td>
+
                         <td>
                              <select name="asset_project_id[${itemLineLength}]" id="asset_project_${itemLineLength}" class="form-control
                              select2" data-row="${itemLineLength}">
@@ -137,28 +144,17 @@
                                 ${assetProjects.map(item => `<option value="${item.id}">${item.project_name}</option>`).join('')}
                             </select>
                         </td>
-                        <td style="text-align:center;">
-                            <input class="form-check-input" type="checkbox" name="check_box_${itemLineLength}"
-                            id="check_box_${itemLineLength}" onchange="toggleAssetInput(${itemLineLength})" checked>
-                            <label class="form-check-label" for="check_box_${itemLineLength}">
-                                Asset ID
-                            </label>
+
+
+                        <td>
+                            <input class="form-control text-center" type="text" id="available_qty_${itemLineLength}" name="asset_available_quantity[${itemLineLength}]" value="0">
                         </td>
 
                         <td>
-                            <input class="form-control text-center" type="text" id="asset_id_${itemLineLength}"
-                            name="asset_id[${itemLineLength}]" >
-                        </td>
-
-                        <td>
-                            <input class="form-control text-center" type="text" id="available_qty_${itemLineLength}" name="asset_available_quantity[${itemLineLength}]" value="0.00">
-                        </td>
-
-                        <td>
-                            <input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="0.00">
+                            <input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" value="0">
                         </td>
                         <td>
-                            <textarea class="form-control" name="specification_${itemLineLength}" id="specification_${itemLineLength}" ></textarea>
+                            <textarea class="form-control" name="specification[${itemLineLength}]" id="specification_${itemLineLength}" ></textarea>
                         </td>
                         <td>
                             <button type="button" class="btn btn-icon btn-xs btn-danger waves-effect" onclick="$(this).closest('tr').remove();">
@@ -196,8 +192,8 @@
                     type: 'GET',
                     success: function (response) {
                         let selectHTML = `
-                            <label for="asset_employees">Employee</label>
-                            <select class="form-control select2" name="asset_employees" id="asset_employees">
+                            <label for="asset_employee">Employee</label>
+                            <select class="form-control select2" name="asset_employee" id="asset_employee">
                                 <option></option>
                                 ${Object.entries(response).map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}
                             </select>`;
@@ -206,7 +202,7 @@
 
 
                        setTimeout(() => {
-                        $('#asset_employees').select2({
+                        $('#asset_employee').select2({
                                     placeholder: 'Select Employee',
                                     width: '100%',
                                     dropdownParent: $('#asset_user_details')
@@ -250,15 +246,13 @@
             }
 
         });
-
-
     });
 
 
 
     // fetch department
 
-      $(document).on('change', '#asset_employees', function () {
+      $(document).on('change', '#asset_employee', function () {
 
             let selectedValue = $(this).val();
                 $.ajax({
@@ -309,9 +303,10 @@
                 data: { item_id: itemId },
                 success: function (models) {
                     let options = '<option value="">Select Model</option>';
-                    models.forEach(model => {
-                        options += `<option value="${model.item_model}">${model.item_model}</option>`;
+                    Object.keys(models).forEach(function (key) {
+                        options += `<option value="${key}">${key}</option>`;
                     });
+
                     $modelSelect.html(options).trigger('change');
                 },
                 error: function () {
@@ -328,10 +323,8 @@
         const itemId = $(`select.asset-item-select[data-row="${row}"]`).val();
 
         const $serialSelect = $(`select.asset-serial-select[data-row="${row}"]`);
-        const $qtyInput = $(`#available_qty_${row}`);
-
         $serialSelect.html('<option value="">Loading...</option>');
-        $qtyInput.val('0.00');
+
 
         if (model && itemId) {
             $.ajax({
@@ -348,11 +341,6 @@
                     });
                     $serialSelect.html(options);
 
-                     // Set available quantity
-                    if (response.total_quantity !== undefined) {
-                        $qtyInput.val(parseFloat(response.total_quantity).toFixed(2));
-                    }
-
                 },
                 error: function () {
                     $serialSelect.html('<option value="">Failed to load serials</option>');
@@ -363,14 +351,79 @@
         }
     });
 
-    // disable asset id
 
-    function toggleAssetInput(index) {
-        const checkbox = document.getElementById(`check_box_${index}`);
-        const input = document.getElementById(`asset_id_${index}`);
-        input.disabled = !checkbox.checked;
-    }
 
+      // When a model is selected, fetch qty
+    $(document).on('change', '.asset-serial-select', function () {
+        const row = $(this).data('row');
+        const serial_number = $(this).val(); // This is likely item_model (name or id)
+
+        const $qtyInput = $(`#available_qty_${row}`);
+        $qtyInput.val('0.00');
+
+        if (serial_number) {
+            $.ajax({
+                url: '/get-asset-qty',
+                type: 'GET',
+                data: {
+                    serial_number: serial_number
+                },
+                success: function (response) {
+
+                     // Set available quantity
+                    if (response.total_quantity !== undefined) {
+                        $qtyInput.val(parseFloat(response.total_quantity));
+                    }
+
+                },
+                error: function () {
+                    $serialSelect.html('<option value="">Failed to load qty</option>');
+                }
+            });
+        } else {
+            $serialSelect.html('<option value="">Select Serial</option>');
+        }
+    });
+
+
+     // When a model is selected, fetch asset id's
+    $(document).on('change', '.asset-serial-select', function () {
+        const row = $(this).data('row');
+        const serialId = $(this).val();
+        const $idSelect = $(`select.asset-id-select[data-row="${row}"]`);
+        $idSelect.html('<option value="">Loading...</option>');
+
+        if (serialId) {
+            $.ajax({
+                url: '/get-asset-ids',
+                type: 'GET',
+                data: {
+                    serial_id: serialId,
+                },
+                success: function (response) {
+                    let options = '';
+                    response.assetIds.forEach(assetId => {
+                        options += `<option value="${assetId.asset_id}">${assetId.asset_id}</option>`;
+                    });
+                    $idSelect.html(options);
+
+                },
+                error: function () {
+                    $idSelect.html('<option value="">Failed to load asset ids </option>');
+                }
+            });
+        } else {
+            $idSelect.html('<option value="">Select Asset ids</option>');
+        }
+    });
+
+
+    $(document).on('change', '.asset-id-select', function () {
+        const row = $(this).data('row');
+        const selectedCount = $(this).val() ? $(this).val().length : 0;
+
+        $(`#qty_${row}`).val(selectedCount);
+    });
 </script>
 
 @endpush
