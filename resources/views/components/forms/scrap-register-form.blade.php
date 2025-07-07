@@ -56,6 +56,7 @@
                             <th>Items</th>
                             <th>Model</th>
                             <th>Serial</th>
+                            <th>Asset Id</th>
                             <th>Unit</th>
                             <th>Qty</th>
                             <th>Rate</th>
@@ -68,7 +69,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="6" class="text-right"><h5 class="mb-0">GrandTotal</h5></th>
+                            <th colspan="7" class="text-right"><h5 class="mb-0">GrandTotal</h5></th>
                             <th class="text-right fw-semibold">
                                 <h5 class="mb-0" id="total_amount_display">0.00</h5>
                                 <input type="hidden" name="grand_total" id="grand_total">
@@ -124,7 +125,12 @@
                     </select>
                 </td>
                 <td>
-                    <select name="serial_no[${itemLineLength}]" id="serial_no_${itemLineLength}" class="form-control select2">
+                    <select name="serial_no[${itemLineLength}]" id="serial_no_${itemLineLength}" onchange="getAssetId(this.value, '${itemLineLength}')" class="form-control select2">
+                        <option value="">Select Serial</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="asset_id[${itemLineLength}]" id="asset_id_${itemLineLength}" class="form-control select2">
                         <option value="">Select Serial</option>
                     </select>
                 </td>
@@ -226,6 +232,34 @@
         $('#total_amount_display').text(total.toFixed(2));
         $('#grand_total').val(total.toFixed(2));
         $('#total_amount').val(total.toFixed(2));
+    }
+
+    function getAssetId(serialNo, itemLineLength) {
+        var item_id = $('#scrap_item_' + itemLineLength).val();
+        var item_model = $('#model_' + itemLineLength).val();
+        $.ajax({
+            url: "{{ route('assets.scrap-register.get-asset-id') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                item_id: item_id,
+                item_model: item_model,
+                serial_no: serialNo
+            },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    var html = '<option value="">Select Asset Ids </option>';
+                    response.data.map(function(assetId) {
+                        html += '<option value="' + assetId.id + '">' + assetId.item_number + '</option>';
+                    });    
+                    $('#asset_id_' + itemLineLength).html(html);
+                    $('#asset_id_' + itemLineLength).select2({
+                        dropdownParent: $('#scrap_offcanvas') // replace this ID with your actual offcanvas container ID
+                    });
+                }
+            }
+        });
     }
     
 </script>

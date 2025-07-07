@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AssetItemLine;
 use App\Models\ScrapRegister;
 use App\Models\AssetItemMaster;
+use App\Models\AssetMapping;
 use App\Models\AssetVendors;
 use Illuminate\Http\Request;
 
@@ -179,6 +180,23 @@ class ScrapRegisterController extends Controller
         return response()->json([
             'success' => true,
             'data' => $models
+        ]);
+    }
+
+    public function getAssetId(Request $request){
+        $assetId = AssetMapping::where('master_item_id', $request->item_id)
+            ->when($request->item_model, function ($query) use ($request) {
+                return $query->where('model', $request->item_model);
+            })
+            ->when($request->serial_no, function ($query) use ($request) {
+                return $query->where('serial_number', $request->serial_no);
+            })
+            ->where('allocation_status', '!=', 3)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $assetId
         ]);
     }
 }
