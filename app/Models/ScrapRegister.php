@@ -21,7 +21,10 @@ class ScrapRegister extends Model
 
     public function vendor()
     {
-        return $this->belongsTo(AssetVendors::class, 'scrap_vendor_id');
+        return $this->belongsTo(AssetVendors::class, 'scrap_vendor_id', 'id');
+    }
+    public function mapping(){
+        return $this->belongsTo(AssetMapping::class, 'asset_mapping_id', 'id');
     }
     
 }

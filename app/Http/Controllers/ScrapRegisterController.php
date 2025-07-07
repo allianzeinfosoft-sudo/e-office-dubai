@@ -28,6 +28,7 @@ class ScrapRegisterController extends Controller
                         'DT_RowIndex'   => $index + 1,
                         'id'            => $item->id,
                         'scrap_no'      => $item->scrap_no,
+                        'asset_mapping_id' => $item->asset_mapping_id,
                         'scrap_date'    => date('d-m-Y', strtotime($item->scrap_date)), //$item->asset_date,
                         'vendor_name'   => $item->vendor->vendor_name,
                         'total_weight'  => $item->total_weight,
@@ -101,6 +102,7 @@ class ScrapRegisterController extends Controller
                 'scrap_item_id' => $itemId,
                 'model'         => $request->model[$index],
                 'serial_no'     => $request->serial_no[$index],  // Forgot to add unit column so I added to this field
+                'asset_mapping_id' => $request->asset_id[$index],  // Forgot to add unit column so I added to this field
                 'unit'          => $request->unit[$index],
                 'quantity'      => $request->quantity[$index],
                 'rate'          => $request->rate[$index],
@@ -128,7 +130,7 @@ class ScrapRegisterController extends Controller
     public function edit($id)
     {
         //
-        $scrapRegister = ScrapRegister::with('items')->findOrFail($id);
+        $scrapRegister = ScrapRegister::with(['items', 'mapping'])->findOrFail($id);
         return response()->json([
             'data' => $scrapRegister
         ]);

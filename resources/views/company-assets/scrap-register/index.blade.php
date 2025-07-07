@@ -156,92 +156,103 @@
     });
 
     function openOffcanvas(id = null) {
-        if (id) {
-            $('#target_id').val(id);
-            $('#scrap_offcanvas-title').html(`
-                <h5 class="offcanvas-title text-white">Edit Scrap Register</h5>
-                <span class="text-white slogan">Edit Scrap Register</span>
-            `);
-            const url = "{{ route('assets.scrap-register.edit', ':id') }}".replace(':id', id);
-            $.ajax({
-                url: url,
-                type: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    let data = response.data;
-                    $('#scrap_no').val(data.scrap_no);
-                    $('#scrap_date').flatpickr().setDate(data.scrap_date);
-                    $('#scrap_vendor_id').val(data.scrap_vendor_id).trigger('change');
-                    $('#total_weight').val(data.total_weight);
-                    $('#total_amount').val(data.total_amount);
-                    $('#remarks').val(data.remarks);
-                    $('#total_amount_display').html(parseFloat(data.total_amount).toFixed(2));
-                    $('#item-line-container').empty();
-                    data.items.forEach(function (item, index) {
-                        let row = `
-                            <tr>
-                                <td>
-                                    <select name="scrap_item_id[${index}]" id="scrap_item_${index}" onchange="getModelNo(this.value, '${index}')" class="form-control select2">
-                                        <option value="">Select Item</option>
-                                        @foreach($assetItems as $key => $label)
-                                            <option value="{{ $label['id'] }}" ${item.scrap_item_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }} [ {{ $label['item_code'] }}  - {{ $label['brand'] }}] </option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td>
-                                    <select name="model[${index}]" id="model_${index}" onchange="getSerialNo('${item.model}', '${index}')" class="form-control select2">
-                                        <option value="">Select Model</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select name="serial_no[${index}]" id="serial_no_${index}" class="form-control select2">
-                                        <option value="">Select Serial</option>
-                                    </select>
-                                </td>
-                                <td><input class="form-control" type="text" name="unit[${index}]" value="${item.unit ?? ''}"></td>
-                                <td><input class="form-control text-center" type="text" name="quantity[${index}]" onchange="calculateAmount('${index}')" value="${item.quantity ?? 0.00}"></td>
-                                <td><input class="form-control text-right" type="text" name="rate[${index}]" onchange="calculateAmount('${index}')" value="${item.rate ?? 0.00}"></td>
-                                <td><input class="form-control text-right" type="text" name="amount[${index}]" onchange="calculateAmount('${index}')" value="${item.amount ?? 0.00}"></td>
-                                <td><input class="form-control" type="text" name="remarks[${index}]" value="${item.remarks ?? ''}"></td>
-                                <td>
-                                    <button type="button" class="btn btn-icon btn-xs btn-danger" onclick="$(this).closest('tr').remove();">
-                                        <i class="ti ti-minus"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                        $('#item-line-container').append(row);                        
-                         // Set the selected item after DOM is inserted
-                        getModelNo(item.scrap_item_id, index);
-                        setTimeout(() => {
-                            $(`#model_${index}`).val(item.model).trigger('change');
+            if (id) {
+                const assetItems = @json($assetItems);
+                $('#target_id').val(id);
+                $('#scrap_offcanvas-title').html(`
+                    <h5 class="offcanvas-title text-white">Edit Scrap Register</h5>
+                    <span class="text-white slogan">Edit Scrap Register</span>
+                `);
+                const url = "{{ route('assets.scrap-register.edit', ':id') }}".replace(':id', id);
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        let data = response.data;
+                        $('#scrap_no').val(data.scrap_no);
+                        $('#scrap_date')[0]._flatpickr.setDate(data.scrap_date); // ensure flatpickr is already initialized
+                        $('#scrap_vendor_id').val(data.scrap_vendor_id).trigger('change');
+                        $('#total_weight').val(data.total_weight);
+                        $('#total_amount').val(data.total_amount);
+                        $('#remarks').val(data.remarks);
+                        $('#total_amount_display').html(parseFloat(data.total_amount).toFixed(2));
+                        $('#item-line-container').empty();
+
+                        data.items.forEach(function (item, index) {
+                            let row = `
+                                <tr>
+                                    <td>
+                                        <select name="scrap_item_id[${index}]" id="scrap_item_${index}" onchange="getModelNo(this.value, '${index}')" class="form-control select2">
+                                            <option value="">Select Item</option>
+                                            @foreach($assetItems as $label)
+                                                <option value="{{ $label['id'] }}">{{ $label['name'] }} [ {{ $label['item_code'] }} - {{ $label['brand'] }}]</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="model[${index}]" id="model_${index}" onchange="getSerialNo(this.value, '${index}')" class="form-control select2">
+                                            <option value="">Select Model</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="serial_no[${index}]" id="serial_no_${index}" onchange="getAssetId(this.value, '${index}')" class="form-control select2">
+                                            <option value="">Select Serial</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="asset_id[${index}]" id="asset_id_${index}" class="form-control select2">
+                                            <option value="">Select Asset ID</option>
+                                        </select>
+                                    </td>
+                                    <td><input class="form-control" type="text" name="unit[${index}]" value="${item.unit ?? ''}"></td>
+                                    <td><input class="form-control text-center" type="text" name="quantity[${index}]" onchange="calculateAmount('${index}')" value="${item.quantity ?? 0.00}"></td>
+                                    <td><input class="form-control text-right" type="text" name="rate[${index}]" onchange="calculateAmount('${index}')" value="${item.rate ?? 0.00}"></td>
+                                    <td><input class="form-control text-right" type="text" name="amount[${index}]" onchange="calculateAmount('${index}')" value="${item.amount ?? 0.00}"></td>
+                                    <td><input class="form-control" type="text" name="remarks[${index}]" value="${item.remarks ?? ''}"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-icon btn-xs btn-danger" onclick="$(this).closest('tr').remove();">
+                                            <i class="ti ti-minus"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            $('#item-line-container').append(row);
+
+                            // Set values after insertion
+                            $(`#scrap_item_${index}`).val(item.scrap_item_id).trigger('change');
+                            getModelNo(item.scrap_item_id, index);
                             setTimeout(() => {
-                                $(`#serial_no_${index}`).val(item.serial_no).trigger('change');
-                            }, 200);
-                        }, 300);
+                                $(`#model_${index}`).val(item.model).trigger('change');
+                                setTimeout(() => {
+                                    $(`#serial_no_${index}`).val(item.serial_no).trigger('change');
+                                    setTimeout(() => {
+                                        $(`#asset_id_${index}`).val(item.asset_mapping_id).trigger('change');
+                                    }, 100);
+                                }, 300);
+                            }, 500);
+                        });
 
-
-                    });
-                    $('#item-line-container select.select2').select2({
-                        dropdownParent: $('#scrap_offcanvas')
-                    });
-                },
-                error: function () {
-                    alert('Failed to load Scrap Register data.');
-                }
-            });
-        } else {
-            // Create Mode
-            $('#scrap-register-form')[0].reset();
-            $('#scrap-register-form').find('select').val('').trigger('change');
-            $('#item-line-container').empty();
-            $('#scrap_offcanvas-title').html(`
-                <h5 class="offcanvas-title text-white">Create Scrap Register</h5>
-                <span class="text-white slogan">Create Scrap Register</span>
-            `);
+                        $('#item-line-container select.select2').select2({
+                            dropdownParent: $('#scrap_offcanvas')
+                        });
+                    },
+                    error: function () {
+                        alert('Failed to load Scrap Register data.');
+                    }
+                });
+            } else {
+                // Create Mode
+                $('#scrap-register-form')[0].reset();
+                $('#scrap-register-form').find('select').val('').trigger('change');
+                $('#item-line-container').empty();
+                $('#scrap_offcanvas-title').html(`
+                    <h5 class="offcanvas-title text-white">Create Scrap Register</h5>
+                    <span class="text-white slogan">Create Scrap Register</span>
+                `);
+            }
+            new bootstrap.Offcanvas('#scrap_offcanvas').show();
         }
-        new bootstrap.Offcanvas('#scrap_offcanvas').show();
-    }
 
     function deleteScrap(id) {
         if (confirm('Delete this scrap entry?')) {

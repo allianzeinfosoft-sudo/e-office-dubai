@@ -172,7 +172,6 @@
             },
             dataType: "json",
             success: function(response) {
-                console.log(response);
                 if (response.success) {
                     var html = '<option value="">Select Serial No</option>';
                     response.data.map(function(serial_no) {
