@@ -12,6 +12,8 @@ class AssetMapping extends Model
         'master_item_id',
         'register_lineitem_id',
         'item_number',
+        'model',
+        'serial_number',
         'allocation_id',
         'scrap_id',
         'repair_id',
