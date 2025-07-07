@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AssetItemLine;
 use App\Models\ScrapRegister;
 use App\Models\AssetItemMaster;
+use App\Models\AssetVendors;
 use Illuminate\Http\Request;
 
 class ScrapRegisterController extends Controller
@@ -42,6 +43,8 @@ class ScrapRegisterController extends Controller
 
         $data['meta_title'] = 'Scrap Register';
         $data['items'] = AssetItemMaster::get();
+        $data['vendors'] = AssetVendors::all();
+        $data['assetItems'] = AssetItemMaster::all();
         return view('company-assets.scrap-register.index', $data);
     }
 
@@ -121,9 +124,13 @@ class ScrapRegisterController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ScrapRegister $scrapRegister)
+    public function edit($id)
     {
         //
+        $scrapRegister = ScrapRegister::with('items')->findOrFail($id);
+        return response()->json([
+            'data' => $scrapRegister
+        ]);
     }
 
     /**
@@ -137,14 +144,21 @@ class ScrapRegisterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ScrapRegister $scrapRegister)
+    public function destroy($id)
     {
         //
+        $scrapRegister = ScrapRegister::findOrFail($id);
+        $scrapRegister->items()->delete();
+        $scrapRegister->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Scrap register deleted successfully.',
+        ]);
+
     }
 
     /* get item serial number */
     public function getItemSerial(Request $request){
-        
         $serials = AssetItemLine::where('asset_item_id', $request->item_id)
         ->when($request->item_model, function ($query, $itemModel) {
             $query->where('item_model', $itemModel);

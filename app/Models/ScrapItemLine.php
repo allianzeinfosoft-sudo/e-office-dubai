@@ -9,7 +9,7 @@ class ScrapItemLine extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'scrap_register_id', 'scrap_item_id', 'serial_no',
+        'scrap_register_id', 'scrap_item_id', 'model', 'serial_no',
         'unit', 'quantity', 'rate', 'amount', 'remarks'
     ];
 

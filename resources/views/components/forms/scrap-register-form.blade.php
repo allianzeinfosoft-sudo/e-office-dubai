@@ -154,10 +154,8 @@
 
     /* Get Serial No */
     function getSerialNo(model, itemLineLength) {
-
         var item_model = model;
         var itemId = $('#scrap_item_' + itemLineLength).val();
-        
         $.ajax({
             url: "{{ route('assets.scrap-register.get-item-serials') }}",
             type: "POST",
@@ -168,6 +166,7 @@
             },
             dataType: "json",
             success: function(response) {
+                console.log(response);
                 if (response.success) {
                     var html = '<option value="">Select Serial No</option>';
                     response.data.map(function(serial_no) {
