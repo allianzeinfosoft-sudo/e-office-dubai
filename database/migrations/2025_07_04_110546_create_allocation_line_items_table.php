@@ -16,7 +16,6 @@ return new class extends Migration
             $table->integer('allocation_id');
             $table->string('item');
             $table->string('model')->nullable();
-            $table->integer('item_line_id');
             $table->string('serial_number')->nullable();
             $table->string('asset_id')->nullable();
             $table->integer('project')->nullable();

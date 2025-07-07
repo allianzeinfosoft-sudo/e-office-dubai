@@ -760,11 +760,11 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
             // Ensure to_user_ids, cc_user_ids, bcc_user_ids are arrays (decode if string)
             $toUserIds = is_string($data->to_user_ids) ? json_decode($data->to_user_ids, true) ?? [] : (array)$data->to_user_ids;
-            $ccUserIds = isset($data->cc_user_ids) 
-                        ? (is_string($data->cc_user_ids) ? json_decode($data->cc_user_ids, true) ?? [] : (array)$data->cc_user_ids) 
+            $ccUserIds = isset($data->cc_user_ids)
+                        ? (is_string($data->cc_user_ids) ? json_decode($data->cc_user_ids, true) ?? [] : (array)$data->cc_user_ids)
                         : [];
-            $bccUserIds = isset($data->bcc_user_ids) 
-                        ? (is_string($data->bcc_user_ids) ? json_decode($data->bcc_user_ids, true) ?? [] : (array)$data->bcc_user_ids) 
+            $bccUserIds = isset($data->bcc_user_ids)
+                        ? (is_string($data->bcc_user_ids) ? json_decode($data->bcc_user_ids, true) ?? [] : (array)$data->bcc_user_ids)
                         : [];
 
             $mail->from_user_id = $data->from_user_id ?? null;  // Can be int or string
@@ -828,11 +828,9 @@ public static function getWorkRatingAnalysisMonthly($empId)
     }
 
     public static function updateOrCreateAssetMapping(array $dataAsset){
-        // Delete previous mappings for this line item
-        AssetMapping::where('register_lineitem_id', $dataAsset['register_lineitem_id'])->delete();
-        /*  */
+
         $lastCount = AssetMapping::where(['master_item_id'=> $dataAsset['master_item_id'], 'model'=> $dataAsset['model'], 'serial_number'=> $dataAsset['moserial_numberdel']])->count();
-        // Create new mappings based on quantity
+
         $quantity = (int) $dataAsset['asset_quantity'];
 
         for ($i = 1; $i <= $quantity; $i++) {
@@ -846,6 +844,34 @@ public static function getWorkRatingAnalysisMonthly($empId)
                 'status'                => 'active',
             ]);
         }
+    }
+
+    public static function updateAssetMapping(array $dataAsset)
+    {
+
+        if($dataAsset['user_type'] == 'employee' || $dataAsset['user_type'] == 'location')
+        {
+            $allocationId = $dataAsset['allocation_id'] ?? null;
+        }
+
+        if($dataAsset['user_type'] == 'scrap')
+        {
+            $scrap_id = $dataAsset['allocation_id'] ?? null;
+        }
+
+        if($dataAsset['user_type'] == 'repair')
+        {
+            $repair_id = $dataAsset['allocation_id'] ?? null;
+        }
+
+        $a_id = $dataAsset['allocation_id'];
+        $model = $dataAsset['model'];
+
+        AssetMapping::where('master_item_id', $a_id)->where('model',$model)->update([
+                        'allocation_id' => $allocationId ?? null,
+                        'scrap_id'      => $scrap_id ?? null,
+                        'repair_id'     => $repair_id ?? null,
+                    ]);
     }
 }
 

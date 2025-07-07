@@ -9,4 +9,9 @@ class AssetAllocation extends Model
 {
     use HasFactory;
     protected $fillable = ['user_type','user','department','remarks','status'];
+
+    public function items()
+    {
+        return $this->hasMany(AllocationLineItem::class, 'allocation_id', 'id');
+    }
 }

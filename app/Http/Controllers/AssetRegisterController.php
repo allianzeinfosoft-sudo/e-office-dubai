@@ -38,13 +38,13 @@ class AssetRegisterController extends Controller
                         'invoice_number'    => $item->invoice_number,
                         'vendor_name'         => $item->vendor->vendor_name,
                         'total_amount'      => $item->total_amount,
-                        'upload_invoice'    => '<a href="' . asset('storage/' . $item->upload_invoice) . '" target="_blank"><i class="fa fa-file"></i></a>', 
+                        'upload_invoice'    => '<a href="' . asset('storage/' . $item->upload_invoice) . '" target="_blank"><i class="fa fa-file"></i></a>',
                         'remarks'           => $item->remarks
                     ];
 
                 });
-                
-           
+
+
 
             return response()->json(['data' => $data]);
         }
@@ -55,7 +55,7 @@ class AssetRegisterController extends Controller
         $data['assetClassifications'] = AssetClassification::all();
         $data['assetCategories'] = AssetCategory::all();
         $data['assetTypes'] = AssetType::all();
-        
+
         return view('company-assets.register.index', $data);
     }
 
@@ -83,7 +83,7 @@ class AssetRegisterController extends Controller
             'asset_item_id' => 'required|array',
             'asset_quantity' => 'required|array',
             'asset_price' => 'required|array',
-            'asset_total' => 'required|array',            
+            'asset_total' => 'required|array',
         ]);
 
         // Upload invoice
@@ -91,7 +91,7 @@ class AssetRegisterController extends Controller
         if ($request->hasFile('upload_invoice')) {
             $filePath = $request->file('upload_invoice')->store('invoices', 'public');
         }
-       
+
 
 
         $totalAmount = array_sum($request->asset_total);
@@ -145,10 +145,10 @@ class AssetRegisterController extends Controller
             ]);
 
         }
-        
+
         return response()->json([
             'success' => true,
-            'message' => 'Asset register saved successfully.',  
+            'message' => 'Asset register saved successfully.',
         ]);
         //return redirect()->back()->with('success', 'Asset register saved successfully.');
     }
