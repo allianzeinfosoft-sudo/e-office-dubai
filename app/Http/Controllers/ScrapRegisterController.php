@@ -93,23 +93,32 @@ class ScrapRegisterController extends Controller
             ]
         );
 
+        $previousAssetMappingIds = $asset->items()->pluck('asset_mapping_id')->toArray();
+        AssetMapping::whereIn('id', $previousAssetMappingIds)->update(['scrap_id' => null, 'allocation_status' => 0]);
+
         // Delete old item lines if editing
         $asset->items()->delete();
 
         // Save asset item lines
         foreach ($request->scrap_item_id as $index => $itemId) {
-            $asset->items()->create([
-                'scrap_item_id' => $itemId,
-                'model'         => $request->model[$index],
-                'serial_no'     => $request->serial_no[$index],  // Forgot to add unit column so I added to this field
-                'asset_mapping_id' => $request->asset_id[$index],  // Forgot to add unit column so I added to this field
-                'unit'          => $request->unit[$index],
-                'quantity'      => $request->quantity[$index],
-                'rate'          => $request->rate[$index],
-                'amount'        => $request->amount[$index],
-                'remarks'       => $request->remarks[$index],
+            $scrapItemLine = $asset->items()->create([
+                'scrap_item_id'     => $itemId,
+                'model'             => $request->model[$index],
+                'serial_no'         => $request->serial_no[$index],  // Forgot to add unit column so I added to this field
+                'asset_mapping_id'  => $request->asset_id[$index],  // Forgot to add unit column so I added to this field
+                'unit'              => $request->unit[$index],
+                'quantity'          => $request->quantity[$index],
+                'rate'              => $request->rate[$index],
+                'amount'            => $request->amount[$index],
+                'remarks'           => $request->remarks[$index],
             ]);
+
+            if(!empty($request->asset_id[$index])) {
+                AssetMapping::where('id', $request->asset_id[$index])
+                    ->update(['scrap_id' => $scrapItemLine->id, 'allocation_status' => 3]);
+            }
         }
+
         return response()->json([
             'success' => true,
             'message' => $request->id ? 'Scrap register updated successfully.' : 'Scrap register saved successfully.',  
