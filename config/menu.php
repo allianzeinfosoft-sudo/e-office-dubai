@@ -585,6 +585,11 @@ return [
                 'permission' => ['view assets'],
             ],
             [
+                'title' => 'Repair Register',
+                'route' =>  '/assets/repair-register',
+                'permission' => ['view assets'],
+            ],
+            [
                 'title' => 'Asset Settings',
                 'route' => 'javascript:void(0);',
                 'permission' => ['view assets'],

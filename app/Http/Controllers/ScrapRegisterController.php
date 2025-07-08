@@ -37,8 +37,6 @@ class ScrapRegisterController extends Controller
                     ];
 
                 });
-                
-           
 
             return response()->json(['data' => $data]);
         }
@@ -104,8 +102,8 @@ class ScrapRegisterController extends Controller
             $scrapItemLine = $asset->items()->create([
                 'scrap_item_id'     => $itemId,
                 'model'             => $request->model[$index],
-                'serial_no'         => $request->serial_no[$index],  // Forgot to add unit column so I added to this field
-                'asset_mapping_id'  => $request->asset_id[$index],  // Forgot to add unit column so I added to this field
+                'serial_no'         => $request->serial_no[$index],  
+                'asset_mapping_id'  => $request->asset_id[$index],  
                 'unit'              => $request->unit[$index],
                 'quantity'          => $request->quantity[$index],
                 'rate'              => $request->rate[$index],

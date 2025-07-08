@@ -61,6 +61,7 @@ use App\Http\Controllers\FeedbackReportController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\ParTemplateController;
 use App\Http\Controllers\PerformanceAppraisalReportController;
+use App\Http\Controllers\RepairRegisterController;
 use App\Http\Controllers\SarTemplate;
 use App\Http\Controllers\SarTemplateController;
 use App\Http\Controllers\SelfAppraisalReportController;
@@ -645,6 +646,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::post('scrap-register/get-item-serials', [ScrapRegisterController::class, 'getItemSerial'])->name('scrap-register.get-item-serials');
         Route::post('scrap-register/get-model-no', [ScrapRegisterController::class, 'getItemModel'])->name('scrap-register.get-model-no');
         Route::post('scrap-register/get-asset-id', [ScrapRegisterController::class, 'getAssetId'])->name('scrap-register.get-asset-id');
+        Route::resource('repair-register', RepairRegisterController::class)->names('repair-register');
     });
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
 

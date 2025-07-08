@@ -882,6 +882,7 @@ public static function getWorkRatingAnalysisMonthly($empId)
                         'repair_id'     => $repair_id ?? null,
                     ]);
     }
+    
 }
 
 
