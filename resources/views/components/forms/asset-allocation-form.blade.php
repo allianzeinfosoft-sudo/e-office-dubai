@@ -57,8 +57,8 @@
                             <th>Serial Number</th>
                             <th>Asset ID</th>
                             <th>Project</th>
-                            <th>Available Qty</th>
-                            <th>Qty</th>
+                            {{-- <th>Available Qty</th>
+                            <th>Qty</th> --}}
                             <th>Specification</th>
                             <th>Actions</th>
                         </tr>
@@ -68,7 +68,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                             <th colspan="8" class="text-right"></th>
+                             <th colspan="6" class="text-right"></th>
                             <th><button type="button" class="btn btn-xs btn-icon btn-success waves-effect" onclick="addItemLine()"><i class="ti ti-plus"></i></button></th>
                         </tr>
                     </tfoot>
@@ -145,14 +145,16 @@
                             </select>
                         </td>
 
+                        {{--
+                            <td>
+                                <input class="form-control text-center" type="text" id="available_qty_${itemLineLength}" name="asset_available_quantity[${itemLineLength}]" value="0">
+                            </td>
 
-                        <td>
-                            <input class="form-control text-center" type="text" id="available_qty_${itemLineLength}" name="asset_available_quantity[${itemLineLength}]" value="0">
-                        </td>
+                            <td>
+                                <input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" value="0">
+                            </td>
+                        --}}
 
-                        <td>
-                            <input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" value="0">
-                        </td>
                         <td>
                             <textarea class="form-control" name="specification[${itemLineLength}]" id="specification_${itemLineLength}" ></textarea>
                         </td>
@@ -162,6 +164,8 @@
                             </button>
                         </td>
                     </tr>`;
+
+
 
         // Convert to jQuery element
         const $newRow = $(html);
@@ -354,36 +358,36 @@
 
 
       // When a model is selected, fetch qty
-    $(document).on('change', '.asset-serial-select', function () {
-        const row = $(this).data('row');
-        const serial_number = $(this).val(); // This is likely item_model (name or id)
+    // $(document).on('change', '.asset-serial-select', function () {
+    //     const row = $(this).data('row');
+    //     const serial_number = $(this).val(); // This is likely item_model (name or id)
 
-        const $qtyInput = $(`#available_qty_${row}`);
-        $qtyInput.val('0.00');
+    //     const $qtyInput = $(`#available_qty_${row}`);
+    //     $qtyInput.val('0.00');
 
-        if (serial_number) {
-            $.ajax({
-                url: '/get-asset-qty',
-                type: 'GET',
-                data: {
-                    serial_number: serial_number
-                },
-                success: function (response) {
+    //     if (serial_number) {
+    //         $.ajax({
+    //             url: '/get-asset-qty',
+    //             type: 'GET',
+    //             data: {
+    //                 serial_number: serial_number
+    //             },
+    //             success: function (response) {
 
-                     // Set available quantity
-                    if (response.total_quantity !== undefined) {
-                        $qtyInput.val(parseFloat(response.total_quantity));
-                    }
+    //                  // Set available quantity
+    //                 if (response.total_quantity !== undefined) {
+    //                     $qtyInput.val(parseFloat(response.total_quantity));
+    //                 }
 
-                },
-                error: function () {
-                    $serialSelect.html('<option value="">Failed to load qty</option>');
-                }
-            });
-        } else {
-            $serialSelect.html('<option value="">Select Serial</option>');
-        }
-    });
+    //             },
+    //             error: function () {
+    //                 $serialSelect.html('<option value="">Failed to load qty</option>');
+    //             }
+    //         });
+    //     } else {
+    //         $serialSelect.html('<option value="">Select Serial</option>');
+    //     }
+    // });
 
 
      // When a model is selected, fetch asset id's
@@ -418,12 +422,12 @@
     });
 
 
-    $(document).on('change', '.asset-id-select', function () {
-        const row = $(this).data('row');
-        const selectedCount = $(this).val() ? $(this).val().length : 0;
+    // $(document).on('change', '.asset-id-select', function () {
+    //     const row = $(this).data('row');
+    //     const selectedCount = $(this).val() ? $(this).val().length : 0;
 
-        $(`#qty_${row}`).val(selectedCount);
-    });
+    //     $(`#qty_${row}`).val(selectedCount);
+    // });
 </script>
 
 @endpush

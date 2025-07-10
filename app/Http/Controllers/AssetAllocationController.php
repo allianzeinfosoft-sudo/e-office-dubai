@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\CustomHelper;
+use App\Models\AllocationLineItem;
 use App\Models\AssetAllocation;
 use App\Models\AssetCategory;
 use App\Models\AssetClassification;
@@ -71,7 +72,7 @@ class AssetAllocationController extends Controller
     public function getAssetId(Request $request)
     {
 
-        $assetIds = AssetMapping::with('masteritem')->where('serial_number', $request->serial_id)->get()
+        $assetIds = AssetMapping::with('masteritem')->where('serial_number', $request->serial_id)->where('allocation_status',0)->get()
         ->map(function ($assetIds) {
             return [
                 'id' => $assetIds->id,
@@ -99,8 +100,8 @@ class AssetAllocationController extends Controller
             'asset_item_id' => 'required|array',
             'asset_model_id' => 'nullable|array',
             'asset_project_id' => 'required|array',
-            'asset_available_quantity' => 'required|array',
-            'asset_quantity' => 'required|array',
+            // 'asset_available_quantity' => 'required|array',
+            // 'asset_quantity' => 'required|array',
             'specification' => 'required|array',
             'remarks' => 'required',
         ]);
@@ -132,7 +133,7 @@ class AssetAllocationController extends Controller
                 'serial_number'           => $request->asset_serialnumber[$index],
                 'project'                 => $request->asset_project_id[$index],
                 'asset_id'                => $asset_code,
-                'qty'                     => $request->asset_quantity[$index],
+                // 'qty'                     => $request->asset_quantity[$index],
                 'specification'           => $request->specification[$index]
             ]);
 
@@ -160,15 +161,21 @@ class AssetAllocationController extends Controller
         $userType = $request->input('user');
         $userId = $request->input('employee');
 
-        // Set the current page manually (because we're using POST)
+        // Fix: Tell Laravel what the current page is
         Paginator::currentPageResolver(function () use ($request) {
             return $request->input('page', 1);
         });
 
-        $allocations = AssetAllocation::with('items', 'employee')
+       $allocations = AssetAllocation::with(['items' => function ($query) {
+                    $query->where('status', 1);
+                }, 'employee', 'department_name'])
             ->where('user_type', $userType)
             ->where('user', $userId)
-            ->paginate(10);
+            ->where('status', 1)
+            ->whereHas('items', function ($query) {
+                $query->where('status', 1);
+            })
+            ->paginate(5);
 
         $html = view('partials.asset_allocation_accordion', compact('allocations'))->render();
 
@@ -178,6 +185,37 @@ class AssetAllocationController extends Controller
         ]);
     }
 
+  public function returnToStore(Request $request, $allocationId)
+    {
+        $item = AllocationLineItem::findOrFail($allocationId);
+        $item->status = 0;
+        $item->return_date_time = date('Y-m-d H:i:s');
+        $item->comment = $request->comment;
+        $item->save();
+
+        $mappings = AssetMapping::whereJsonContains('allocation_id', (int) $allocationId)->get();
+
+        foreach ($mappings as $mapping) {
+            // Filter out the current allocationId
+            $updatedIds = array_filter($mapping->allocation_id, function ($id) use ($allocationId) {
+                return $id != $allocationId;
+            });
+
+            // Re-index the array to avoid JSON encoding issues
+            $mapping->allocation_id = array_values($updatedIds);
+            $mapping->allocation_status = 0;
+            $mapping->save();
+        }
+
+        // Check if AJAX
+        if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Asset returned successfully.'
+                ]);
+            }
+
+    }
 
     public function show(AssetAllocation $assetAllocation)
     {

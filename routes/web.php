@@ -652,6 +652,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
         Route::get('reports/scrap-items', [ScrapRegisterController::class, 'reportScrapItems'])->name('reports.scrap-items');
         Route::get('reports/scrap-items-data', [ScrapRegisterController::class, 'scrapItemsReport'])->name('reports.scrap-items-data');
+        Route::post('return/{allocation}', [AssetAllocationController::class, 'returnToStore'])->name('return');
+
     });
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
     Route::get('/get-asset-models', [AssetAllocationController::class, 'getModels']);

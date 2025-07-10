@@ -17,7 +17,9 @@ class AllocationLineItem extends Model
                             'project',
                             'qty',
                             'specification',
-                            'status'
+                            'status',
+                            'return_date_time',
+                            'comment',
                         ];
 
 
