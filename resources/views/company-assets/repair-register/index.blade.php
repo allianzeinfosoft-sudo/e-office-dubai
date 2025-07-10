@@ -33,6 +33,17 @@
         padding: 0.40rem 0.40rem !important;
         font-size: 0.7125rem !important;
     }
+
+    #item-receive-modal {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        z-index: 1055 !important;
+    }
+    .modal-backdrop {
+        z-index: 1050 !important;
+    }
+   
 </style>
 @stop
 
@@ -112,33 +123,25 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="item-receive-modal" tabindex="-1" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-md" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title" id="exampleModalLabel1">Receive Item</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('assets.store-vendor-category') }}" method="post" id="item-receive-form">
-                    @csrf
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Vendor Category <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="name" id="name" placeholder="vendor Category" required />
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" form="vendor-category-form" class="btn btn-primary waves-effect"> <i class="fa fa-save me-2"></i> Save</button>
-                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
+<div class="modal" tabindex="-1" id="item-receive-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Modal body text goes here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
     </div>
+  </div>
 </div>
+
+
 @stop
 
 @push('js')
@@ -170,7 +173,7 @@
                     render: function (data, type, row, meta) {
                         return row.received_date != null
                             ? row.received_date
-                            : `<button class="btn btn-sm btn-success" onclick="receiveRepairItem(${row.id})">Receive</button>`;
+                            : `<button class="btn btn-sm btn-success" onclick="receiveRepairItem()">Receive</button>`;
                     }
                 },
                 { data: 'remarks', name: 'remarks' },
@@ -235,9 +238,10 @@
     }
 
     function receiveRepairItem(id) {
-        $('#item-receive-modal').modal('show');
-        $('#item-receive-form')[0].reset();
+        const modal = new bootstrap.Modal(document.getElementById('item-receive-modal'));
+        modal.show();
     }
+
     
 </script>
 @endpush
