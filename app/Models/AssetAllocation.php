@@ -19,4 +19,9 @@ class AssetAllocation extends Model
     {
         return $this->belongsTo(Employee::class,'user','user_id');
     }
+
+    public function department_name()
+    {
+        return $this->belongsTo(Department::class,'department','id');
+    }
 }

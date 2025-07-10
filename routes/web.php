@@ -648,6 +648,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::post('scrap-register/get-asset-id', [ScrapRegisterController::class, 'getAssetId'])->name('scrap-register.get-asset-id');
         Route::resource('repair-register', RepairRegisterController::class)->names('repair-register');
         Route::post('alloted-item-search',[AssetAllocationController::class, 'allotedItemSearch'])->name('alloted-item-search');
+        Route::post('return/{allocation}', [AssetAllocationController::class, 'returnToStore'])->name('return');
+
     });
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
     Route::get('/get-asset-models', [AssetAllocationController::class, 'getModels']);

@@ -154,6 +154,14 @@ return [
         'location' => 'Location',
         'scrap' => 'Scrap',
         'repair' => 'Repair'
+    ],
+
+    'asset_allocation_users' => [
+        'employee' => 'Employee',
+        'location' => 'Location'
     ]
+
+
+
 
 ];

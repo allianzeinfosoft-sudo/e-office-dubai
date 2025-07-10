@@ -73,7 +73,7 @@
                                               <div class="mb-3 col-12">
                                                     <select class="form-control select2" name="user" id="user">
                                                         <option></option>
-                                                        @foreach (config('optionsData.asset_users') as $key => $value)
+                                                        @foreach (config('optionsData.asset_allocation_users') as $key => $value)
                                                             <option value="{{ $key }}"> {{ $value }} </option>
                                                         @endforeach
                                                     </select>
@@ -116,7 +116,7 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-end w-90" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i>
@@ -164,29 +164,34 @@
                 });
         });
 
-        // Handle AJAX pagination links
+       // Handle pagination links via AJAX
         $(document).on('click', '#allocation-pagination .pagination a', function (e) {
             e.preventDefault();
 
-            let url = $(this).attr('href');
+            let pageUrl = $(this).attr('href');
+            let page = new URL(pageUrl).searchParams.get('page');
+
+            // Get the form
             let form = $('#allocated-item-search')[0];
             let formData = new FormData(form);
-
-            // Append the page query param manually to form action
-            formData.append('page', new URL(url).searchParams.get('page'));
+            formData.append('page', page);
 
             $.ajax({
-                url: $('#allocated-item-search').attr('action'),
+                url: $(form).attr('action'), // POST to same route
                 type: "POST",
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function (response) {
                     toastr.success(response.message);
-                    $('#accordionWithIcon').html(response.html);
+                    $('#accordionWithIcon').html(response.html); // Replace accordion content
+                },
+                error: function () {
+                    toastr.error('Failed to load page');
                 }
             });
         });
+
 
 
 
@@ -205,6 +210,10 @@
                 processData: false,   // MUST be false
                 success: function (response) {
                     toastr["success"](response.message);
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
                 }
             });
         });
@@ -415,6 +424,33 @@
         });
     });
 
+// return item to store
+
+$(document).on('submit', '.return-form', function (e) {
+
+    e.preventDefault();
+    const form = $(this);
+    const allocationId = form.data('id');
+
+    $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: form.serialize(),
+        headers: {
+            'X-CSRF-TOKEN': form.find('input[name="_token"]').val()
+        },
+        success: function (res) {
+            toastr.success('Assets returned successfully');
+            const accordionCard = $('#accordion-card-' + allocationId);
+            accordionCard.fadeOut(300, function () {
+                $(this).remove();
+            });
+        },
+        error: function () {
+            toastr.error('Failed to return assets');
+        }
+    });
+});
 
 </script>
 @endpush
