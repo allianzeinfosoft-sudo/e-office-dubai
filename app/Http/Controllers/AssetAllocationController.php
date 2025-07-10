@@ -12,6 +12,7 @@ use App\Models\AssetMapping;
 use App\Models\AssetType;
 use App\Models\AssetVendors;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 class AssetAllocationController extends Controller
 {
@@ -75,6 +76,7 @@ class AssetAllocationController extends Controller
             return [
                 'id' => $assetIds->id,
                 'asset_id' => $assetIds->item_number ? $assetIds->masteritem->item_code .'-'. $assetIds->item_number : '',
+                'asset_id_number' => $assetIds->item_number ?? '',
             ];
         });
 
@@ -120,13 +122,16 @@ class AssetAllocationController extends Controller
         //  Save asset item lines
         foreach ($request->asset_item_id as $index => $itemId) {
 
+            $master_item_code = CustomHelper::getItemCode($request->asset_item_id[$index]);
+
+            $asset_code = $master_item_code->item_code.'-'.$request->asset_id[$index];
             $itemLine = $asset->items()->create([
                 'allocation_id'           => $itemId,
                 'item'                    => $request->asset_item_id[$index],
                 'model'                   => $request->asset_model_id[$index],
                 'serial_number'           => $request->asset_serialnumber[$index],
                 'project'                 => $request->asset_project_id[$index],
-                'asset_id'                => $request->asset_id[$index],
+                'asset_id'                => $asset_code,
                 'qty'                     => $request->asset_quantity[$index],
                 'specification'           => $request->specification[$index]
             ]);
@@ -136,7 +141,8 @@ class AssetAllocationController extends Controller
 
                 'allocation_id'  => $itemLine->id,
                 'user_type'      => $request->asset_user,
-                'item'           => $request->asset_item_id[$index],
+                'asset_item_id'  => $request->asset_item_id[$index],
+                'item_number'    => $request->asset_id[$index],
                 'model'          => $request->asset_model_id[$index],
                 'serial_number'  => $request->asset_serialnumber[$index],
             ]);
@@ -148,6 +154,30 @@ class AssetAllocationController extends Controller
             'message' => 'Asset allocation saved successfully.',
         ]);
     }
+
+   public function allotedItemSearch(Request $request)
+    {
+        $userType = $request->input('user');
+        $userId = $request->input('employee');
+
+        // Set the current page manually (because we're using POST)
+        Paginator::currentPageResolver(function () use ($request) {
+            return $request->input('page', 1);
+        });
+
+        $allocations = AssetAllocation::with('items', 'employee')
+            ->where('user_type', $userType)
+            ->where('user', $userId)
+            ->paginate(10);
+
+        $html = view('partials.asset_allocation_accordion', compact('allocations'))->render();
+
+        return response()->json([
+            'message' => 'Allocated items loaded successfully.',
+            'html' => $html
+        ]);
+    }
+
 
     public function show(AssetAllocation $assetAllocation)
     {

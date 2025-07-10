@@ -13,7 +13,7 @@ use App\Models\MailBox;
 use App\Models\User;
 use App\Models\AssetMapping;
 use App\Models\AssetItemLine;
-
+use App\Models\AssetItemMaster;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -857,30 +857,87 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
     public static function updateAssetMapping(array $dataAsset)
     {
+        $master_item_id = $dataAsset['asset_item_id'];
+        $model = $dataAsset['model'];
+        $serial_number = $dataAsset['serial_number'];
 
-        if($dataAsset['user_type'] == 'employee' || $dataAsset['user_type'] == 'location')
+
+         $record = AssetMapping::where('master_item_id', $master_item_id)
+                                    ->where('item_number', $dataAsset['item_number'])
+                                    ->where('model', $model)
+                                    ->where('serial_number', $serial_number)
+                                    ->first();
+
+        if($dataAsset['user_type'] === 'employee' || $dataAsset['user_type'] === 'location')
         {
             $allocationId = $dataAsset['allocation_id'] ?? null;
+            $allocationId = $allocationId ?? [];
+            $status = 1;
+
+            $currentAllocations = $record->allocation_id ?? [];
+
+            if (!is_array($currentAllocations)) {
+                $currentAllocations = json_decode($currentAllocations, true) ?? [];
+            }
+
+            if (!in_array($allocationId, $currentAllocations)) {
+                $currentAllocations[] = $allocationId;
+            }
+
+            if ($record) {
+
+                $record->allocation_id = $currentAllocations;
+                $record->allocation_status = $status;
+                $record->save();
+            }
         }
 
         if($dataAsset['user_type'] == 'scrap')
         {
             $scrap_id = $dataAsset['allocation_id'] ?? null;
+            $status = 3;
+
+             if ($record) {
+
+                $record->scrap_id = $scrap_id ?? null;
+                $record->allocation_status = $status;
+                $record->save();
+            }
+
         }
 
         if($dataAsset['user_type'] == 'repair')
         {
             $repair_id = $dataAsset['allocation_id'] ?? null;
+            $status = 2;
+
+            if ($record) {
+
+                $record->repair_id = $repair_id ?? null;
+                $record->allocation_status = $status;
+                $record->save();
+            }
         }
 
-        $a_id = $dataAsset['allocation_id'];
-        $model = $dataAsset['model'];
 
-        AssetMapping::where('master_item_id', $a_id)->where('model',$model)->update([
-                        'allocation_id' => $allocationId ?? null,
-                        'scrap_id'      => $scrap_id ?? null,
-                        'repair_id'     => $repair_id ?? null,
-                    ]);
+
+
+
+        // AssetMapping::where('master_item_id', $master_item_id)->where('item_number',$dataAsset['item_number'])->where('model',$model)->where('serial_number',$serial_number)->update([
+        //                 'allocation_id' => $allocationId ?? null,
+        //                 'scrap_id'      => $scrap_id ?? null,
+        //                 'repair_id'     => $repair_id ?? null,
+        //                 'allocation_status' => $status,
+        //             ]);
+
+
+
+    }
+
+    public static function getItemCode($item_id)
+    {
+        return AssetItemMaster::select('item_code')->where('id',$item_id)->first();
+
     }
     
 }

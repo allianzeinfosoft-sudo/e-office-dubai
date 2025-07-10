@@ -19,4 +19,18 @@ class AllocationLineItem extends Model
                             'specification',
                             'status'
                         ];
+
+
+    public function itemAllocation()
+    {
+        return $this->belongsTo(AssetAllocation::class,'allocation_id','id');
+    }
+
+    public function masterItem()
+    {
+        return $this->belongsTo(AssetItemMaster::class,'item','id');
+    }
+
 }
+
+
