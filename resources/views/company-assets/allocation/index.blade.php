@@ -63,21 +63,9 @@
                         <div class="card mb-4">
                             <h5 class="card-header">Search Item</h5>
                             <div class="card-body">
-                                <form id="formAccountSettings" method="POST" onsubmit="return false">
+                                <form id="allocated-item-search" action="{{ route('assets.alloted-item-search'); }}" method="POST" onsubmit="return false">
+                                    @csrf
                                     <div class="row">
-                                        <div class="mb-3 col-md-3 form-password-toggle">
-                                            <label class="form-label" for="currentPassword">Asset Class</label>
-                                            <div class="input-group input-group-merge">
-                                                <div class="mb-3 col-12">
-                                                    <select class="form-control select2" name="asset_class" id="asset_class">
-                                                        <option></option>
-                                                        @foreach ($classifications as $classification)
-                                                            <option value="{{ $classification->id }}">{{ $classification->name ?? '-' }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <div class="mb-3 col-md-3 form-password-toggle">
                                             <label class="form-label" for="newPassword">Asset User</label>
@@ -107,30 +95,18 @@
                         </div>
 
 
-                        <div class="card">
-                            <div class="card-datatable table-mom">
-                                <div class="card-datatable table-responsive">
-                                    <table class="table table-bordered table-striped" id="asset-allocation-table" style="font-size: 12px;">
-                                        <thead>
-                                            <tr>
-                                                <th>No.</th>
-                                                <th>Reg. No.</th>
-                                                <th>Date</th>
-                                                <th>Vendor</th>
-                                                <th>Invoice</th>
-                                                <th>Amount</th>
-                                                <th>Doc</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
 
-                    </div>
+                <!-- Accordion with Icon -->
+                <div class="card mb-4 pb-4" id="asset-item-list-accodion">
+                  <div class="accordion mt-3 " id="accordionWithIcon">
+                    <!-- accordian -->
+                  </div>
+
                 </div>
 
+
+
+                </div>
                 <x-footer />
                 <div class="content-backdrop fade"></div>
                 <div class="layout-overlay layout-menu-toggle"></div>
@@ -166,13 +142,54 @@
 @push('js')
 <script>
     $(function () {
-        const assetAllocationTable = $('#asset-allocation-table');
 
-        if(assetAllocationTable.length) {
 
-        }
+        $('#allocated-item-search').submit(function (e) {
+            let url = $(this).attr('action');
+            e.preventDefault();
 
-        /* Store Items */
+            let form = this;
+            let formData = new FormData(form);
+
+             $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        toastr.success(response.message);
+                        $('#accordionWithIcon').html(response.html);
+                    }
+                });
+        });
+
+        // Handle AJAX pagination links
+        $(document).on('click', '#allocation-pagination .pagination a', function (e) {
+            e.preventDefault();
+
+            let url = $(this).attr('href');
+            let form = $('#allocated-item-search')[0];
+            let formData = new FormData(form);
+
+            // Append the page query param manually to form action
+            formData.append('page', new URL(url).searchParams.get('page'));
+
+            $.ajax({
+                url: $('#allocated-item-search').attr('action'),
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    toastr.success(response.message);
+                    $('#accordionWithIcon').html(response.html);
+                }
+            });
+        });
+
+
+
         $('#allocation-form').submit(function (e) {
             let url = $(this).attr('action');
             e.preventDefault();
@@ -188,16 +205,12 @@
                 processData: false,   // MUST be false
                 success: function (response) {
                     toastr["success"](response.message);
-                    $('#asset-allocation-table').DataTable().ajax.reload();
-
-                    const offcanvasEl = document.getElementById('vendor_offcanvas');
-                    const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
-                    if (offcanvas) {
-                        offcanvas.hide();
-                    }
                 }
             });
         });
+
+
+
 
     });
 
@@ -347,10 +360,10 @@
                     type: 'GET',
                     success: function (response) {
                         let selectHTML = `
-                            <label class="form-label" for="user_detail">Employee</label>
+                            <label class="form-label" for="employee">Employee</label>
                             <div class="input-group input-group-merge">
                                 <div class="mb-3 col-12">
-                                    <select class="form-control select2" name="employees" id="employees" style="width: 100%;">
+                                    <select class="form-control select2" name="employee" id="employee" style="width: 100%;">
                                         <option></option>
                                         ${Object.entries(response).map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}
                                     </select>
@@ -358,7 +371,7 @@
                             </div>`;
 
                         $('#user_details').html(selectHTML);
-                        $('#employees').select2({
+                        $('#employee').select2({
                             placeholder: 'Select Employee',
                             width: '100%'
                         });

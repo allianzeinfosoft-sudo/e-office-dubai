@@ -20,9 +20,27 @@ class AssetMapping extends Model
         'allocation_status',
         'status'];
 
+    protected $casts = [
+            'allocation_id' => 'array',
+        ];
+
     public function masteritem()
     {
         return $this->belongsTo(AssetItemMaster::class,'master_item_id','id');
+    }
+
+    public function register_lineitems()
+    {
+        return $this->belongsToMany(AssetItemLine::class,'register_lineitem_id','id');
+    }
+
+    public function allocations()
+    {
+        return AllocationLineItem::where(function ($query) {
+            foreach ($this->allocation_id ?? [] as $id) {
+                $query->orWhere('id', $id);
+            }
+        });
     }
 
 }

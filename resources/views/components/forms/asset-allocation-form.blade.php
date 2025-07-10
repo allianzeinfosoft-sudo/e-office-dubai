@@ -403,7 +403,7 @@
                 success: function (response) {
                     let options = '';
                     response.assetIds.forEach(assetId => {
-                        options += `<option value="${assetId.asset_id}">${assetId.asset_id}</option>`;
+                        options += `<option value="${assetId.asset_id_number}">${assetId.asset_id}</option>`;
                     });
                     $idSelect.html(options);
 
