@@ -34,16 +34,6 @@
         font-size: 0.7125rem !important;
     }
 
-    #item-receive-modal {
-        display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        z-index: 1055 !important;
-    }
-    .modal-backdrop {
-        z-index: 1050 !important;
-    }
-   
 </style>
 @stop
 
@@ -101,6 +91,48 @@
     </div>
 </div>
 
+<!-- Receive Offcanvas -->
+<div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="item_receive_offcanvas" aria-labelledby="receive_item_offcanvas-title">
+    <div class="offcanvas-header bg-primary p-3">
+        <span class="d-flex justify-content-between align-items-center gap-2">
+            <i class="ti ti-tools fs-2 text-white"></i>
+            <span id="receive_item_offcanvas-title">
+                <h5 class="offcanvas-title text-white">Receive Item</h5>
+                <span class="text-white slogan">Add Receive Item</span>
+            </span>
+        </span>
+        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <form action="{{ route('assets.repair-register.update-item') }}" method="post" id="update_receive_item">
+                    @csrf
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label for="repair_date" class="form-label">Received Date <span class="text-danger">*</span></label>
+                            <input type="text" name="repair_date" id="repair_date" class="form-control" placeholder=" Received Date"  />
+                        </div>
+                        <div class="col-sm-12">
+                            <label for="return_amount" class="form-label">Amount Paid <span class="text-danger">*</span></label>
+                            <input type="text" name="return_amount" id="return_amount" class="form-control" placeholder="Total Amount" />
+                        </div>
+                        <div class="col-sm-12">
+                            <label for="remarks" class="form-label">Remarks <span class="text-danger">*</span></label>
+                            <textarea class="form-control" name="remarks" id="remarks"></textarea>
+                        </div>
+                        <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2 mt-3">
+                            <input type="hidden" name="id" id="receive_item_id">
+                            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
+                            <button type="submit" form="update_receive_item" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Repair Offcanvas -->
 <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="repair_offcanvas" aria-labelledby="repairCanvasLabel">
     <div class="offcanvas-header bg-primary p-3">
@@ -122,24 +154,8 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal" tabindex="-1" id="item-receive-modal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Modal body text goes here.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
+
+
 
 
 @stop
@@ -171,9 +187,9 @@
                 { 
                     data: null,
                     render: function (data, type, row, meta) {
-                        return row.received_date != null
-                            ? row.received_date
-                            : `<button class="btn btn-sm btn-success" onclick="receiveRepairItem()">Receive</button>`;
+                        return row.item_return_date != null
+                            ?  row.item_return_date  
+                            : `<button class="btn btn-sm btn-success" onclick="receiveRepairItem(${row.id})">Receive</button>`;
                     }
                 },
                 { data: 'remarks', name: 'remarks' },
@@ -208,6 +224,32 @@
                 }
             });
         });
+
+        $('#repair_date').flatpickr({
+            monthSelectorType: 'static',
+            altInput: true,
+            altFormat: 'd-m-Y',
+            dateFormat: 'd-m-Y'
+        });
+
+        $('#update_receive_item').submit(function (e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    toastr.success(res.message);
+                    $('#item_receive_offcanvas').offcanvas('hide');
+                    repairTable.ajax.reload();
+                    $('#update_receive_item')[0].reset();
+                }
+            });
+        });
+
     });
 
     function openRepairOffcanvas(id = null) {
@@ -218,6 +260,16 @@
         $('#repair_offcanvas-title').html(`<h5 class="offcanvas-title text-white">Send to Repair</h5>
             <span class="text-white slogan">Add Repair Entry</span>`);
         new bootstrap.Offcanvas('#repair_offcanvas').show();
+    }
+
+    function receiveRepairItem(id = null) {
+        $('#update_receive_item')[0].reset();
+        $('#receive_item_offcanvas-title').html(`<h5 class="offcanvas-title text-white">Receive Item</h5>
+        <span class="text-white slogan">Receive Item from Repair</span>`);
+        const offcanvasElement = document.getElementById('item_receive_offcanvas');
+        const bsOffcanvas = new bootstrap.Offcanvas(offcanvasElement);
+        bsOffcanvas.show();
+        $('#receive_item_id').val(id);
     }
 
     function deleteRepair(id) {
@@ -237,11 +289,7 @@
         }
     }
 
-    function receiveRepairItem(id) {
-        const modal = new bootstrap.Modal(document.getElementById('item-receive-modal'));
-        modal.show();
-    }
-
     
+
 </script>
 @endpush

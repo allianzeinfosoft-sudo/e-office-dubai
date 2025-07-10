@@ -35,6 +35,7 @@ class RepairRegisterController extends Controller
                     'rate'              => $item->rate,
                     'amount'            => $item->amount,
                     'vendor_name'       => optional(optional($item->register)->vendor)->vendor_name,
+                    'item_return_date'  => $item->repair_date ? date('d-m-Y', strtotime($item->repair_date)) : null,
                     'status'            => $item->repair_date == null ? 'Sent' : 'Received',
                     'remarks'           => $item->remarks,
                     'asset_mapping_id'  => optional($item->assetMapping)->id,
@@ -181,6 +182,35 @@ class RepairRegisterController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Repair register entry deleted successfully.'
+        ]);
+    }
+
+    public function updateItem(Request $request) {
+        $validated = $request->validate([
+            'repair_date' => 'required|date',
+            'return_amount' => 'required|numeric',
+            'remarks' => 'required',
+        ]);
+
+        if ($request->id) {
+            $item = RepairItemLine::find($request->id);
+            $previousRemarks = $item->remarks;
+            AssetMapping::where('id', $item->asset_map_id)->update(['repair_id' => null, 'allocation_status' => 0]);
+            $item->update([
+                'repair_date' => date('Y-m-d', strtotime($validated['repair_date'])), 
+                'return_amount' => $validated['return_amount'],
+                'remarks' => $previousRemarks . ' | ' . $validated['remarks'],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Repair item updated successfully.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Item not found or ID missing.',
         ]);
     }
 }
