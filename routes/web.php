@@ -649,6 +649,9 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::resource('repair-register', RepairRegisterController::class)->names('repair-register');
         Route::post('repair-register/update-item', [RepairRegisterController::class, 'updateItem'])->name('repair-register.update-item');
         Route::post('alloted-item-search',[AssetAllocationController::class, 'allotedItemSearch'])->name('alloted-item-search');
+
+        Route::get('reports/scrap-items', [ScrapRegisterController::class, 'reportScrapItems'])->name('reports.scrap-items');
+        Route::get('reports/scrap-items-data', [ScrapRegisterController::class, 'scrapItemsReport'])->name('reports.scrap-items-data');
     });
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
     Route::get('/get-asset-models', [AssetAllocationController::class, 'getModels']);

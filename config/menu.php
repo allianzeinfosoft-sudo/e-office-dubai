@@ -589,6 +589,28 @@ return [
                 'route' =>  '/assets/repair-register',
                 'permission' => ['view assets'],
             ],
+             [
+                'title' => 'Reports',
+                'route' => 'javascript:void(0);',
+                'permission' => ['view assets'],
+                'submenu' =>[
+                    [
+                        'title' => 'Stock Items',
+                        'route' =>  '/assets/type',
+                        'permission' => ['view assets'],
+                    ],
+                    [
+                        'title' => 'Scrap Items',
+                        'route' =>  'assets/reports/scrap-items',
+                        'permission' => ['view assets'],
+                    ],
+                    [
+                        'title' => 'Repairs Items',
+                        'route' =>  '/assets/category',
+                        'permission' => ['view assets'],
+                    ]
+                ]
+            ],
             [
                 'title' => 'Asset Settings',
                 'route' => 'javascript:void(0);',

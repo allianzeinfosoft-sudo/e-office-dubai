@@ -7,6 +7,7 @@ use App\Models\ScrapRegister;
 use App\Models\AssetItemMaster;
 use App\Models\AssetMapping;
 use App\Models\AssetVendors;
+use App\Models\ScrapItemLine;
 use Illuminate\Http\Request;
 
 class ScrapRegisterController extends Controller
@@ -206,6 +207,57 @@ class ScrapRegisterController extends Controller
         return response()->json([
             'success' => true,
             'data' => $assetId
+        ]);
+    }
+
+    public function reportScrapItems(){
+        $data['meta_title'] = 'Scrap Items Report';
+        $data['vendors'] = AssetVendors::all();
+        $data['scraps'] = ScrapRegister::all();
+        return view('company-assets.reports.scrap_item_report', $data);
+    }
+    public function scrapItemsReport(Request $request){
+
+        $vendorId = $request->input('vendor_id');
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        $scrapItems = ScrapItemLine::with(['item', 'register', 'mapping'])
+        ->when($vendorId, function ($query) use ($vendorId) {
+            $query->whereHas('register', function ($q) use ($vendorId) {
+                $q->where('scrap_registers.scrap_vendor_id', $vendorId); // add table name
+            });
+        })
+        ->when($fromDate, function ($query) use ($fromDate) {
+            $query->whereHas('register', function ($q) use ($fromDate) {
+                $q->whereDate('scrap_registers.scrap_date', '>=', date('Y-m-d', strtotime($fromDate)));
+            });
+        })
+        ->when($toDate, function ($query) use ($toDate) {
+            $query->whereHas('register', function ($q) use ($toDate) {
+                $q->whereDate('scrap_registers.scrap_date', '<=', date('Y-m-d', strtotime($toDate)));
+            });
+        })
+        ->get();
+
+        return response()->json([
+            'data' => $scrapItems->map(function ($item, $index) {
+                return [
+                    'DT_RowIndex' => $index + 1,
+                    'scrap_no' => $item->register->scrap_no ?? '',
+                    'scrap_date' => optional($item->register)->scrap_date ? date('d-m-Y', strtotime($item->register->scrap_date)) : '',
+                    'vendor_name' => $item->register->vendor->vendor_name ?? '',
+                    'item_name' => $item->item->name ?? '',
+                    'asset_code' => $item->mapping->item_number ?? '',
+                    'item_model' => $item->model ?? '',
+                    'serial_number' => $item->serial_no ?? '',
+                    'unit' => $item->unit ?? '',
+                    'quantity' => $item->quantity ?? 0,
+                    'rate' => $item->rate ?? 0,
+                    'amount' => $item->amount ?? 0,
+                    'remarks' => $item->remarks ?? '',
+                ];
+            }),
         ]);
     }
 }
