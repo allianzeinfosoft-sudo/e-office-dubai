@@ -200,7 +200,7 @@ class ScrapRegisterController extends Controller
             ->when($request->serial_no, function ($query) use ($request) {
                 return $query->where('serial_number', $request->serial_no);
             })
-            ->where('allocation_status', '!=', 3)
+            ->where('allocation_status', 0)
             ->get();
 
         return response()->json([
