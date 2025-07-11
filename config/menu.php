@@ -596,7 +596,7 @@ return [
                 'submenu' =>[
                     [
                         'title' => 'Stock Report',
-                        'route' =>  '/assets/type',
+                        'route' =>  '/assets/reports/stock-report',
                         'permission' => ['view assets'],
                     ],
                     [
@@ -609,7 +609,7 @@ return [
                         'route' =>  'assets/reports/scrap-items',
                         'permission' => ['view assets'],
                     ],
-                    
+
                     [
                         'title' => 'Repairs Report',
                         'route' =>  '/assets/category',
