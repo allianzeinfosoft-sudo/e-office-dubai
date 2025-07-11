@@ -142,9 +142,8 @@
                                             <th>Item Brand</th>
                                             <th>Item Model</th>
                                             <th>Item Serial</th>
-                                            <th>Assigned</th>
-                                            <th>Repaired</th>
-                                            <th>Scrapped</th>
+                                            <th>Item Serial</th>
+                                            
                                         </tr>
                                     </thead>
                                 </table>
