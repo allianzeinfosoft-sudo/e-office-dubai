@@ -7,6 +7,10 @@
         margin-top: 10px;
         margin-left: 10px;
     }
+    .dataTables_length{
+        float: left;
+        margin-left: 20px;
+    }
 </style>
 @stop
 
@@ -120,7 +124,7 @@
 
         if (workingHoursTable.length) {
             $('.datatables-working-hours-report').DataTable({
-                dom: 'Bfrtip',
+                dom: 'Blfrtip',
                 buttons: [
                     { extend: 'excelHtml5', title: 'Daily Attendance Report', 
                         exportOptions: {
