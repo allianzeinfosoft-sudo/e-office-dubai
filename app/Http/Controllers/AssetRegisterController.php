@@ -214,6 +214,7 @@ class AssetRegisterController extends Controller
     public function stockReport(){
         $data['meta_title'] = 'Stock Report';
         $data['vendors'] = AssetVendors::all();
+        $data['items']  = AssetItemMaster::all();
 
         $data['stock_in_hand'] = AssetMapping::where('allocation_status', 0)->count('master_item_id');
         $data['stock_allocated'] = AssetMapping::where('allocation_status', 1)->count('master_item_id');
