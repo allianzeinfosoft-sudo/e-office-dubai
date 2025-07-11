@@ -609,6 +609,7 @@ return [
                         'route' =>  'assets/reports/scrap-items',
                         'permission' => ['view assets'],
                     ],
+                    
                     [
                         'title' => 'Repairs Report',
                         'route' =>  '/assets/category',
