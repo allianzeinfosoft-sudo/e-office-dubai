@@ -73,7 +73,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             @foreach ($assetsClassified as $item)
                                 <div class="col-xl-2 col-md-4 col-6 mb-4">
                                     <div class="card">
@@ -110,23 +110,12 @@
 
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="vendor_id">Vendors</label>
+                                            <label for="vendor_id">Items</label>
                                             <select name="vendor_id" id="vendor_id" class="form-control select2">
                                                 <option value="">All</option>
-                                                @foreach ($vendors as $vendor)
-                                                    <option value="{{ $vendor->id }}">{{ $vendor->vendor_name }}</option>
+                                                @foreach ($items as $item)
+                                                    <option value="{{ $item->id }}">{{ $item->name }} [{{$item->item_code }} - {{ $item->brand }}] </option>
                                                 @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="status">Staus</label>
-                                            <select name="status" id="status" class="form-control select2">
-                                                <option value="">All</option>
-                                                <option value="sent">Sent</option>
-                                                <option value="received">Received</option>
                                             </select>
                                         </div>
                                     </div>
@@ -147,20 +136,14 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Repair No</th>
-                                            <th>Repair Date</th>
-                                            <th>Vendor</th>
-                                            <th>Item</th>
-                                            <th>Asset No</th>
-                                            <th>Model</th>
-                                            <th>Serial No</th>
-                                            <th>Unit</th>
-                                            <th>Qty</th>
-                                            <th>Unit Price</th>
-                                            <th>Amount</th>
-                                            <th>Return Date</th>
-                                            <th>Amount</th>
-                                            <th>Remarks</th>
+                                            <th>Purchase Date</th>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            <th>Item Brand</th>
+                                            <th>Item Model</th>
+                                            <th>Item Serial</th>
+                                            <th>Item Serial</th>
+                                            
                                         </tr>
                                     </thead>
                                 </table>
