@@ -649,12 +649,17 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::resource('repair-register', RepairRegisterController::class)->names('repair-register');
         Route::post('repair-register/update-item', [RepairRegisterController::class, 'updateItem'])->name('repair-register.update-item');
         Route::post('alloted-item-search',[AssetAllocationController::class, 'allotedItemSearch'])->name('alloted-item-search');
-        
+        /* Scrap report */
         Route::get('reports/scrap-items', [ScrapRegisterController::class, 'reportScrapItems'])->name('reports.scrap-items');
         Route::get('reports/scrap-items-data', [ScrapRegisterController::class, 'scrapItemsReport'])->name('reports.scrap-items-data');
+        /* Repair report */
         Route::get('reports/repair-items', [RepairRegisterController::class, 'reportRepairItems'])->name('reports.repair-items');
         Route::get('reports/repair-items-data', [RepairRegisterController::class, 'repairItemsReport'])->name('reports.repair-items-data');
+        /* Stock report */
+        Route::get('reports/stock-report', [AssetRegisterController::class, 'stockReport'])->name('reports.stock-report');
+
         Route::post('return/{allocation}', [AssetAllocationController::class, 'returnToStore'])->name('return');
+
     });
 
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
