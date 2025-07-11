@@ -606,7 +606,7 @@ return [
                     ],
                     [
                         'title' => 'Repairs Items',
-                        'route' =>  '/assets/category',
+                        'route' =>  'assets/reports/repair-items',
                         'permission' => ['view assets'],
                     ]
                 ]

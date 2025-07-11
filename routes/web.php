@@ -649,12 +649,14 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::resource('repair-register', RepairRegisterController::class)->names('repair-register');
         Route::post('repair-register/update-item', [RepairRegisterController::class, 'updateItem'])->name('repair-register.update-item');
         Route::post('alloted-item-search',[AssetAllocationController::class, 'allotedItemSearch'])->name('alloted-item-search');
-
+        
         Route::get('reports/scrap-items', [ScrapRegisterController::class, 'reportScrapItems'])->name('reports.scrap-items');
         Route::get('reports/scrap-items-data', [ScrapRegisterController::class, 'scrapItemsReport'])->name('reports.scrap-items-data');
+        Route::get('reports/repair-items', [RepairRegisterController::class, 'reportRepairItems'])->name('reports.repair-items');
+        Route::get('reports/repair-items-data', [RepairRegisterController::class, 'repairItemsReport'])->name('reports.repair-items-data');
         Route::post('return/{allocation}', [AssetAllocationController::class, 'returnToStore'])->name('return');
-
     });
+
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
     Route::get('/get-asset-models', [AssetAllocationController::class, 'getModels']);
     Route::get('/get-asset-serials', [AssetAllocationController::class, 'getSerials']);
