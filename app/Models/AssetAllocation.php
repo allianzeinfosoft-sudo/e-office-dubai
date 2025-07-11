@@ -24,4 +24,8 @@ class AssetAllocation extends Model
     {
         return $this->belongsTo(Department::class,'department','id');
     }
+
+
+
+
 }

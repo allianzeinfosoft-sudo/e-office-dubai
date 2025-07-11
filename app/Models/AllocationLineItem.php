@@ -20,6 +20,7 @@ class AllocationLineItem extends Model
                             'status',
                             'return_date_time',
                             'comment',
+                            'asset_itemline_id'
                         ];
 
 
@@ -31,6 +32,25 @@ class AllocationLineItem extends Model
     public function masterItem()
     {
         return $this->belongsTo(AssetItemMaster::class,'item','id');
+    }
+
+    public function project_info()
+    {
+        return $this->belongsTo(Project::class,'project','id');
+    }
+    public function classification()
+    {
+        return $this->belongsTo(AssetClassification::class,'asset_classification_id', 'id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(AssetCategory::class,'asset_category_id','id');
+    }
+
+    public function assetType()
+    {
+        return $this->belongsTo(AssetType::class,'asset_type','id');
     }
 
 }

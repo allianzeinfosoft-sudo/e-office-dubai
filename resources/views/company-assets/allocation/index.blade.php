@@ -81,9 +81,7 @@
                                             </div>
                                         </div>
 
-                                    <div class="mb-3 col-md-3 form-password-toggle" id="user_details">
-
-                                    </div>
+                                    <div class="mb-3 col-md-3 form-password-toggle" id="user_details"> </div>
 
                                     <div>
                                         <button type="submit" class="btn btn-primary me-2">Search</button>

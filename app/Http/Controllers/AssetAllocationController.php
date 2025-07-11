@@ -9,9 +9,13 @@ use App\Models\AssetCategory;
 use App\Models\AssetClassification;
 use App\Models\AssetItemLine;
 use App\Models\AssetItemMaster;
+use App\Models\AssetLocation;
 use App\Models\AssetMapping;
 use App\Models\AssetType;
 use App\Models\AssetVendors;
+use App\Models\Department;
+use App\Models\Employee;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 
@@ -217,24 +221,85 @@ class AssetAllocationController extends Controller
 
     }
 
-    public function show(AssetAllocation $assetAllocation)
+    public function reportAllocatedItems()
     {
-        //
+        $data['meta_title']  = 'Allocated Items Report';
+        $data['departments'] = Department::all();
+        $data['employees'] = Employee::all();
+        $data['locations'] = AssetLocation::all();
+        $data['projects'] = Project::all();
+        $data['classifications'] = AssetClassification::all();
+        return view('company-assets.reports.allocation_item_report', $data);
     }
 
-    public function edit(AssetAllocation $assetAllocation)
+    public function allocatedItemsReport(Request $request)
     {
-        //
+        $classification = $request->input('classification');
+        $department     = $request->input('department');
+        $user_type      = $request->input('user_type');
+        $location       = $request->input('location');
+        $employee           = $request->input('employee');
+        $project        = $request->input('project');
+
+        $query = AssetAllocation::with(['items' => function ($q) {
+                            $q->where('status', 1)
+                            ->with(['masterItem', 'project_info']);
+                        }, 'employee', 'department_name'])
+                    ->where('status', 1);
+
+
+        if(!empty($classification))
+        {
+
+        }
+        // Apply filters if present
+        if (!empty($user_type)) {
+            $query->where('user_type', $user_type);
+        }
+        if($user_type == 'employee' && !empty($employee))
+        {
+            $query->where('user', $employee);
+        }
+        if($user_type == 'location' && !empty($location))
+        {
+            $query->where('user', $location);
+        }
+
+
+        if (!empty($department)) {
+            $query->where('department', $department);
+        }
+
+        if (!empty($project)) {
+            $query->whereHas('items', function ($q) use ($project) {
+                $q->where('project', $project);
+            });
+        }
+
+        // Load data (no pagination)
+        $allocated_items = $query->get();
+
+        $reportData = [];
+        $rowIndex = 1;
+
+        foreach ($allocated_items as $allocation) {
+            foreach ($allocation->items as $item) {
+                $reportData[] = [
+                    'DT_RowIndex'    => $rowIndex++,
+                    'item_name' => ($item->masterItem?->brand ?? '') . ' ' . ($item->masterItem?->name ?? ''),
+                    'model'          => $item->model ?? '',
+                    'asset_id'       => $item->asset_id ?? '',
+                    'serial_number'  => $item->serial_number ?? '',
+                    'allocated_to'   => $allocation->employee->full_name ?? '',
+                    'department'     => $allocation->department_name->department ?? '',
+                    'project'        => $item->project_info->project_name ?? '',
+                    'allocated_date' => optional($allocation->created_at)->format('d-m-Y'),
+                ];
+            }
+        }
+
+        return response()->json(['data' => $reportData]);
     }
 
-    public function update(Request $request, AssetAllocation $assetAllocation)
-    {
-        //
-    }
 
-
-    public function destroy(AssetAllocation $assetAllocation)
-    {
-        //
-    }
 }
