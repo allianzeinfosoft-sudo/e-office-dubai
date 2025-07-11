@@ -10,6 +10,7 @@ use App\Models\AssetVendors;
 use App\Models\AssetItemMaster;
 use App\Models\AssetClassification;
 use App\Models\AssetCategory;
+use App\Models\AssetItemLine;
 use App\Models\AssetType;
 use App\Models\AssetMapping;
 use Illuminate\Support\Facades\Storage;
@@ -207,5 +208,22 @@ class AssetRegisterController extends Controller
             'success' => true,
             'message' => 'Asset register deleted successfully.'
         ]);
+    }
+
+    /* stock Report */
+    public function stockReport(){
+        $data['meta_title'] = 'Stock Report';
+        $data['vendors'] = AssetVendors::all();
+
+        $data['stock_in_hand'] = AssetMapping::where('allocation_status', 0)->count('master_item_id');
+        $data['stock_allocated'] = AssetMapping::where('allocation_status', 1)->count('master_item_id');
+        $data['stock_scraped'] = AssetMapping::where('allocation_status', 3)->count('master_item_id');
+        $data['stock_repaired'] = AssetMapping::where('allocation_status', 2)->count('master_item_id');
+        
+        $data['assetsClassified'] = AssetItemLine::with('asset_classification')
+            ->selectRaw('asset_classification_id, SUM(asset_quantity) as total_quantity')
+            ->groupBy('asset_classification_id')
+            ->get();
+        return view('company-assets.reports.stock-report', $data);
     }
 }

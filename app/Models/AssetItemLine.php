@@ -30,8 +30,16 @@ class AssetItemLine extends Model
     {
         return $this->belongsTo(AssetItemMaster::class, 'asset_item_id', 'id');
     }
-    public function classification()
+    public function asset_classification()
     {
         return $this->belongsTo(AssetClassification::class, 'asset_classification_id', 'id');
+    }
+    public function asset_category()
+    {
+        return $this->belongsTo(AssetCategory::class, 'asset_category_id', 'id');
+    }
+    public function asset_type()
+    {
+        return $this->belongsTo(AssetType::class, 'asset_type_id', 'id');
     }
 }

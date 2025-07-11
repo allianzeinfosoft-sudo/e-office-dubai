@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RepairRegister;
 use App\Models\RepairItemLine;
 use App\Models\AssetMapping;
+use App\Models\AssetVendors;
 use Illuminate\Http\Request;
 
 
@@ -196,12 +197,13 @@ class RepairRegisterController extends Controller
             $item = RepairItemLine::find($request->id);
             $previousRemarks = $item->remarks;
             AssetMapping::where('id', $item->asset_map_id)->update(['repair_id' => null, 'allocation_status' => 0]);
+            
             $item->update([
                 'repair_date' => date('Y-m-d', strtotime($validated['repair_date'])), 
                 'return_amount' => $validated['return_amount'],
                 'remarks' => $previousRemarks . ' | ' . $validated['remarks'],
             ]);
-
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Repair item updated successfully.',
@@ -211,6 +213,65 @@ class RepairRegisterController extends Controller
         return response()->json([
             'success' => false,
             'message' => 'Item not found or ID missing.',
+        ]);
+    }
+
+    public function reportRepairItems() {
+        $data['meta_title'] = 'Repair Items Report';
+        $data['vendors'] = AssetVendors::all();
+        return view('company-assets.reports.repair_item_report', $data);
+    }
+
+    public function repairItemsReport(Request $request){
+
+        $vendorId   = $request->input('vendor_id');
+        $fromDate   = $request->input('from_date');
+        $toDate     = $request->input('to_date');
+        $status     = $request->input('status');
+
+        $reportItems = RepairItemLine::with(['item', 'register', 'assetMapping'])
+        ->when($vendorId, function ($query) use ($vendorId) {
+            $query->whereHas('register', function ($q) use ($vendorId) {
+                $q->where('repair_registers.vendor_id', $vendorId); // add table name
+            });
+        })
+        ->when($status, function ($query) use ($status) {
+            $query->whereHas('register', function ($q) use ($status) {
+                $q->where('repair_registers.status', $status); // add table name
+            });
+        })
+        ->when($fromDate, function ($query) use ($fromDate) {
+            $query->whereHas('register', function ($q) use ($fromDate) {
+                $q->whereDate('repair_registers.repair_date', '>=', date('Y-m-d', strtotime($fromDate)));
+            });
+        })
+        ->when($toDate, function ($query) use ($toDate) {
+            $query->whereHas('register', function ($q) use ($toDate) {
+                $q->whereDate('repair_registers.repair_date', '<=', date('Y-m-d', strtotime($toDate)));
+            });
+        })
+        ->get();
+
+        return response()->json([
+            'data' => $reportItems->map(function ($item, $index) {
+                return [
+                    'DT_RowIndex' => $index + 1,
+                    'scrap_no' => $item->register->repair_no ?? '',
+                    'scrap_date' => optional($item->register)->repair_date ? date('d-m-Y', strtotime($item->register->repair_date)) : '',
+                    'vendor_name' => $item->register->vendor->vendor_name ?? '',
+                    'item_name' => $item->item->name ?? '',
+                    'asset_code' => $item->assetMapping->item_number ?? '',
+                    'item_model' => $item->item_model ?? '',
+                    'serial_number' => $item->serial_no ?? '',
+                    'unit' => $item->unit ?? '',
+                    'quantity' => $item->quantity ?? 0,
+                    'rate' => $item->rate ?? 0,
+                    'amount' => $item->amount ?? 0,
+                    'return_date' => $item->repair_date ? date('d-m-Y', strtotime($item->repair_date)) : '',
+                    'return_amount' => $item->return_amount ?? '',
+                    'remarks' => $item->remarks ?? '',
+                ];
+            }),
         ]);
     }
 }
