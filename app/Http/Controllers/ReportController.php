@@ -395,7 +395,7 @@ class ReportController extends Controller
         $reportDate = Carbon::createFromFormat('d-m-Y', $request->report_date ?? now()->format('d-m-Y'))->format('Y-m-d');
 
         // Get all active employees
-        $employees = Employee::with('user')->get();
+        $employees = Employee::with('user')->whereIn('status', [1, 2, 5,])->get();
 
         // Get all attendances for the day
         $attendances = Attendance::whereDate('signin_date', $reportDate)->get()->keyBy('emp_id');
