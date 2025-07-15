@@ -484,6 +484,11 @@
                               </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td>Human Resource</td>
+                                    <td>HR</td>
+                                    <td><a href="mailto:{{ 'hr@mail.allianzegroup.com' ?? ''  }}">{{ 'hr@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
                               @if($uniqueTeamLeads->isNotEmpty())
                                 @foreach($uniqueTeamLeads as $uniqueTeamLead)
                                 <tr class="{{$uniqueTeamLead->id}}">
@@ -493,6 +498,11 @@
                                 </tr>
                                 @endforeach
                               @endif
+                                <tr>
+                                    <td>Finance and Accounts</td>
+                                    <td>Nirmal Sebastian</td>
+                                    <td><a href="mailto:{{ 'nirmals@mail.allianzegroup.com' ?? ''  }}">{{ 'nirmals@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
                             </tbody>
                           </table>
                         </div>

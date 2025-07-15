@@ -428,6 +428,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/check-leave-overlap', [LeaveController::class, 'checkOverlap'])->name('check.leave.overlap');
     Route::post('/leave_summary_filter', [LeaveController::class, 'leave_summary_filter'])->name('leave_summary_filter');
     Route::get('/check-leave-allocation/{user}', [LeaveController::class, 'check_leave_allocated']);
+    Route::get('/reports/all-users-report', [ReportController::class, 'allUserReport']) ->name('reports.all-user-reports');
+    Route::get('/reports/all-user-report-data', [ReportController::class, 'allUserReportData'])->name('reports.all-user-data');
 
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
