@@ -11,6 +11,7 @@ use App\Models\workReport;
 use App\Models\Project;
 use App\Models\ProjectTask;
 use App\Helpers\CustomHelper;
+use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
@@ -262,7 +263,7 @@ class ReportController extends Controller
         // Attendance + Leave
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user);
         $data['leave_stats']          = CustomHelper::getEmployeeLeaveStats($selected_user, $selected_year);
-        
+
         // Other info
         $data['current_user'] = Employee::where('user_id', $selected_user)->first();
         $data['employees']    = Employee::all();
@@ -677,7 +678,7 @@ class ReportController extends Controller
         }
 
         $data['attendances'] = collect($report);
-        
+
         $html = view('reports.all-attendance-report.report-view', $data)->render();
 
         return response()->json(['html' => $html]);
@@ -910,4 +911,44 @@ class ReportController extends Controller
 
         return response()->json($query->get());
     }
+
+     public function allUserReport(){
+        $data['meta_title'] = 'All Users Report';
+        $data['employees'] = Employee::all();
+        return view('reports.all-user-report.index', $data);
+    }
+
+    public function allUserReportData(Request $request){
+
+
+        $query = Employee::with('user');
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('join_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('join_date', '<=', $request->end_date);
+        }
+
+        $employees = $query->get()->map(function ($employee) {
+            return [
+                'id'           => $employee->id,
+                'name'         => $employee->full_name ?? '-',
+                'emp_id'       => 'AIS-'.$employee->employeeID ?? '-',
+                'email'        => $employee->user?->email ?? '-',
+                'phone'        => $employee->phonenumber ?? '-',
+                'role'         => $employee->role ?? '-',
+                'group'        => $employee->group ?? '-',
+                'department'   => $employee?->department?->department ?? '-',
+                'designation'  => $employee?->designation?->designation ?? '-',
+                'joining_date' => Carbon::parse($employee->join_date)->format('d-m-Y'),
+            ];
+        });
+
+        return response()->json(['data' => $employees]);
+
+    }
 }
+
+
