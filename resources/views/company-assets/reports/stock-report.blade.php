@@ -26,7 +26,7 @@
 
                         <div class="row">
 
-                            <div class="col-xl-2 col-md-4 col-6 mb-4">
+                            <div class="col-xl-3 col-md-4 col-6 mb-4">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="badge p-2 bg-label-danger mb-2 rounded">
@@ -38,7 +38,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-xl-2 col-md-4 col-6 mb-4">
+                            <div class="col-xl-3 col-md-4 col-6 mb-4">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="badge p-2 bg-label-success mb-2 rounded">
@@ -50,7 +50,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-xl-2 col-md-4 col-6 mb-4">
+                            <div class="col-xl-3 col-md-4 col-6 mb-4">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="badge p-2 bg-label-warning mb-2 rounded">
@@ -62,7 +62,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-xl-2 col-md-4 col-6 mb-4">
+                            <div class="col-xl-3 col-md-4 col-6 mb-4">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="badge p-2 bg-label-info mb-2 rounded">
@@ -74,7 +74,7 @@
                                 </div>
                             </div>
 
-                            @foreach ($assetsClassified as $item)
+                            {{-- @foreach ($assetsClassified as $item)
                                 <div class="col-xl-2 col-md-4 col-6 mb-4">
                                     <div class="card">
                                         <div class="card-body">
@@ -86,7 +86,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
+                            @endforeach --}}
 
                         </div>
 
@@ -96,22 +96,63 @@
 
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="from_date">From Date</label>
-                                            <input type="text" name="from_date" id="from_date" class="form-control" placeholder="From Date">
+                                            <label for="location_status">Location Status</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="location_status" id="all_location" value="all" checked>
+                                                <label class="form-check-label" for="all_location">All</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="location_status" id="location_allocated" value="allocated">
+                                                <label class="form-check-label" for="location_allocated">Allocated</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="location_status" id="location_instore" value="in_store">
+                                                <label class="form-check-label" for="location_instore">In Store</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="classification">Classification</label>
+                                            <select name="classification" id="classification" class="form-control select2">
+                                                <option value="">All</option>
+                                                @foreach ($classifications as $classification)
+                                                    <option value="{{ $classification->id }}">{{ $classification->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
 
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="to_date">To Date</label>
-                                            <input type="text" name="to_date" id="to_date" class="form-control" placeholder="To Date">
+                                            <label for="category">Category</label>
+                                            <select name="category" id="category" class="form-control select2">
+                                                <option value="">All</option>
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
 
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="vendor_id">Items</label>
-                                            <select name="vendor_id" id="vendor_id" class="form-control select2">
+                                            <label for="type">Type</label>
+                                            <select name="type" id="type" class="form-control select2">
+                                                <option value="">All</option>
+                                                @foreach ($types as $type)
+                                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="asset_item_id">Items</label>
+                                            <select name="asset_item_id" id="asset_item_id" class="form-control select2">
                                                 <option value="">All</option>
                                                 @foreach ($items as $item)
                                                     <option value="{{ $item->id }}">{{ $item->name }} [{{$item->item_code }} - {{ $item->brand }}] </option>
@@ -120,30 +161,53 @@
                                         </div>
                                     </div>
 
+                                    {{-- <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="model">Model</label>
+                                            <select name="model" id="model" class="form-control select2">
+                                                <option value="">All</option>
+                                                @foreach ($items as $item)
+                                                    <option value="{{ $item->id }}">{{ $item->name }} [{{$item->item_code }} - {{ $item->brand }}] </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div> --}}
+
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <button type="button" onclick="get_reports()" class="btn btn-primary mt-4" id="search">Filter</button>
+                                            <label for="vendor">Vendor</label>
+                                            <select name="vendor" id="vendor" class="form-control select2">
+                                                <option value="">All</option>
+                                                @foreach ($vendors as $vendor)
+                                                    <option value="{{ $vendor->id }}">{{ $vendor->vendor_name }} </option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
-                                    
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <button type="button" onclick="get_stock_reports()" class="btn btn-primary mt-4" id="search">Filter</button>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="card">
                             <div class="card-datatable table-responsive">
-                                <table class="table table-bordered" id="repair-register-table" style="font-size: 12px;">
+                                <table class="table table-bordered" id="stock-report-table" style="font-size: 12px;">
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Purchase Date</th>
-                                            <th>Item Code</th>
-                                            <th>Item Name</th>
-                                            <th>Item Brand</th>
-                                            <th>Item Model</th>
-                                            <th>Item Serial</th>
-                                            <th>Item Serial</th>
-                                            
+                                            <th>Item</th>
+                                            <th>Model</th>
+                                            <th>Serial Number</th>
+                                            <th>Classification</th>
+                                            <th>Category</th>
+                                            <th>Type</th>
+                                            <th>Vendor</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -163,60 +227,54 @@
 @push('js')
 <script>
     $(function () {
-        $('#from_date , #to_date').flatpickr({
-            altInput: true,
-            altFormat: 'd-m-Y',
-            dateFormat: 'd-m-Y'
-        });
-        get_reports();
+        get_stock_reports();
     });
-    
-    function get_reports() {
-        if ($.fn.DataTable.isDataTable('#repair-register-table')) {
-            $('#repair-register-table').DataTable().clear().destroy();
-        }
-        const from_date = $('#from_date').val();
-        const to_date = $('#to_date').val();
-        const vendor_id = $('#vendor_id').val();
-        const status = $('#status').val();
-        
-        const scrapTable = $('#repair-register-table') ;
 
-        scrapTable.DataTable({
+    function get_stock_reports() {
+        if ($.fn.DataTable.isDataTable('#stock-report-table')) {
+            $('#stock-report-table').DataTable().clear().destroy();
+        }
+        const location_status = $('input[name="location_status"]:checked').val();
+        const classification = $('#classification').val();
+        const category = $('#category').val();
+        const type = $('#type').val();
+        const asset_item_id = $('#asset_item_id').val();
+        const model = $('#model').val();
+        const vendor = $('#vendor').val();
+
+        const stockTable = $('#stock-report-table') ;
+
+        stockTable.DataTable({
             dom: 'Bfrtip',
             buttons: [
-                { extend: 'excelHtml5', title: 'Repair Item Report from ' + from_date + ' to ' + to_date},
-                { extend: 'pdfHtml5', title: 'Repair Item Report from ' + from_date + ' to ' + to_date , orientation: 'portrait', pageSize: 'A4'},
-                { extend: 'print', title: 'Repair Item Report from ' + from_date + ' to ' + to_date}
+                { extend: 'excelHtml5', title: 'Stock Item Report'},
+                { extend: 'pdfHtml5', title: 'Stock Item Report'},
+                { extend: 'print', title: 'Stock Item Report'}
             ],
             processing: false,
             serverSide: false,
             ajax: {
-                url:'{{ route("assets.reports.repair-items-data") }}',
+                url:'{{ route("assets.reports.stock-items-data") }}',
                 data: {
-                    from_date: from_date,
-                    to_date: to_date,
-                    vendor_id: vendor_id,
-                    status: status
+                    location_status: location_status,
+                    classification: classification,
+                    category: category,
+                    type: type,
+                    model: model,
+                    vendor: vendor,
+                    asset_item_id:asset_item_id
                 }
             },
             dataSrc: 'data',
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                { data: 'scrap_no' },
-                { data: 'scrap_date' },
-                { data: 'vendor_name' },
-                { data: 'item_name' },
-                { data: 'asset_code' },
-                { data: 'item_model' },
-                { data: 'serial_number' },
-                { data: 'unit' },
-                { data: 'quantity' },
-                { data: 'rate' },
-                { data: 'amount' },
-                { data: 'return_date' },
-                { data: 'return_amount' },
-                { data: 'remarks' },
+                { data: 'item' },
+                { data: 'model' },
+                { data: 'serial_number'},
+                { data: 'classification' },
+                { data: 'category' },
+                { data: 'type' },
+                { data: 'vendor' }
             ]
         });
     }

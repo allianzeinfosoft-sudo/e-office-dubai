@@ -153,11 +153,7 @@
 @push('js')
 <script>
     $(function () {
-        $('#from_date , #to_date').flatpickr({
-            altInput: true,
-            altFormat: 'd-m-Y',
-            dateFormat: 'd-m-Y'
-        });
+
         get_reports();
     });
 

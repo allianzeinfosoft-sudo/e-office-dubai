@@ -42,4 +42,8 @@ class AssetItemLine extends Model
     {
         return $this->belongsTo(AssetType::class, 'asset_type_id', 'id');
     }
+   public function mapping()
+    {
+        return $this->hasMany(AssetMapping::class, 'register_lineitem_id', 'id');
+    }
 }

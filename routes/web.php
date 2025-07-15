@@ -661,6 +661,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::post('return/{allocation}', [AssetAllocationController::class, 'returnToStore'])->name('return');
         Route::get('reports/allocated-items',[AssetAllocationController::class, 'reportAllocatedItems'])->name('reports.allocated-items');
         Route::get('reports/allocated-items-data', [AssetAllocationController::class, 'allocatedItemsReport'])->name('reports.allocated-items-data');
+        Route::get('/reports/stock-items-data', [AssetRegisterController::class, 'stockItemReport'])->name('reports.stock-items-data');
 
     });
 

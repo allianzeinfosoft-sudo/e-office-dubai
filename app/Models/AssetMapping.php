@@ -29,9 +29,13 @@ class AssetMapping extends Model
         return $this->belongsTo(AssetItemMaster::class,'master_item_id','id');
     }
 
-    public function register_lineitems()
+    // public function register_lineitems()
+    // {
+    //     return $this->belongsToMany(AssetItemLine::class,'register_lineitem_id','id');
+    // }
+    public function register_lineitem()
     {
-        return $this->belongsToMany(AssetItemLine::class,'register_lineitem_id','id');
+        return $this->belongsTo(AssetItemLine::class, 'register_lineitem_id', 'id');
     }
 
     public function allocations()
