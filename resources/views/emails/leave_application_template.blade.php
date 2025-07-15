@@ -24,7 +24,7 @@
     <p>Looking forward to your approval.</p>
 
     <p>Best Regards,<br>
-    {{ $details['employee_name'] }}</p>
+       Allianze E-Office Admin</p>
 </body>
 </html>
 

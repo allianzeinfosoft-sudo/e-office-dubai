@@ -167,8 +167,16 @@ return [
                 'title' => 'Survey Report',
                 'route' => '/survey-report',
             ],
-
-
+            [
+                'title' => 'All Users Report',
+                'route' => '/reports/all-users-report',
+                'permission' => ['view all users report'],
+            ],
+            /* [
+                'title' => 'Over All Emergency Work Report',
+                'route' => '/reports/over-all-emorgency-work-report',
+                'permission' => ['view all emergency work report'],
+            ], */
         ]
     ],
     [
@@ -192,7 +200,7 @@ return [
                 'route' =>  '/sartemplate-assign',
                 'permission' => ['assign SAR'],
             ],
-             [
+            [
                 'title' => 'SAR Report',
                 'route' => '/sar-report',
             ],
@@ -223,10 +231,9 @@ return [
                 'route' => '/par-report',
             ],
 
-
         ]
     ],
-     [
+    [
         'title' => 'Feedback',
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',

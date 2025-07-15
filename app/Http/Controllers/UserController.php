@@ -1091,16 +1091,18 @@ public function checkAccountNumber(Request $request)
 
         $month = $request->input('month') ?? date('m');  // Default to current month
         $year = $request->input('year') ?? date('Y');    // Default to current year
-
+        $this_month_leave_hours = 0;
         $fromDate = date('Y-m-d', strtotime("$year-$month-01"));
         $toDate = date('Y-m-t', strtotime($fromDate));  // t = last day of the month
         $weekOffDays = [0, 6]; // Sunday, Saturday
 
         $employees = Employee::with('user')->whereIn('status', [1, 2, 5])->get();
 
-        $data = $employees->map(function ($employee , $index) use ($fromDate, $toDate, $weekOffDays) {
+        $data = $employees->map(function ($employee , $index) use ($fromDate, $toDate, $weekOffDays, $month, $year) {
             $workingDays = $this->getTotalWorkingDays($fromDate, $toDate, $weekOffDays);
-            $expectedSeconds = ($workingDays * 8); // 8 hours per day
+            $this_month_leave = $this->getThisMonthLeave($month, $year,$employee->user_id);
+            $this_month_leave_hours = $this_month_leave * 8;
+            $expectedSeconds = ($workingDays * 8) - $this_month_leave_hours; // 8 hours per day
 
             $attendanceRecords = Attendance::where('emp_id', $employee->user_id)
                 ->whereBetween('signin_date', [$fromDate, $toDate])
@@ -1135,6 +1137,17 @@ public function checkAccountNumber(Request $request)
         return response()->json(['data' => $data]);
     }
 
+    public function getThisMonthLeave($month, $year, $user_id)
+    {
+        return $leaveCount = Leave::where('user_id', $user_id)
+                ->whereYear('leave_from', $year)
+                ->whereMonth('leave_from', $month)
+                ->where('status', 2)
+                ->sum('leave_day_count');
+    }
+
+
+
     public function getTotalWorkingDays($fromDate, $toDate, $weekOffDays = [0, 6]){
         $from = Carbon::parse($fromDate);
         $to = Carbon::parse($toDate);
@@ -1152,6 +1165,8 @@ public function checkAccountNumber(Request $request)
         }
         return $workingDays;
     }
+
+
 
 
 

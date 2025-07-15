@@ -36,7 +36,7 @@
 
         </div>
         <div class="row justify-content-between d-flex">
-        <div class="col-md-6"><span>Best Regards,<br>{{ $details['employee_name'] }}</span></div>
+        <div class="col-md-6"><span>Best Regards,<br>Allianze E-Office Admin</span></div>
         <div class="col-md-5 mt-3 text-end"><span>{{ date('d-m-Y H:i:s') }}</span></div>
         </div>
     </div>
