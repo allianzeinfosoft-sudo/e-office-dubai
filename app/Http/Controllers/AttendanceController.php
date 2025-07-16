@@ -82,6 +82,7 @@ class AttendanceController extends Controller{
         // Approved half day leaves
         $halfDayLeaves = Leave::where('user_id', $user->id)
             // Adjust if your system uses a different label
+            ->where('leave_type','!=','off_day')
             ->whereMonth('leave_from', $currentMon)
             ->whereYear('leave_from', $currentYear)
             ->sum('leave_day_count');
@@ -105,16 +106,18 @@ class AttendanceController extends Controller{
             $totalMinutes += ((int)$h * 60) + (int)$m; // ignore seconds
         }
 
-
-        $data['totalWorkedHours'] = sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
+        $data['totalWorkedHours'] = $totalMinutes/60;
+        // sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
+        // dd($data['totalWorkedHours']);
 
         /******* CURRENT MONTH AVERAGE WORKED HOURS OF USERS *******/
         // Calculate average worked hours per day
         if ($data['days_of_worked'] > 0) {
-            $avgMinutes = round($totalMinutes / $data['days_of_worked']);
+            $avgMinutes = $totalMinutes / $data['days_of_worked'];
             $avgHours = floor($avgMinutes / 60);
             $avgMins = $avgMinutes % 60;
-            $data['avgWorkedHours'] = sprintf('%02d:%02d', $avgHours, $avgMins);
+            $data['avgWorkedHours'] = round(($avgMinutes / 60),2);
+            // sprintf('%02d:%02d', $avgHours, $avgMins);
             $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
         } else {
             $data['avgWorkedHours'] = '00:00';

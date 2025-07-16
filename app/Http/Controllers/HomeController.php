@@ -33,7 +33,7 @@ class HomeController extends Controller
 
         $selected_user =  Auth::user()->id;
         $selected_year =  date('Y');
-        
+
         $data['employee'] = Employee::with('department', 'designation', 'workshift', 'reportingToEmployee')->where('user_id', $selected_user)->first();
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
         $data['holidays'] = Holiday::where('holiday_group', $data['employee']?->holidayGroup)->get();
@@ -44,7 +44,7 @@ class HomeController extends Controller
 
         // Total Working Hours
         $attendances = Attendance::where('status', 'mark-out')->where('emp_id', $user->id)->whereBetween('signin_date', [$fromDate, $toDate]) ->get();
-        
+
         // Get all working_hours within the selected range
         $attendancesHours = Attendance::where('emp_id', $user->id)
             ->whereYear('signin_date', $selected_year)
@@ -65,23 +65,35 @@ class HomeController extends Controller
             }
         }
 
+        $total_leaves_days = Leave::where('user_id', $user->id)
+            // Adjust if your system uses a different label
+            ->where('leave_type','!=','off_day')
+            ->whereMonth('leave_from', $fromDate)
+            ->whereYear('leave_from', $selected_year)
+            ->sum('leave_day_count');
+
+        $validDays = $validDays - $total_leaves_days;
+
         // Helper to format seconds to H:i:s
-        function formatTime($seconds) {
-            $hours = floor($seconds / 3600);
-            $minutes = floor(($seconds % 3600) / 60);
-            $seconds = $seconds % 60;
+        // function formatTime($seconds) {
+        //     $hours = floor($seconds / 3600);
+        //     $minutes = floor(($seconds % 3600) / 60);
+        //     $seconds = $seconds % 60;
 
-            return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-        }
+        //     return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        // }
 
-        $data['totalWorkingTime']   = formatTime($totalSeconds);
-        $data['averageWorkingTime'] = $validDays > 0 ? formatTime($totalSeconds / $validDays) : '00:00:00';
+        $data['totalWorkingTime']   = $totalSeconds/3600;
+        $data['averageWorkingTime'] = $validDays > 0 ? ($totalSeconds/3600) / $validDays : '00:00:00';
         $data['workingDays']        = $validDays;
 
         // Leave count
-        $data['leaveCount'] = Leave::where('user_id', $user->id)->where(function ($q) use ($fromDate, $toDate) {
-            $q->whereBetween('leave_from', [$fromDate, $toDate])->orWhereBetween('leave_to', [$fromDate, $toDate]);
-        })->count();
+        $data['leaveCount'] = Leave::where('user_id', $user->id)
+            // Adjust if your system uses a different label
+            ->where('leave_type','!=','off_day')
+            ->whereMonth('leave_from', $fromDate)
+            ->whereYear('leave_from', $selected_year)
+            ->sum('leave_day_count');
 
         $teamLeadIds = Employee::whereNotNull('reporting_to')->distinct()->pluck('reporting_to');
         $data['uniqueTeamLeads'] = Employee::with('department', 'user')->whereIn('user_id', $teamLeadIds)->get();
