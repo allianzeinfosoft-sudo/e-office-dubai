@@ -86,7 +86,7 @@ class AttendanceController extends Controller{
             ->whereYear('leave_from', $currentYear)
             ->sum('leave_day_count');
 
-        $data['days_of_worked'] = $fullDays + ($halfDays * 0.5) - ($halfDayLeaves);
+        $data['days_of_worked'] = $fullDays + ($halfDays * 0.5);
 
 /* =================================================================================================== */
 
