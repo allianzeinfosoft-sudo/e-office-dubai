@@ -70,11 +70,11 @@
                                             <button type="button" onclick="get_reports()" class="btn btn-primary mt-4" id="search">Filter</button>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="card">
                             <div class="card-datatable table-responsive">
                                 <table class="table table-bordered" id="repair-register-table" style="font-size: 12px;">
@@ -121,7 +121,7 @@
         });
         get_reports();
     });
-    
+
     function get_reports() {
         if ($.fn.DataTable.isDataTable('#repair-register-table')) {
             $('#repair-register-table').DataTable().clear().destroy();
@@ -130,8 +130,8 @@
         const to_date = $('#to_date').val();
         const vendor_id = $('#vendor_id').val();
         const status = $('#status').val();
-        
-        const scrapTable = $('#repair-register-table') ;
+
+        const scrapTable = $('#repair-register-table');
 
         scrapTable.DataTable({
             dom: 'Bfrtip',
