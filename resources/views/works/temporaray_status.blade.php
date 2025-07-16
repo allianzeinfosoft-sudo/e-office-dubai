@@ -90,8 +90,8 @@
 
                                             <div class="col-sm-12 mb-2 g-2">
                                                 <div class="form-group">
-                                                    <label for="comments" class="form-label">Comments</label>
-                                                    <textarea name="comments" id="comments" class="form-control" rows="5"></textarea>
+                                                    <label for="comments" class="form-label">Comments <span class="text-danger">*</span></label>
+                                                    <textarea name="comments" id="comments" class="form-control" rows="5" required></textarea>
                                                 </div>
                                             </div>
                                             
