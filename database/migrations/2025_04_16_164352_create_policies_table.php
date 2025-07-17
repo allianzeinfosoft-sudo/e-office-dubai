@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('policies', function (Blueprint $table) {
             $table->id();
             $table->string('policyTitle', 255);
-            $table->date('policyStartDate');
-            $table->date('pollicyEndDate');
-            $table->text('descriptions');
+            $table->date('policyStartDate')->nullable();
+            $table->date('pollicyEndDate')->nullable();
+            $table->text('descriptions')->nullable();
             $table->string('attachments', 255);
             $table->timestamps();
         });
