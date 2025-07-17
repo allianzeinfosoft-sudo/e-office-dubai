@@ -132,8 +132,8 @@
             const assetBaseUrl = "{{ asset('storage') }}";
 
             policyTable.DataTable({
-                processing: true,
-                serverSide: true,
+                processing: false,
+                serverSide: false,
                 ajax: {
                     type: "GET",
                     url: "{{ route('others.policies.index') }}",
