@@ -141,6 +141,7 @@ class PermissionSeeder extends Seeder
                     'permission_category_id' => $category->id
                 ]);
             }
+
         }
     }
 
