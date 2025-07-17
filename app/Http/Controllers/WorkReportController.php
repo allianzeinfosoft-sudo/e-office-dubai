@@ -170,17 +170,19 @@ class WorkReportController extends Controller
             'productivity_hour' => $productivity_hour,
         ]);
     
-        // ✅ Fetch total attendance working time (in seconds)
         $attendance = Attendance::where('emp_id', $request->emp_id)
             ->where('signin_date', $request->report_date)
             ->first();
+
         $totalAttendanceTime = $attendance ? strtotime($attendance->working_hours) - strtotime('00:00:00') : 0;
-        // ✅ Get total reported work time for the same date and employee (convert to seconds)
+
         $totalReportedTime = WorkReport::where('emp_id', $request->emp_id)
             ->where('report_date', $request->report_date)
-            ->sum(DB::raw('total_time * 3600')); // Convert hours to seconds if stored as decimal
-    
-        // ✅ Calculate the balance working time
+            ->get()
+            ->sum(function ($report) {
+                return strtotime($report->total_time) - strtotime('00:00:00');
+            });
+
         $balanceTime = max($totalAttendanceTime - $totalReportedTime, 0);
         $formattedBalanceTime = gmdate("H:i:s", $balanceTime);
     
