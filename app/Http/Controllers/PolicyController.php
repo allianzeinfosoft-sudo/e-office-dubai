@@ -165,7 +165,7 @@ class PolicyController extends Controller
                 'descriptions'      => $validatedData['descriptions'] ?? '',
                 'department_id'     => $validatedData['department_id'] ?? null,
                 'project_id'        => $request['project_id'] ?? null,
-                'role_id'           => $request['role_id'] ?? null,
+                // 'role_id'           => $request['role_id'] ?? null,
                 'attachments'       => $validatedData['attachments'] ?? '',
             ]
         );
