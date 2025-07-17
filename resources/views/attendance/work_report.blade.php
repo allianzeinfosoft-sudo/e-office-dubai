@@ -255,6 +255,13 @@
                         alert('Work report ' + (method === "PUT" ? 'updated' : 'added') + ' successfully!');
                         
                         $('#workReportForm')[0].reset(); 
+                        $('#project_name').val('').trigger('change');
+                        $('#type_of_work').val('').trigger('change');
+
+                        $("#workReportForm").attr("action", `/work-report/store`);
+                        $("#formMethod").val("POST"); // Set method to PUT for update
+                        $('#submitForm').html('<i class="ti ti-check"></i> Add'); // Update button text
+
                         let workReport = response.data;
                         updateTableRow(workReport);
                        // getReportData(response.data);

@@ -27,13 +27,7 @@
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between">
                                         <small class="d-block mb-1"> You can enter your temporary work report on {{ date('d-m-Y') }}</small>
-                                        <p class="text-danger text-bold">Your balance time : <span class="badge bg-label-danger">
-                                            @if(isset($missingReport) && isset($missingReport->balance_time))
-                                                {{ $missingReport->balance_time }}
-                                            @else
-                                                00:00:00
-                                            @endif
-                                        </span></p>
+                                        <p class="text-danger text-bold">Your balance time : <span class="badge bg-label-danger">{{ date('H:i', strtotime($missingReport->balance_time)) }}</span></p>
                                     </div>
                                     <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> {{ $meta_title }}</h4>
                                 </div>
@@ -230,42 +224,60 @@
         });
 
         $('#submitForm').on('click', function(e) {
-            e.preventDefault(); // Prevent default form submission
+            e.preventDefault();
+            
             let current_working_hours = '{{ $missingReport->balance_time }}';
             let total_time = $('#total_time').val();
 
             let currentSeconds = parseTimeToSeconds(current_working_hours);
             let enteredSeconds = parseTimeToSeconds(total_time);
 
-            if (enteredSeconds > currentSeconds) {
-                alert('No. of Hours cannot be greater than current working hours');
-                $('#total_time').focus();
-                return;    
-            }
-
-            let form = $('#workReportForm')[0]; // Get raw DOM form element
-            let formData = new FormData(form);  // Load existing form inputs
-
-            let actionUrl = $(form).attr('action'); // Use jQuery to get the form action
+            let form = $('#workReportForm')[0];
+            let formData = new FormData(form);
+            let actionUrl = $(form).attr('action');
             let method = $('#formMethod').val(); // POST or PUT
 
+            // ⛳ CSRF token and method spoofing
+            formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+            if (method === "PUT") {
+                formData.append('_method', 'PUT');
+            } else {
+                if (enteredSeconds > currentSeconds) {
+                    alert('No. of Hours cannot be greater than current working hours');
+                    $('#total_time').focus();
+                    return;
+                }
+            }
+
             $.ajax({
-                type: method === "PUT" ? "PUT" : "POST",
+                type: "POST", // ✅ Always POST
                 url: actionUrl,
                 data: formData,
-                contentType: false, // Required for FormData
-                processData: false, // Required for FormData
+                contentType: false,
+                processData: false,
                 success: function(response) {
                     if (response.success) {
                         alert('Work report ' + (method === "PUT" ? 'updated' : 'added') + ' successfully!');
-                        $('#workReportForm')[0].reset(); 
-                        updateTableRow(response.data);
+                        $('#workReportForm')[0].reset();
+                        $('#project_name').val('').trigger('change');
+                        $('#type_of_work').val('').trigger('change');
 
+                        $("#workReportForm").attr("action", `/work-report/store`);
+                        $("#formMethod").val("POST");
+                        $('#submitForm').html('<i class="ti ti-check"></i> Add');
+
+                        updateTableRow(response.data);
+                        
                         if (response.balance_working_hours === "00:00:00") {
                             $("#workReportFormContainer").hide();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 300);
                         } else {
                             $("#total_time").val(response.balance_working_hours);
                         }
+
                     } else {
                         alert('Something went wrong. Please try again.');
                     }
@@ -425,6 +437,9 @@
                 if (response.success) {
                     alert('Work report deleted successfully!');
                     $(`tr[data-id="${reportId}"]`).remove(); // Remove the deleted row from the table
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
                 } else {
                     alert('Failed to delete the report.');
                 }
