@@ -336,6 +336,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/others/policies/store', [PolicyController::class, 'store'])->name('others.policies.store');
     Route::get('/others/policies/{policy}/edit', [PolicyController::class, 'edit'])->name('others.policies.edit');
     Route::delete('/others/policies/{policy}/destroy', [PolicyController::class, 'destroy'])->name('others.policies.destroy');
+    Route::get('/projects-by-department', [PolicyController::class, 'getProjectsByDepartment'])->name('get.projects.by.department');
 
     /* Others/MOMs */
     Route::get('/others/moms', [MomController::class, 'index'])->name('others.moms.index');

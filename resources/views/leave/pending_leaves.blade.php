@@ -91,7 +91,8 @@
             <h3 class="mb-2"></h3>
             <p class="text-muted">Respond to the leave request to complete the leave process.</p>
           </div>
-          <form action="{{route('leaves.leave_action')}}" method="post" id="addNewCCForm" class="row g-3"  >
+          {{-- action="{{route('leaves.leave_action')}}" --}}
+          <form  method="post" id="addNewCCForm" class="row g-3"  >
            <!-- Hidden Fields (If Needed for Form Submission) -->
            @csrf
 
@@ -144,19 +145,24 @@
 @section('js')
 <script>
 
-
+let dtLeavePending;
  $(function () {
 
     var dtLeavePendingTable = $('.datatables-pending-request');
     // Users List datatable
     if (dtLeavePendingTable.length) {
-      var dtLeavePending = dtLeavePendingTable.DataTable({
+       dtLeavePending = dtLeavePendingTable.DataTable({
           ajax: {
               url: "/leave-pending",
               type: "GET",
               dataType: "json",
               dataSrc: "data"
           },
+
+         createdRow: function (row, data, dataIndex) {
+            $(row).attr('id', 'leave-row-' + data.id); // 👈 add unique ID to each row
+        },
+
         columns: [
           // columns according to JSON
           { data: null, title: 'S.No',
@@ -322,6 +328,7 @@
     let userGroup = $(this).data("usergroup");
     let initial_approve_status = $(this).data("initial_approve_status");
     let initial_approver_name = $(this).data("initial_approver_name");
+    $('#comment').val('');
 
     // Pass values to the modal inputs or elements
     $("#modalLeaveId").val(leaveId);
@@ -359,6 +366,45 @@
 });
 
 
+
+// submit leave action
+
+$(document).ready(function () {
+    $('#addNewCCForm').on('submit', function (e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const formData = form.serialize();
+        const leaveId = $('#modalLeaveId').val();
+
+        $.ajax({
+            url: "{{ route('leaves.leave_action') }}",
+            method: "POST",
+            data: formData,
+            success: function (response) {
+                // Show success toast/message (optional)
+                 if (response.error) {
+                    toastr.error(response.message || 'Something went wrong!');
+                    return;
+                }
+                toastr.success("Action completed successfully!");
+
+                // Hide the modal (assuming Bootstrap modal)
+                $('#addNewCCModal').modal('hide');
+
+                let leaveId = $('#modalLeaveId').val();
+                let rowSelector = '#leave-row-' + leaveId;
+
+                // Remove row from DataTable
+                dtLeavePending.row($(rowSelector)).remove().draw(false);
+            },
+            error: function (xhr) {
+                let msg = xhr.responseJSON?.message || 'Something went wrong!';
+                toastr.error(msg);
+            }
+        });
+    });
+});
 
 </script>
 @stop

@@ -392,7 +392,9 @@ class LeaveController extends Controller
                     $leave->initial_approved_date = date('Y-m-d');
                     if($leave->save())
                     {
-                        return redirect()->back()->with('success', 'Leave Approved successfully!');
+                        // return redirect()->back()->with('success', 'Leave Approved successfully!');
+                        return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
+
                     }
 
                 }
@@ -457,11 +459,13 @@ class LeaveController extends Controller
                         );
                     }
 
-                    return redirect()->back()->with('success', 'Leave Approved successfully!');
+                    // return redirect()->back()->with('success', 'Leave Approved successfully!');
+                    return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
+
                 }
-                return redirect()->back()->with('error', 'Failed to update leave status!');
+                return response()->json(['error' => true, 'message' => 'Failed to update leave status!']);
             } else {
-                return redirect()->back()->with('error', 'Invalid user!');
+                return response()->json(['error' => true, 'message' => 'Invalid user!']);
             }
         }
         elseif($action == 2)
@@ -520,12 +524,14 @@ class LeaveController extends Controller
                 }
 
 
-                return redirect()->back()->with('success', 'Leave Rejected successfully!');
+                // return redirect()->back()->with('success', 'Leave Rejected successfully!');
+                return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
+
 
 
 
             } else {
-                return redirect()->back()->with('error', 'Invalid user!');
+                return response()->json(['error' => true, 'message' => 'Invalid user!']);
             }
         }
 

@@ -78,7 +78,7 @@
                           </span>
                           <div class="content-left">
                             <div class="d-flex align-items-center my-1">
-                              <h4 class="mb-0 me-2" id="totalWorkingTime" >{{ $totalWorkingTime }}</h4>
+                              <h4 class="mb-0 me-2" id="totalWorkingTime" >{{ round((float)$totalWorkingTime,2) }}</h4>
                             </div>
                             <span>Total Working Time</span>
                           </div>
@@ -91,7 +91,7 @@
                           </span>
                           <div class="content-left">
                             <div class="d-flex align-items-center my-1">
-                              <h4 class="mb-0 me-2" id="averageWorkingTime">{{ round((float) $averageWorkingTime, 2) ?? 0 }}</h4>
+                              <h4 class="mb-0 me-2" id="averageWorkingTime">{{ round((float)$averageWorkingTime,2) ?? 0 }}</h4>
                             </div>
                             <span>Avg. Working Time</span>
                           </div>
@@ -117,7 +117,7 @@
                           </span>
                           <div class="content-left">
                             <div class="d-flex align-items-center my-1">
-                              <h4 class="mb-0 me-2" id="leaveCount">{{ $leaveCount }}</h4>
+                              <h4 class="mb-0 me-2" id="leaveCount">{{ round($leaveCount,1) }}</h4>
                             </div>
                             <span>Leave</span>
                           </div>

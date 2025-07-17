@@ -73,7 +73,7 @@
                           <div class="d-flex align-items-start justify-content-between">
                             <div class="content-left">
                               <div class="d-flex align-items-center my-1">
-                                <h4 class="mb-0 me-2">{{ $totalWorkedHours ?? '0' }}</h4>
+                                <h4 class="mb-0 me-2">{{ round((float)$totalWorkedHours,2) ?? '0' }}</h4>
                               </div>
                               <span>Total Working Hours</span>
                             </div>

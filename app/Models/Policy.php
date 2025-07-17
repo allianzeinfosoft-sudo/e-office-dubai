@@ -13,6 +13,7 @@ class Policy extends Model
         'policyStartDate',
         'pollicyEndDate',
         'department_id',
+        'project_id',
         'role_id',
         'descriptions',
         'attachments',
@@ -24,6 +25,10 @@ class Policy extends Model
 
     public function role(){
         return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
+
+    public function project(){
+        return $this->belongsTo(Project::class,'project_id','id');
     }
 
 }

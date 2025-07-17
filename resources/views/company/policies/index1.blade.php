@@ -28,15 +28,16 @@
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Others /</span> {{ $meta_title }}</h4>
 
                     <div class="row">
+                    @hasanyrole('Developer|HR')
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
-                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openPolicyOffcanvas()">
+                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openCompanyPolicyOffcanvas()">
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
                                     <span class="d-none d-sm-inline-block"> New Policy</span>
                                 </span>
                             </a>
                         </div>
-
+                    @endhasanyrole
                         <div class="card">
                             <div class="card-datatable table-policy">
                                 <table class="datatables-basic datatables-policy table border-top table-hover table-striped">
@@ -44,13 +45,9 @@
                                         <tr>
                                             <th>No.</th>
                                             <th>Policy Title</th>
-                                            {{-- <th>Start Date</th>
-                                            <th>End Date</th> --}}
-                                            <th>Department</th>
-                                            <th>Project</th>
-                                            <th>Group</th>
+                                            <th>Start Date</th>
                                             <th>Description</th>
-                                            <th>Created</th>
+                                            <th>Attachment</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -75,8 +72,8 @@
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i>
             <span id="policy-offcanvas-title">
-                <h5 class="offcanvas-title text-white">Create Policy</h5>
-                <span class="text-white slogan">Create New Policy</span>
+                <h5 class="offcanvas-title text-white">Create Company Policy</h5>
+                <span class="text-white slogan">Create New Company Policy</span>
             </span>
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i></button>
@@ -84,11 +81,31 @@
     <div class="offcanvas-body">
         <div class="row">
             <div class="col-sm-12">
-                <x-policy-form />
+                <x-company-policy-form />
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="viewCompanyPolicy" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel1">View MOM</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Close</button>
+                <input type="hidden" name="id" id="target_id">
+                <button type="button" onclick="markAsRead()" class="btn btn-primary waves-effect waves-light">Mark as Read</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
 
 @push('js')
@@ -108,54 +125,47 @@
     });
 
     $(function(){
-
-
-        const endPicker = $("#pollicyEndDate").flatpickr({
+        $('.flatpickr-input').flatpickr({
+            monthSelectorType: 'static',
             altInput: true,
             altFormat: 'd-m-Y',
             dateFormat: 'd-m-Y'
-        })
-
-        $("#policyStartDate").flatpickr({
-            altInput: true,
-            altFormat: 'd-m-Y',
-            dateFormat: 'd-m-Y',
-            onChange: function(selectedDates, dateStr, instance) {
-            // Set minDate of end date based on start date
-                $("#pollicyEndDate")[0]._flatpickr.set('minDate', dateStr);
-            }
         });
 
-        var policyTable = $('.datatables-policy');
+        let policyTable = $('.datatables-policy');
 
         if(policyTable.length){
-            const assetBaseUrl = "{{ asset('storage') }}";
+            const assetBaseUrl = "{{ asset('storage/company_policies') }}";
 
             policyTable.DataTable({
-                processing: false,
-                serverSide: false,
+                processing: true,
+                serverSide: true,
                 ajax: {
                     type: "GET",
-                    url: "{{ route('others.policies.index') }}",
+                    url: "{{ route('view.company-policies') }}",
                     dataType: "json",
                     dataSrc: "data"
                 },
                 columns: [
                     { data: 'row', name: 'No' },
                     { data: 'policyTitle', name: 'Policy Title' },
-                    // { data: 'policyStartDate', name: 'Start Date' },
-                    // { data: 'pollicyEndDate', name: 'End Date' },
-                    { data: 'department', name: 'Department'},
-                    { data: 'project', name: 'Project'},
-                    { data: 'role', name: 'Group' },
-                    { data: 'descriptions', name: 'Description' },
-                    { data: 'createdAt', name: 'Created' },
+                    { data: 'policyStartDate', name: 'Start Date' },
+                    { data: 'policyDescription', name: 'Description' },
+                    {
+                        data: 'attachments',
+                        render: function (data) {
+                            if (data) {
+                                return `<a href="${assetBaseUrl}/${data}" target="_blank" class="btn btn-sm btn-outline-success"><i class="ti ti-download"></i></a>`;
+                            }
+                            return '-';
+                        }
+                    },
                     {
                         data: null,
-                        title: 'Actions',
                         render: function (data, type, row) {
-                            return ` <a href="${assetBaseUrl}/policies/${row.attachments}" target="_blank" class="btn btn-sm btn-icon btn-outline-success"><i class="ti ti-download"></i></a>
-                                <a href="javascript:void(0)" onclick="openPolicyOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary"><i class="ti ti-edit"></i></a>
+                            return `
+                                <a href="javascript:void(0)" onclick="viewCompanyPolicyModal('${row.id}')" class="btn btn-sm btn-icon btn-success"><i class="ti ti-eye"></i></a>
+                                <a href="javascript:void(0)" onclick="openCompanyPolicyOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary"><i class="ti ti-edit"></i></a>
                                 <button type="button" class="btn btn-sm btn-icon btn-danger" onclick="deletePolicy(${row.id})"><i class="ti ti-trash"></i></button>`;
                         }
                     }
@@ -163,12 +173,12 @@
             });
         }
 
-        $('#policy-form').on('submit', function (e) {
+        $('#company-policy-form').on('submit', function (e) {
             e.preventDefault();
             $('#description').val(quillPolicy.root.innerHTML);
-            const form = $(this);
-            const formData = new FormData(this);
-            const url = form.attr('action');
+            let form = $(this);
+            let formData = new FormData(this);
+            let url = form.attr('action');
 
             $.ajax({
                 url: url,
@@ -190,7 +200,7 @@
                 },
                 error: function (xhr) {
                     let message = 'Something went wrong.';
-                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    if (xhr.responseJSON?.errors) {
                         message = Object.values(xhr.responseJSON.errors).join('\n');
                     } else if (xhr.responseJSON?.message) {
                         message = xhr.responseJSON.message;
@@ -204,12 +214,11 @@
         });
     });
 
-    function openPolicyOffcanvas(id = null) {
-        const $form = $('#policy-form');
+    function openCompanyPolicyOffcanvas(id = null) {
+        const $form = $('#company-policy-form');
         $form[0].reset();
         $('#target_id').val('');
         $('#policy-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Create Policy</h5><span class="text-white slogan">Create New Policy</span>`);
-
         const offcanvasElement = $('#policy_offcanvas');
 
         if (offcanvasElement.length) {
@@ -218,24 +227,23 @@
         }
 
         if (id) {
-            const url = "{{ route('others.policies.edit', ':policy') }}".replace(':policy', id);
+            const url = "{{ route('view.company-policies.edit', ':CompanyPolicy') }}".replace(':CompanyPolicy', id);
             $('#target_id').val(id);
             $('#policy-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Edit Policy</h5><span class="text-white slogan">Edit Policy</span>`);
             $('#current-attachment').remove();
+
             $.ajax({
                 url: url,
                 type: 'GET',
                 success: function (data) {
                     $('#policyTitle').val(data.policy.policyTitle);
                     $('#policyStartDate').flatpickr().setDate(data.policy.policyStartDate, true);
-                    $('#pollicyEndDate').flatpickr().setDate(data.policy.pollicyEndDate, true);
-                    $('#department_id').val(data.policy.department_id).trigger('change');
-                    $('#role_id').val(data.policy.role_id).trigger('change');
-                    const desc = data.policy.descriptions || '';
+                    const desc = data.policy.policyDescription || '';
                     quillPolicy.root.innerHTML = desc;
                     $('#description').val(desc);
+
                     if (data.policy.attachments) {
-                        const fileUrl = `/storage/policies/${data.policy.attachments}`;
+                        const fileUrl = `/storage/company_policies/${data.policy.attachments}`;
                         $('#attachments').after(`
                             <div id="current-attachment" class="mt-2">
                                 <a href="${fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary"> <i class="ti ti-pin me-1"></i> ${data.policy.attachments} </a>
@@ -244,6 +252,8 @@
                     } else {
                         $('#current-attachment').remove();
                     }
+
+                    $('#status').val(data.policy.status);
                 },
                 error: function () {
                     alert('Failed to load policy data.');
@@ -253,9 +263,9 @@
     }
 
     function deletePolicy(id) {
-        if (confirm('Are you sure you want to delete this policy?')) {
+        if (confirm('Are you sure you want to delete this company policy?')) {
             $.ajax({
-                url: "{{ route('others.policies.destroy', ':policy') }}".replace(':policy', id),
+                url: "{{ route('view.company-policies.destroy', ':CompanyPolicy') }}".replace(':CompanyPolicy', id),
                 type: "DELETE",
                 data: { _token: "{{ csrf_token() }}" },
                 success: function(response) {
@@ -267,6 +277,39 @@
                 }
             });
         }
+    }
+
+    function viewCompanyPolicyModal(id) {
+        const url = "{{ route('view.company-policies.show', ':companyPolicy') }}".replace(':companyPolicy', id);
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                $('#viewCompanyPolicy .modal-body').html(data.html);
+                $('.modal-title').text(data.meta_title);
+                $('#viewCompanyPolicy').modal('show');
+                $('#target_id').val(id);
+            },
+            error: function () {
+                alert('Failed to load Company Policy data.');
+            }
+        });
+    }
+
+    function markAsRead() {
+        const id = $('#target_id').val();
+        $.ajax({
+            url: "{{ route('view.company-policies.mark-as-read', ':companyPolicy') }}".replace(':companyPolicy', id),
+            type: "POST",
+            data: { _token: "{{ csrf_token() }}" },
+            success: function(response) {
+                $('#viewCompanyPolicy').modal('hide');
+                $('.datatables-policy').DataTable().ajax.reload();
+            },
+            error: function() {
+                alert("Error marking as read. Please try again.");
+            }
+        });
     }
 </script>
 @endpush
