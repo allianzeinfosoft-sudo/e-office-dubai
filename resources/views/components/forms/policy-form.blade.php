@@ -1,5 +1,5 @@
 <form action="{{ route('others.policies.store') }}" method="post" id="policy-form" enctype="multipart/form-data">
-    @csrf 
+    @csrf
     <input type="hidden" name="id" id="target_id">
 
     <div class="row">
@@ -48,7 +48,7 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="col-sm-12 mb-3">
             <div class="form-group">
                 <label for="description-editor">Policy Description</label>
@@ -68,6 +68,6 @@
             <button type="submit" class="btn btn-primary">
                 <i class="fa fa-save"></i>&nbsp;&nbsp; Save
             </button>
-        </div>   
+        </div>
     </div>
 </form>
