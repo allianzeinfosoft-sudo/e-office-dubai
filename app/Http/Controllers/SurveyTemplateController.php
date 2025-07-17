@@ -111,10 +111,11 @@ class SurveyTemplateController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Survey Template saved successfully!');
+        return redirect()->back()->with('success', 'Survey template saved successfully!');
     }
 
-    /**
+    /*
+     *
      * Display the specified resource.
      */
     public function show(SurveyTemplate $surveyTemplate)

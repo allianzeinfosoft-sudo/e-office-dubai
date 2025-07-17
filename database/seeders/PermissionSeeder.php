@@ -45,7 +45,7 @@ class PermissionSeeder extends Seeder
                 'view user overview'
             ],
             'Survey Management' => [
-                'view surveys', 'create survey', 'edit survey', 'delete survey', 'submit survey response', 'assign survey'
+                'view surveys', 'create survey', 'edit survey', 'delete survey', 'submit survey response', 'assign survey', 'survey-report'
             ],
             'SAR Management' => [
                 'view SARs', 'create SAR', 'edit SAR', 'delete SAR', 'review SAR', 'assign SAR'
@@ -73,7 +73,7 @@ class PermissionSeeder extends Seeder
                 'approve job applications','shortlist candidates', 'schedule interviews'
             ],
             'E-Library Management' => [
-                'view e-library', 'add books', 'edit books', 'delete books','issue books', 'view e-library', 
+                'view e-library', 'add books', 'edit books', 'delete books','issue books', 'view e-library',
                 'view books category', 'view e-library reports','view issued books report', 'view pending books report', 'view damage or loss report',
             ],
             'Thought Management' => [
