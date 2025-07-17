@@ -258,7 +258,14 @@
                 success: function(response) {
                     if (response.success) {
                         alert('Work report ' + (method === "PUT" ? 'updated' : 'added') + ' successfully!');
-                        $('#workReportForm')[0].reset(); 
+                        $('#workReportForm')[0].reset();
+                         $('#project_name').val('').trigger('change');
+                        $('#type_of_work').val('').trigger('change');
+
+                        $("#workReportForm").attr("action", `/work-report/store`);
+                        $("#formMethod").val("POST"); 
+                        $('#submitForm').html('<i class="ti ti-check"></i> Add'); 
+
                         updateTableRow(response.data);
 
                         if (response.balance_working_hours === "00:00:00") {
