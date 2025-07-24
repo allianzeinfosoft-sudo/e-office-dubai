@@ -112,8 +112,8 @@ class AttendanceController extends Controller{
             $avgMinutes = $totalMinutes / $data['days_of_worked'];
             $avgHours = floor($avgMinutes / 60);
             $avgMins = $avgMinutes % 60;
-            $data['avgWorkedHours'] = round(($avgMinutes / 60),2);
-            // sprintf('%02d:%02d', $avgHours, $avgMins);
+            //$data['avgWorkedHours'] = round(($avgMinutes / 60),2);
+            $data['avgWorkedHours'] = sprintf('%02d:%02d', $avgHours, $avgMins);
             $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
         } else {
             $data['avgWorkedHours'] = '00:00';
