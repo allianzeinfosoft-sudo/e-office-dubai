@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('asset_registers', function (Blueprint $table) {
             $table->id();
             $table->date('asset_date');
-            $table->string('asset_number', 15);
+            $table->string('asset_number', 15)->nullable();
             $table->string('company_name', 15);
             $table->date('purchase_date');
             $table->integer('vendor_id');
             $table->string('invoice_number', 15)->nullable();
-            $table->float('total_amount', 10, 2) ->nullable();
+            $table->float('total_amount', 50, 2) ->nullable();
             $table->string('upload_invoice', 100) ->nullable();
             $table->text('remarks')->nullable();
             $table->timestamps();

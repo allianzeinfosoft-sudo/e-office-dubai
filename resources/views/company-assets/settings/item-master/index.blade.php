@@ -26,7 +26,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> {{ $meta_title }}</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-7">
                             <div class="card">
@@ -37,9 +41,7 @@
                                                 <th width="8%">Sl.No</th>
                                                 <th>Item Code</th>
                                                 <th>Item Name</th>
-                                                <th>Brand</th>
                                                 <th>Description</th>
-                                                <th>Status</th>
                                                 <th width="15%">Actions</th>
                                             </tr>
                                         </thead>
@@ -69,16 +71,12 @@
                                         </div>
 
                                          <div class="mb-3">
-                                            <label for="brand" class="form-label">Brand</label>
-                                            <input type="text" class="form-control" id="brand" name="brand" required>
-                                        </div>
-
-                                         <div class="mb-3">
                                             <label for="description" class="form-label">Description</label>
                                             <textarea class="form-control" id="description" name="description"></textarea>
                                         </div>
 
                                         <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="button" class="btn btn-secondary" id="cancel-button">Cancel</button>
                                     </form>
                                 </div>
                             </div>
@@ -114,9 +112,7 @@
                 { data: 'row', name: 'No' },
                 { data: 'item_code', name: 'Item Code' },
                 { data: 'name', name: 'Item Name' },
-                { data: 'brand', name: 'Brand'},
                 { data: 'description', name: 'Description'},
-                { data: 'status', name: 'Status'},
                 {
                     data: null,
                     title: 'Actions',
@@ -177,7 +173,6 @@
                     $('#target_id').val(response.data.id);
                     $('#item_code').val(response.data.item_code);
                     $('#name').val(response.data.name);
-                    $('#brand').val(response.data.brand);
                     $('#description').val(response.data.description);
                 } else {
                     alert(response.message);
@@ -206,5 +201,11 @@
         }
     }
 
+
+        document.getElementById('cancel-button').addEventListener('click', function () {
+        document.getElementById('item-master-form').reset();
+        document.getElementById('target_id').value = ''; // Optional: reset hidden field
+        $('#form-title').text('Add New Item Master');
+    });
 </script>
 @endpush

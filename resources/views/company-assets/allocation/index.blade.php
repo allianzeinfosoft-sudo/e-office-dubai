@@ -47,7 +47,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> {{ $meta_title }}</h4>
-
+                      <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
@@ -114,7 +118,7 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
+<div class="offcanvas offcanvas-end w-90" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i>

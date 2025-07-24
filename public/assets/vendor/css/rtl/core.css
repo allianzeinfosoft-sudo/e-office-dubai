@@ -4034,7 +4034,8 @@ textarea.form-control-lg {
   --bs-pagination-padding-y: 0.594rem;
   --bs-pagination-font-size: 0.9375rem;
   --bs-pagination-color: #5d596c;
-  --bs-pagination-bg: rgba(75, 70, 92, 0.08);
+  /* --bs-pagination-bg: rgba(75, 70, 92, 0.08); */
+  --bs-pagination-bg: white;
   --bs-pagination-border-width: 0px;
   --bs-pagination-border-color: rgba(75, 70, 92, 0.08);
   --bs-pagination-border-radius: 0.375rem;
@@ -8180,8 +8181,9 @@ html:not([dir=rtl]) .input-group > .btn-group:last-child > .btn:not([class*=btn-
 @media (min-width: 768px) {
   .nav-tabs.widget-nav-tabs .nav-link {
     height: 94px !important;
-    width: 110px !important;
+    width: 200px !important;
     border-radius: 0.375rem;
+    background-color: aliceblue;
   }
 }
 @media (max-width: 767.98px) {

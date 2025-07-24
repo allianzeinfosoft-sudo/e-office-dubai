@@ -53,13 +53,18 @@
                     <thead>
                         <tr style="text-align: center">
                             <th>Item</th>
-                            <th>Model</th>
-                            <th>Serial Number</th>
                             <th>Asset ID</th>
-                            <th>Project</th>
+                            <th>Model</th>
+                            <th>Brand</th>
+                            <th>Classification</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Serial Number</th>
+
                             {{-- <th>Available Qty</th>
                             <th>Qty</th> --}}
                             <th>Specification</th>
+                             <th>Project</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -68,7 +73,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                             <th colspan="6" class="text-right"></th>
+                             <th colspan="10" class="text-right"></th>
                             <th><button type="button" class="btn btn-xs btn-icon btn-success waves-effect" onclick="addItemLine()"><i class="ti ti-plus"></i></button></th>
                         </tr>
                     </tfoot>
@@ -112,29 +117,43 @@
                             <select name="asset_item_id[${itemLineLength}]" id="item_${itemLineLength}" class="form-control
                              select2 asset-item-select" data-row="${itemLineLength}">
                                 <option value="">Select Item</option>
-                                ${assetItems.map(item => `<option value="${item.id}">${item.name} [${item.item_code} - ${item.brand}]</option>`).join('')}
-                            </select>
-                        </td>
-                        <td>
-                             <select name="asset_model_id[${itemLineLength}]" id="asset_model_${itemLineLength}"
-                             class="form-control select2 asset-model-select" data-row="${itemLineLength}"">
-                                <option value="">Select Model</option>
+                                ${assetItems.map(item => `<option value="${item.id}">${item.name} [${item.item_code}]</option>`).join('')}
                             </select>
                         </td>
 
                         <td>
-                            <select name="asset_serialnumber[${itemLineLength}]" id="asset_serialnumber_${itemLineLength}" class="form-control
-                            select2 asset-serial-select" data-row="${itemLineLength}"">
-                                <option value="">Select Serial</option>
-
+                             <select name="asset_code_id[${itemLineLength}]" id="asset_code_${itemLineLength}"
+                             class="form-control select2 asset-code-select" data-row="${itemLineLength}"">
+                                <option value="">Select Asset ID</option>
                             </select>
                         </td>
 
-                         <td>
-                            <select name="asset_id[${itemLineLength}]" id="asset_id_${itemLineLength}" class="form-control
-                            select2 asset-id-select" data-row="${itemLineLength}"" data-placeholder="Select Asset ID">
-                                <option value="">Select ID</option>
-                            </select>
+                        <td>
+                             <input class="form-control text-center" type="text" id="asset_model_${itemLineLength}" name="asset_model_id[${itemLineLength}]" readonly>
+                        </td>
+
+                        <td>
+                             <input class="form-control text-center" type="text" id="asset_brand_${itemLineLength}" name="asset_brand_id[${itemLineLength}]" readonly>
+                        </td>
+
+                        <td>
+                             <input class="form-control text-center" type="text" id="asset_classification_${itemLineLength}" name="asset_classification_id[${itemLineLength}]" readonly>
+                        </td>
+
+                        <td>
+                             <input class="form-control text-center" type="text" id="asset_category_${itemLineLength}" name="asset_category_id[${itemLineLength}]" readonly>
+                        </td>
+
+                        <td>
+                             <input class="form-control text-center" type="text" id="asset_type_${itemLineLength}" name="asset_type_id[${itemLineLength}]" readonly>
+                        </td>
+
+                        <td>
+                            <input class="form-control text-center" type="text" id="asset_serialnumber_${itemLineLength}" name="asset_serialnumber[${itemLineLength}]" readonly>
+                        </td>
+
+                        <td>
+                            <textarea class="form-control" name="specification[${itemLineLength}]" id="specification_${itemLineLength}" readonly></textarea>
                         </td>
 
                         <td>
@@ -145,19 +164,6 @@
                             </select>
                         </td>
 
-                        {{--
-                            <td>
-                                <input class="form-control text-center" type="text" id="available_qty_${itemLineLength}" name="asset_available_quantity[${itemLineLength}]" value="0">
-                            </td>
-
-                            <td>
-                                <input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" value="0">
-                            </td>
-                        --}}
-
-                        <td>
-                            <textarea class="form-control" name="specification[${itemLineLength}]" id="specification_${itemLineLength}" ></textarea>
-                        </td>
                         <td>
                             <button type="button" class="btn btn-icon btn-xs btn-danger waves-effect" onclick="$(this).closest('tr').remove();">
                                 <i class="ti ti-minus"></i>
@@ -290,70 +296,70 @@
 
 
     // When an asset item is selected, fetch models
-    $(document).on('change', '.asset-item-select', function () {
-        const itemId = $(this).val();
-        const row = $(this).data('row');
+    // $(document).on('change', '.asset-item-select', function () {
+    //     const itemId = $(this).val();
+    //     const row = $(this).data('row');
 
-        const $modelSelect = $(`select.asset-model-select[data-row="${row}"]`);
-        const $serialSelect = $(`select.asset-serial-select[data-row="${row}"]`);
+    //     const $modelSelect = $(`select.asset-model-select[data-row="${row}"]`);
+    //     const $serialSelect = $(`select.asset-serial-select[data-row="${row}"]`);
 
-        $modelSelect.html('<option value="">Loading...</option>');
-        $serialSelect.html('<option value="">Select Serial</option>');
+    //     $modelSelect.html('<option value="">Loading...</option>');
+    //     $serialSelect.html('<option value="">Select Serial</option>');
 
-        if (itemId) {
-            $.ajax({
-                url: '/get-asset-models',
-                type: 'GET',
-                data: { item_id: itemId },
-                success: function (models) {
-                    let options = '<option value="">Select Model</option>';
-                    Object.keys(models).forEach(function (key) {
-                        options += `<option value="${key}">${key}</option>`;
-                    });
+    //     if (itemId) {
+    //         $.ajax({
+    //             url: '/get-asset-models',
+    //             type: 'GET',
+    //             data: { item_id: itemId },
+    //             success: function (models) {
+    //                 let options = '<option value="">Select Model</option>';
+    //                 Object.keys(models).forEach(function (key) {
+    //                     options += `<option value="${key}">${key}</option>`;
+    //                 });
 
-                    $modelSelect.html(options).trigger('change');
-                },
-                error: function () {
-                    $modelSelect.html('<option value="">Failed to load models</option>');
-                }
-            });
-        }
-    });
+    //                 $modelSelect.html(options).trigger('change');
+    //             },
+    //             error: function () {
+    //                 $modelSelect.html('<option value="">Failed to load models</option>');
+    //             }
+    //         });
+    //     }
+    // });
 
    // When a model is selected, fetch serial numbers
-    $(document).on('change', '.asset-model-select', function () {
-        const row = $(this).data('row');
-        const model = $(this).val(); // This is likely item_model (name or id)
-        const itemId = $(`select.asset-item-select[data-row="${row}"]`).val();
+    // $(document).on('change', '.asset-model-select', function () {
+    //     const row = $(this).data('row');
+    //     const model = $(this).val(); // This is likely item_model (name or id)
+    //     const itemId = $(`select.asset-item-select[data-row="${row}"]`).val();
 
-        const $serialSelect = $(`select.asset-serial-select[data-row="${row}"]`);
-        $serialSelect.html('<option value="">Loading...</option>');
+    //     const $serialSelect = $(`select.asset-serial-select[data-row="${row}"]`);
+    //     $serialSelect.html('<option value="">Loading...</option>');
 
 
-        if (model && itemId) {
-            $.ajax({
-                url: '/get-asset-serials',
-                type: 'GET',
-                data: {
-                    item_id: itemId,
-                    item_model: model
-                },
-                success: function (response) {
-                    let options = '<option value="">Select Serial</option>';
-                    response.serials.forEach(serial => {
-                        options += `<option value="${serial.serial_number}">${serial.serial_number}</option>`;
-                    });
-                    $serialSelect.html(options);
+    //     if (model && itemId) {
+    //         $.ajax({
+    //             url: '/get-asset-serials',
+    //             type: 'GET',
+    //             data: {
+    //                 item_id: itemId,
+    //                 item_model: model
+    //             },
+    //             success: function (response) {
+    //                 let options = '<option value="">Select Serial</option>';
+    //                 response.serials.forEach(serial => {
+    //                     options += `<option value="${serial.serial_number}">${serial.serial_number}</option>`;
+    //                 });
+    //                 $serialSelect.html(options);
 
-                },
-                error: function () {
-                    $serialSelect.html('<option value="">Failed to load serials</option>');
-                }
-            });
-        } else {
-            $serialSelect.html('<option value="">Select Serial</option>');
-        }
-    });
+    //             },
+    //             error: function () {
+    //                 $serialSelect.html('<option value="">Failed to load serials</option>');
+    //             }
+    //         });
+    //     } else {
+    //         $serialSelect.html('<option value="">Select Serial</option>');
+    //     }
+    // });
 
 
 
@@ -391,35 +397,35 @@
 
 
      // When a model is selected, fetch asset id's
-    $(document).on('change', '.asset-serial-select', function () {
-        const row = $(this).data('row');
-        const serialId = $(this).val();
-        const $idSelect = $(`select.asset-id-select[data-row="${row}"]`);
-        $idSelect.html('<option value="">Loading...</option>');
+    // $(document).on('change', '.asset-serial-select', function () {
+    //     const row = $(this).data('row');
+    //     const serialId = $(this).val();
+    //     const $idSelect = $(`select.asset-id-select[data-row="${row}"]`);
+    //     $idSelect.html('<option value="">Loading...</option>');
 
-        if (serialId) {
-            $.ajax({
-                url: '/get-asset-ids',
-                type: 'GET',
-                data: {
-                    serial_id: serialId,
-                },
-                success: function (response) {
-                    let options = '';
-                    response.assetIds.forEach(assetId => {
-                        options += `<option value="${assetId.asset_id_number}">${assetId.asset_id}</option>`;
-                    });
-                    $idSelect.html(options);
+    //     if (serialId) {
+    //         $.ajax({
+    //             url: '/get-asset-ids',
+    //             type: 'GET',
+    //             data: {
+    //                 serial_id: serialId,
+    //             },
+    //             success: function (response) {
+    //                 let options = '';
+    //                 response.assetIds.forEach(assetId => {
+    //                     options += `<option value="${assetId.asset_id_number}">${assetId.asset_id}</option>`;
+    //                 });
+    //                 $idSelect.html(options);
 
-                },
-                error: function () {
-                    $idSelect.html('<option value="">Failed to load asset ids </option>');
-                }
-            });
-        } else {
-            $idSelect.html('<option value="">Select Asset ids</option>');
-        }
-    });
+    //             },
+    //             error: function () {
+    //                 $idSelect.html('<option value="">Failed to load asset ids </option>');
+    //             }
+    //         });
+    //     } else {
+    //         $idSelect.html('<option value="">Select Asset ids</option>');
+    //     }
+    // });
 
 
     // $(document).on('change', '.asset-id-select', function () {
@@ -428,6 +434,77 @@
 
     //     $(`#qty_${row}`).val(selectedCount);
     // });
+
+
+    // When an asset item is selected, fetch models
+    $(document).on('change', '.asset-item-select', function () {
+        const itemId = $(this).val();
+        const row = $(this).data('row');
+
+        const $assetCodeSelect = $(`select.asset-code-select[data-row="${row}"]`);
+
+        $assetCodeSelect.html('<option value="">Loading...</option>');
+
+        if (itemId) {
+            $.ajax({
+                url: '/get-asset-code',
+                type: 'GET',
+                data: { item_id: itemId },
+                success: function (response) {
+                    let options = '<option value="">Select Asset Code</option>';
+
+                    response.forEach(function (item) {
+                        options += `<option value="${item.id}">${item.assetCode}</option>`;
+                    });
+
+                    $assetCodeSelect.html(options).trigger('change');
+                },
+                error: function () {
+                    $assetCodeSelect.html('<option value="">Failed to load models</option>');
+                }
+            });
+        } else {
+            $assetCodeSelect.html('<option value="">Select Asset Code</option>');
+        }
+    });
+
+ // get mapped asset item is item code selected
+    $(document).on('change', '.asset-code-select', function () {
+        const itemId = $(this).val();
+        const row = $(this).data('row');
+
+        const $modelInput = $(`#asset_model_${row}`);
+        const $brandInput = $(`#asset_brand_${row}`);
+        const $classificationInput =$(`#asset_classification_${row}`);
+        const $categoryInput = $(`#asset_category_${row}`);
+        const $typeInput = $(`#asset_type_${row}`);
+        const $serialInput = $(`#asset_serialnumber_${row}`);
+        const $specificationInput = $(`#specification_${row}`);
+
+
+        if (itemId) {
+            $.ajax({
+                url: '/get-asset-mapped-item',
+                type: 'GET',
+                data: { item_id: itemId },
+                success: function (data) {
+
+                    $modelInput.val(data.model || '');
+                    $brandInput.val(data.brand || '');
+                    $classificationInput.val(data.classification || '');
+                    $categoryInput.val(data.category || '');
+                    $typeInput.val(data.type || '');
+                    $serialInput.val(data.serial_number || '');
+                    $specificationInput.val(data.specification || '');
+                },
+                error: function () {
+                    $assetCodeSelect.html('<option value="">Failed to load models</option>');
+                }
+            });
+        } else {
+            $assetCodeSelect.html('<option value="">Select Asset Code</option>');
+        }
+    });
 </script>
 
 @endpush

@@ -24,7 +24,7 @@ class AssetRegisterController extends Controller
     {
         if($request->ajax()) {
             $asset = AssetRegister::with('vendor')
-                ->select('id', 'asset_date', 'asset_number', 'company_name', 'purchase_date', 'invoice_number', 'vendor_id', 'total_amount', 'upload_invoice', 'remarks')
+                ->select('id', 'asset_date', 'company_name', 'purchase_date', 'invoice_number', 'vendor_id', 'total_amount', 'upload_invoice', 'remarks')
                 ->get();
 
             $data = $asset->map(function($item, $index) {
@@ -33,7 +33,6 @@ class AssetRegisterController extends Controller
                         'DT_RowIndex'       => $index + 1,
                         'id'                => $item->id,
                         'asset_date'        => date('d-m-Y', strtotime($item->asset_date)), //$item->asset_date,
-                        'asset_number'      => $item->asset_number,
                         'company_name'      => $item->company_name,
                         'purchase_date'     => date('d-m-Y', strtotime($item->purchase_date)), //$item->purchase_date,
                         'invoice_number'    => $item->invoice_number,
@@ -74,7 +73,6 @@ class AssetRegisterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'asset_number' => 'required',
             'company_name' => 'required|string',
             'purchase_date' => 'required',
             'invoice_number' => 'required',
@@ -102,7 +100,6 @@ class AssetRegisterController extends Controller
             ['id' => $request->id],
             [
                 'asset_date'     => date('Y-m-d', strtotime($request->purchase_date)),
-                'asset_number'   => $request->asset_number,
                 'company_name'   => $request->company_name,
                 'purchase_date'  => date('Y-m-d', strtotime($request->purchase_date)), //$request->purchase_date,
                 'invoice_number' => $request->invoice_number,
@@ -127,6 +124,7 @@ class AssetRegisterController extends Controller
 
             $LineItems = $asset->items()->create([
                 'asset_item_id'           => $itemId,
+                'asset_brand'             => $request->asset_brand[$index],
                 'item_model'              => $request->asset_model[$index],
                 'asset_description'       => $request->asset_unit[$index],  // Forgot to add unit column so I added to this field
                 'asset_classification_id' => $request->asset_classification_id[$index],
@@ -134,7 +132,7 @@ class AssetRegisterController extends Controller
                 'asset_type_id'           => $request->asset_type_id[$index],
                 'asset_quantity'          => $request->asset_quantity[$index],
                 'asset_price'             => $request->asset_price[$index],
-                'asset_total'             => $request->asset_total[$index],
+                'asset_total' => number_format((float) $request->asset_total[$index], 2, '.', ''),
                 'serial_number'           => $request->serial_number[$index],
                 'warranty'                => $request->warranty[$index],
             ]);
@@ -170,6 +168,7 @@ class AssetRegisterController extends Controller
     {
         //
         $register = AssetRegister::with('items')->findOrFail($id);
+
         return response()->json([
             'data' => $register
         ]);
@@ -232,8 +231,90 @@ class AssetRegisterController extends Controller
         return view('company-assets.reports.stock-report', $data);
     }
 
-    public function stockItemReport(Request $request){
+    // public function stockItemReport(Request $request){
 
+    //     $location_status = $request->input('location_status'); // all, allocated, in_store
+    //     $classification  = $request->input('classification');
+    //     $category        = $request->input('category');
+    //     $type            = $request->input('type');
+    //     $asset_item_id   = $request->input('asset_item_id');
+    //     $vendor          = $request->input('vendor');
+
+    //     $query = AssetRegister::with(['vendor','items']);
+    //     if (!empty($vendor)) {
+    //         $query->where('vendor_id', $vendor);
+    //     }
+
+    //     $query->whereHas('items', function ($q) use ($asset_item_id, $classification, $category, $type) {
+
+    //         if (!empty($classification)) {
+    //             $q->where('asset_classification_id', $classification);
+    //         }
+
+    //         if (!empty($category)) {
+    //             $q->where('asset_category_id', $category);
+    //         }
+
+    //         if (!empty($type)) {
+    //             $q->where('asset_type_id', $type);
+    //         }
+
+
+    //         // Add location_status filter based on mapping
+
+    //     })->with(['items' => function ($q) use ($location_status, $asset_item_id) {
+
+    //         if ($location_status === 'allocated') {
+
+    //             $q->whereDoesntHave('mapping', fn ($mq) => $mq->where('allocation_status', 0));
+
+    //         } elseif ($location_status === 'in_store') {
+
+    //             $q->whereHas('mapping', fn ($mq) => $mq->where('allocation_status', 0));
+    //         }
+
+    //         if (!empty($asset_item_id)) {
+
+    //             $q->where('asset_item_id', $asset_item_id);
+    //         }
+
+    //         $q->with([
+    //             'asset_item',
+    //             'asset_classification',
+    //             'asset_category',
+    //             'asset_type',
+    //             'mapping'
+    //         ]);
+    //     }]);
+
+    //     $allocated_items = $query->get();
+
+
+    //     $reportData = [];
+    //     $rowIndex = 1;
+
+    //     foreach ($allocated_items as $allocation) {
+    //         foreach ($allocation->items as $item) {
+    //             $reportData[] = [
+    //                 'DT_RowIndex'    => $rowIndex++,
+    //                 'item'           => ($item->asset_item?->item_code ?? '') . ' ' . ($item->asset_item?->name ?? ''),
+    //                 'model'          => $item->item_model ?? '',
+    //                 'serial_number'  => $item->serial_number ?? '',
+    //                 'classification' => $item->asset_classification->name ?? '',
+    //                 'category'       => $item->asset_category->name ?? '',
+    //                 'type'           => $item->asset_type->name ?? '',
+    //                 'vendor'         => $allocation->vendor->vendor_name ?? '',
+    //             ];
+    //         }
+    //     }
+
+    //     return response()->json(['data' => $reportData]);
+
+    // }
+
+
+    public function stockItemReport(Request $request)
+    {
         $location_status = $request->input('location_status'); // all, allocated, in_store
         $classification  = $request->input('classification');
         $category        = $request->input('category');
@@ -241,14 +322,24 @@ class AssetRegisterController extends Controller
         $asset_item_id   = $request->input('asset_item_id');
         $vendor          = $request->input('vendor');
 
-        $query = AssetRegister::with(['vendor','items']);
+        $query = AssetMapping::with([
+            'masteritem',
+            'register_lineitem.asset_item',
+            'register_lineitem.asset_classification',
+            'register_lineitem.asset_category',
+            'register_lineitem.asset_type',
+            'register_lineitem.asset_register',
+        ]);
 
-        if (!empty($vendor)) {
-            $query->where('vendor_id', $vendor);
+        // Apply location_status filter
+        if ($location_status === 'allocated') {
+            $query->where('allocation_status', '!=', 0);
+        } elseif ($location_status === 'in_store') {
+            $query->where('allocation_status', 0);
         }
 
-        $query->whereHas('items', function ($q) use ($asset_item_id, $classification, $category, $type) {
-
+        // Apply filters from register_lineitem relationship
+        $query->whereHas('register_lineitem', function ($q) use ($classification, $category, $type, $asset_item_id, $vendor) {
             if (!empty($classification)) {
                 $q->where('asset_classification_id', $classification);
             }
@@ -261,57 +352,38 @@ class AssetRegisterController extends Controller
                 $q->where('asset_type_id', $type);
             }
 
-
-            // Add location_status filter based on mapping
-
-        })->with(['items' => function ($q) use ($location_status, $asset_item_id) {
-
-            if ($location_status === 'allocated') {
-
-                $q->whereDoesntHave('mapping', fn ($mq) => $mq->where('allocation_status', 0));
-
-            } elseif ($location_status === 'in_store') {
-
-                $q->whereHas('mapping', fn ($mq) => $mq->where('allocation_status', 0));
-            }
-
             if (!empty($asset_item_id)) {
-
                 $q->where('asset_item_id', $asset_item_id);
             }
 
-            $q->with([
-                'asset_item',
-                'asset_classification',
-                'asset_category',
-                'asset_type',
-                'mapping'
-            ]);
-        }]);
+            if (!empty($vendor)) {
+                $q->whereHas('asset_register', fn($qr) => $qr->where('vendor_id', $vendor));
+            }
+        });
 
-        $allocated_items = $query->get();
-
+        $mappings = $query->get();
 
         $reportData = [];
         $rowIndex = 1;
+        foreach ($mappings as $mapping) {
+            $line = $mapping->register_lineitem;
 
-        foreach ($allocated_items as $allocation) {
-            foreach ($allocation->items as $item) {
-                $reportData[] = [
-                    'DT_RowIndex'    => $rowIndex++,
-                    'item'           => ($item->asset_item?->item_code ?? '') . ' ' . ($item->asset_item?->name ?? ''),
-                    'model'          => $item->item_model ?? '',
-                    'serial_number'  => $item->serial_number ?? '',
-                    'classification' => $item->asset_classification->name ?? '',
-                    'category'       => $item->asset_category->name ?? '',
-                    'type'           => $item->asset_type->name ?? '',
-                    'vendor'         => $allocation->vendor->vendor_name ?? '',
-                ];
-            }
+            $reportData[] = [
+                'DT_RowIndex'    => $rowIndex++,
+                'item'           => ($line->asset_item?->item_code ?? '') . ' ' . ($line->asset_item?->name ?? ''),
+                'model'          => $mapping->model ?? '',
+                'brand'          => $line->asset_brand ?? '',
+                'serial_number'  => $mapping->serial_number ?? '',
+                'asset_id'       => CustomHelper::itemCodeGenerater($mapping->id),
+                'classification' => $line->asset_classification->name ?? '',
+                'category'       => $line->asset_category->name ?? '',
+                'type'           => $line->asset_type->name ?? '',
+                'vendor'         => $line->asset_register->vendor->vendor_name ?? '',
+                'allocation_status'=> $mapping->allocation_status == 1 ? 'Allocated' : 'Not Allocated',
+            ];
         }
 
         return response()->json(['data' => $reportData]);
-
-
     }
+
 }

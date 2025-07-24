@@ -21,7 +21,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> ScrapReports</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
 
                         <div class="card mb-2">
@@ -59,11 +63,11 @@
                                             <button type="button" onclick="get_reports()" class="btn btn-primary mt-4" id="search">Filter</button>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="card">
                             <div class="card-datatable table-responsive">
                                 <table class="table table-bordered" id="scrap-register-table" style="font-size: 12px;">
@@ -108,7 +112,7 @@
         });
         get_reports();
     });
-    
+
     function get_reports() {
         if ($.fn.DataTable.isDataTable('#scrap-register-table')) {
             $('#scrap-register-table').DataTable().clear().destroy();
@@ -116,7 +120,7 @@
         const from_date = $('#from_date').val();
         const to_date = $('#to_date').val();
         const vendor_id = $('#vendor_id').val();
-        
+
         const scrapTable = $('#scrap-register-table') ;
 
         scrapTable.DataTable({

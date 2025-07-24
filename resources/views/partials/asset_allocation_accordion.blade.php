@@ -16,8 +16,9 @@
                         aria-expanded="{{ $item->id === 0 ? 'true' : 'false' }}">
                         <i class="ti ti-asset ti-xs me-2"></i>
                         {{-- Allocation #{{ $allocation->id }} --}}
+
                         @if($firstItem)
-                            {{ $firstItem->item_name }} Asset ID: {{ $firstItem->asset_id }}, SN: {{ $firstItem->serial_number }}
+                            {{ $firstItem->item_name }} Asset ID: {{ \App\Helpers\CustomHelper::itemCodeGenerater($item->asset_mapping_id) }}, SN: {{ $item->serial_number }}
                         @endif
                         -( {{ $allocation->employee->full_name ?? 'N/A' }} )
                     </button>
@@ -38,6 +39,7 @@
                                         {{-- <p><strong>Status:</strong> {{ ucfirst($allocation->status) }}</p> --}}
                                         <p><strong>Remarks:</strong> {{ $allocation->remarks ?? '-' }}</p>
                                         <p><strong>Allocated At:</strong> {{ $allocation->created_at->format('d-m-Y') }}</p>
+                                        <p><strong>Project: </strong>{{ $item->project_info->project_name ?? ''; }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -50,11 +52,11 @@
                                     </div>
                                     <div class="card-body mt-4">
 
-                                        <p><strong>Asset ID:</strong> {{ $item->asset_id ?? 'N/A' }}</p>
+                                        <p><strong>Asset ID:</strong> {{ \App\Helpers\CustomHelper::itemCodeGenerater($item->asset_mapping_id) }}, SN: {{ $item->serial_number }}</p>
                                         <p><strong>Brand Name:</strong> {{ $item->masterItem->name ?? 'N/A' }}</p>
                                         <p><strong>Model:</strong> {{ $item->model ?? '-' }}</p>
                                         <p><strong>Serial Number:</strong> {{ $item->serial_number ?? '-' }}</p>
-
+                                        <p><strong>Specification:</strong> {{ $item->specification ?? '-' }}</p>
                                     </div>
                                 </div>
                             </div>

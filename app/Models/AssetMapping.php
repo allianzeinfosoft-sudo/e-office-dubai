@@ -47,4 +47,5 @@ class AssetMapping extends Model
         });
     }
 
+
 }

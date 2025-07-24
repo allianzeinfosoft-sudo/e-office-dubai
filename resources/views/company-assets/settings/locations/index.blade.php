@@ -26,7 +26,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> {{ $meta_title }}</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-7">
                             <div class="card">

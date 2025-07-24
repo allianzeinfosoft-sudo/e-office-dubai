@@ -5,7 +5,7 @@
     .w-35 { width: 35% !important; }
     .w-45 { width: 45% !important; }
     .w-90 { width: 90% !important; }
-    
+
     .offcanvas-close {
         position: absolute;
         top: 0px;
@@ -21,7 +21,7 @@
         padding-top: 0.58rem;
         padding-bottom: 0.58rem;
     }
-    
+
     #item-line-table > :not(caption) > * > * {
         padding: 0.5rem 0.5rem !important;
         background-color: var(--bs-table-bg);
@@ -47,7 +47,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> ScrapRegister</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
@@ -88,7 +92,7 @@
 <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="scrap_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-description fs-2 text-white"></i> 
+            <i class="ti ti-file-description fs-2 text-white"></i>
             <span id="scrap_offcanvas-title">
                 <h5 class="offcanvas-title text-white">Create Scrap Register</h5>
                 <span class="text-white slogan">Add new Scrap Register</span>

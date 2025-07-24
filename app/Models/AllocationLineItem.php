@@ -13,7 +13,7 @@ class AllocationLineItem extends Model
                             'item',
                             'model',
                             'serial_number',
-                            'asset_id',
+                            'asset_mapping_id',
                             'project',
                             'qty',
                             'specification',

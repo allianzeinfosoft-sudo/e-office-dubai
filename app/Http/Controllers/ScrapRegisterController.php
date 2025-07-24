@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CustomHelper;
 use App\Models\AssetItemLine;
 use App\Models\ScrapRegister;
 use App\Models\AssetItemMaster;
@@ -70,11 +71,11 @@ class ScrapRegisterController extends Controller
             'scrap_vendor_id' => 'required',
             'total_amount' => 'required',
             'remarks' => 'nullable',
-            
+
             'scrap_item_id' => 'required|array',
             'quantity' => 'required|array',
             'rate' => 'required|array',
-            'amount' => 'required|array',            
+            'amount' => 'required|array',
         ]);
 
         $totalAmount = array_sum($request->amount);
@@ -103,8 +104,8 @@ class ScrapRegisterController extends Controller
             $scrapItemLine = $asset->items()->create([
                 'scrap_item_id'     => $itemId,
                 'model'             => $request->model[$index],
-                'serial_no'         => $request->serial_no[$index],  
-                'asset_mapping_id'  => $request->asset_id[$index],  
+                'serial_no'         => $request->serial_no[$index],
+                'asset_mapping_id'  => $request->asset_id[$index],
                 'unit'              => $request->unit[$index],
                 'quantity'          => $request->quantity[$index],
                 'rate'              => $request->rate[$index],
@@ -120,7 +121,7 @@ class ScrapRegisterController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $request->id ? 'Scrap register updated successfully.' : 'Scrap register saved successfully.',  
+            'message' => $request->id ? 'Scrap register updated successfully.' : 'Scrap register saved successfully.',
         ]);
     }
 
@@ -193,8 +194,10 @@ class ScrapRegisterController extends Controller
         ]);
     }
 
-    public function getAssetId(Request $request){
-        $assetId = AssetMapping::where('master_item_id', $request->item_id)
+   public function getAssetId(Request $request)
+    {
+        $assets = AssetMapping::with('masteritem')
+            ->where('master_item_id', $request->item_id)
             ->when($request->item_model, function ($query) use ($request) {
                 return $query->where('model', $request->item_model);
             })
@@ -204,9 +207,20 @@ class ScrapRegisterController extends Controller
             ->where('allocation_status', 0)
             ->get();
 
+        // Format with item_code
+        $data = $assets->map(function ($asset) {
+            return [
+                'id'           => $asset->id,
+                'asset_id'    => optional($asset->masteritem)->item_code.'-'.$asset->item_number,
+                'item_number'  => $asset->item_number,
+                'model'        => $asset->model,
+                'serial_no'    => $asset->serial_number,
+            ];
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $assetId
+            'data'    => $data,
         ]);
     }
 
@@ -248,7 +262,7 @@ class ScrapRegisterController extends Controller
                     'scrap_date' => optional($item->register)->scrap_date ? date('d-m-Y', strtotime($item->register->scrap_date)) : '',
                     'vendor_name' => $item->register->vendor->vendor_name ?? '',
                     'item_name' => $item->item->name ?? '',
-                    'asset_code' => $item->mapping->item_number ?? '',
+                    'asset_code' => CustomHelper::itemCodeGenerater($item->mapping->id),
                     'item_model' => $item->model ?? '',
                     'serial_number' => $item->serial_no ?? '',
                     'unit' => $item->unit ?? '',

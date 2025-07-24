@@ -832,14 +832,13 @@ public static function getWorkRatingAnalysisMonthly($empId)
         AssetMapping::where('register_lineitem_id', $dataAsset['register_lineitem_id'])->delete();
 
         // Count previous mappings for the same item-model-serial combo to continue item_number sequence
-        $lastCount = AssetMapping::where([
-            'master_item_id'  => $dataAsset['master_item_id'],
-            'model'           => $dataAsset['model'],
-            'serial_number'   => $dataAsset['serial_number']
-        ])->count();
+       $lastItemNumber = AssetMapping::where([
+            'master_item_id' => $dataAsset['master_item_id'],
+        ])->max('item_number') ?? 0;
 
+        // 'model'          => $dataAsset['model'],
         // Set the starting item number
-        $startNumber = $lastCount;
+        $startNumber = $lastItemNumber;
 
         // Create new mappings based on asset_quantity
         $quantity = (int) $dataAsset['asset_quantity'];
@@ -857,16 +856,8 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
     public static function updateAssetMapping(array $dataAsset)
     {
-        $master_item_id = $dataAsset['asset_item_id'];
-        $model = $dataAsset['model'];
-        $serial_number = $dataAsset['serial_number'];
 
-
-         $record = AssetMapping::where('master_item_id', $master_item_id)
-                                    ->where('item_number', $dataAsset['item_number'])
-                                    ->where('model', $model)
-                                    ->where('serial_number', $serial_number)
-                                    ->first();
+        $record = AssetMapping::find($dataAsset['asset_mapping_id']);
 
         if($dataAsset['user_type'] === 'employee' || $dataAsset['user_type'] === 'location')
         {
@@ -939,7 +930,28 @@ public static function getWorkRatingAnalysisMonthly($empId)
         return AssetItemMaster::select('item_code')->where('id',$item_id)->first();
 
     }
-    
+
+    public static function itemCodeGenerater($mapping_id)
+    {
+
+         $item_map = AssetMapping::find($mapping_id);
+
+        if (!$item_map) {
+            return '-';
+        }
+
+        $masterItemId = $item_map->master_item_id;
+        $item_number = $item_map->item_number;
+
+        $item = AssetItemMaster::find($masterItemId);
+
+        if (!$item) {
+            return '-'; // or fallback code
+        }
+
+        return $item->item_code . '-' . $item_number;
+    }
+
 }
 
 

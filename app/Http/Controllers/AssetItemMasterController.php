@@ -15,11 +15,10 @@ class AssetItemMasterController extends Controller
             $items = $items->map(function ($item, $index) {
                 return [
                     'row' => $index + 1,
-                    'id' => $item->id,
-                    'item_code' => $item->item_code,
-                    'name' => $item->name,
-                    'description' => $item->description,
-                    'brand' => $item->brand,
+                    'id' => $item->id ?? '-',
+                    'item_code' => $item->item_code ?? '-',
+                    'name' => $item->name ?? '-',
+                    'description' => $item->description ?? '-',
                     'status' => $item->status,
                 ];
             });
@@ -44,7 +43,6 @@ class AssetItemMasterController extends Controller
         $validated = $request->validate([
             'item_code' => 'required',
             'name' => 'required',
-            'brand' => 'required',
         ]);
 
         AssetItemMaster::updateOrCreate([
@@ -54,7 +52,6 @@ class AssetItemMasterController extends Controller
             'name' => $request->name,
             'item_code' => $request->item_code,
             'name' => $request->name,
-            'brand' => $request->brand,
             'description' => $request->description,
         ]);
 

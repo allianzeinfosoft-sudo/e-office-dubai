@@ -17,7 +17,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <x-menu />
 
         <div class="layout-page">
@@ -26,7 +26,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> {{ $meta_title }}</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
@@ -54,13 +58,13 @@
                                         </thead>
                                     </table>
                                 </div>
-                            </div>  
+                            </div>
                         </div>
 
                     </div>
                 </div>
 
-                <x-footer /> 
+                <x-footer />
                 <div class="content-backdrop fade"></div>
                 <div class="layout-overlay layout-menu-toggle"></div>
                 <div class="drag-target"></div>
@@ -72,7 +76,7 @@
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-description fs-2 text-white"></i> 
+            <i class="ti ti-file-description fs-2 text-white"></i>
             <span id="vendor-offcanvas-title">
                 <h5 class="offcanvas-title text-white">Create Vendor</h5>
                 <span class="text-white slogan">Create New Asset Vendor</span>
@@ -126,7 +130,7 @@
     $(function () {
         const vendorTable = $('#vendor-table');
 
-        if(vendorTable.length) {            
+        if(vendorTable.length) {
             vendorTable.DataTable({
             processing: true,
             serverSide: false, // set to true if using server-side pagination
@@ -247,7 +251,7 @@
                     $('#vendor_address').val(vendor.vendor_address);
                     $('#email').val(vendor.email);
                     $('#website').val(vendor.website);
-                    $('#mobile_number').val(vendor.mobile_number);  
+                    $('#mobile_number').val(vendor.mobile_number);
                 },
                 error: function () {
                     alert('Failed to load MOM data.');
@@ -261,6 +265,6 @@
         $('#vendor-category-form')[0].reset();
     }
 
-    
+
 </script>
 @endpush

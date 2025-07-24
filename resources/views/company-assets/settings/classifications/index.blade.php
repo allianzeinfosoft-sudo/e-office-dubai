@@ -17,7 +17,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <x-menu />
 
         <div class="layout-page">
@@ -26,7 +26,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> {{ $meta_title }}</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-7">
                             <div class="card">
@@ -40,7 +44,7 @@
                                             </tr>
                                         </thead>
                                     </table>
-                                </div>  
+                                </div>
                             </div>
                         </div>
 
@@ -58,6 +62,7 @@
                                             <input type="text" class="form-control" id="name" name="name" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="button" class="btn btn-secondary" id="cancel-button">Cancel</button>
                                     </form>
                                 </div>
                             </div>
@@ -66,7 +71,7 @@
                     </div>
                 </div>
 
-                <x-footer /> 
+                <x-footer />
                 <div class="content-backdrop fade"></div>
                 <div class="layout-overlay layout-menu-toggle"></div>
                 <div class="drag-target"></div>
@@ -92,7 +97,7 @@
             columns: [
                 { data: 'row', name: 'No' },
                 { data: 'name', name: 'Name' },
-                { 
+                {
                     data: null,
                     title: 'Actions',
                     render: function (data, type, row) {
@@ -176,6 +181,14 @@
             });
         }
     }
+
+
+    document.getElementById('cancel-button').addEventListener('click', function () {
+        document.getElementById('classification-form').reset();
+        document.getElementById('target_id').value = ''; // Optional: reset hidden field
+        $('#form-title').text('Add New Classification');
+    });
+
 
 </script>
 @endpush

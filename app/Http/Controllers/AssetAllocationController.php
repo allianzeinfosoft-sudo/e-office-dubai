@@ -24,6 +24,7 @@ class AssetAllocationController extends Controller
 
     public function index(Request $request)
     {
+
         $data['classifications'] = AssetClassification::get();
         $data['assetItems'] = AssetItemMaster::all();
         $data['vendors'] = AssetVendors::all();
@@ -76,7 +77,7 @@ class AssetAllocationController extends Controller
     public function getAssetId(Request $request)
     {
 
-        $assetIds = AssetMapping::with('masteritem')->where('serial_number', $request->serial_id)->where('allocation_status',0)->get()
+        $assetIds = AssetMapping::with('masteritem')->where('serial_number', $request->serial_id)->get()
         ->map(function ($assetIds) {
             return [
                 'id' => $assetIds->id,
@@ -99,15 +100,14 @@ class AssetAllocationController extends Controller
     {
 
         $validated = $request->validate([
-            'asset_id' => 'required',
-            'asset_user' => 'required',
-            'asset_item_id' => 'required|array',
-            'asset_model_id' => 'nullable|array',
-            'asset_project_id' => 'required|array',
-            // 'asset_available_quantity' => 'required|array',
-            // 'asset_quantity' => 'required|array',
-            'specification' => 'required|array',
-            'remarks' => 'required',
+
+            'asset_code_id'     => 'required',
+            'asset_user'        => 'required',
+            'asset_item_id'     => 'required|array',
+            'asset_model_id'    => 'nullable|array',
+            'asset_project_id'  => 'required|array',
+            'specification'     => 'required|array',
+            'remarks'           => 'required',
         ]);
 
 
@@ -121,23 +121,18 @@ class AssetAllocationController extends Controller
             ]
         );
 
-        //  Delete old item lines if editing
-        $asset->items()->delete();
-
         //  Save asset item lines
         foreach ($request->asset_item_id as $index => $itemId) {
 
             $master_item_code = CustomHelper::getItemCode($request->asset_item_id[$index]);
 
-            $asset_code = $master_item_code->item_code.'-'.$request->asset_id[$index];
             $itemLine = $asset->items()->create([
                 'allocation_id'           => $itemId,
                 'item'                    => $request->asset_item_id[$index],
                 'model'                   => $request->asset_model_id[$index],
                 'serial_number'           => $request->asset_serialnumber[$index],
                 'project'                 => $request->asset_project_id[$index],
-                'asset_id'                => $asset_code,
-                // 'qty'                     => $request->asset_quantity[$index],
+                'asset_mapping_id'        => $request->asset_code_id[$index],
                 'specification'           => $request->specification[$index]
             ]);
 
@@ -146,10 +141,7 @@ class AssetAllocationController extends Controller
 
                 'allocation_id'  => $itemLine->id,
                 'user_type'      => $request->asset_user,
-                'asset_item_id'  => $request->asset_item_id[$index],
-                'item_number'    => $request->asset_id[$index],
-                'model'          => $request->asset_model_id[$index],
-                'serial_number'  => $request->asset_serialnumber[$index],
+                'asset_mapping_id' => $request->asset_code_id[$index],
             ]);
 
         }
@@ -283,12 +275,14 @@ class AssetAllocationController extends Controller
         $rowIndex = 1;
 
         foreach ($allocated_items as $allocation) {
+
             foreach ($allocation->items as $item) {
+
                 $reportData[] = [
                     'DT_RowIndex'    => $rowIndex++,
                     'item_name' => ($item->masterItem?->brand ?? '') . ' ' . ($item->masterItem?->name ?? ''),
                     'model'          => $item->model ?? '',
-                    'asset_id'       => $item->asset_id ?? '',
+                    'asset_id'       => CustomHelper::itemCodeGenerater($item->asset_mapping_id),
                     'serial_number'  => $item->serial_number ?? '',
                     'allocated_to'   => $allocation->employee->full_name ?? '',
                     'department'     => $allocation->department_name->department ?? '',
@@ -300,6 +294,72 @@ class AssetAllocationController extends Controller
 
         return response()->json(['data' => $reportData]);
     }
+
+    public function getAssetCode(Request $request)
+    {
+
+         $asset = AssetMapping::where('master_item_id', $request->item_id)
+        ->get()
+        ->map(function ($assetCodes) {
+            return [
+                'id' => $assetCodes->id,
+                'assetCode' => CustomHelper::itemCodeGenerater($assetCodes->id),
+            ];
+        });
+        return response()->json($asset);
+    }
+
+   public function getAssetItemInfo(Request $request)
+    {
+        $asset = AssetMapping::with('register_lineitem')->find($request->item_id);
+
+        if (!$asset) {
+            return response()->json(['error' => 'Asset not found'], 404);
+        }
+
+        return response()->json([
+            'id' => $asset->id,
+            'model' => $asset->model ?? '-',
+            'brand' => $asset->register_lineitem?->asset_brand ?? '-',
+            'classification' => $asset->register_lineitem?->asset_classification?->name ?? '-',
+            'category' => $asset->register_lineitem?->asset_category?->name ?? '-',
+            'type' => $asset->register_lineitem?->asset_type?->name ?? '-',
+            'serial_number' => $asset->serial_number ?? '-',
+            'specification' => $asset->register_lineitem?->asset_description ?? '-',
+        ]);
+    }
+
+
+    public function allAssets(Request $request)
+    {
+        // dd($request->all());
+          // Optional paginator override (usually not needed unless doing something special)
+        Paginator::currentPageResolver(function () use ($request) {
+            return $request->input('page', 1);
+        });
+
+        // Start query with eager loading
+        $query = AssetMapping::with(['register_lineitem', 'masteritem']);
+
+        // Filter by asset ID if provided
+        if ($request->filled('asset_id')) {
+            $query->where('id', $request->asset_id);
+        }
+
+        // Paginate results (with filter values preserved in pagination links)
+        $assets = $query->paginate(10)->withQueryString();
+
+        // Get all asset IDs (for dropdown or search suggestion list, etc.)
+        $assetIds = AssetMapping::pluck('id'); // more efficient than all()
+
+        // Return view
+        return view('company-assets.assets.index', [
+            'meta_title' => 'All Assets',
+            'assets' => $assets,
+            'assetIds' => $assetIds,
+        ]);
+    }
+
 
 
 }

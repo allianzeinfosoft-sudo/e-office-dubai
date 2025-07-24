@@ -21,7 +21,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> StockReports</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
 
                         <div class="row">
@@ -201,6 +205,7 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
+                                            <th>Asset ID</th>
                                             <th>Item</th>
                                             <th>Model</th>
                                             <th>Serial Number</th>
@@ -208,6 +213,7 @@
                                             <th>Category</th>
                                             <th>Type</th>
                                             <th>Vendor</th>
+                                            <th>Allocation Status</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -268,13 +274,26 @@
             dataSrc: 'data',
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                { data: 'asset_id'},
                 { data: 'item' },
                 { data: 'model' },
                 { data: 'serial_number'},
                 { data: 'classification' },
                 { data: 'category' },
                 { data: 'type' },
-                { data: 'vendor' }
+                { data: 'vendor' },
+                {
+                    data: 'allocation_status',
+                    render: function (data, type, row) {
+                        if (data === 'Allocated') {
+                            return '<button class="btn btn-sm btn-success">Allocated</button>';
+                        } else {
+                            return '<button class="btn btn-sm btn-danger">Not Allocated</button>';
+                        }
+                    },
+                    orderable: false,
+                    searchable: false
+                }
             ]
         });
     }

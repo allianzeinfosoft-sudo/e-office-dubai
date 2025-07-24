@@ -48,7 +48,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> Repair Register</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn btn-primary" href="javascript:void(0);" onclick="openRepairOffcanvas()">
@@ -184,11 +188,11 @@
                 { data: 'rate', name: 'rate' },
                 { data: 'amount', name: 'amount' },
                 { data: 'status', name: 'status' },
-                { 
+                {
                     data: null,
                     render: function (data, type, row, meta) {
                         return row.item_return_date != null
-                            ?  row.item_return_date  
+                            ?  row.item_return_date
                             : `<button class="btn btn-sm btn-success" onclick="receiveRepairItem(${row.id})">Receive</button>`;
                     }
                 },
@@ -289,7 +293,7 @@
         }
     }
 
-    
+
 
 </script>
 @endpush

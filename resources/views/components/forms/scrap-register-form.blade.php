@@ -65,7 +65,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="item-line-container">   
+                    <tbody id="item-line-container">
                     </tbody>
                     <tfoot>
                         <tr>
@@ -87,7 +87,7 @@
                     <textarea name="remarks" id="remarks" cols="30" rows="5" class="form-control"></textarea>
                 </div>
             </div>
-            
+
             <div class="col-sm-12 mb-3">
                 <button type="submit" class="btn btn-primary"> <i class="fa fa-save"></i>&nbsp;&nbsp; Save </button>
             </div>
@@ -110,7 +110,7 @@
         var itemLineLength = $('#item-line-container tr').length + 1;
 
         var assetItems = {!! json_encode($assetItems) !!};
-        
+
         let html = `
             <tr>
                 <td>
@@ -176,7 +176,7 @@
                     var html = '<option value="">Select Serial No</option>';
                     response.data.map(function(serial_no) {
                         html += '<option value="' + serial_no + '">' + serial_no + '</option>';
-                    });    
+                    });
                     $('#serial_no_' + itemLineLength).html(html);
                     $('#serial_no_' + itemLineLength).select2({
                         dropdownParent: $('#scrap_offcanvas') // replace this ID with your actual offcanvas container ID
@@ -201,7 +201,7 @@
                     var html = '<option value="">Select Model</option>';
                     response.data.map(function(model) {
                         html += '<option value="' + model + '">' + model + '</option>';
-                    });    
+                    });
                     $('#model_' + itemLineLength).html(html);
                     $('#model_' + itemLineLength).select2({
                         dropdownParent: $('#scrap_offcanvas') // replace this ID with your actual offcanvas container ID
@@ -250,8 +250,8 @@
                 if (response.success) {
                     var html = '<option value="">Select Asset Ids </option>';
                     response.data.map(function(assetId) {
-                        html += '<option value="' + assetId.id + '">' + assetId.item_number + '</option>';
-                    });    
+                        html += '<option value="' + assetId.id + '">' + assetId.asset_id + '</option>';
+                    });
                     $('#asset_id_' + itemLineLength).html(html);
                     $('#asset_id_' + itemLineLength).select2({
                         dropdownParent: $('#scrap_offcanvas') // replace this ID with your actual offcanvas container ID
@@ -260,7 +260,7 @@
             }
         });
     }
-    
+
 </script>
-    
+
 @endpush

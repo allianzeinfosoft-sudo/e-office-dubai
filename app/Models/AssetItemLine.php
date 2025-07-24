@@ -11,6 +11,7 @@ class AssetItemLine extends Model
     protected $fillable = [
         'asset_register_id',
         'asset_item_id',
+        'asset_brand',
         'item_model',
         'asset_description',
         'asset_classification_id',

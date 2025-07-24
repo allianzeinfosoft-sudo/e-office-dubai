@@ -13,7 +13,7 @@
         padding: 28px 10px;
         border-radius: 0px;
     }
-    
+
     #item-line-table th {
         text-transform: uppercase;
         font-size: 0.6125rem !important;
@@ -32,13 +32,13 @@
         border-radius: 0.2rem !important;
         font-size: 0.6125rem !important;
     }
-    
+
 </style>
 @stop
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <x-menu />
 
         <div class="layout-page">
@@ -47,7 +47,11 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> {{ $meta_title }}</h4>
-
+                    <div class="row">
+                        <div class="md-4 mb-2">
+                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
@@ -76,13 +80,13 @@
                                         </thead>
                                     </table>
                                 </div>
-                            </div>  
+                            </div>
                         </div>
 
                     </div>
                 </div>
 
-                <x-footer /> 
+                <x-footer />
                 <div class="content-backdrop fade"></div>
                 <div class="layout-overlay layout-menu-toggle"></div>
                 <div class="drag-target"></div>
@@ -94,7 +98,7 @@
 <div class="offcanvas offcanvas-end w-90" data-bs-backdrop="static" tabindex="-1" id="vendor_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-description fs-2 text-white"></i> 
+            <i class="ti ti-file-description fs-2 text-white"></i>
             <span id="vendor-offcanvas-title">
                 <h5 class="offcanvas-title text-white">Create Asset Register</h5>
                 <span class="text-white slogan">Add new Asset Register</span>
@@ -119,14 +123,13 @@
     $(function () {
         const assetRegisterTable = $('#asset-register-table');
 
-        if(assetRegisterTable.length) {            
+        if(assetRegisterTable.length) {
             assetRegisterTable.DataTable({
             processing: true,
             serverSide: false, // set to true if using server-side pagination
             ajax: '{{ route("assets.register.index") }}', // your route
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                { data: 'asset_number', name: 'Reg. No.' },
                 { data: 'purchase_date', name: 'Date' },
                 { data: 'vendor_name', name: 'Vendor' },
                 { data: 'invoice_number', name: 'Invoice No.' },
@@ -156,7 +159,7 @@
         $('#register-form').submit(function (e) {
             let url = $(this).attr('action');
             e.preventDefault();
-            
+
             let form = this;
             let formData = new FormData(form);
 
@@ -231,9 +234,7 @@
                 dataType: 'json',
                 success: function(response) {
                     let data = response.data;
-
                     // Main form values
-                    $('#asset_number').val(data.asset_number);
                     $('#company_name').val(data.company_name).trigger('change');
                     $('#purchase_date').flatpickr().setDate(data.purchase_date);
                     $('#invoice_number').val(data.invoice_number);
@@ -243,50 +244,54 @@
                     $('#total_amount').html(parseFloat(data.total_amount).toFixed(2));
 
                     // Clear existing line items
-                    $('#item-line-container').empty();  
+                    $('#item-line-container').empty();
 
                     // Loop through line items and append rows
                     data.items.forEach(function(item, index) {
                         let row = `
                             <tr>
                                 <td>
-                                    <select name="asset_item_id[${index}]" class="form-control select2">
-                                        @foreach($assetItems as $key => $label)
-                                            <option value="{{ $label['id'] }}" ${item.asset_item_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td><input type="text" name="asset_model[${index}]" class="form-control" value="${item.item_model ?? ''}"></td>
-                                <td><input type="text" name="serial_number[${index}]" class="form-control" value="${item.serial_number ?? ''}"></td>
-                                <td><input type="text" name="warranty[${index}]" class="form-control" value="${item.warranty ?? ''}"></td>
-                                <td>
-                                    <select name="asset_classification_id[${index}]" class="form-control select2">
+                                    <select name="asset_classification_id[${index}]" class="form-control select2" required>
                                         @foreach($assetClassifications as $key => $label)
                                             <option value="{{ $label['id'] }}" ${item.asset_classification_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="asset_category_id[${index}]" class="form-control select2">
+                                    <select name="asset_category_id[${index}]" class="form-control select2" required>
                                         @foreach($assetCategories as $key => $label)
                                             <option value="{{ $label['id'] }}" ${item.asset_category_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="asset_type_id[${index}]" class="form-control select2">
+                                    <select name="asset_type_id[${index}]" class="form-control select2" required>
                                         @foreach($assetTypes as $key => $label)
                                             <option value="{{ $label['id'] }}" ${item.asset_type_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
                                         @endforeach
                                     </select>
                                 </td>
-                                <td><input type="text" name="asset_unit[${index}]" class="form-control"  readonly value="${item.asset_description}"></td>
+                                <td>
+                                    <select name="asset_item_id[${index}]" class="form-control select2" required>
+                                        @foreach($assetItems as $key => $label)
+                                            <option value="{{ $label['id'] }}" ${item.asset_item_id == {{ $label['id'] }} ? 'selected' : ''}>{{ $label['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td width="10%"><input class="form-control" type="text" name="asset_brand[${index}]" value="${item.asset_brand}" placeholder="Brand name" required></td>
+                                <td><input type="text" name="asset_model[${index}]" class="form-control" value="${item.item_model ?? ''}" required></td>
+
+                                <td width="10%">
+                                    <textarea class="form-control" name="asset_unit[${index}]" placeholder="Specification" row="5">${item.asset_description}</textarea>
+                                </td>
                                 <td><input type="number" name="asset_quantity[${index}]" class="form-control quantity" onchange="calculateAmount('${index}')" id="qty_${index}" value="${item.asset_quantity}"></td>
                                 <td><input type="number" name="asset_price[${index}]" class="form-control price" onchange="calculateAmount('${index}')" id="price_${index}" value="${item.asset_price}"></td>
-                                <td><input type="text" name="asset_total[${index}]" class="form-control total" onchange="calculateAmount('${index}')" id="amount_${index}" readonly value="${item.asset_total}"></td>
+                                <td><input type="text" name="asset_total[${index}]" class="form-control total" onchange="calculateAmount('${index}')" id="amount_${index}" readonly value="${item.asset_total}" ></td>
+                                <td><input type="text" name="serial_number[${index}]" class="form-control" value="${item.serial_number ?? ''}"></td>
+                                <td><input type="text" name="warranty[${index}]" class="form-control" value="${item.warranty ?? ''}"></td>
+
                                 <td><button type="button" class="btn btn-xs btn-icon btn-danger" onclick="$(this).closest('tr').remove(); calculateGrandTotal();"><i class="ti ti-minus"></i></button></td>
-                            </tr>
-                        `;
+                            </tr>`;
                         $('#item-line-container').append(row);
                     });
 

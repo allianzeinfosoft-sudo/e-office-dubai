@@ -15,14 +15,15 @@ return new class extends Migration
             $table->id();
             $table->integer('asset_register_id');
             $table->integer('asset_item_id');
+            $table->string('asset_brand')->nullable();
             $table->string('item_model', 50) ->nullable();
             $table->text('asset_description')->nullable();
             $table->integer('asset_classification_id');
             $table->integer('asset_category_id');
             $table->integer('asset_type_id');
-            $table->float('asset_quantity', 10, 2);
-            $table->float('asset_price', 10, 2);
-            $table->float('asset_total', 10, 2);
+            $table->float('asset_quantity', 50, 2);
+            $table->float('asset_price', 50, 2);
+            $table->float('asset_total', 50, 2);
             $table->timestamps();
         });
     }

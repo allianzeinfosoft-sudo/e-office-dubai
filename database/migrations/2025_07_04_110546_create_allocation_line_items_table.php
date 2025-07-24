@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('item');
             $table->string('model')->nullable();
             $table->string('serial_number')->nullable();
-            $table->string('asset_id')->nullable();
+            $table->string('asset_mapping_id')->nullable();
             $table->integer('project')->nullable();
             $table->integer('qty')->nullable();
             $table->text('specification')->nullable();

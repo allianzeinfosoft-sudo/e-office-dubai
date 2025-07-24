@@ -53,6 +53,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
 use App\Http\Controllers\AssetAllocationController;
+use App\Http\Controllers\AssetDashboardController;
 use App\Http\Controllers\AssetItemMasterController;
 use App\Http\Controllers\AssetLocationController;
 use App\Http\Controllers\AssetTypeController;
@@ -638,6 +639,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     /* Asset Type*/
     Route::prefix('assets')->name('assets.')->group(function () {
+        Route::get('all',[AssetAllocationController::class,'allAssets'])->name('all');
         Route::resource('type', AssetTypeController::class)->names('type');
         Route::resource('location', AssetLocationController::class)->names('location');
         Route::resource('vendors', AssetVendorsController::class)->names('vendors');
@@ -665,14 +667,16 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::get('reports/allocated-items',[AssetAllocationController::class, 'reportAllocatedItems'])->name('reports.allocated-items');
         Route::get('reports/allocated-items-data', [AssetAllocationController::class, 'allocatedItemsReport'])->name('reports.allocated-items-data');
         Route::get('/reports/stock-items-data', [AssetRegisterController::class, 'stockItemReport'])->name('reports.stock-items-data');
-
+        Route::get('/dashboard',[AssetDashboardController::class,'index'])->name('dashboard');
     });
 
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
     Route::get('/get-asset-models', [AssetAllocationController::class, 'getModels']);
+    Route::get('/get-asset-code',[AssetAllocationController::class, 'getAssetCode']);
     Route::get('/get-asset-serials', [AssetAllocationController::class, 'getSerials']);
     Route::get('/get-asset-qty', [AssetAllocationController::class, 'getQty']);
     Route::get('/get-asset-ids', [AssetAllocationController::class, 'getAssetId']);
+    Route::get('/get-asset-mapped-item', [AssetAllocationController::class, 'getAssetItemInfo']);
 
 
 
