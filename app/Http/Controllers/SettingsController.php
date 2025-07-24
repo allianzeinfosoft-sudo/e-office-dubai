@@ -85,7 +85,7 @@ class SettingsController extends Controller
 
         if ($request->ajax()) {
 
-            $usersShifts = Employee::with('workshift','user','login_limited_time_info')->get()
+            $usersShifts = Employee::with('workshift','user','login_limited_time_info')->where('status',2)->get()
             ->map(function ($usersShifts) {
                 return [
                     'user_id' => $usersShifts->user_id,
