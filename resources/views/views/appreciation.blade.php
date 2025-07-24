@@ -66,7 +66,7 @@
                                                     <img class="w-25" src="{{ asset('storage/appreciation_flowers/' . $item['image']) }}" alt="Appreciation Background">
                                                 </div>
                                                 <p class="mt-3 mb-2">
-                                                    {!! nl2br(e($item['message'])) !!}
+                                                    {!! preg_replace('/(\n|\r){2,}/', "\n", $item['message']) !!}
                                                 </p>
                                                 <div class="d-flex justify-content-between align-items-center mt-5 flex-wrap">
                                                     <div>

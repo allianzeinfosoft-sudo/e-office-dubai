@@ -1,5 +1,34 @@
 @extends('layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/ui-carousel.css') }}" />
+<style>
+  .gallery-thumbs {
+      height: 90px; /* Adjust overall height */
+      padding: 10px 0;
+      box-sizing: border-box;
+  }
+
+  /* Each thumbnail */
+  .gallery-thumbs .swiper-slide {
+      width: 70px;              /* Fixed thumbnail width */
+      height: 70px;             /* Fixed thumbnail height */
+      background-size: cover;   /* Cover entire area */
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 8px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+  }
+
+  .gallery-thumbs .swiper-slide-thumb-active {
+      opacity: 1;
+      border: 2px solid #007bff; /* Highlight active */
+  }
+</style>
+@endsection
+
 @section('content')
 <div class="layout-wrapper layout-content-navbar {{ $background_class ?? 'bg-eoffice' }}">
     <div class="layout-container">
@@ -270,27 +299,109 @@
                 </div>
                 <!--Leave Summary-->
 
-                <!--Current Productive Time Analytics -->
-                <div class="col-md-6 col-12 my-auto">
-                  <div class="card card-bg">
-                    <div class="card-header d-flex align-items-center justify-content-between">
-                      <div>
-                        <h5 class="card-title mb-0">Current Productive Time Analytics</h5>
-                        <small class="text-muted">{{ date('F') }}</small>
+                {{-- If Current Feeds Birthdays and Appriciations  will show else not--}}
+               @if(!empty($feed_data))
+                  <div class="col-md-6 col-12 mt-15">
+                      <div class="card card-bg">
+                          <div class="card-body p-0">
+                              <div class="text-center">
+                                  <!-- Main Swiper -->
+                                  <div class="swiper gallery-top bday-card">
+                                      <div class="swiper-wrapper">
+                                          @foreach ($feed_data as $item)
+                                              @if($item['type'] == 'birthday')
+                                                  {{-- Each employee = one slide --}}
+                                                  @foreach($item['employees'] as $employee)
+                                                      <div class="swiper-slide bday-card">
+                                                          <canvas class="confetti-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:10;"></canvas>
+                                                          <div class="card-bday">
+                                                              <img class="bdy-img mt-5 rounded-circle" 
+                                                                  src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}" 
+                                                                  alt="{{ $employee['full_name'] }}" width="100" height="150">
+                                                          </div>
+                                                          <p class="bdy-name mt-2">{{ $employee['full_name'] }}</p>
+                                                      </div>
+                                                  @endforeach
+                                              @else
+                                                  {{-- Appreciation = one slide --}}
+                                                  <div class="swiper-slide card-app">
+                                                      <div class="card-app-content p-3">
+                                                        <div class="appreciation-employees mt-3">
+                                                            @foreach($item['employees'] as $employee)
+                                                                <img class="rounded-circle mx-1" 
+                                                                    src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}" 
+                                                                    title="{{ $employee['full_name'] }}" width="100" height="100">
+                                                            @endforeach
+                                                        </div>
+                                                          <p>{!! preg_replace('/(\n|\r){2,}/', "\n", $item['message']) !!}</p>
+                                                      </div>
+                                                  </div>
+                                              @endif
+                                          @endforeach
+                                      </div>
+
+                                      <!-- Swiper Navigation -->
+                                      <div class="swiper-button-next swiper-button-white"></div>
+                                      <div class="swiper-button-prev swiper-button-white"></div>
+
+                                      
+                                    
+                                  </div>
+
+                                  <!-- Thumbnail Swiper -->
+                                  <div class="swiper gallery-thumbs">
+                                        <div class="swiper-wrapper">
+                                            @foreach ($feed_data as $item)
+                                                @if($item['type'] == 'birthday')
+                                                    
+                                                    @foreach($item['employees'] as $employee)
+                                                        <div class="swiper-slide" style="background-image: url('{{ asset('storage/' . ($employee['profile_image'] ?? '/assets/avatars/default-avatar.png')) }}')"></div>
+                                                    @endforeach
+                                                @else
+                                                    
+                                                    <div class="swiper-slide" style="background-image: url('{{ asset($item['image'] ? 'storage/'.$item['image'] : '/assets/avatars/default-avatar.png') }}')"></div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                  
+                                  
+                                  
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  @else
+
+                  <!--Current Productive Time Analytics -->
+                  <div class="col-md-6 col-12 my-auto">
+                    <div class="card card-bg">
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                        <div>
+                          <h5 class="card-title mb-0">Current Productive Time Analytics</h5>
+                          <small class="text-muted">{{ date('F') }}</small>
+                        </div>
+                      </div>
+                      <div class="card-body pb-5">
+
+                        <x-charts.attendance-donut-chart
+                          id="attendanceDonut"
+                          :labels="['Outstanding', 'Very Good', 'Good', 'Above Average', 'Average', 'Poor']"
+                          :donutsData="[$work_analysis['Outstanding'], $work_analysis['Very Good'], $work_analysis['Good'], $work_analysis['Above Average'], $work_analysis['Average'], $work_analysis['Poor']]"
+                          :backgroundColors="['#fee802', '#3fd0bd', '#826bf8', '#2b9bf4', '#f86624', '#ea5455']"
+                          height="360px"
+                        />
                       </div>
                     </div>
-                    <div class="card-body pb-5">
-
-                      <x-charts.attendance-donut-chart
-                        id="attendanceDonut"
-                        :labels="['Outstanding', 'Very Good', 'Good', 'Above Average', 'Average', 'Poor']"
-                        :donutsData="[$work_analysis['Outstanding'], $work_analysis['Very Good'], $work_analysis['Good'], $work_analysis['Above Average'], $work_analysis['Average'], $work_analysis['Poor']]"
-                        :backgroundColors="['#fee802', '#3fd0bd', '#826bf8', '#2b9bf4', '#f86624', '#ea5455']"
-                        height="360px"
-                      />
-                    </div>
                   </div>
-                </div>
+
+                  @endif
+
+                
+
+                {{--  --}}
+
                 <!--Current Productive Time Analytics -->
 
                 <!--current attendence Analytics -->
@@ -533,10 +644,36 @@
   </div>
 @endsection
 @push('js')
+<script src="{{ asset('assets/js/ui-carousel.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script>
   $(function () {
     $('.table-holiday').DataTable();
+    
+    var galleryThumbs = new Swiper('.gallery-thumbs', {
+        spaceBetween: 10,
+        slidesPerView: 'auto', // Flexible thumbnails
+        freeMode: true,
+        watchSlidesProgress: true,
+    });
+
+    var galleryTop = new Swiper('.gallery-top', {
+        spaceBetween: 10,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        autoplay: {
+            delay: 4000, // 4 seconds per slide
+            disableOnInteraction: false, // keep autoplay even after user interaction
+        },
+        speed: 800, // smooth slide transition
+        loop: true, // Infinite scroll
+        thumbs: {
+            swiper: galleryThumbs
+        }
+    });
+
   });
 
   updateLeaveSummary('current_month');
