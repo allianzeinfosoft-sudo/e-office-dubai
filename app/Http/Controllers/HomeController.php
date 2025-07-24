@@ -52,6 +52,15 @@ class HomeController extends Controller
             ->where('status', 'mark-out')
             ->pluck('working_hours'); // Returns a collection of HH:MM:SS strings
 
+            // Helper function to format seconds to HH:MM:SS
+            function formatTime($seconds) {
+                $hours = floor($seconds / 3600);
+                $minutes = floor(($seconds % 3600) / 60);
+                $seconds = $seconds % 60;
+
+                return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            }
+
         $totalSeconds = 0;
         $validDays = 0;
 
@@ -72,7 +81,8 @@ class HomeController extends Controller
             ->whereYear('leave_from', $selected_year)
             ->sum('leave_day_count');
 
-        $validDays = $validDays - $total_leaves_days;
+        // $validDays = $validDays - $total_leaves_days;
+        $validDays = max($validDays - $total_leaves_days, 0);
 
         // Helper to format seconds to H:i:s
         // function formatTime($seconds) {
@@ -83,8 +93,8 @@ class HomeController extends Controller
         //     return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         // }
 
-        $data['totalWorkingTime']   = $totalSeconds/3600;
-        $data['averageWorkingTime'] = $validDays > 0 ? ($totalSeconds/3600) / $validDays : '00:00:00';
+        $data['totalWorkingTime']   = formatTime($totalSeconds); // $totalSeconds/3600;
+        $data['averageWorkingTime'] = $validDays > 0 ? formatTime($totalSeconds / $validDays) : '00:00:00'; //$validDays > 0 ? ($totalSeconds/3600) / $validDays : '00:00:00';
         $data['workingDays']        = $validDays;
 
         // Leave count
