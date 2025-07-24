@@ -88,13 +88,14 @@
 @push('js')
 <script>
 
-//   $('#shift_start_time, #shift_end_time, #login_limited_time, #mini_break_time, #max_break_time').flatpickr({
-//             enableTime: true,
-//             noCalendar: true,
-//             dateFormat: 'H:i:S',
-//             time_24hr: true,
-//             enableSeconds: true
-//         });
+  $('#shift_start_time, #shift_end_time, #login_limited_time, #mini_break_time, #max_break_time').flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'H:i:S',
+            time_24hr: true,
+            enableSeconds: true,
+            allowInput: true
+        });
 
    /*  flatpickr("#mini_break_time", {
       enableTime: true,
