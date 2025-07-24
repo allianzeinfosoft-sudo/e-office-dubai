@@ -41,9 +41,7 @@ class AttendanceController extends Controller{
         $daysInMonth        = now()->daysInMonth;
         $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
 
-
         $user               = Auth::user();
-
         $shift              = Workshift::find($user->employee?->shift_id);
         $shiftType          = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
 
@@ -51,7 +49,7 @@ class AttendanceController extends Controller{
         $data['shiftType']      = $shiftType;
         $data['employee']       = Employee::with('workshift')->where('user_id', Auth::user()->id)->first();
 
-/* ================================================================================================== */
+        /* ================================================================================================== */
 
         /******* CURRENT MONTH TOTAL WORKED DAYS OF USERS *******/
 
@@ -89,14 +87,12 @@ class AttendanceController extends Controller{
 
         $data['days_of_worked'] = $fullDays + ($halfDays * 0.5); // - ($halfDayLeaves);
 
-/* =================================================================================================== */
+        /* =================================================================================================== */
 
         /******* CURRENT MONTH TOTAL WORKED HOURS OF USERS *******/
 
         // Get all working_hours OF attendances for the current month
-        $attendancesWorkinghours = Attendance::where('username', $user->username)
-            ->where('signin_date', 'like', "$currentMonth%")
-            ->pluck('working_hours');
+        $attendancesWorkinghours = Attendance::where('username', $user->username) ->where('signin_date', 'like', "$currentMonth%") ->pluck('working_hours');
 
         $totalMinutes = 0;
 
@@ -124,7 +120,7 @@ class AttendanceController extends Controller{
             $data['avgProgressPercentage'] = 0;
         }
 
-/* =================================================================================================== */
+        /* =================================================================================================== */
 
         $shiftStartTime     = Carbon::parse($data['employee']?->workshift?->shift_start_time);
         $shiftEndTime       = Carbon::parse($data['employee']?->workshift?->shift_end_time);
@@ -148,7 +144,7 @@ class AttendanceController extends Controller{
             return $date;
         };
 
-/* =================================================================================================== */
+        /* =================================================================================================== */
         /* IF USER JOIN DATE IS TODAY THEN SET START DAY TO 1 */
 
         /* If join date is today then set start day to 1 */
@@ -170,18 +166,14 @@ class AttendanceController extends Controller{
             return view('attendance.index', $data);
         }
 
-/* ================================================================================================== */
+        /* ================================================================================================== */
 
         // Get the last attendance date with both signin and signout
-        $lastAttendance = Attendance::where('username', $user->username)
-            ->whereNotNull('signin_time')
-            ->whereNotNull('signout_time')
-            ->where('status', 'mark-out')
-            ->orderByDesc('signin_date')
-            ->first();
+        $lastAttendance = Attendance::where('username', $user->username) ->whereNotNull('signin_time') ->whereNotNull('signout_time') ->where('status', 'mark-out') ->orderByDesc('signin_date') ->first();
 
 
             if ($lastAttendance) {
+
                 $lastWorkingDate = Carbon::parse($lastAttendance->signin_date);
                 $today = Carbon::today();
 
@@ -230,34 +222,33 @@ class AttendanceController extends Controller{
                         }
                     }
 
-                $attendanceRecords = Attendance::where('username', $user->username)
-                    ->whereBetween('signin_date', [$formattedDate, $endDate])
-                    ->where('status', 'mark-out')
-                    ->get();
-                if($attendanceRecords){
-                    foreach ($attendanceRecords as $record) {
-                        $workingHours = $record->working_hours; // e.g., "06:45:00"
-    
-                        if ($workingHours) {
-                            // Convert to seconds
-                            list($hours, $minutes, $seconds) = explode(':', $workingHours);
-                            $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
-    
-                            // Check if less than 7 hours (25200 seconds)
-                            if ($totalSeconds < 25200) {
-                                $date = $record->signin_date;
-                                $data['date'] = $date;
-                                $data['error'] = "You worked less than 7 hours on " . date('d-m-Y', strtotime($date)) . ". Please apply for half-day leave.
-                                    <a class='btn btn-xs btn-warning' href='" . route('leaves.create', ['date' => $date]) . "'>Apply Leave</a>";
-                                return view('attendance.no_action_from', $data);
+                    $attendanceRecords = Attendance::where('username', $user->username)
+                        ->whereBetween('signin_date', [$formattedDate, $endDate])
+                        ->where('status', 'mark-out')
+                        ->get();
+                    if($attendanceRecords){
+                        foreach ($attendanceRecords as $record) {
+                            $workingHours = $record->working_hours; // e.g., "06:45:00"
+        
+                            if ($workingHours) {
+                                // Convert to seconds
+                                list($hours, $minutes, $seconds) = explode(':', $workingHours);
+                                $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+        
+                                // Check if less than 7 hours (25200 seconds)
+                                if ($totalSeconds < 25200) {
+                                    $date = $record->signin_date;
+                                    $data['date'] = $date;
+                                    $data['error'] = "You worked less than 7 hours on " . date('d-m-Y', strtotime($date)) . ". Please apply for half-day leave.
+                                        <a class='btn btn-xs btn-warning' href='" . route('leaves.create', ['date' => $date]) . "'>Apply Leave</a>";
+                                    return view('attendance.no_action_from', $data);
+                                }
                             }
                         }
                     }
+
                 }
-
             }
-
-        }
 
 
 
@@ -427,7 +418,6 @@ class AttendanceController extends Controller{
         $todayHours = intdiv($todayMinutes, 60);
         $todayMins  = $todayMinutes % 60;
         $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
-       ;
         $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100); // Assuming 480 = 8 hours work
 
 
