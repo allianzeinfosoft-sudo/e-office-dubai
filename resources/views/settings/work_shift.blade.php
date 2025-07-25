@@ -93,7 +93,8 @@
             noCalendar: true,
             dateFormat: 'H:i:S',
             time_24hr: true,
-            enableSeconds: true
+            enableSeconds: true,
+            allowInput: true
         });
 
    /*  flatpickr("#mini_break_time", {

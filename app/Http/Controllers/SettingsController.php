@@ -85,13 +85,14 @@ class SettingsController extends Controller
 
         if ($request->ajax()) {
 
-            $usersShifts = Employee::with('workshift','user','login_limited_time_info')->get()
+            $usersShifts = Employee::with('workshift','user','login_limited_time_info')->where('status',2)->get()
             ->map(function ($usersShifts) {
                 return [
                     'user_id' => $usersShifts->user_id,
                     'picture' => $usersShifts->profile_image ? $usersShifts->profile_image : '',
                     'name' => $usersShifts->full_name ? $usersShifts->full_name : '',
                     'user_name' => $usersShifts->user ? $usersShifts->user->username : '',
+                    'shift_name' => $usersShifts->workshift ? $usersShifts->workshift->shift_id : '',
                     'shift_start_time' => $usersShifts->workshift ? $usersShifts->workshift->shift_start_time : '',
                     'shift_end_time' => $usersShifts->workshift ? $usersShifts->workshift->shift_end_time : '',
                     'wildcard_entry' => $usersShifts->login_limited_time ? $usersShifts->login_limited_time : '',
