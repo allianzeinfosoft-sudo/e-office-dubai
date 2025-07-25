@@ -42,6 +42,7 @@ class SarExport implements FromCollection, WithHeadings, ShouldAutoSize, WithSty
                     $assignment->employee->full_name ?? 'N/A',
                     $assignment->employee->user->email ?? 'N/A',
                     $assignment->employee->department->department ?? 'N/A',
+                    $assignment->sar_name ?? 'NA'
                 ];
 
                 // Map answers to question columns
@@ -60,7 +61,7 @@ class SarExport implements FromCollection, WithHeadings, ShouldAutoSize, WithSty
 
     public function headings(): array
     {
-         $headings = ['Employee Name', 'Email ID', 'Department'];
+         $headings = ['Employee Name', 'Email ID', 'Department', 'SAR Name'];
 
         // Add dynamic question headings
         foreach ($this->questions as $index => $question) {
