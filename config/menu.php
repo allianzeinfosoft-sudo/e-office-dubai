@@ -201,12 +201,12 @@ return [
         'title' => 'PAR',
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',
-        'permission' => ['view PAR','create PAR', 'assign PAR'],
+        'permission' => ['view PARs','create PAR', 'assign PAR'],
         'submenu' => [
             [
                 'title' => 'PAR`S',
                 'route' => '/user-pars',
-                'permission' => ['create PAR'],
+                'permission' => ['view PARs'],
             ],
             [
                 'title' => 'Questions Templates',
@@ -228,7 +228,7 @@ return [
         'title' => 'Feedback',
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',
-        'permission' => ['view PAR','create PAR', 'assign PAR'],
+        'permission' => ['view PARs','create PAR', 'assign PAR'],
         'submenu' => [
             [
                 'title' => 'Feedback`s',
