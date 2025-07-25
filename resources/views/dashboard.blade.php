@@ -333,7 +333,11 @@
                                                                     title="{{ $employee['full_name'] }}" width="100" height="100">
                                                             @endforeach
                                                         </div>
-                                                          <p>{!! preg_replace('/(\n|\r){2,}/', "\n", $item['message']) !!}</p>
+                                                        <div class="cng-img text-center">
+                                                            <img class="w-40" src="../../assets/img/backgrounds/cng.png">
+                                                            <img class="w-25" src="{{ asset($item['image'] ? '/storage/appreciation_flowers/'.$item['image'] : '/assets/avatars/default-avatar.png') }}" alt="Appreciation Background">
+                                                        </div>
+                                                        <p class="fs-6">{!! preg_replace('/(\n|\r){2,}/', "\n", $item['message']) !!}</p>
                                                       </div>
                                                   </div>
                                               @endif
@@ -358,8 +362,7 @@
                                                         <div class="swiper-slide" style="background-image: url('{{ asset('storage/' . ($employee['profile_image'] ?? '/assets/avatars/default-avatar.png')) }}')"></div>
                                                     @endforeach
                                                 @else
-                                                    
-                                                    <div class="swiper-slide" style="background-image: url('{{ asset($item['image'] ? 'storage/'.$item['image'] : '/assets/avatars/default-avatar.png') }}')"></div>
+                                                    <div class="swiper-slide" style="background-image: url('{{ asset($item['image'] ? '/storage/appreciation_flowers/'.$item['image'] : '/assets/avatars/default-avatar.png') }}')"></div>
                                                 @endif
                                             @endforeach
                                         </div>
