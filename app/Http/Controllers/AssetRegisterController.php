@@ -24,7 +24,7 @@ class AssetRegisterController extends Controller
     {
         if($request->ajax()) {
             $asset = AssetRegister::with('vendor')
-                ->select('id', 'asset_date', 'company_name', 'purchase_date', 'invoice_number', 'vendor_id', 'total_amount', 'upload_invoice', 'remarks')
+                ->select('id','asset_number', 'asset_date', 'company_name', 'purchase_date', 'invoice_number', 'vendor_id', 'total_amount', 'upload_invoice', 'remarks')
                 ->get();
 
             $data = $asset->map(function($item, $index) {
@@ -32,6 +32,7 @@ class AssetRegisterController extends Controller
                     return [
                         'DT_RowIndex'       => $index + 1,
                         'id'                => $item->id,
+                        'batch_no'          => $item->asset_number,
                         'asset_date'        => date('d-m-Y', strtotime($item->asset_date)), //$item->asset_date,
                         'company_name'      => $item->company_name,
                         'purchase_date'     => date('d-m-Y', strtotime($item->purchase_date)), //$item->purchase_date,

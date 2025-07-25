@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CustomHelper;
 use App\Models\RepairRegister;
 use App\Models\RepairItemLine;
 use App\Models\AssetMapping;
@@ -24,7 +25,7 @@ class RepairRegisterController extends Controller
                     'DT_RowIndex'       => $index + 1,
                     'id'                => $item->id,
                     'register_id'       => optional($item->register)->id,
-                    'repair_date'       => optional($item->register && $item->register->repair_date) 
+                    'repair_date'       => optional($item->register && $item->register->repair_date)
                                             ? date('d-m-Y', strtotime($item->register->repair_date)) . ' | '.  optional($item->register)->repair_no
                                             : '',
                     'item_code'         => optional($item->item)->item_code,
@@ -68,12 +69,10 @@ class RepairRegisterController extends Controller
             'repair_no' => 'required',
             'repair_date' => 'required',
             'vendor_id' => 'required',
-            
             'repair_item_id' => 'required|array',
-            'quantity' => 'required|array',
         ]);
 
-        $totalAmount = array_sum($request->amount);
+        $totalAmount = array_sum($request->rate);
 
         // Create or update main record
         $repairAsset = RepairRegister::updateOrCreate(
@@ -99,13 +98,13 @@ class RepairRegisterController extends Controller
         foreach ($request->repair_item_id as $index => $itemId) {
             $repairItemLine = $repairAsset->items()->create([
                 'item_master_id'    => $itemId,
-                'item_model'        => $request->model[$index],
-                'serial_no'         => $request->serial_no[$index],  
-                'asset_map_id'      => $request->asset_mapping_id[$index],  
-                'unit'              => $request->unit[$index],
-                'quantity'          => $request->quantity[$index],
+                'item_model'        => $request->asset_model[$index],
+                'serial_no'         => $request->serial_no[$index],
+                'asset_map_id'      => $request->asset_id[$index],
+                // 'unit'              => $request->unit[$index],
+                // 'quantity'          => $request->quantity[$index],
                 'rate'              => $request->rate[$index],
-                'amount'            => $request->amount[$index],
+                // 'amount'            => $request->amount[$index],
                 'remarks'           => $request->remarks[$index],
             ]);
 
@@ -116,7 +115,7 @@ class RepairRegisterController extends Controller
         }
         return response()->json([
             'success' => true,
-            'message' => $request->id ? 'Repair register updated successfully.' : 'Repair register saved successfully.',  
+            'message' => $request->id ? 'Repair register updated successfully.' : 'Repair register saved successfully.',
         ]);
     }
 
@@ -197,13 +196,13 @@ class RepairRegisterController extends Controller
             $item = RepairItemLine::find($request->id);
             $previousRemarks = $item->remarks;
             AssetMapping::where('id', $item->asset_map_id)->update(['repair_id' => null, 'allocation_status' => 0]);
-            
+
             $item->update([
-                'repair_date' => date('Y-m-d', strtotime($validated['repair_date'])), 
+                'repair_date' => date('Y-m-d', strtotime($validated['repair_date'])),
                 'return_amount' => $validated['return_amount'],
                 'remarks' => $previousRemarks . ' | ' . $validated['remarks'],
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Repair item updated successfully.',
@@ -273,5 +272,20 @@ class RepairRegisterController extends Controller
                 ];
             }),
         ]);
+    }
+
+
+    public function getRepairAssetCode(Request $request)
+    {
+
+        $asset = AssetMapping::where('allocation_status',2)->where('master_item_id', $request->item_id)
+        ->get()
+        ->map(function ($assetCodes) {
+            return [
+                'id' => $assetCodes->id,
+                'assetCode' => CustomHelper::itemCodeGenerater($assetCodes->id),
+            ];
+        });
+        return response()->json($asset);
     }
 }

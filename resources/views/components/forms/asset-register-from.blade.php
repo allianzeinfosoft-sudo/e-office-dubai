@@ -8,12 +8,12 @@
 
         <div class="row">
 
-            {{-- <div class="col-sm-4 mb-3">
+            <div class="col-sm-4 mb-3">
                 <div class="form-group">
-                    <label for="asset_number">Reg. No. <span class="text-danger">*</span></label>
-                    <input type="text" name="asset_number" id="asset_number" class="form-control" placeholder="Register Number" required />
+                    <label for="asset_number">Batch No. <span class="text-danger">*</span></label>
+                    <input type="text" name="asset_number" id="asset_number" class="form-control" placeholder="Register Number" value="{{ $batch_no }}" readonly />
                 </div>
-            </div> --}}
+            </div>
 
             <div class="col-sm-4 mb-3">
                 <div class="form-group">

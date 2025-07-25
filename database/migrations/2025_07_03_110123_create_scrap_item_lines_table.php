@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('scrap_item_id');
             $table->string('serial_no',50)->nullable();
             $table->string('unit',20)->nullable();
-            $table->decimal('quantity', 10, 3);
+            $table->decimal('quantity', 10, 3)->nullable();
             $table->decimal('rate', 10, 2);
             $table->decimal('amount', 10, 2);
             $table->text('remarks')->nullable();

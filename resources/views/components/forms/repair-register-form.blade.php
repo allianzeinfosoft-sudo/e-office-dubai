@@ -12,8 +12,8 @@
 
             <div class="col-sm-4 mb-3">
                 <div class="form-group">
-                    <label for="repair_no">Repair No. <span class="text-danger">*</span></label>
-                    <input type="text" name="repair_no" id="repair_no" class="form-control" placeholder="Repair Number" required />
+                    <label for="repair_no">Batch No. <span class="text-danger">*</span></label>
+                    <input type="text" name="repair_no" id="repair_no" class="form-control" placeholder="Repair Number" value="{{ $batch_no }}" />
                 </div>
             </div>
 
@@ -26,8 +26,8 @@
 
             <div class="col-sm-4 mb-3">
                 <div class="form-group">
-                    <label for="total_amount">Total Amount</label>
-                    <input type="text" name="total_amount" id="total_amount" class="form-control" placeholder="Total Amount"/>
+                    <label for="total_amount">Total Estimated Amount</label>
+                    <input type="text" name="total_amount" id="total_amount" class="form-control" placeholder="Total Amount" readonly/>
                 </div>
             </div>
 
@@ -55,22 +55,27 @@
                     <thead>
                         <tr>
                             <th>Items</th>
-                            <th>Model</th>
-                            <th>Serial</th>
                             <th>Asset Id</th>
-                            <th>Unit</th>
-                            <th>Qty</th>
+                            <th>Model</th>
+                            <th>Brand</th>
+                            <th>Classification</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Serial Number</th>
+                            <th>Specification</th>
+                            {{-- <th>Unit</th>
+                            <th>Qty</th> --}}
                             <th>Rate</th>
-                            <th>Amount</th>
+                            {{-- <th>Amount</th> --}}
                             <th>Remarks</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="item-line-container">   
+                    <tbody id="item-line-container">
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="7" class="text-right"><h5 class="mb-0">GrandTotal</h5></th>
+                            <th colspan="9" class="text-right"><h5 class="mb-0">GrandTotal</h5></th>
                             <th class="text-right fw-semibold">
                                 <h5 class="mb-0" id="total_amount_display">0.00</h5>
                                 <input type="hidden" name="grand_total" id="grand_total">
@@ -88,7 +93,7 @@
                     <textarea name="remarks" id="remarks" cols="30" rows="5" class="form-control"></textarea>
                 </div>
             </div>
-            
+
             <div class="col-sm-12 mb-3">
                 <button type="submit" class="btn btn-primary"> <i class="fa fa-save"></i>&nbsp;&nbsp; Save </button>
             </div>
@@ -111,42 +116,63 @@
     function addItemLine() {
     var itemLineLength = $('#item-line-container tr').length + 1;
     var assetItems = {!! json_encode($assetItems) !!};
-    
+
     let html = `
             <tr>
                 <td>
-                    <select name="repair_item_id[${itemLineLength}]" id="repair_item_id_${itemLineLength}" onchange="getModelNo(this.value, '${itemLineLength}')" class="form-control select2">
+                    <select name="repair_item_id[${itemLineLength}]" id="repair_item_id_${itemLineLength}" data-row="${itemLineLength}" class="form-control select2 asset-item-select">
                         <option value="">Select Item</option>
-                        ${assetItems.map(item => `<option value="${item.id}">${item.name} [${item.item_code} - ${item.brand}]</option>`).join('')}
+                        ${assetItems.map(item => `<option value="${item.id}">${item.name} [${item.item_code}]</option>`).join('')}
                     </select>
                 </td>
+
                 <td>
-                    <select name="model[${itemLineLength}]" id="model_${itemLineLength}" onchange="getSerialNo(this.value, '${itemLineLength}')" class="form-control select2">
-                        <option value="">Select Model</option>
+                    <select name="asset_id[${itemLineLength}]" id="asset_id_${itemLineLength}" class="form-control select2 asset-code-select" data-row="${itemLineLength}">
+                        <option value="">Select Asset ID</option>
                     </select>
                 </td>
+
                 <td>
-                    <select name="serial_no[${itemLineLength}]" id="serial_no_${itemLineLength}" onchange="getAssetId(this.value, '${itemLineLength}')" class="form-control select2">
-                        <option value="">Select Serial</option>
-                    </select>
+                     <input class="form-control text-center" type="text" id="asset_model_${itemLineLength}" name="asset_model[${itemLineLength}]" readonly>
                 </td>
+
                 <td>
-                    <select name="asset_mapping_id[${itemLineLength}]" id="asset_mapping_id_${itemLineLength}" class="form-control select2">
-                        <option value="">Select Asset</option>
-                    </select>
+                    <input class="form-control text-center" type="text" id="asset_brand_${itemLineLength}" name="asset_brand_id[${itemLineLength}]" readonly>
                 </td>
-                <td><input class="form-control" type="text" name="unit[${itemLineLength}]" id="unit_${itemLineLength}" value=""></td>
-                <td><input class="form-control text-center" type="text" id="quantity_${itemLineLength}" name="quantity[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="1.00"></td>
-                <td><input class="form-control text-right" type="text" id="rate_${itemLineLength}" name="rate[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
-                <td><input class="form-control text-right" type="text" id="amount_${itemLineLength}" name="amount[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
+
+                <td>
+                    <input class="form-control text-center" type="text" id="asset_classification_${itemLineLength}" name="asset_classification_id[${itemLineLength}]" readonly>
+                </td>
+
+                <td>
+                    <input class="form-control text-center" type="text" id="asset_category_${itemLineLength}" name="asset_category_id[${itemLineLength}]" readonly>
+                </td>
+
+                <td>
+                    <input class="form-control text-center" type="text" id="asset_type_${itemLineLength}" name="asset_type_id[${itemLineLength}]" readonly>
+                </td>
+
+                <td>
+                    <input class="form-control text-center" type="text" id="asset_serialnumber_${itemLineLength}" name="serial_no[${itemLineLength}]" readonly>
+                </td>
+
+                <td>
+                    <textarea class="form-control" name="specification[${itemLineLength}]" id="specification_${itemLineLength}" readonly></textarea>
+                </td>
+
+                <td><input class="form-control text-right" type="text" id="rate_${itemLineLength}" name="rate[${itemLineLength}]" onchange="calculateGrandTotal('${itemLineLength}')" placeholder="0"></td>
+
                 <td><input class="form-control" type="text" name="remarks[${itemLineLength}]" id="remarks_${itemLineLength}" value=""></td>
                 <td>
                     <button type="button" class="btn btn-icon btn-xs btn-danger waves-effect" onclick="$(this).closest('tr').remove();">
                         <i class="ti ti-minus"></i>
                     </button>
                 </td>
-            </tr>
-        `;
+            </tr>`;
+
+            // <td><input class="form-control" type="text" name="unit[${itemLineLength}]" id="unit_${itemLineLength}" value=""></td>
+            // <td><input class="form-control text-center" type="text" id="quantity_${itemLineLength}" name="quantity[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="1.00"></td>
+            // <td><input class="form-control text-right" type="text" id="amount_${itemLineLength}" name="amount[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" value="0.00"></td>
 
         const $newRow = $(html);
         $('#item-line-container').append($newRow);
@@ -158,72 +184,72 @@
     }
 
     /* Get Serial No */
-    function getSerialNo(model, itemLineLength) {
-        var item_model = model;
-        var itemId = $('#repair_item_id_' + itemLineLength).val(); // updated ID selector
+    // function getSerialNo(model, itemLineLength) {
+    //     var item_model = model;
+    //     var itemId = $('#repair_item_id_' + itemLineLength).val(); // updated ID selector
 
-        $.ajax({
-            url: "{{ route('assets.scrap-register.get-item-serials') }}", // updated route
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                item_id: itemId,
-                item_model: item_model
-            },
-            dataType: "json",
-            success: function(response) {
-                if (response.success) {
-                    var html = '<option value="">Select Serial No</option>';
-                    response.data.map(function(serial_no) {
-                        html += '<option value="' + serial_no + '">' + serial_no + '</option>';
-                    });
-                    $('#serial_no_' + itemLineLength).html(html);
-                    $('#serial_no_' + itemLineLength).select2({
-                        dropdownParent: $('#repair_offcanvas') // updated container ID
-                    });
-                }
-            }
-        });
-    }
+    //     $.ajax({
+    //         url: "{{ route('assets.scrap-register.get-item-serials') }}", // updated route
+    //         type: "POST",
+    //         data: {
+    //             _token: "{{ csrf_token() }}",
+    //             item_id: itemId,
+    //             item_model: item_model
+    //         },
+    //         dataType: "json",
+    //         success: function(response) {
+    //             if (response.success) {
+    //                 var html = '<option value="">Select Serial No</option>';
+    //                 response.data.map(function(serial_no) {
+    //                     html += '<option value="' + serial_no + '">' + serial_no + '</option>';
+    //                 });
+    //                 $('#serial_no_' + itemLineLength).html(html);
+    //                 $('#serial_no_' + itemLineLength).select2({
+    //                     dropdownParent: $('#repair_offcanvas') // updated container ID
+    //                 });
+    //             }
+    //         }
+    //     });
+    // }
 
-    function getModelNo(itemId, itemLineLength) {
-        var item_id = itemId;
-        $.ajax({
-            url: "{{ route('assets.scrap-register.get-model-no') }}", // Updated route
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                item_id: itemId,
-            },
-            dataType: "json",
-            success: function(response) {
-                if (response.success) {
-                    var html = '<option value="">Select Model</option>';
-                    response.data.map(function(model) {
-                        html += '<option value="' + model + '">' + model + '</option>';
-                    });
-                    $('#model_' + itemLineLength).html(html);
-                    $('#model_' + itemLineLength).select2({
-                        dropdownParent: $('#repair_offcanvas') // updated container ID
-                    });
-                }
-            }
-        });
-    }
+    // function getModelNo(itemId, itemLineLength) {
+    //     var item_id = itemId;
+    //     $.ajax({
+    //         url: "{{ route('assets.scrap-register.get-model-no') }}", // Updated route
+    //         type: "POST",
+    //         data: {
+    //             _token: "{{ csrf_token() }}",
+    //             item_id: itemId,
+    //         },
+    //         dataType: "json",
+    //         success: function(response) {
+    //             if (response.success) {
+    //                 var html = '<option value="">Select Model</option>';
+    //                 response.data.map(function(model) {
+    //                     html += '<option value="' + model + '">' + model + '</option>';
+    //                 });
+    //                 $('#model_' + itemLineLength).html(html);
+    //                 $('#model_' + itemLineLength).select2({
+    //                     dropdownParent: $('#repair_offcanvas') // updated container ID
+    //                 });
+    //             }
+    //         }
+    //     });
+    // }
 
 
-    function calculateAmount(itemLineLength) {
-        var qty = $('#quantity_' + itemLineLength).val();
-        var price = $('#rate_' + itemLineLength).val();
-        var amount = qty * price;
-        $('#amount_' + itemLineLength).val(amount);
-        calculateGrandTotal();
-    }
+    // function calculateAmount(itemLineLength) {
+    //     var qty = $('#quantity_' + itemLineLength).val();
+    //     var price = $('#rate_' + itemLineLength).val();
+    //     var amount = qty * price;
+    //     $('#amount_' + itemLineLength).val(amount);
+    //     calculateGrandTotal();
+    // }
 
     function calculateGrandTotal() {
         var total = 0;
         $('#item-line-container tr').each(function() {
-            var amount = $(this).find('input[name^="amount["]').val();
+            var amount = $(this).find('input[name^="rate["]').val();
             if (!isNaN(parseFloat(amount))) {
                 total += parseFloat(amount);
             }
@@ -261,8 +287,77 @@
             }
         });
     }
-    
+
+
+// select asset code from item
+$(document).on('change', '.asset-item-select', function () {
+
+        const itemId = $(this).val();
+        const row = $(this).data('row');
+        const $assetCodeSelect = $(`select.asset-code-select[data-row="${row}"]`);
+        $assetCodeSelect.html('<option value="">Loading...</option>');
+
+        if (itemId) {
+            $.ajax({
+                url: '/get-repair-asset-code',
+                type: 'GET',
+                data: { item_id: itemId },
+                success: function (response) {
+                    let options = '<option value="">Select Asset Code</option>';
+
+                    response.forEach(function (item) {
+                        options += `<option value="${item.id}">${item.assetCode}</option>`;
+                    });
+
+                    $assetCodeSelect.html(options).trigger('change');
+                },
+                error: function () {
+                    $assetCodeSelect.html('<option value="">Failed to load models</option>');
+                }
+            });
+        } else {
+            $assetCodeSelect.html('<option value="">Select Asset Code</option>');
+        }
+    });
+
+ // get mapped asset item is item code selected
+    $(document).on('change', '.asset-code-select', function () {
+        const itemId = $(this).val();
+        const row = $(this).data('row');
+
+        const $modelInput = $(`#asset_model_${row}`);
+        const $brandInput = $(`#asset_brand_${row}`);
+        const $classificationInput =$(`#asset_classification_${row}`);
+        const $categoryInput = $(`#asset_category_${row}`);
+        const $typeInput = $(`#asset_type_${row}`);
+        const $serialInput = $(`#asset_serialnumber_${row}`);
+        const $specificationInput = $(`#specification_${row}`);
+
+
+        if (itemId) {
+            $.ajax({
+                url: '/get-asset-mapped-item',
+                type: 'GET',
+                data: { item_id: itemId },
+                success: function (data) {
+
+                    $modelInput.val(data.model || '');
+                    $brandInput.val(data.brand || '');
+                    $classificationInput.val(data.classification || '');
+                    $categoryInput.val(data.category || '');
+                    $typeInput.val(data.type || '');
+                    $serialInput.val(data.serial_number || '');
+                    $specificationInput.val(data.specification || '');
+                },
+                error: function () {
+                    $assetCodeSelect.html('<option value="">Failed to load models</option>');
+                }
+            });
+        } else {
+            $assetCodeSelect.html('<option value="">Select Asset Code</option>');
+        }
+    });
 </script>
-    
+
 @endpush
 </div>

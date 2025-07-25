@@ -123,7 +123,7 @@
 
                         <td>
                              <select name="asset_code_id[${itemLineLength}]" id="asset_code_${itemLineLength}"
-                             class="form-control select2 asset-code-select" data-row="${itemLineLength}"">
+                             class="form-control select2 asset-code-select" data-row="${itemLineLength}">
                                 <option value="">Select Asset ID</option>
                             </select>
                         </td>

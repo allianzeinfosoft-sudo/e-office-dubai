@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use App\Models\AssetVendors;
 use App\Models\AssetItemMaster;
+use App\Models\RepairRegister;
 
 class RepairRegisterForm extends Component
 {
@@ -15,12 +16,18 @@ class RepairRegisterForm extends Component
      */
     public $vendors;
     public $assetItems;
+    public $batch_no;
 
     public function __construct()
     {
         //
         $this->vendors = AssetVendors::all();
         $this->assetItems = AssetItemMaster::all();
+
+         // Generate next asset number as AST-00001 format
+        $lastAsset = RepairRegister::orderBy('id', 'desc')->first();
+        $lastNumber = $lastAsset ? intval(preg_replace('/[^0-9]/', '', $lastAsset->id)) : 0;
+        $this->batch_no = 'RPR-' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
     }
 
     /**

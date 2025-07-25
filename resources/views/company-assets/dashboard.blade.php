@@ -67,7 +67,7 @@
                                 <h5 class="card-title mb-1 pt-2">Reparing Assets</h5>
                                 <small class="text-muted">Count of assets on repairing</small>
                                 <div class="">
-                                    <a href="{{ route('assets.scrap-register.index') }}" class="form-control btn btn-primary">Add to repair</a>
+                                    <a href="{{ route('assets.repair-register.index') }}" class="form-control btn btn-primary">Add to repair</a>
                                 </div>
                                 </div>
                             </div>
@@ -80,7 +80,7 @@
                                 <h5 class="card-title mb-1 pt-2">Scrapped Assets</h5>
                                 <small class="text-muted">Count of assets for scrap</small>
                                 <div class="">
-                                    <a href="{{ route('assets.repair-register.index') }}" class="form-control btn btn-primary">Add to scrap</a>
+                                    <a href="{{ route('assets.scrap-register.index') }}" class="form-control btn btn-primary">Add to scrap</a>
                                 </div>
                                 </div>
                             </div>
@@ -105,36 +105,36 @@
                                 <ul class="nav nav-tabs widget-nav-tabs pb-3 gap-4 mx-1 d-flex flex-nowrap" role="tablist">
                                     <li class="nav-item">
                                     <a href="{{ route('assets.reports.stock-report') }}"
-                                        class="nav-link btn active d-flex flex-column align-items-center justify-content-center">
+                                        class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
                                         <div class="badge bg-label-secondary rounded p-2">
-                                        <i class="ti ti-shopping-cart ti-sm"></i>
+                                        <i class="ti ti-file ti-sm"></i>
                                         </div>
                                         <h6 class="tab-widget-title mb-0 mt-2">Stock Report</h6>
                                     </a>
                                     </li>
                                     <li class="nav-item">
                                     <a href="{{ route('assets.reports.allocated-items') }}"
-                                        class="nav-link btn d-flex flex-column align-items-center justify-content-center">
+                                        class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
                                         <div class="badge bg-label-secondary rounded p-2">
-                                        <i class="ti ti-chart-bar ti-sm"></i>
+                                        <i class="ti ti-file ti-sm"></i>
                                         </div>
                                         <h6 class="tab-widget-title mb-0 mt-2">Allocation Report</h6>
                                     </a>
                                     </li>
                                     <li class="nav-item">
                                     <a href="{{ route('assets.reports.scrap-items') }}"
-                                        class="nav-link btn d-flex flex-column align-items-center justify-content-center">
+                                        class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
                                         <div class="badge bg-label-secondary rounded p-2">
-                                        <i class="ti ti-currency-dollar ti-sm"></i>
+                                        <i class="ti ti-file ti-sm"></i>
                                         </div>
                                         <h6 class="tab-widget-title mb-0 mt-2">Scrap Report</h6>
                                     </a>
                                     </li>
                                     <li class="nav-item">
                                     <a href="{{ route('assets.reports.repair-items') }}"
-                                        class="nav-link btn d-flex flex-column align-items-center justify-content-center">
+                                        class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
                                         <div class="badge bg-label-secondary rounded p-2">
-                                        <i class="ti ti-chart-pie-2 ti-sm"></i>
+                                        <i class="ti ti-file ti-sm"></i>
                                         </div>
                                         <h6 class="tab-widget-title mb-0 mt-2">Repair Report</h6>
                                     </a>
@@ -175,7 +175,7 @@
 
                                     <li class="nav-item">
                                         <a href="{{ route('classification.index') }}"
-                                            class="nav-link btn active d-flex flex-column align-items-center justify-content-center">
+                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
                                             <div class="badge bg-label-secondary rounded p-2">
                                             <i class="ti ti-settings ti-sm"></i>
                                             </div>
@@ -185,7 +185,7 @@
 
                                     <li class="nav-item">
                                         <a href="{{ route('classification.index') }}"
-                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center">
+                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
                                             <div class="badge bg-label-secondary rounded p-2">
                                             <i class="ti ti-settings ti-sm"></i>
                                             </div>
@@ -195,7 +195,7 @@
 
                                     <li class="nav-item">
                                         <a href="{{ route('assets.type.index') }}"
-                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center">
+                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
                                             <div class="badge bg-label-secondary rounded p-2">
                                             <i class="ti ti-settings ti-sm"></i>
                                             </div>
@@ -205,7 +205,7 @@
 
                                     <li class="nav-item">
                                         <a href="{{ route('assets.location.index') }}"
-                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center">
+                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
                                             <div class="badge bg-label-secondary rounded p-2">
                                             <i class="ti ti-settings ti-sm"></i>
                                             </div>
@@ -215,7 +215,7 @@
 
                                     <li class="nav-item">
                                         <a href="{{ route('assets.itemmaster.index') }}"
-                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center">
+                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
                                             <div class="badge bg-label-secondary rounded p-2">
                                             <i class="ti ti-settings ti-sm"></i>
                                             </div>
@@ -225,7 +225,7 @@
 
                                     <li class="nav-item">
                                         <a href="{{ route('assets.vendors.index') }}"
-                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center">
+                                            class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
                                             <div class="badge bg-label-secondary rounded p-2">
                                             <i class="ti ti-settings ti-sm"></i>
                                             </div>

@@ -72,10 +72,10 @@
                                             <th>Model</th>
                                             <th>serial no</th>
                                             <th>Vendor</th>
-                                            <th>Unit</th>
-                                            <th>Qty</th>
+                                            {{-- <th>Unit</th>
+                                            <th>Qty</th> --}}
                                             <th>Rate</th>
-                                            <th>Amount</th>
+                                            {{-- <th>Amount</th> --}}
                                             <th>Status</th>
                                             <th>Received</th>
                                             <th>Remarks</th>
@@ -183,10 +183,10 @@
                 { data: 'item_model', name: 'item_model' },
                 { data: 'serial_no', name: 'serial_no' },
                 { data: 'vendor_name', name: 'vendor_name' },
-                { data: 'unit', name: 'unit' },
-                { data: 'quantity', name: 'quantity' },
+                // { data: 'unit', name: 'unit' },
+                // { data: 'quantity', name: 'quantity' },
                 { data: 'rate', name: 'rate' },
-                { data: 'amount', name: 'amount' },
+                // { data: 'amount', name: 'amount' },
                 { data: 'status', name: 'status' },
                 {
                     data: null,

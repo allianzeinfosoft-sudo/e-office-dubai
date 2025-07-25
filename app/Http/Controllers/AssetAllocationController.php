@@ -309,6 +309,10 @@ class AssetAllocationController extends Controller
         return response()->json($asset);
     }
 
+
+
+
+
    public function getAssetItemInfo(Request $request)
     {
         $asset = AssetMapping::with('register_lineitem')->find($request->item_id);

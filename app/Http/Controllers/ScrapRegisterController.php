@@ -71,14 +71,11 @@ class ScrapRegisterController extends Controller
             'scrap_vendor_id' => 'required',
             'total_amount' => 'required',
             'remarks' => 'nullable',
-
             'scrap_item_id' => 'required|array',
-            'quantity' => 'required|array',
             'rate' => 'required|array',
-            'amount' => 'required|array',
         ]);
 
-        $totalAmount = array_sum($request->amount);
+        $totalAmount = array_sum($request->rate);
 
         // Create or update main record
         $asset = ScrapRegister::updateOrCreate(
@@ -103,13 +100,10 @@ class ScrapRegisterController extends Controller
         foreach ($request->scrap_item_id as $index => $itemId) {
             $scrapItemLine = $asset->items()->create([
                 'scrap_item_id'     => $itemId,
-                'model'             => $request->model[$index],
+                'model'             => $request->asset_model[$index],
                 'serial_no'         => $request->serial_no[$index],
                 'asset_mapping_id'  => $request->asset_id[$index],
-                'unit'              => $request->unit[$index],
-                'quantity'          => $request->quantity[$index],
                 'rate'              => $request->rate[$index],
-                'amount'            => $request->amount[$index],
                 'remarks'           => $request->remarks[$index],
             ]);
 
@@ -273,5 +267,19 @@ class ScrapRegisterController extends Controller
                 ];
             }),
         ]);
+    }
+
+     public function getScrapAssetCode(Request $request)
+    {
+
+         $asset = AssetMapping::where('allocation_status',3)->where('master_item_id', $request->item_id)
+        ->get()
+        ->map(function ($assetCodes) {
+            return [
+                'id' => $assetCodes->id,
+                'assetCode' => CustomHelper::itemCodeGenerater($assetCodes->id),
+            ];
+        });
+        return response()->json($asset);
     }
 }

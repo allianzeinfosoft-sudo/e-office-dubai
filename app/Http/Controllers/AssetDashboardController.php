@@ -29,6 +29,7 @@ class AssetDashboardController extends Controller
         $data['stock_allocated'] = AssetMapping::where('allocation_status', 1)->count('master_item_id');
         $data['stock_scraped'] = AssetMapping::where('allocation_status', 3)->count('master_item_id');
         $data['stock_repaired'] = AssetMapping::where('allocation_status', 2)->count('master_item_id');
+        // dd($data['stock_repaired']);
 
         $data['classifications'] = AssetClassification::all();
         $data['categories'] = AssetCategory::all();

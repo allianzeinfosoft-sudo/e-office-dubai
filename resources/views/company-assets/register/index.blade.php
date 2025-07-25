@@ -69,7 +69,7 @@
                                         <thead>
                                             <tr>
                                                 <th>No.</th>
-                                                <th>Reg. No.</th>
+                                                <th>Batch No</th>
                                                 <th>Date</th>
                                                 <th>Vendor</th>
                                                 <th>Invoice</th>
@@ -130,6 +130,7 @@
             ajax: '{{ route("assets.register.index") }}', // your route
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                { data: 'batch_no', name: 'Batch No'},
                 { data: 'purchase_date', name: 'Date' },
                 { data: 'vendor_name', name: 'Vendor' },
                 { data: 'invoice_number', name: 'Invoice No.' },

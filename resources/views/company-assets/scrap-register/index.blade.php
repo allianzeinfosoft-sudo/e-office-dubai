@@ -65,7 +65,7 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Scrap No</th>
+                                            <th>Batch No</th>
                                             <th>Scrap Date</th>
                                             <th>Vendor</th>
                                             <th>Total Weight</th>
@@ -132,8 +132,7 @@
                     render: function (data) {
                         return `
                             <button class="btn btn-sm btn-primary" onclick="openOffcanvas(${data})"><i class="ti ti-edit"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteScrap(${data})"><i class="ti ti-trash"></i></button>
-                        `;
+                            <button class="btn btn-sm btn-danger" onclick="deleteScrap(${data})"><i class="ti ti-trash"></i></button>`;
                     }
                 }
             ]
