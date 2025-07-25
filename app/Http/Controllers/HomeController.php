@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\Attendance;
 use App\Models\Leave;
 use App\Models\Holiday;
+use App\Models\Appreciation;
 use App\Models\LeaveAllocation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -41,6 +42,7 @@ class HomeController extends Controller
         $user = Auth::user();
         $fromDate = Carbon::now()->startOfMonth();
         $toDate = Carbon::now()->endOfMonth();
+        $today = Carbon::today();
 
         // Total Working Hours
         $attendances = Attendance::where('status', 'mark-out')->where('emp_id', $user->id)->whereBetween('signin_date', [$fromDate, $toDate]) ->get();
@@ -51,6 +53,14 @@ class HomeController extends Controller
             ->whereBetween('signin_date', [$fromDate, $toDate])
             ->where('status', 'mark-out')
             ->pluck('working_hours'); // Returns a collection of HH:MM:SS strings
+
+            // Helper function to format seconds to HH:MM:SS
+            function formatTime($seconds) {
+                $hours = floor($seconds / 3600);
+                $minutes = floor(($seconds % 3600) / 60);
+
+                return sprintf('%02d:%02d', $hours, $minutes);
+            }
 
         $totalSeconds = 0;
         $validDays = 0;
@@ -72,7 +82,8 @@ class HomeController extends Controller
             ->whereYear('leave_from', $selected_year)
             ->sum('leave_day_count');
 
-        $validDays = $validDays - $total_leaves_days;
+        // $validDays = $validDays - $total_leaves_days;
+        $validDays = max($validDays - $total_leaves_days, 0);
 
         // Helper to format seconds to H:i:s
         // function formatTime($seconds) {
@@ -83,8 +94,8 @@ class HomeController extends Controller
         //     return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         // }
 
-        $data['totalWorkingTime']   = $totalSeconds/3600;
-        $data['averageWorkingTime'] = $validDays > 0 ? ($totalSeconds/3600) / $validDays : '00:00:00';
+        $data['totalWorkingTime']   = formatTime($totalSeconds); // $totalSeconds/3600;
+        $data['averageWorkingTime'] = $validDays > 0 ? formatTime($totalSeconds / $validDays) : '00:00:00'; //$validDays > 0 ? ($totalSeconds/3600) / $validDays : '00:00:00';
         $data['workingDays']        = $validDays;
 
         // Leave count
@@ -100,6 +111,72 @@ class HomeController extends Controller
         $data['worksBrakesData'] = CustomHelper::getMonthlyWorkBreakData($selected_user);
         $data['barChartData'] = CustomHelper::getMonthlyWorkBreakDataForBarChart($selected_user);
         $data['work_analysis']  = CustomHelper::getWorkRatingAnalysisMonthly($selected_user);
+
+        /* Birthdays */
+        $birthdayEmployees = Employee::select('full_name', 'profile_image')
+            ->whereMonth('dob', $today->month)
+            ->whereDay('dob', $today->day)
+            ->get();
+
+        $feedData = collect();
+
+        if ($birthdayEmployees->isNotEmpty()) {
+            $birthdayFeed = [
+                'type' => 'birthday',
+                'display_date' => $today->format('d-F'),
+                'sort_date' => $today->format('Y-m-d'),
+                'employees' => $birthdayEmployees->map(function ($employee) {
+                    return [
+                        'full_name' => $employee->full_name,
+                        'profile_image' => $employee->profile_image ?: '/profile_pics/default-avatar.png',
+                    ];
+                }),
+            ];
+
+            $feedData->push($birthdayFeed);
+        }
+
+        /* Appreciations */
+        $rawAppreciations = Appreciation::whereDate('display_date', '<=', $today)
+            ->whereDate('display_end_date', '>=', $today)
+            ->get();
+
+        if ($rawAppreciations->isNotEmpty()) {
+            $appreciations = $rawAppreciations->map(function ($appreciation) {
+                $displayDate = Carbon::parse($appreciation->display_date);
+                $employeeDetails = [];
+
+                // Get IDs from the 'appreciant' string
+                $ids = array_filter(array_map('trim', explode(',', $appreciation->appreciant)));
+
+                if (!empty($ids)) {
+                    $employees = Employee::with('user:id,email')
+                        ->whereIn('user_id', $ids)
+                        ->get(['id', 'user_id', 'full_name', 'profile_image']);
+
+                    $employeeDetails = $employees->map(function ($employee) {
+                        return [
+                            'full_name' => $employee->full_name,
+                            'email' => $employee->user?->email ?? '',
+                            'profile_image' => $employee->profile_image ?: '/profile_pics/default-avatar.png',
+                        ];
+                    })->toArray();
+                }
+
+                return [
+                    'type' => 'appreciation',
+                    'display_date' => $displayDate->format('d-F'),
+                    'sort_date' => $displayDate->format('Y-m-d'),
+                    'employees' => $employeeDetails,
+                    'message' => $appreciation->appreciation_details,
+                    'image' => $appreciation->picture,
+                ];
+            });
+
+            $feedData = $feedData->merge($appreciations);
+        }
+
+        $data['feed_data'] = $feedData->sortByDesc('sort_date')->values()->toArray();
 
         return view('dashboard', $data);
     }

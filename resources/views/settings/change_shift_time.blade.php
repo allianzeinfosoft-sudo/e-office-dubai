@@ -54,6 +54,7 @@
                                         <th>S.No</th>
                                         <th>Name</th>
                                         <th>Username</th>
+                                        <th>Shift Name</th>
                                         <th>Shift Time</th>
                                         <th>Login Limited Time</th>
                                     </tr>
@@ -194,6 +195,7 @@
                         }
                     },
                     { data: 'user_name', title: 'Username' },
+                    { data: 'shift_name', title: 'Shift Name'},
                     {
                         data: null,
                         title: 'Shift Time',

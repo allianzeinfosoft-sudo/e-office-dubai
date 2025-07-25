@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('template_id');
             $table->string('survey_name')->nullable();
+            $table->string('survey_code', 150)->nullable();
             $table->unsignedBigInteger('assigned_by');
             $table->date('survey_start_date');
             $table->date('survey_end_date');
