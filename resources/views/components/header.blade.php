@@ -111,6 +111,7 @@
                     </div>
 
                     <div class="row row-bordered overflow-visible g-0">
+                      @if(Auth::user()->hasRole(['Developer']))
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-chart-bar fs-4"></i>
@@ -118,6 +119,9 @@
                         <a href="{{ route('home') }}" class="stretched-link">Dashboard</a>
                         <small class="text-muted mb-0">User Profile</small>
                       </div>
+                      @endif
+
+                      @if(Auth::user()->hasRole(['Developer']))
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-settings fs-4"></i>
@@ -125,6 +129,7 @@
                         <a href="{{ route('appearences.index') }}" class="stretched-link">Setting</a>
                         <small class="text-muted mb-0">Account Settings</small>
                       </div>
+                      @endif
                     </div>
 
                     <div class="row row-bordered overflow-visible g-0">
