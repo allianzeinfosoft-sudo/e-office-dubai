@@ -330,6 +330,8 @@ class AssetRegisterController extends Controller
             'register_lineitem.asset_category',
             'register_lineitem.asset_type',
             'register_lineitem.asset_register',
+            'allocation_lineitems.employee',
+            'allocation_lineitems.location'
         ]);
 
         // Apply location_status filter
@@ -369,9 +371,18 @@ class AssetRegisterController extends Controller
         foreach ($mappings as $mapping) {
             $line = $mapping->register_lineitem;
 
+             // Prepare allocated users/locations list
+            $allocatedUsers = [];
+            foreach ($mapping->allocation_lineitems as $allocation) {
+                if ($allocation->allocation_type === 'employee') {
+                    $allocatedUsers[] = $allocation->employee->full_name ?? 'Unknown Employee';
+                } elseif ($allocation->allocation_type === 'location') {
+                    $allocatedUsers[] = $allocation->location->name ?? 'Unknown Location';
+                }
+            }
             $reportData[] = [
                 'DT_RowIndex'    => $rowIndex++,
-                'item'           => ($line->asset_item?->item_code ?? '') . ' ' . ($line->asset_item?->name ?? ''),
+                'item'           => $line->asset_item?->name ?? '',
                 'model'          => $mapping->model ?? '',
                 'brand'          => $line->asset_brand ?? '',
                 'serial_number'  => $mapping->serial_number ?? '',
@@ -381,6 +392,7 @@ class AssetRegisterController extends Controller
                 'type'           => $line->asset_type->name ?? '',
                 'vendor'         => $line->asset_register->vendor->vendor_name ?? '',
                 'allocation_status'=> $mapping->allocation_status == 1 ? 'Allocated' : 'Not Allocated',
+                'user'          => implode(', ', $allocatedUsers)
             ];
         }
 

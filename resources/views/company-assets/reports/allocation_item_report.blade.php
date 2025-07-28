@@ -48,11 +48,23 @@
                                         </div>
                                     </div> --}}
 
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="asset_item">Asset</label>
+                                            <select name="asset_item" id="asset_item" class="form-control select2">
+                                                <option value=" ">All</option>
+                                                @foreach ($master_items as $master_item)
+                                                    <option value="{{ $master_item->id }}">{{ $master_item->name ?? '-' }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
                                      <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="department">Department</label>
                                             <select name="department" id="department" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($departments as $department)
                                                     <option value="{{ $department->id }}">{{ $department->department ?? '-' }}</option>
                                                 @endforeach
@@ -66,7 +78,7 @@
                                         <div class="form-group">
                                             <label for="user_type">User Type</label>
                                             <select name="user_type" id="user_type" class="form-control select2">
-                                                <option value=""></option>
+                                                <option value=" ">All</option>
                                                 @foreach (config('optionsData.asset_allocation_users') as $key => $value)
                                                     <option value="{{ $key }}"> {{ $value }} </option>
                                                 @endforeach
@@ -79,7 +91,7 @@
                                         <div class="form-group">
                                             <label for="employee">Employees</label>
                                             <select name="employee" id="employee" class="form-control select2">
-                                                <option value=""></option>
+                                                <option value=" ">All</option>
                                                 @foreach ($employees as $employee)
                                                     <option value="{{ $employee->user_id }}">{{ $employee->full_name ?? '-' }}</option>
                                                 @endforeach
@@ -92,7 +104,7 @@
                                         <div class="form-group">
                                             <label for="location">Locations</label>
                                             <select name="location" id="location" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($locations as $location)
                                                     <option value="{{ $location->id }}">{{ $location->name ?? '-' }}</option>
                                                 @endforeach
@@ -105,7 +117,7 @@
                                         <div class="form-group">
                                            <label for="project">Projects</label>
                                             <select name="project" id="project" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($projects as $project)
                                                     <option value="{{ $project->id }}">{{ $project->project_name ?? '-' }}</option>
                                                 @endforeach
@@ -130,9 +142,9 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
+                                            <th>Asset ID</th>
                                             <th>Item Name</th>
                                             <th>Model</th>
-                                            <th>Asset ID</th>
                                             <th>Serial Number</th>
                                             <th>Allocated To</th>
                                             <th>Department</th>
@@ -171,6 +183,7 @@
         const employee = $('#employee').val();
         const location = $('#location').val();
         const project = $('#project').val();
+        const asset_item = $('#asset_item').val();
 
         const scrapTable = $('#allocation-table');
 
@@ -191,15 +204,16 @@
                     user_type: user_type,
                     employee: employee,
                     location: location,
-                    project: project
+                    project: project,
+                    asset_item:asset_item
                 }
             },
             dataSrc: 'data',
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                { data: 'asset_id' },
                 { data: 'item_name' },
                 { data: 'model' },
-                { data: 'asset_id' },
                 { data: 'serial_number' },
                 { data: 'allocated_to' },
                 { data: 'department' },

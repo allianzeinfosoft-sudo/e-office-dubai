@@ -126,6 +126,19 @@ class AssetAllocationController extends Controller
 
             $master_item_code = CustomHelper::getItemCode($request->asset_item_id[$index]);
 
+            if($request->asset_user == 'employee')
+            {
+                $asset_user_id = $request->asset_employee ?? '';
+            }
+            else if($request->asset_user == 'location')
+            {
+                $asset_user_id = $request->asset_location ?? '';
+            }
+            else
+            {
+                $asset_user_id = '';
+            }
+
             $itemLine = $asset->items()->create([
                 'allocation_id'           => $itemId,
                 'item'                    => $request->asset_item_id[$index],
@@ -133,7 +146,9 @@ class AssetAllocationController extends Controller
                 'serial_number'           => $request->asset_serialnumber[$index],
                 'project'                 => $request->asset_project_id[$index],
                 'asset_mapping_id'        => $request->asset_code_id[$index],
-                'specification'           => $request->specification[$index]
+                'specification'           => $request->specification[$index],
+                'allocation_type'         => $request->asset_user ?? '',
+                'allocated_user'          => $asset_user_id ?? '',
             ]);
 
 
@@ -220,6 +235,7 @@ class AssetAllocationController extends Controller
         $data['employees'] = Employee::all();
         $data['locations'] = AssetLocation::all();
         $data['projects'] = Project::all();
+        $data['master_items'] = AssetItemMaster::all();
         $data['classifications'] = AssetClassification::all();
         return view('company-assets.reports.allocation_item_report', $data);
     }
@@ -230,8 +246,9 @@ class AssetAllocationController extends Controller
         $department     = $request->input('department');
         $user_type      = $request->input('user_type');
         $location       = $request->input('location');
-        $employee           = $request->input('employee');
+        $employee       = $request->input('employee');
         $project        = $request->input('project');
+        $asset_item     = $request->input('asset_item');
 
         $query = AssetAllocation::with(['items' => function ($q) {
                             $q->where('status', 1)
@@ -258,6 +275,12 @@ class AssetAllocationController extends Controller
         }
 
 
+        if (!empty($asset_item)) {
+              $query->whereHas('items', function ($q) use ($asset_item) {
+                $q->where('item', $asset_item);
+            });
+        }
+
         if (!empty($department)) {
             $query->where('department', $department);
         }
@@ -275,8 +298,11 @@ class AssetAllocationController extends Controller
         $rowIndex = 1;
 
         foreach ($allocated_items as $allocation) {
-
             foreach ($allocation->items as $item) {
+
+                  $allocatedTo = $item->allocation_type === 'employee'
+                    ? ($allocation->employee->full_name ?? 'Unknown Employee')
+                    : ($item->location->name ?? 'Unknown Location');
 
                 $reportData[] = [
                     'DT_RowIndex'    => $rowIndex++,
@@ -284,8 +310,8 @@ class AssetAllocationController extends Controller
                     'model'          => $item->model ?? '',
                     'asset_id'       => CustomHelper::itemCodeGenerater($item->asset_mapping_id),
                     'serial_number'  => $item->serial_number ?? '',
-                    'allocated_to'   => $allocation->employee->full_name ?? '',
-                    'department'     => $allocation->department_name->department ?? '',
+                    'allocated_to'   => $allocatedTo ?? '',
+                    'department'     => $allocation->department_name->department ?? '-',
                     'project'        => $item->project_info->project_name ?? '',
                     'allocated_date' => optional($allocation->created_at)->format('d-m-Y'),
                 ];

@@ -38,6 +38,11 @@ class AssetMapping extends Model
         return $this->belongsTo(AssetItemLine::class, 'register_lineitem_id', 'id');
     }
 
+    public function allocation_lineitems()
+    {
+        return $this->hasMany(AllocationLineItem::class, 'asset_mapping_id');
+    }
+
     public function allocations()
     {
         return AllocationLineItem::where(function ($query) {

@@ -45,13 +45,16 @@ class PermissionSeeder extends Seeder
                 'view user overview'
             ],
             'Survey Management' => [
-                'view surveys', 'create survey', 'edit survey', 'delete survey', 'submit survey response', 'assign survey', 'survey-report'
+                'view surveys', 'create survey', 'edit survey', 'delete survey', 'submit survey response', 'assign survey', 'survey report'
             ],
             'SAR Management' => [
                 'view SARs', 'create SAR', 'edit SAR', 'delete SAR', 'review SAR', 'assign SAR'
             ],
             'PAR Management' => [
                 'view PARs', 'create PAR', 'edit PAR', 'delete PAR', 'review PAR', 'assign PAR'
+            ],
+            'Feedback Management' => [
+                'view feedback','create feedback','edit feedback', 'delete feedback', 'review feedback', 'assign feedback'
             ],
             'Conference Hall Management' => [
                 'view bookings', 'create booking', 'edit booking', 'cancel booking', 'approve booking', 'asssigned booking'
@@ -116,6 +119,18 @@ class PermissionSeeder extends Seeder
             ],
             'Jobs Management' => [
                 'view jobs', 'post job', 'edit job', 'delete job', 'publish job', 'assign job'
+            ],
+            'Quick Notes' => [
+                    'create quick notes','view quick notes', 'delete quick notes'
+            ],
+            'Ticket Raising' => [
+                'create tickets','view tickets','close tickets','delete tickets'
+            ],
+            'Assets' => [
+                'create assets','allocate assets','view asset reports','delete assets'
+            ],
+            'DB Backup' => [
+                'generate db backup','download db backup'
             ],
             'Settings Management' => [
                 'view settings', 'update settings', 'manage roles', 'manage permissions', 'change appearence', 'view department',

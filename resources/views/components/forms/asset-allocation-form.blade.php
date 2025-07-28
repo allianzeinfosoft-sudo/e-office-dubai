@@ -105,12 +105,27 @@
     });
 
     function addItemLine() {
+
         var itemLineLength = $('#item-line-container tr').length + 1;
         var assetItems = {!! json_encode($assetItems) !!};
         var assetClassifications = {!! json_encode($assetClassifications) !!};
         var assetCategories = {!! json_encode($assetCategories) !!};
         var assetTypes = {!! json_encode($assetTypes) !!};
         var assetProjects = {!! json_encode($projects) !!}
+        var userType = $("#asset_user").val();
+
+        let project = `<select name="asset_project_id[${itemLineLength}]" id="asset_project_${itemLineLength}" class="form-control
+                             select2" data-row="${itemLineLength}">
+                                <option value="">Select Project</option>
+                                ${assetProjects.map(item => `<option value="${item.id}">${item.project_name}</option>`).join('')}
+                            </select>`;
+        if(userType == 'employee' || userType == 'location'){
+            var project_td = project
+        }
+        else
+        {
+            var project_td = '';
+        }
 
         let html = `<tr data-row="${itemLineLength}">
                         <td>
@@ -157,11 +172,7 @@
                         </td>
 
                         <td>
-                             <select name="asset_project_id[${itemLineLength}]" id="asset_project_${itemLineLength}" class="form-control
-                             select2" data-row="${itemLineLength}">
-                                <option value="">Select Project</option>
-                                ${assetProjects.map(item => `<option value="${item.id}">${item.project_name}</option>`).join('')}
-                            </select>
+                            ${project_td}
                         </td>
 
                         <td>

@@ -20,7 +20,9 @@ class AllocationLineItem extends Model
                             'status',
                             'return_date_time',
                             'comment',
-                            'asset_itemline_id'
+                            'asset_itemline_id',
+                            'allocation_type',
+                            'allocated_user',
                         ];
 
 
@@ -51,6 +53,16 @@ class AllocationLineItem extends Model
     public function assetType()
     {
         return $this->belongsTo(AssetType::class,'asset_type','id');
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'allocated_user', 'user_id');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(AssetLocation::class,'allocated_user','id');
     }
 
 }

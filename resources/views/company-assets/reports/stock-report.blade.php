@@ -121,7 +121,7 @@
                                         <div class="form-group">
                                             <label for="classification">Classification</label>
                                             <select name="classification" id="classification" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($classifications as $classification)
                                                     <option value="{{ $classification->id }}">{{ $classification->name }}</option>
                                                 @endforeach
@@ -133,7 +133,7 @@
                                         <div class="form-group">
                                             <label for="category">Category</label>
                                             <select name="category" id="category" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                                 @endforeach
@@ -145,7 +145,7 @@
                                         <div class="form-group">
                                             <label for="type">Type</label>
                                             <select name="type" id="type" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($types as $type)
                                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
                                                 @endforeach
@@ -157,9 +157,9 @@
                                         <div class="form-group">
                                             <label for="asset_item_id">Items</label>
                                             <select name="asset_item_id" id="asset_item_id" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($items as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->name }} [{{$item->item_code }} - {{ $item->brand }}] </option>
+                                                    <option value="{{ $item->id }}">{{ $item->name }} [{{$item->item_code }}] </option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -181,7 +181,7 @@
                                         <div class="form-group">
                                             <label for="vendor">Vendor</label>
                                             <select name="vendor" id="vendor" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($vendors as $vendor)
                                                     <option value="{{ $vendor->id }}">{{ $vendor->vendor_name }} </option>
                                                 @endforeach
@@ -206,7 +206,7 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Asset ID</th>
-                                            <th>Item</th>
+                                            <th>Item Name</th>
                                             <th>Model</th>
                                             <th>Serial Number</th>
                                             <th>Classification</th>
@@ -214,6 +214,7 @@
                                             <th>Type</th>
                                             <th>Vendor</th>
                                             <th>Allocation Status</th>
+                                            <th>User</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -286,17 +287,26 @@
                     data: 'allocation_status',
                     render: function (data, type, row) {
                         if (data === 'Allocated') {
-                            return '<button class="btn btn-sm btn-success">Allocated</button>';
+                            return '<p class="text-success">Allocated</p>';
                         } else {
-                            return '<button class="btn btn-sm btn-danger">Not Allocated</button>';
+                            return '<p class="text-danger">Not Allocated</p>';
                         }
                     },
                     orderable: false,
                     searchable: false
-                }
+                },
+                {
+                    data: 'user',
+                    render: function(data) {
+                        return data ? data : '<span class="text-muted">In Store</span>';
+                    }
+                },
             ]
         });
     }
+
+
+
 
 </script>
 @endpush

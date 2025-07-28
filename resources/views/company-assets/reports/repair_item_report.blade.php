@@ -50,7 +50,7 @@
                                         <div class="form-group">
                                             <label for="vendor_id">Vendors</label>
                                             <select name="vendor_id" id="vendor_id" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($vendors as $vendor)
                                                     <option value="{{ $vendor->id }}">{{ $vendor->vendor_name }}</option>
                                                 @endforeach
@@ -62,7 +62,7 @@
                                         <div class="form-group">
                                             <label for="status">Staus</label>
                                             <select name="status" id="status" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 <option value="sent">Sent</option>
                                                 <option value="received">Received</option>
                                             </select>
@@ -85,15 +85,15 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Repair No</th>
+                                            <th>Batch No</th>
                                             <th>Repair Date</th>
                                             <th>Vendor</th>
                                             <th>Item</th>
                                             <th>Asset No</th>
                                             <th>Model</th>
                                             <th>Serial No</th>
-                                            <th>Unit</th>
-                                            <th>Qty</th>
+                                            {{-- <th>Unit</th>
+                                            <th>Qty</th> --}}
                                             <th>Unit Price</th>
                                             <th>Amount</th>
                                             <th>Return Date</th>
@@ -165,8 +165,8 @@
                 { data: 'asset_code' },
                 { data: 'item_model' },
                 { data: 'serial_number' },
-                { data: 'unit' },
-                { data: 'quantity' },
+                // { data: 'unit' },
+                // { data: 'quantity' },
                 { data: 'rate' },
                 { data: 'amount' },
                 { data: 'return_date' },

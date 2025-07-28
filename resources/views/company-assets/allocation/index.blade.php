@@ -47,13 +47,15 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> {{ $meta_title }}</h4>
-                      <div class="row">
-                        <div class="md-4 mb-2">
-                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
-                        </div>
-                    </div>
+
                     <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-end mb-3">
+
+                        <div class="col-md-6 pb-3">
+                            <a class="btn btn-primary" href="{{ route('assets.dashboard') }}">
+                            Assets Dashboard
+                            </a>
+                        </div>
+                        <div class="col-md-6 text-end pb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>

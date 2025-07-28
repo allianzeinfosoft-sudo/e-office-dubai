@@ -59,6 +59,7 @@
                                         <th>Issue Date</th>
                                         <th>Close Date</th>
                                         <th>Status</th>
+                                        <th>Comment</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -101,7 +102,7 @@
 
 {{-- view ticket details --}}
 <div class="modal fade" id="ticketDetail" tabindex="-1" aria-hidden="true" >
-  <div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
+  <div class="modal-dialog modal-dialog-centered1 modal-lg modal-simple modal-add-new-cc">
     <div class="modal-content p-3 p-md-5">
       <div class="modal-body" style="border: 0.5px solid #474a4e; border-radius: 10px;">
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -123,6 +124,9 @@
         {{-- @if(Auth::user()->employee->department->department == 'Technical') --}}
           <button type="button" id="show-close-form" class="btn btn-label-primary">
             Close Ticket
+          </button>
+           <button type="button" id="mark-as-read" class="btn btn-label-primary">
+            Mark As Read
           </button>
         {{-- @endif --}}
         </div>
@@ -247,10 +251,12 @@
                         title: 'Status',
                         render: function (data) {
                             if (data == 1) return `<button class="btn btn-sm btn-label-linkedin">Closed</button>`;
+                             if (data == 2) return `<button class="btn btn-sm btn-primary">Issue on Processing</button>`;
                             if (data == 0 || data == '') return `<button class="btn btn-sm btn-danger">Pending</button>`;
                             return 'N/A';
                         }
                     },
+                    { data: 'comment', title: 'Comment' },
                     {
                         data: null,
                         title: 'Actions',
@@ -352,17 +358,24 @@ $(document).on("click", ".open-modal", function() {
     let ticketId = $(this).data("id");
     let status = $(this).data("status");
 
-    if (status === 0 || status === null || status === '0'  || status === '') {
-        $('#show-close-form').prop('disabled', false).show();
-    } else {
-        $('#show-close-form').prop('disabled', true).text("Already Closed");
+    if (status === 0 || status === null || status === '') {
+        $('#show-close-form').prop('disabled', true).text("Close Ticket");
+    }else if(status === 1)
+    {
+         $('#show-close-form').prop('disabled', true).text("Already Closed");
+    }
+    else if(status === 2){
+        $('#show-close-form').prop('disabled', false).text("Close Ticket");
+        // $('#show-close-form').prop('disabled', false).show();
+        $('#mark-as-read').prop('disabled', true).show();
     }
 
     $("#ticket_id").val(ticketId);
     $("#description").text(ticket_description);
 
-    let image = `<img src="/storage/${picture}" alt="Image" object-fit: cover; border-radius: 6px;" />`;
+    let image = `<img src="/storage/${picture}" alt="Image" style="object-fit: cover; border-radius: 6px; max-width: 100%; height: auto;" />`;
     $("#picture_div").html(image);
+
     $('#close-ticket-form').hide();
     $('#comment').val('');
     $('#ticketDetail').modal('show');
@@ -413,6 +426,44 @@ $('#close-ticket-form').on('submit', function (e) {
 });
 
 
+// mark as read
+$('#mark-as-read').on('click', function (e) {
+
+    e.preventDefault();
+
+    let ticketId = $('#ticket_id').val();
+    let comment = $('#comment').val();
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This ticket will be marked as read.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#198754", // green
+        cancelButtonColor: "#6c757d",  // gray
+        confirmButtonText: "Yes, mark it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/tickets/' + ticketId + '/mark-as-read',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    comment: comment // optional, only if needed
+                },
+                success: function (response) {
+                    Swal.fire("Marked!", "The ticket has been marked as read.", "success").then(() => {
+                        $('#ticketDetail').modal('hide');
+                        $('#datatables-tickets').DataTable().ajax.reload(null, false); // ✅ reload without resetting pagination
+                    });
+                },
+                error: function (xhr) {
+                    Swal.fire("Error!", "Something went wrong while marking the ticket as read.", "error");
+                }
+            });
+        }
+    });
+});
 
 </script>
 @endpush

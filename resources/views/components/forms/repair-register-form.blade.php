@@ -26,7 +26,7 @@
 
             <div class="col-sm-4 mb-3">
                 <div class="form-group">
-                    <label for="total_amount">Total Estimated Amount</label>
+                    <label for="total_amount">Estimated Amount</label>
                     <input type="text" name="total_amount" id="total_amount" class="form-control" placeholder="Total Amount" readonly/>
                 </div>
             </div>

@@ -106,36 +106,30 @@
                                     <li class="nav-item">
                                     <a href="{{ route('assets.reports.stock-report') }}"
                                         class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
-                                        <div class="badge bg-label-secondary rounded p-2">
-                                        <i class="ti ti-file ti-sm"></i>
-                                        </div>
+
+                                       <i class="ti ti-report ti-sm"></i>
+
                                         <h6 class="tab-widget-title mb-0 mt-2">Stock Report</h6>
                                     </a>
                                     </li>
                                     <li class="nav-item">
                                     <a href="{{ route('assets.reports.allocated-items') }}"
                                         class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
-                                        <div class="badge bg-label-secondary rounded p-2">
-                                        <i class="ti ti-file ti-sm"></i>
-                                        </div>
+                                            <i class="ti ti-arrows-split ti-sm"></i>
                                         <h6 class="tab-widget-title mb-0 mt-2">Allocation Report</h6>
                                     </a>
                                     </li>
                                     <li class="nav-item">
                                     <a href="{{ route('assets.reports.scrap-items') }}"
                                         class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
-                                        <div class="badge bg-label-secondary rounded p-2">
-                                        <i class="ti ti-file ti-sm"></i>
-                                        </div>
+                                        <i class="ti ti-trash ti-sm"></i>
                                         <h6 class="tab-widget-title mb-0 mt-2">Scrap Report</h6>
                                     </a>
                                     </li>
                                     <li class="nav-item">
                                     <a href="{{ route('assets.reports.repair-items') }}"
                                         class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
-                                        <div class="badge bg-label-secondary rounded p-2">
-                                        <i class="ti ti-file ti-sm"></i>
-                                        </div>
+                                        <i class="ti ti-tool ti-sm"></i>
                                         <h6 class="tab-widget-title mb-0 mt-2">Repair Report</h6>
                                     </a>
                                     </li>
@@ -176,9 +170,7 @@
                                     <li class="nav-item">
                                         <a href="{{ route('classification.index') }}"
                                             class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
-                                            <div class="badge bg-label-secondary rounded p-2">
                                             <i class="ti ti-settings ti-sm"></i>
-                                            </div>
                                             <h6 class="tab-widget-title mb-0 mt-2">Asset Classifications</h6>
                                         </a>
                                     </li>
@@ -186,9 +178,7 @@
                                     <li class="nav-item">
                                         <a href="{{ route('classification.index') }}"
                                             class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
-                                            <div class="badge bg-label-secondary rounded p-2">
-                                            <i class="ti ti-settings ti-sm"></i>
-                                            </div>
+                                                <i class="ti ti-settings ti-sm"></i>
                                             <h6 class="tab-widget-title mb-0 mt-2">Asset Categories</h6>
                                         </a>
                                     </li>
@@ -196,9 +186,8 @@
                                     <li class="nav-item">
                                         <a href="{{ route('assets.type.index') }}"
                                             class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
-                                            <div class="badge bg-label-secondary rounded p-2">
+
                                             <i class="ti ti-settings ti-sm"></i>
-                                            </div>
                                             <h6 class="tab-widget-title mb-0 mt-2">Asset Types</h6>
                                         </a>
                                     </li>
@@ -206,9 +195,8 @@
                                     <li class="nav-item">
                                         <a href="{{ route('assets.location.index') }}"
                                             class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
-                                            <div class="badge bg-label-secondary rounded p-2">
+
                                             <i class="ti ti-settings ti-sm"></i>
-                                            </div>
                                             <h6 class="tab-widget-title mb-0 mt-2">Asset Locations</h6>
                                         </a>
                                     </li>
@@ -216,9 +204,8 @@
                                     <li class="nav-item">
                                         <a href="{{ route('assets.itemmaster.index') }}"
                                             class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
-                                            <div class="badge bg-label-secondary rounded p-2">
+
                                             <i class="ti ti-settings ti-sm"></i>
-                                            </div>
                                             <h6 class="tab-widget-title mb-0 mt-2">Asset Item Master</h6>
                                         </a>
                                     </li>
@@ -226,9 +213,8 @@
                                     <li class="nav-item">
                                         <a href="{{ route('assets.vendors.index') }}"
                                             class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
-                                            <div class="badge bg-label-secondary rounded p-2">
+
                                             <i class="ti ti-settings ti-sm"></i>
-                                            </div>
                                             <h6 class="tab-widget-title mb-0 mt-2">Vendors</h6>
                                         </a>
                                     </li>

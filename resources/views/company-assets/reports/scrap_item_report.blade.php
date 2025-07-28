@@ -50,7 +50,7 @@
                                         <div class="form-group">
                                             <label for="scrap_date">Vendors</label>
                                             <select name="vendor_id" id="vendor_id" class="form-control select2">
-                                                <option value="">All</option>
+                                                <option value=" ">All</option>
                                                 @foreach ($vendors as $vendor)
                                                     <option value="{{ $vendor->id }}">{{ $vendor->vendor_name }}</option>
                                                 @endforeach
@@ -74,15 +74,15 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Scrap No</th>
+                                            <th>Batch No</th>
                                             <th>Scrap Date</th>
                                             <th>Vendor</th>
                                             <th>Item</th>
                                             <th>Asset No</th>
                                             <th>Model</th>
                                             <th>Serial No</th>
-                                            <th>Unit</th>
-                                            <th>Qty</th>
+                                            {{-- <th>Unit</th>
+                                            <th>Qty</th> --}}
                                             <th>Unit Price</th>
                                             <th>Amount</th>
                                             <th>Remarks</th>
@@ -150,8 +150,8 @@
                 { data: 'asset_code' },
                 { data: 'item_model' },
                 { data: 'serial_number' },
-                { data: 'unit' },
-                { data: 'quantity' },
+                // { data: 'unit' },
+                // { data: 'quantity' },
                 { data: 'rate' },
                 { data: 'amount' },
                 { data: 'remarks' },

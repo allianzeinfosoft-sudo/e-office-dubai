@@ -17,6 +17,7 @@ class RepairRegisterController extends Controller
      */
     public function index(Request $request){
         //
+
         if ($request->ajax()) {
             $repairItems = RepairItemLine::with(['register.vendor', 'item', 'assetMapping'])->get();
 
@@ -35,6 +36,7 @@ class RepairRegisterController extends Controller
                     'quantity'          => $item->quantity,
                     'unit'              => $item->unit,
                     'rate'              => $item->rate,
+                    'actual_rate'       => $item->return_amount,
                     'amount'            => $item->amount,
                     'vendor_name'       => optional(optional($item->register)->vendor)->vendor_name,
                     'item_return_date'  => $item->repair_date ? date('d-m-Y', strtotime($item->repair_date)) : null,

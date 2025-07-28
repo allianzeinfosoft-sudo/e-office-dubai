@@ -146,12 +146,13 @@ return [
         'title' => 'Survey',
         'icon' => 'ti ti-rocket',
         'route' => 'javascript:void(0);',
-        'permission' => ['create survey','assign survey','view surveys'],
+        'permission' => ['create survey','assign survey','view surveys','view surveys report'],
         // 'badge' => "New",
         'submenu' => [
             [
                 'title' => 'Survey`s',
                 'route' => '/user-surveys',
+                'permission' => ['view surveys'],
             ],
             [
                 'title' => 'Questions Templates',
@@ -165,7 +166,7 @@ return [
             ],
             [
                 'title' => 'Survey Report',
-                'route' => '/survey-report',
+                'route' => '/survey report',
             ],
 
         ]
@@ -174,7 +175,7 @@ return [
         'title' => 'SAR',
         'icon' => 'ti ti-replace',
         'route' => 'javascript:void(0);',
-        'permission' => ['view SARs','review SAR'],
+        'permission' => ['create SARs','assign SARs','view SARs','review SARs', 'view SARs report'],
         'submenu' => [
              [
                 'title' => 'SAR`s',
@@ -194,6 +195,7 @@ return [
             [
                 'title' => 'SAR Report',
                 'route' => '/sar-report',
+                'permission' => ['view SARs report'],
             ],
         ]
     ],
@@ -201,7 +203,7 @@ return [
         'title' => 'PAR',
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',
-        'permission' => ['view PARs','create PAR', 'assign PAR'],
+        'permission' => ['view PARs','create PARs', 'assign PARs', 'view PARs report'],
         'submenu' => [
             [
                 'title' => 'PAR`S',
@@ -211,6 +213,7 @@ return [
             [
                 'title' => 'Questions Templates',
                 'route' => '/partemplate',
+                'permission' => ['view PARs'],
             ],
             [
                 'title' => 'Assign PAR',
@@ -220,6 +223,7 @@ return [
             [
                 'title' => 'PAR Report',
                 'route' => '/par-report',
+                'permission' => ['view PARs report'],
             ],
 
         ]
@@ -228,26 +232,29 @@ return [
         'title' => 'Feedback',
         'icon' => 'ti ti-send',
         'route' => 'javascript:void(0);',
-        'permission' => ['view PARs','create PAR', 'assign PAR'],
+        'permission' => ['view feedback','create feedback', 'assign feedback','view feedback report'],
         'submenu' => [
             [
                 'title' => 'Feedback`s',
                 'route' => '/user-feedbacks',
+                'permission' => ['view feedback']
 
             ],
             [
                 'title' => 'Questions Templates',
                 'route' => '/feedback',
+                'permission' => ['create feedback']
             ],
             [
                 'title' => 'Assign Feedback',
                 'route' => '/feedback-assign',
+                'permission' => ['assign feedback'],
 
             ],
             [
                 'title' => 'Feedback Report',
                 'route' => '/feedback-report',
-
+                'permission' => ['view feedback report']
             ],
 
         ]
@@ -482,7 +489,7 @@ return [
         'title' => 'Jobs',
         'icon' => 'ti ti-mail-forward',
         'route' => '/jobs',
-        'permission' => ['view quick notes']
+        'permission' => ['view jobs']
     ],
     [
         'title' => 'Tools',
@@ -560,6 +567,7 @@ return [
         'title' => 'Ticket Raising',
         'icon' => 'ti ti-icons',
         'route' => 'tickets',
+        'permission' => ['view tickets'],
     ],
     [
         'title' => 'Assets',

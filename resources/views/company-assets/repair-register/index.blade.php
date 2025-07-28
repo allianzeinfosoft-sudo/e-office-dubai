@@ -48,13 +48,15 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> Repair Register</h4>
-                    <div class="row">
-                        <div class="md-4 mb-2">
-                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+
+                    <div class="row mb-3 pb-3 align-items-center">
+
+                        <div class="col-md-6 pb-3">
+                            <a class="btn btn-primary" href="{{ route('assets.dashboard') }}">
+                                Assets Dashboard
+                            </a>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-end mb-3">
+                        <div class="col-md-6 text-end pb-3">
                             <a class="btn btn-primary" href="javascript:void(0);" onclick="openRepairOffcanvas()">
                                 <i class="ti ti-plus"></i> Send to Repair
                             </a>
@@ -74,7 +76,8 @@
                                             <th>Vendor</th>
                                             {{-- <th>Unit</th>
                                             <th>Qty</th> --}}
-                                            <th>Rate</th>
+                                            <th>Estimated Rate</th>
+                                            <th>Actual Rate</th>
                                             {{-- <th>Amount</th> --}}
                                             <th>Status</th>
                                             <th>Received</th>
@@ -186,6 +189,7 @@
                 // { data: 'unit', name: 'unit' },
                 // { data: 'quantity', name: 'quantity' },
                 { data: 'rate', name: 'rate' },
+                { data: 'actual_rate', name: 'actual_rate'},
                 // { data: 'amount', name: 'amount' },
                 { data: 'status', name: 'status' },
                 {

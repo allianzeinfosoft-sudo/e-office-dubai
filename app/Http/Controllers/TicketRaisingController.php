@@ -30,6 +30,7 @@ class TicketRaisingController extends Controller
                     'issue_date_time' => $tickets->issue_date_time ? $tickets->issue_date_time : '',
                     'close_date_time' => $tickets->close_date_time ? $tickets->close_date_time : '',
                     'picture' => $tickets->picture ? $tickets->picture : '',
+                    'comment' => $tickets->comment ?? '',
                     'status' => $tickets->status ? $tickets->status : '',
                     'created_at' => $tickets->created_at ? date('d-m-Y', strtotime($tickets->created_at)) : '',
                 ];
@@ -122,5 +123,15 @@ class TicketRaisingController extends Controller
         $ticket->save();
 
         return response()->json(['message' => 'Ticket closed successfully']);
+    }
+
+    public function mark_as_read(Request $request, $id)
+    {
+        $ticket = TicketRaising::findOrFail($id);
+
+        $ticket->status = 2;
+        $ticket->save();
+
+        return response()->json(['message' => 'Ticket read successfully']);
     }
 }
