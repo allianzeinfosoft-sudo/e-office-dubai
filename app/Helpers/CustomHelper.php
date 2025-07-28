@@ -253,14 +253,16 @@ class CustomHelper{
 
     public static function currentAttendanceAnalytics($empId, $year = null, $month = null){
         $now = Carbon::now();
-        $month = $month ?? $now->month;
+       // $month = $month ?? $now->month;
         $year = $year ?? $now->year;
 
         // Fetch attendance records for the employee
         $attendances = Attendance::where('emp_id', $empId)
-            ->when($year, fn($q) => $q->whereYear('signin_date', $year))
-            ->when($month, fn($q) => $q->whereMonth('signin_date', $month))
+            ->whereYear('signin_date', $year)
+           // ->whereMonth('signin_date', $month)
             ->get();
+        
+      //  dd($attendances);
 
         if ($attendances->isEmpty()) {
             return [
@@ -283,15 +285,23 @@ class CustomHelper{
         $completedDays = $totalAttendances - $markOutCount;
 
         // 2. incomplete or half days (only mark-out + is_incomplete = 1)
-        $incompleteOrHalfDays = $attendances->filter(function ($att) {
+        $incompleteOrHalfDays = Leave::where('user_id', $empId)
+            ->where('status', 2)
+            ->where('leave_type', 'half_day')
+            ->whereYear('leave_from', $year)
+            ->whereMonth('leave_from', $month)
+            ->count();
+        
+        /* $attendances->filter(function ($att) {
             return $att->status === 'mark-out' && $att->is_incomplete;
-        })->count();
+        })->count(); */
 
         // 3. off_days = attended on Saturday or Sunday
         $offDays = $attendances->filter(function ($att) {
             $dayOfWeek = Carbon::parse($att->signin_date)->dayOfWeek;
             return in_array($dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
         })->count();
+
 
         // 4. custom_days = punch_type = custom
         $customDays = $attendances->where('punchin_type', 'custom')->count();
@@ -308,6 +318,7 @@ class CustomHelper{
         // 6. leaves with status = 2
         $totalLeaves = Leave::where('user_id', $empId)
             ->where('status', 2)
+            ->where('leave_type', 'full_day')
             ->whereYear('leave_from', $year)
             ->whereMonth('leave_from', $month)
             ->count();
