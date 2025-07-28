@@ -311,7 +311,7 @@ class CustomHelper{
             ->where('leave_type','=','full_day')
             ->whereYear('leave_from', $year)
             ->whereMonth('leave_from', $month)
-            ->sum('leave_day_count');
+            ->count();
 
         $halfLeaves = Leave::where('user_id', $empId)
             ->where('status', 2)
