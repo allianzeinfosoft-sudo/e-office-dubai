@@ -39,6 +39,9 @@
                   <i class="ti ti-md"></i>
                 </a>
               </li>
+              @php
+                  use App\Helpers\CustomHelper;
+                @endphp
               <!--/ Style Switcher -->
             @if (Auth::user()->hasRole(['HR','Developer']))
               <!-- Quick links  -->
@@ -124,6 +127,13 @@
 
                     <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
+                        
+                        <div class="float-end d-flex">
+                            <a href="{{ route('wfs-wfh-approval-list') }}" class="btn btn-sm btn-icon rounded-pill btn-danger waves-effect waves-light">
+                              {{ CustomHelper::wfhWfsAttendanceCount() }}
+                            </a>
+                        </div>
+
                         <span class="dropdown-shortcuts-icon rounded-circle mb-2">
                           <i class="ti ti-home fs-4"></i>
                         </span>
@@ -144,9 +154,7 @@
               </li>
               @endif
               <!-- Quick links -->
-               @php
-                  use App\Helpers\CustomHelper;
-                @endphp
+               
 
               <!-- Notification -->
 

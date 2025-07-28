@@ -9,6 +9,7 @@ use App\Models\workReport;
 use App\Models\LeaveAllocation;
 use App\Models\UserEntryBlockList;
 use App\Models\CustomAttendance;
+use App\Models\WorkFromHomeAttendance;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -812,6 +813,10 @@ public static function getWorkRatingAnalysisMonthly($empId)
             \Log::error('Mail store error: ' . $e->getMessage());
             return ['send' => false, 'error' => $e->getMessage()];
         }
+    }
+
+    public static function wfhWfsAttendanceCount(){
+        return WorkFromHomeAttendance::where(['approvel_status' => 0])->count();
     }
 }
 
