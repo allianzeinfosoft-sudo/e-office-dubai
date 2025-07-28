@@ -14,6 +14,8 @@ use App\Models\User;
 use App\Models\AssetMapping;
 use App\Models\AssetItemLine;
 use App\Models\AssetItemMaster;
+use App\Models\WorkFromHomeAttendance;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -167,6 +169,7 @@ class CustomHelper{
             $leaveCount = Leave::where('user_id', $empId)
                 ->whereYear('leave_from', $year)
                 ->whereMonth('leave_from', $month)
+                ->whereIn('leave_type', ['full_day', 'half_day'])
                 ->where('status', 2)
                 ->sum('leave_day_count');
 
@@ -268,7 +271,8 @@ class CustomHelper{
             ->when($month, fn($q) => $q->whereMonth('signin_date', $month))
             ->get();
 
-        if ($attendances->isEmpty()) {
+
+            if ($attendances->isEmpty()) {
             return [
                 'emp_id' => $empId,
                 'year' => $year,
@@ -288,10 +292,18 @@ class CustomHelper{
         // 1. completed_days = total attendance - mark-out count
         $completedDays = $totalAttendances - $markOutCount;
 
+
         // 2. incomplete or half days (only mark-out + is_incomplete = 1)
-        $incompleteOrHalfDays = $attendances->filter(function ($att) {
+        $incompleteOrHalfDays = Leave::where('user_id', $empId)
+            ->where('status', 2)
+            ->where('leave_type', 'half_day')
+            ->whereYear('leave_from', $year)
+            ->whereMonth('leave_from', $month)
+            ->count();
+
+        /* $attendances->filter(function ($att) {
             return $att->status === 'mark-out' && $att->is_incomplete;
-        })->count();
+        })->count(); */
 
         // 3. off_days = attended on Saturday or Sunday
         $offDays = $attendances->filter(function ($att) {
@@ -299,8 +311,12 @@ class CustomHelper{
             return in_array($dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
         })->count();
 
+
+
         // 4. custom_days = punch_type = custom
         $customDays = $attendances->where('punchin_type', 'custom')->count();
+
+
 
         // 5. holidays worked
         $holidays = Holiday::whereYear('date', $year)
@@ -314,6 +330,7 @@ class CustomHelper{
         // 6. leaves with status = 2
         $totalLeaves = Leave::where('user_id', $empId)
             ->where('status', 2)
+            ->where('leave_type', 'full_day')
             ->whereYear('leave_from', $year)
             ->whereMonth('leave_from', $month)
             ->count();
@@ -952,6 +969,10 @@ public static function getWorkRatingAnalysisMonthly($empId)
         return $item->item_code . '-' . $item_number;
     }
 
+
+    public static function wfhWfsAttendanceCount(){
+        return WorkFromHomeAttendance::where(['approvel_status' => 0])->count();
+    }
 }
 
 
