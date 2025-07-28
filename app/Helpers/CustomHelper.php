@@ -161,6 +161,7 @@ class CustomHelper{
             $leaveCount = Leave::where('user_id', $empId)
                 ->whereYear('leave_from', $year)
                 ->whereMonth('leave_from', $month)
+                ->whereIn('leave_type', ['full_day', 'half_day'])
                 ->where('status', 2)
                 ->sum('leave_day_count');
 
@@ -253,18 +254,17 @@ class CustomHelper{
 
     public static function currentAttendanceAnalytics($empId, $year = null, $month = null){
         $now = Carbon::now();
-       // $month = $month ?? $now->month;
+        $month = $month ?? $now->month;
         $year = $year ?? $now->year;
 
         // Fetch attendance records for the employee
         $attendances = Attendance::where('emp_id', $empId)
-            ->whereYear('signin_date', $year)
-           // ->whereMonth('signin_date', $month)
+            ->when($year, fn($q) => $q->whereYear('signin_date', $year))
+            ->when($month, fn($q) => $q->whereMonth('signin_date', $month))
             ->get();
         
-      //  dd($attendances);
-
-        if ($attendances->isEmpty()) {
+            
+            if ($attendances->isEmpty()) {
             return [
                 'emp_id' => $empId,
                 'year' => $year,
@@ -272,17 +272,18 @@ class CustomHelper{
                 'message' => 'No attendance data found for this employee.',
             ];
         }
-
+        
         $username = $attendances->first()->username;
-
+        
         // Count all attendances
         $totalAttendances = $attendances->count();
-
+        
         // Count mark-out statuses
         $markOutCount = $attendances->where('status', 'mark-out')->count();
-
+        
         // 1. completed_days = total attendance - mark-out count
         $completedDays = $totalAttendances - $markOutCount;
+
 
         // 2. incomplete or half days (only mark-out + is_incomplete = 1)
         $incompleteOrHalfDays = Leave::where('user_id', $empId)
@@ -302,9 +303,12 @@ class CustomHelper{
             return in_array($dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
         })->count();
 
+        
 
         // 4. custom_days = punch_type = custom
         $customDays = $attendances->where('punchin_type', 'custom')->count();
+
+        
 
         // 5. holidays worked
         $holidays = Holiday::whereYear('date', $year)
