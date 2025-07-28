@@ -308,9 +308,18 @@ class CustomHelper{
         // 6. leaves with status = 2
         $totalLeaves = Leave::where('user_id', $empId)
             ->where('status', 2)
+            ->where('leave_type','=','full_day')
             ->whereYear('leave_from', $year)
             ->whereMonth('leave_from', $month)
-            ->count();
+            ->sum('leave_day_count');
+
+        $halfLeaves = Leave::where('user_id', $empId)
+            ->where('status', 2)
+            ->where('leave_type','=','half_day')
+            ->whereYear('leave_from', $year)
+            ->whereMonth('leave_from', $month)
+            ->sum('leave_day_count');
+
 
         return [
             'emp_id'                    => $empId,
@@ -318,7 +327,7 @@ class CustomHelper{
             'year'                      => $year,
             'month'                     => $month,
             'completed_days'            => ($markOutCount - $customDays),
-            'incomplete_or_half_days'   => $incompleteOrHalfDays,
+            'incomplete_or_half_days'   => $halfLeaves,
             'off_days'                  => $offDays,
             'custom_days'               => $customDays,
             'total_holidays'            => $holidayWorked,
