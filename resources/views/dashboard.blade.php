@@ -315,8 +315,8 @@
                                                       <div class="swiper-slide bday-card">
                                                           <canvas class="confetti-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:10;"></canvas>
                                                           <div class="card-bday">
-                                                              <img class="bdy-img mt-5 rounded-circle" 
-                                                                  src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}" 
+                                                              <img class="bdy-img mt-5 rounded-circle"
+                                                                  src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
                                                                   alt="{{ $employee['full_name'] }}" width="100" height="150">
                                                           </div>
                                                           <p class="bdy-name mt-2">{{ $employee['full_name'] }}</p>
@@ -328,8 +328,8 @@
                                                       <div class="card-app-content p-3">
                                                         <div class="appreciation-employees mt-3">
                                                             @foreach($item['employees'] as $employee)
-                                                                <img class="rounded-circle mx-1" 
-                                                                    src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}" 
+                                                                <img class="rounded-circle mx-1"
+                                                                    src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
                                                                     title="{{ $employee['full_name'] }}" width="100" height="100">
                                                             @endforeach
                                                         </div>
@@ -348,8 +348,8 @@
                                       <div class="swiper-button-next swiper-button-white"></div>
                                       <div class="swiper-button-prev swiper-button-white"></div>
 
-                                      
-                                    
+
+
                                   </div>
 
                                   <!-- Thumbnail Swiper -->
@@ -357,7 +357,7 @@
                                         <div class="swiper-wrapper">
                                             @foreach ($feed_data as $item)
                                                 @if($item['type'] == 'birthday')
-                                                    
+
                                                     @foreach($item['employees'] as $employee)
                                                         <div class="swiper-slide" style="background-image: url('{{ asset('storage/' . ($employee['profile_image'] ?? '/assets/avatars/default-avatar.png')) }}')"></div>
                                                     @endforeach
@@ -367,9 +367,9 @@
                                             @endforeach
                                         </div>
                                     </div>
-                                  
-                                  
-                                  
+
+
+
                               </div>
                           </div>
                       </div>
@@ -401,7 +401,7 @@
 
                   @endif
 
-                
+
 
                 {{--  --}}
 
@@ -600,7 +600,7 @@
                             <tbody>
                                 <tr>
                                     <td>Human Resource</td>
-                                    <td>HR</td>
+                                    <td>Sujatha P</td>
                                     <td><a href="mailto:{{ 'hr@mail.allianzegroup.com' ?? ''  }}">{{ 'hr@mail.allianzegroup.com' ?? ''  }} </a></td>
                                 </tr>
                               @if($uniqueTeamLeads->isNotEmpty())
@@ -652,7 +652,7 @@
 <script>
   $(function () {
     $('.table-holiday').DataTable();
-    
+
     var galleryThumbs = new Swiper('.gallery-thumbs', {
         spaceBetween: 10,
         slidesPerView: 'auto', // Flexible thumbnails
