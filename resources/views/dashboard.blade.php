@@ -408,7 +408,7 @@
                 <!--Current Productive Time Analytics -->
 
                 <!--current attendence Analytics -->
-                <div class="col-12 mt-3">
+                <div class="col-12 mt-3" style="visibility: hidden">
                   <div class="card card-bg">
                     <div class="card-header d-flex justify-content-between align-items-md-center align-items-start">
                       <h5 class="card-title mb-0">Current Attendance Analytics</h5>
@@ -605,7 +605,7 @@
                                 </tr>
                               @if($uniqueTeamLeads->isNotEmpty())
                                 @foreach($uniqueTeamLeads as $uniqueTeamLead)
-                                <tr class="{{$uniqueTeamLead->id}}">
+                                <tr class="{{ $uniqueTeamLead->id }}">
                                   <td>{{ $uniqueTeamLead->department->department ?? '' }}</td>
                                   <td> {{ $uniqueTeamLead->full_name ?? '' }} </td>
                                   <td><a href="mailto:{{ $uniqueTeamLead->user->email ?? ''  }}">{{ $uniqueTeamLead->user->email ?? ''  }} </a>	</td>
