@@ -106,11 +106,11 @@ class HomeController extends Controller
             ->whereYear('leave_from', $selected_year)
             ->sum('leave_day_count');
 
-        $teamLeadIds = Employee::whereNotNull('reporting_to')->distinct()->pluck('reporting_to');
-        $data['uniqueTeamLeads'] = Employee::with('department', 'user')->whereIn('user_id', $teamLeadIds)->get();
-        $data['worksBrakesData'] = CustomHelper::getMonthlyWorkBreakData($selected_user);
-        $data['barChartData'] = CustomHelper::getMonthlyWorkBreakDataForBarChart($selected_user);
-        $data['work_analysis']  = CustomHelper::getWorkRatingAnalysisMonthly($selected_user);
+        $teamLeadIds                = Employee::whereNotNull('reporting_to')->distinct()->pluck('reporting_to');
+        $data['uniqueTeamLeads']    = Employee::with('department', 'user')->whereIn('user_id', $teamLeadIds)->get();
+        $data['worksBrakesData']    = CustomHelper::getMonthlyWorkBreakData($selected_user);
+        $data['barChartData']       = CustomHelper::getMonthlyWorkBreakDataForBarChart($selected_user);
+        $data['work_analysis']      = CustomHelper::getWorkRatingAnalysisMonthly($selected_user);
 
         /* Birthdays */
         $birthdayEmployees = Employee::select('full_name', 'profile_image')

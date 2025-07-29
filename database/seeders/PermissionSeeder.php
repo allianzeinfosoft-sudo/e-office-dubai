@@ -48,10 +48,10 @@ class PermissionSeeder extends Seeder
                 'view surveys', 'create survey', 'edit survey', 'delete survey', 'submit survey response', 'assign survey', 'survey report'
             ],
             'SAR Management' => [
-                'view SARs', 'create SAR', 'edit SAR', 'delete SAR', 'review SAR', 'assign SAR'
+                'view SARs', 'create SAR', 'edit SAR', 'delete SAR', 'review SAR', 'assign SAR', 'view SARs report', 'view feedback report'
             ],
             'PAR Management' => [
-                'view PARs', 'create PAR', 'edit PAR', 'delete PAR', 'review PAR', 'assign PAR'
+                'view PARs', 'create PAR', 'edit PAR', 'delete PAR', 'review PAR', 'assign PAR', 'view PARs report'
             ],
             'Feedback Management' => [
                 'view feedback','create feedback','edit feedback', 'delete feedback', 'review feedback', 'assign feedback'
