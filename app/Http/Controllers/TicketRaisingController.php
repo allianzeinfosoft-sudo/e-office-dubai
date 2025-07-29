@@ -23,6 +23,7 @@ class TicketRaisingController extends Controller
             ->map(function ($tickets) {
                 return [
                     'id' => $tickets->id,
+                    'user' => $tickets->user,
                     'employee' => $tickets->ticket_raiser ? $tickets->ticket_raiser->full_name : '',
                     'ticket_department' => $tickets->ticketDepartment? $tickets->ticketDepartment->department : '',
                     'ticket_title' => $tickets->ticket_title ? $tickets->ticket_title : '',
@@ -117,7 +118,7 @@ class TicketRaisingController extends Controller
     {
         $ticket = TicketRaising::findOrFail($id);
 
-        $ticket->status = 1;
+        $ticket->status = 3;
         $ticket->comment = $request->comment;
         $ticket->close_date_time = date('Y-m-d H:i:s'); // optional
         $ticket->save();
@@ -134,4 +135,15 @@ class TicketRaisingController extends Controller
 
         return response()->json(['message' => 'Ticket read successfully']);
     }
+
+    public function issue_solved(Request $request, $id)
+    {
+        $ticket = TicketRaising::findOrFail($id);
+
+        $ticket->status = 1;
+        $ticket->save();
+
+        return response()->json(['message' => 'Ticket read successfully']);
+    }
+
 }

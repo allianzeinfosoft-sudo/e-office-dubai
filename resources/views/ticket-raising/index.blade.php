@@ -121,14 +121,19 @@
         </div>
         <div class="col-12 text-center">
 
-        {{-- @if(Auth::user()->employee->department->department == 'Technical') --}}
+        @if(Auth::user()->employee->department->department == 'Technical')
           <button type="button" id="show-close-form" class="btn btn-label-primary">
             Close Ticket
           </button>
            <button type="button" id="mark-as-read" class="btn btn-label-primary">
             Mark As Read
           </button>
-        {{-- @endif --}}
+        @endif
+
+           <button type="button" id="issue-solved" class="btn btn-label-primary">
+            Issue Solved
+          </button>
+
         </div>
         <form id="close-ticket-form" style="display: none;" class="mt-4">
           <div class="mb-3">
@@ -230,17 +235,6 @@
                         orderable: false, // Optional: prevent sorting on this column
                         searchable: false // Optional: exclude from search
                     },
-                    // {
-                    //     data: 'picture',
-                    //     title: 'Image',
-                    //     render: function (data, type, row) {
-                    //         if (data) {
-                    //             return `<img src="/storage/${data}" alt="Image" style="width: 150px; height: 150px; object-fit: cover; border-radius: 6px;" />`;
-                    //         } else {
-                    //             return 'No Image';
-                    //         }
-                    //     }
-                    // },
                     { data: 'employee', title: 'Employee' },
                     { data: 'ticket_department', title: 'Department' },
                     { data: 'ticket_title', title: 'Ticket Title' },
@@ -251,7 +245,8 @@
                         title: 'Status',
                         render: function (data) {
                             if (data == 1) return `<button class="btn btn-sm btn-label-linkedin">Closed</button>`;
-                             if (data == 2) return `<button class="btn btn-sm btn-primary">Issue on Processing</button>`;
+                            if (data == 2) return `<button class="btn btn-sm btn-primary">Issue on Processing</button>`;
+                            if (data == 3) return `<button class="btn btn-sm btn-warning">wait for user confirmation</button>`
                             if (data == 0 || data == '') return `<button class="btn btn-sm btn-danger">Pending</button>`;
                             return 'N/A';
                         }
@@ -265,9 +260,10 @@
                             let description = row.ticket_description;
                             let id = row.id;
                             let status = row.status;
+                            let user = row.user;
 
                             const editUrl = "{{ route('tickets.edit', ':id') }}".replace(':id', row.id);
-                            return `<button class="btn btn-sm btn-success me-2 open-modal" data-function="1" data-id="${id}" data-status="${status}" data-ticket_description="${description}" data-picture="${picture}"  data-bs-toggle="modal" data-bs-target="#ticketDetail"><i class="fa fa-eye"></i></button>
+                            return `<button class="btn btn-sm btn-success me-2 open-modal" data-function="1" data-user="${user}" data-id="${id}" data-status="${status}" data-ticket_description="${description}" data-picture="${picture}"  data-bs-toggle="modal" data-bs-target="#ticketDetail"><i class="fa fa-eye"></i></button>
                             <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-tickets" onclick="openTicketOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
                                 <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-tickets" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
                         }
@@ -357,17 +353,38 @@ $(document).on("click", ".open-modal", function() {
     let ticket_description = $(this).data("ticket_description");
     let ticketId = $(this).data("id");
     let status = $(this).data("status");
-
+    let user = $(this).data("user");
+    var authUser = @json(Auth::user()->id);
     if (status === 0 || status === null || status === '') {
-        $('#show-close-form').prop('disabled', true).text("Close Ticket");
+
+        $('#show-close-form').attr('style', 'display: none !important');
+        $('#issue-solved').attr('style', 'display: none !important');
+        $('#mark-as-read').attr('style', 'display: block !important');
+
     }else if(status === 1)
     {
-         $('#show-close-form').prop('disabled', true).text("Already Closed");
+        $('#show-close-form').attr('style', 'display: none !important');
+        $('#mark-as-read').attr('style', 'display: none !important');
+        $('#issue-solved').attr('style', 'display: none !important');
+
     }
     else if(status === 2){
-        $('#show-close-form').prop('disabled', false).text("Close Ticket");
-        // $('#show-close-form').prop('disabled', false).show();
-        $('#mark-as-read').prop('disabled', true).show();
+        $('#issue-solved').attr('style', 'display: none !important');
+        $('#mark-as-read').attr('style', 'display: none !important');
+        $('#show-close-form').attr('style', 'display: block !important');
+    }
+    else if(status === 3){
+        $('#show-close-form').attr('style', 'display: none !important');
+        $('#mark-as-read').attr('style', 'display: none !important');
+
+         if(authUser == user)
+        {
+            $('#issue-solved').attr('style', 'display: block !important');
+        }
+        else
+        {
+            $('#issue-solved').attr('style', 'display: none !important');
+        }
     }
 
     $("#ticket_id").val(ticketId);
@@ -379,6 +396,8 @@ $(document).on("click", ".open-modal", function() {
     $('#close-ticket-form').hide();
     $('#comment').val('');
     $('#ticketDetail').modal('show');
+
+
 
 });
 
@@ -414,7 +433,7 @@ $('#close-ticket-form').on('submit', function (e) {
                 success: function (response) {
                     Swal.fire("Closed!", "The ticket has been closed.", "success").then(() => {
                         $('#ticketDetail').modal('hide');
-                        $('#datatables-tickets').DataTable().ajax.reload(); // optional: refresh datatable
+                        $('#datatables-tickets').DataTable().ajax.reload();
                     });
                 },
                 error: function (xhr) {
@@ -454,7 +473,8 @@ $('#mark-as-read').on('click', function (e) {
                 success: function (response) {
                     Swal.fire("Marked!", "The ticket has been marked as read.", "success").then(() => {
                         $('#ticketDetail').modal('hide');
-                        $('#datatables-tickets').DataTable().ajax.reload(null, false); // ✅ reload without resetting pagination
+                        $('#datatables-tickets').DataTable().ajax.reload();
+
                     });
                 },
                 error: function (xhr) {
@@ -465,5 +485,44 @@ $('#mark-as-read').on('click', function (e) {
     });
 });
 
+
+// confirmation
+$('#issue-solved').on('click', function (e) {
+
+    e.preventDefault();
+
+    let ticketId = $('#ticket_id').val();
+    let comment = $('#comment').val();
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This ticket is solved.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#198754", // green
+        cancelButtonColor: "#6c757d",  // gray
+        confirmButtonText: "Yes, mark it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/tickets/' + ticketId + '/issue-solved',
+                method: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    comment: comment // optional, only if needed
+                },
+                success: function (response) {
+                    Swal.fire("Marked!", "The ticket has been solved.", "success").then(() => {
+                        $('#ticketDetail').modal('hide');
+                       $('#datatables-tickets').DataTable().ajax.reload();
+                    });
+                },
+                error: function (xhr) {
+                    Swal.fire("Error!", "Something went wrong while marking the ticket as read.", "error");
+                }
+            });
+        }
+    });
+});
 </script>
 @endpush

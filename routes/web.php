@@ -625,6 +625,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     Route::post('/tickets/{id}/close', [TicketRaisingController::class, 'close'])->name('tickets.close');
     Route::post('/tickets/{id}/mark-as-read', [TicketRaisingController::class, 'mark_as_read'])->name('tickets.markasread');
+    Route::post('/tickets/{id}/issue-solved', [TicketRaisingController::class, 'issue_solved'])->name('tickets.issuesolved');
 
     /* Asset classification */
     Route::get('/assets/classification', [AssetClassificationController::class, 'index'])->name('classification.index');
