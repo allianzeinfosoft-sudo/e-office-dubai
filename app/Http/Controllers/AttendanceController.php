@@ -69,9 +69,9 @@ class AttendanceController extends Controller{
                 $minutes = (int) $minutes;
                 $totalMinutes = ($hours * 60) + $minutes;
 
-                if ($totalMinutes >= 420) {
+                if ($totalMinutes >= 360) {
                     $fullDays++;
-                } elseif ($totalMinutes > 210 && $totalMinutes < 420) {
+                } elseif ($totalMinutes > 210 && $totalMinutes < 360) {
                     $halfDays++;
                 }
             }
