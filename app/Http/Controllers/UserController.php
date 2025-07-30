@@ -460,7 +460,7 @@ class UserController extends Controller
         $user_leaves = $user->user_leaves;
 
         $pending_leave = $user_leaves->where('status', 1)->sum('leave_day_count');
-        $approved_leave = $user_leaves->where('status', 2)->sum('leave_day_count');
+        $approved_leave = $user_leaves->where('status', 2)->where('leave_type','!=','off_day')->sum('leave_day_count');
 
         // This month's leave (based on from_date in current month)
         $this_month_leave = $user_leaves->filter(function ($leave) {

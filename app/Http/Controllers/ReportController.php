@@ -553,13 +553,13 @@ class ReportController extends Controller
 
         if ($request->filled('day')) {
             $startDate = Carbon::createFromDate($request->year, $request->month, $request->day);
-            $endDate = $startDate;
+            $endDate = Carbon::createFromDate($request->year, $request->month, $request->day)->endOfMonth();
         } else {
             $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
            // $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
-            $endDate = $endDate = Carbon::now();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
         }
-
+        
         $attendances = Attendance::with('employee', 'employee.user')
             ->where('emp_id', $employeeId)
             ->whereBetween('signin_date', [$startDate->toDateString(), $endDate->toDateString()])
@@ -608,6 +608,7 @@ class ReportController extends Controller
 
         $serial = 1;
         $currentDate = $startDate->copy();
+        
 
         while ($currentDate->lte($endDate)) {
             $dateStr = $currentDate->format('Y-m-d');
@@ -647,12 +648,18 @@ class ReportController extends Controller
                 } elseif (!$att->signout_time) {
                     $row->status = 'mark-in';
                     $row->statusText = '<span class="badge bg-label-info mt-1">On Going</span>';
-                } elseif ($att->working_hours && $att->working_hours < '08:00:00') {
-                    $row->status = 'incomplete';
-                    $row->statusText = '<span class="badge bg-label-warning mt-1"> In-complete </span>';
-                } else {
-                    $row->status = 'mark-out';
-                    $row->statusText = '<span class="badge bg-label-info mt-1">Completed</span>';
+            
+                }else {
+                    if ($att->working_hours > '03:30:00' && $att->working_hours < '06:30:00') {
+                        $row->status = 'Half Day';
+                        $row->statusText = '<span class="badge bg-label-warning mt-1">Half Day</span>';
+                    } elseif ($att->working_hours >= '06:30:00' && $att->working_hours <= '08:00:00') {
+                        $row->status = 'Incomplete';
+                        $row->statusText = '<span class="badge bg-label-warning mt-1">Incomplete</span>';
+                    } else {
+                        $row->status = 'mark-out';
+                        $row->statusText = '<span class="badge bg-label-info mt-1">Completed</span>';
+                    }
                 }
                 $row->atte_id = $att->id ?? 'N/A';
             } elseif (in_array($dateStr, $leaveDates)) {

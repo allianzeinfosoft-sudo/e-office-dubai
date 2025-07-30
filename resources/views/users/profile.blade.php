@@ -108,6 +108,9 @@
                         <li class="d-flex align-items-center justify-content-between mb-3">
                           <span class="fw-bold"><i class="ti ti-user mt-n2"></i>Reporting To: &nbsp;</span><span>{{ $user->employee->reportingToEmployee ? $user->employee->reportingToEmployee->full_name : 'N/A'  }}</span>
                         </li>
+                          <li class="d-flex align-items-center justify-content-between mb-3">
+                          <span class="fw-bold"><i class="ti ti-user mt-n2"></i>Shift Time: &nbsp;</span><span>{{ $user->employee?->workshift ? $user->employee?->workshift?->shift_id : 'N/A'  }} [ {{ $user->employee?->workshift ? $user->employee?->workshift?->shift_start_time : 'N/A'  }} To {{ $user->employee?->workshift ? $user->employee?->workshift?->shift_end_time : 'N/A'  }}]</span>
+                        </li>
                         <hr>
                         <li class="d-flex align-items-center mb-3">
                           <div class="timeline-event">
