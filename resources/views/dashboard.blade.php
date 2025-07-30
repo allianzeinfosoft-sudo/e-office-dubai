@@ -357,10 +357,11 @@
                                         <div class="swiper-wrapper">
                                             @foreach ($feed_data as $item)
                                                 @if($item['type'] == 'birthday')
-
-                                                    @foreach($item['employees'] as $employee)
-                                                        <div class="swiper-slide" style="background-image: url('{{ asset('storage/' . ($employee['profile_image'] ?? '/assets/avatars/default-avatar.png')) }}')"></div>
-                                                    @endforeach
+                                                    @if(count($item['employees']) > 1)
+                                                        @foreach($item['employees'] as $employee)
+                                                            <div class="swiper-slide" style="background-image: url('{{ asset('storage/' . ($employee['profile_image'] ?? '/assets/avatars/default-avatar.png')) }}')"></div>
+                                                        @endforeach
+                                                    @endif
                                                 @else
                                                     <div class="swiper-slide" style="background-image: url('{{ asset($item['image'] ? '/storage/appreciation_flowers/'.$item['image'] : '/assets/avatars/default-avatar.png') }}')"></div>
                                                 @endif
