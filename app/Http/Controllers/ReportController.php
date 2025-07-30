@@ -608,6 +608,7 @@ class ReportController extends Controller
 
         $serial = 1;
         $currentDate = $startDate->copy();
+        
 
         while ($currentDate->lte($endDate)) {
             $dateStr = $currentDate->format('Y-m-d');
@@ -648,19 +649,17 @@ class ReportController extends Controller
                     $row->status = 'mark-in';
                     $row->statusText = '<span class="badge bg-label-info mt-1">On Going</span>';
             
-                }else if ($att->working_hours > '03:30:00' && $att->working_hours < '06:29:00') {
-                       $row->status = 'Half Day';
-                        $row->statusText = '<span class="badge bg-label-warning mt-1"> Half Day </span>';
-                }
-
-                    else if($att->working_hours > '06:30:00' && $att->working_hours < '08:00:00'){
+                }else {
+                    if ($att->working_hours > '03:30:00' && $att->working_hours < '06:30:00') {
+                        $row->status = 'Half Day';
+                        $row->statusText = '<span class="badge bg-label-warning mt-1">Half Day</span>';
+                    } elseif ($att->working_hours >= '06:30:00' && $att->working_hours <= '08:00:00') {
                         $row->status = 'Incomplete';
-                         $row->statusText = '<span class="badge bg-label-warning mt-1"> Incomplete </span>';
+                        $row->statusText = '<span class="badge bg-label-warning mt-1">Incomplete</span>';
+                    } else {
+                        $row->status = 'mark-out';
+                        $row->statusText = '<span class="badge bg-label-info mt-1">Completed</span>';
                     }
-
-                 else {
-                    $row->status = 'mark-out';
-                    $row->statusText = '<span class="badge bg-label-info mt-1">Completed</span>';
                 }
                 $row->atte_id = $att->id ?? 'N/A';
             } elseif (in_array($dateStr, $leaveDates)) {
