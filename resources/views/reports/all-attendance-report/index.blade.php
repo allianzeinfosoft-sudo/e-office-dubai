@@ -164,6 +164,7 @@
                 url: url,
                 data: data,
                 dataType: "json",
+                
                 success: function (response) {
                     $('#all-report-container').html(response.html);
                     $('.datatables-all-attendance-report').DataTable({
