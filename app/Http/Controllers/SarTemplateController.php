@@ -15,6 +15,7 @@ use Laravel\Ui\Presets\React;
 use Illuminate\Support\Str;
 
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Validation\Rule;
 
 class SarTemplateController extends Controller
 {
@@ -63,11 +64,27 @@ class SarTemplateController extends Controller
     {
         $validated = $request->validate([
             'id' => 'nullable|exists:sar_templates,id',
-            'template_name' => 'required|string',
+            'template_name' => [
+                'required',
+                'string',
+                Rule::unique('sar_templates', 'template_name')
+                    ->ignore($request->id) // Ignore current record when updating
+                    ->where(function ($query) use ($request) {
+                        return $query->where('department_id', $request->department_id);
+                    }),
+            ],
             'department_id' => 'required|exists:departments,id',
             'questions' => 'required|array|min:1',
             'questions.*.question' => 'required|string',
         ]);
+
+        $messages = [
+                        'template_name.unique' => 'This template name already exists in the selected department.',
+                    ];
+
+        $validated = $request->validate([
+
+        ], $messages);
 
         // If editing, update the existing template
         if ($request->filled('id')) {
@@ -102,7 +119,7 @@ class SarTemplateController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'SAR Template saved successfully!');
+       return response()->json(['success' => true, 'message' => 'Template saved successfully']);
     }
 
 

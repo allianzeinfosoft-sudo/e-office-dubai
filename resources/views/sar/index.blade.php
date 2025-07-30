@@ -58,6 +58,16 @@
 
 
                     <div class="card">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            @endif
+
                         <div class="card-datatable table-responsive">
                             <table class="hover_effect datatables-basic datatables-sar-template table border-top table-stripedc" id="datatables-sar-template">
                                 <thead>

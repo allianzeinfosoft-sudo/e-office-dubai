@@ -32,6 +32,8 @@ class HomeController extends Controller
      */
     public function index(Request $request){
 
+
+
         $selected_user =  Auth::user()->id;
         $selected_year =  date('Y');
 

@@ -14,6 +14,11 @@ use App\Models\User;
 use App\Models\AssetMapping;
 use App\Models\AssetItemLine;
 use App\Models\AssetItemMaster;
+use App\Models\CompanyPolicy;
+use App\Models\FeedbackAssign;
+use App\Models\ParUserAssign;
+use App\Models\SarUserAssign;
+use App\Models\SurveyUserAssign;
 use App\Models\WorkFromHomeAttendance;
 
 use Illuminate\Support\Facades\DB;
@@ -972,6 +977,50 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
     public static function wfhWfsAttendanceCount(){
         return WorkFromHomeAttendance::where(['approvel_status' => 0])->count();
+    }
+
+    public static function SurveyNotification()
+    {
+        if (Auth::check()) {
+            $userId = Auth::id(); // or Auth::user()->id
+        }
+       return SurveyUserAssign::where('status', 1)->where('user_id',$userId)->count();
+    }
+
+    public static function ParNotification()
+    {
+        if(Auth::check()){
+            $userId = Auth::id();
+        }
+
+        return ParUserAssign::where('status',1)->where('user_id',$userId)->count();
+    }
+
+    public static function SarNotification()
+    {
+         if(Auth::check()){
+            $userId = Auth::id();
+        }
+
+        return SarUserAssign::where('status',1)->where('user_id',$userId)->count();
+    }
+
+    public static function FeedbackNotification()
+    {
+        if(Auth::check()){
+            $userId = Auth::id();
+        }
+
+        return FeedbackAssign::where('status',1)->where('user_id',$userId)->count();
+    }
+
+    public static function PolicyNotification()
+    {
+         if(Auth::check()){
+            $userId = Auth::id();
+        }
+
+        return CompanyPolicy::where('status',0)->count();
     }
 }
 

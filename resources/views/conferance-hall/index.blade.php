@@ -17,7 +17,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <x-menu />
 
         <div class="layout-page">
@@ -28,6 +28,7 @@
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Conferance Hall /</span> {{ $meta_title }}</h4>
 
                     <div class="row">
+                    @can('create booking')
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openConferanceOffcanvas()">
                                 <span>
@@ -36,7 +37,7 @@
                                 </span>
                             </a>
                         </div>
-
+                    @endcan
                         <div class="card">
                             <div class="card-datatable table-conferance" style="font-size: 11px;">
                                 <table class="datatables-basic datatables-conferance table border-top table-hover table-striped table-sm">
@@ -55,12 +56,12 @@
                                         </tr>
                                     </thead>
                                 </table>
-                            </div>  
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <x-footer /> 
+                <x-footer />
                 <div class="content-backdrop fade"></div>
                 <div class="layout-overlay layout-menu-toggle"></div>
                 <div class="drag-target"></div>
@@ -72,7 +73,7 @@
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="conferance_hall_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-file-description fs-2 text-white"></i> 
+            <i class="ti ti-file-description fs-2 text-white"></i>
             <span id="conferance-hall-offcanvas-title">
                 <h5 class="offcanvas-title text-white">Create Booking</h5>
                 <span class="text-white slogan">Create New conferance hall booking</span>
@@ -93,13 +94,13 @@
 
 @push('js')
 <script>
-    
-    $(function(){
 
+    $(function(){
+         window.userPermissions = @json(auth()->user()->getAllPermissions()->pluck('name'));
         var conferanceTable = $('.datatables-conferance');
 
         if (conferanceTable.length) {
-            
+
             conferanceTable.DataTable({
                 processing: true,
                 serverSide: false,
@@ -152,13 +153,25 @@
                     },
                     { data: 'purpose', name: 'Purpose' },
                     { data: 'status', name: 'Status' },
-                    { 
+                    {
                         data: null,
                         title: 'Actions',
                         render: function (data, type, row) {
-                            return `
-                                <a href="javascript:void(0)" onclick="openConferanceOffcanvas(${row.id})" class="btn btn-sm btn-icon btn-primary"><i class="ti ti-edit"></i></a>
-                                <button type="button" class="btn btn-sm btn-icon btn-danger" onclick="deleteConferanceHall(${row.id})"><i class="ti ti-trash"></i></button>`;
+                            let actions = '';
+
+                            // Check permission for edit
+                            if (window.userPermissions.includes('edit booking')) {
+                                actions += `<a href="javascript:void(0)" onclick="openConferanceOffcanvas(${row.id})"
+                                            class="btn btn-sm btn-icon btn-primary"><i class="ti ti-edit"></i></a> `;
+                            }
+
+                            // Check permission for delete
+                            if (window.userPermissions.includes('cancel booking')) {
+                                actions += `<button type="button" class="btn btn-sm btn-icon btn-danger"
+                                            onclick="deleteConferanceHall(${row.id})"><i class="ti ti-trash"></i></button>`;
+                            }
+
+                            return actions || '-'; // Show '-' if no actions are allowed
                         }
                     }
                 ],
@@ -231,7 +244,7 @@
         if (id) {
             const url = "{{ route('conferance-hall.edit', ':conferenceHall') }}".replace(':conferenceHall', id);
 
-            
+
             $('#target_id').val(id);
             $('#conferance-hall-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Edit Conferance Hall</h5><span class="text-white slogan">Edit Booking </span>`);
             $.ajax({

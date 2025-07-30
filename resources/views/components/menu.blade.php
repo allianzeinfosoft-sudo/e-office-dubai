@@ -1,11 +1,22 @@
 <!-- Menu -->
+<?php
+use App\helpers\CustomHelper;
+$badges = [
+    'Survey' => auth()->check() ? CustomHelper::SurveyNotification() : 0,
+    'PAR' => auth()->check() ? CustomHelper::ParNotification() : 0,
+    'SAR' => auth()->check() ? CustomHelper::SarNotification() : 0,
+    'Feedback' => auth()->check() ? CustomHelper::FeedbackNotification() : 0,
+    'Company Policies' => auth()->check() ? CustomHelper::PolicyNotification() : 0,
+
+];
+?>
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
         <a href="{{ route('home') }}" class="app-brand-link">
             <span class="logo-white">
                 <img class="w-100" src="{{asset('assets/img/icons/logo-white.png') }} ">
             </span>
-        </a>             
+        </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
             <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
@@ -32,7 +43,7 @@
 
         // Check main item permission
         $hasPermission = $checkPermission($item['permission'] ?? null);
-        
+
         // Filter submenu based on permission
         if (isset($item['submenu'])) {
             $item['submenu'] = collect($item['submenu'])
@@ -80,9 +91,18 @@
                    class="menu-link {{ !empty($item['submenu']) ? 'menu-toggle' : '' }}">
                     <i class="menu-icon tf-icons {{ $item['icon'] ?? '' }}"></i>
                     <div data-i18n="{{ $item['title'] }}">{{ $item['title'] }}</div>
-                    @if(isset($item['badge']))
+                    {{-- @if(isset($item['badge']))
+                        <div class="badge bg-label-primary rounded-pill ms-auto">{{ $item['badge'] }}</div>
+                    @endif --}}
+                    {{-- Check for dynamic badge --}}
+                   @if(isset($badges[$item['title']]) && $badges[$item['title']] > 0)
+                        <div class="badge bg-label-danger rounded-pill ms-auto">
+                            new {{ $badges[$item['title']] }}
+                        </div>
+                    @elseif(isset($item['badge']))
                         <div class="badge bg-label-primary rounded-pill ms-auto">{{ $item['badge'] }}</div>
                     @endif
+
                 </a>
 
                 @if(!empty($item['submenu']))

@@ -7,6 +7,9 @@
     </ul>
 </div>
 @endif
+<div id="error-container" class="alert alert-danger d-none">
+    <ul id="error-list" class="mb-0"></ul>
+</div>
 <form action="{{ route('sartemplate.store') }}" method="POST" id="sar-template-form" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="id" id="target_id">
@@ -14,14 +17,14 @@
         <div class="col-sm-6 mb-3">
             <div class="form-group">
                 <label for="template_name">Template Name <span class="text-danger">*</span></label>
-                <input type="text" name="template_name" id="template_name" class="form-control" placeholder="Template Name" require />
+                <input type="text" name="template_name" id="template_name" class="form-control" placeholder="Template Name" />
             </div>
         </div>
 
         <div class="col-sm-6 mb-3">
             <div class="form-group">
                 <label for="department">Department <span class="text-danger">*</span></label>
-                <select name="department_id" id="department_id" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select department">
+                <select name="department_id" id="department_id" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select department" required>
                     <option value=""></option>
                     @foreach ($departments as $department)
                       <option value="{{ $department->id }}"> {{ $department->department  ?? '' }} </option>
@@ -85,6 +88,70 @@
                 optionsDiv.style.display = 'none';
             }
         }
+
+    // form submit
+
+    document.getElementById('sar-template-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        let form = this;
+        let formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'Accept': 'application/json' // Force Laravel to return JSON
+            }
+        })
+        .then(async response => {
+            if (!response.ok) {
+                // If validation fails, Laravel still returns JSON when Accept: application/json is sent
+                const errorData = await response.json();
+                throw errorData;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                 const errorContainer = document.getElementById('error-container');
+                const errorList = document.getElementById('error-list');
+                errorList.innerHTML = ''; // Remove old errors
+                errorContainer.classList.add('d-none'); // Hide the error div
+                toastr.success('Form submitted successfully!', 'Success');
+                form.reset();
+                document.getElementById('question-container').innerHTML = '';
+                $('.datatables-sar-template').DataTable().ajax.reload();
+
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+
+            const errorContainer = document.getElementById('error-container');
+            const errorList = document.getElementById('error-list');
+            errorList.innerHTML = ''; // Clear old errors
+
+            if (error.errors) {
+                // Show Laravel validation errors
+                Object.values(error.errors).forEach(errArray => {
+                    errArray.forEach(msg => {
+                        let li = document.createElement('li');
+                        li.textContent = msg;
+                        errorList.appendChild(li);
+                    });
+                });
+                errorContainer.classList.remove('d-none'); // Show the div
+            } else {
+                // Generic error
+                let li = document.createElement('li');
+                li.textContent = "Something went wrong!";
+                errorList.appendChild(li);
+                errorContainer.classList.remove('d-none');
+            }
+        });
+    });
 
 
 </script>

@@ -332,10 +332,9 @@ return [
                 'permission' => ['view announcement'],
             ],
             [
-                'title' => 'Company Policies ',
+                'title' => 'Company Policies',
                 'route' =>  '/view/company-policies',
                 'permission' => ['view policy'],
-                'badge' => "New",
             ],
             [
                 'title' => 'Holidays',
