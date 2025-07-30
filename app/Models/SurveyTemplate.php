@@ -30,4 +30,8 @@ class SurveyTemplate extends Model
     {
         return $this->belongsTo(Employee::class, 'created_by','user_id');
     }
+     public function userAssignments()
+    {
+        return $this->hasMany(SurveyUserAssign::class, 'template_id');
+    }
 }

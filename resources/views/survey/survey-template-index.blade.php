@@ -174,9 +174,8 @@
                             const editUrl = "{{ route('surveytemplate.edit', ':id') }}".replace(':id', row.id);
                             return `
                                 <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary view-survey-template" title="view questions"  onclick="openSurveyQuestionOffcanvas(${row.id})""><i class="ti ti-eye"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-survey-template" title="edit" onclick="openSurveyTemplateOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-survey-template" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>
-                            `;
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-survey-template" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
+                            // <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-survey-template" title="edit" onclick="openSurveyTemplateOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
                         }
                     }
                 ]
@@ -188,7 +187,7 @@
 
     $(document).on('click', '.delete-survey-template', function(e) {
         e.preventDefault();
-        const sarTemplateId = $(this).data('id');
+        const surveyTemplateId = $(this).data('id');
 
         Swal.fire({
                 title: "Are you sure?",

@@ -40,7 +40,7 @@ class AssetRegisterController extends Controller
                         'vendor_name'         => $item->vendor->vendor_name,
                         'total_amount'      => $item->total_amount,
                         'upload_invoice'    => '<a href="' . asset('storage/' . $item->upload_invoice) . '" target="_blank"><i class="fa fa-file"></i></a>',
-                        'remarks'           => $item->remarks
+                        'remarks'           => $item->remarks ?? ''
                     ];
 
                 });
@@ -78,7 +78,6 @@ class AssetRegisterController extends Controller
             'purchase_date' => 'required',
             'invoice_number' => 'required',
             'vendor_id' => 'required',
-            'remarks' => 'nullable',
             'upload_invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'asset_item_id' => 'required|array',
             'asset_quantity' => 'required|array',
@@ -106,7 +105,7 @@ class AssetRegisterController extends Controller
                 'invoice_number' => $request->invoice_number,
                 'vendor_id'      => $request->vendor_id,
                 'total_amount'   => $totalAmount,
-                'remarks'        => $request->remarks,
+                'remarks'        => $request->remarks ?? '',
                 'upload_invoice' => $filePath,
             ]
         );

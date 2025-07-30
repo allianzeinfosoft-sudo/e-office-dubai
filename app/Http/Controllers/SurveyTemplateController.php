@@ -142,9 +142,26 @@ class SurveyTemplateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SurveyTemplate $surveyTemplate)
+    public function destroy($id)
     {
-        //
+
+       $survey = SurveyTemplate::findOrFail($id);
+        try {
+
+             if ($survey->userAssignments()->exists()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'This template is assigned to one or more users and cannot be deleted.',
+                ], 400);
+             }
+
+            $survey->questions()->delete(); // optional: if cascading needed
+            $survey->delete();
+
+            return response()->json(['success' => true, 'message' => 'Survey Template deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete Survey Template.'], 500);
+        }
     }
 
     public function fetch($id)

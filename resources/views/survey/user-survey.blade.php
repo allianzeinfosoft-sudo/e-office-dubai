@@ -240,16 +240,16 @@ function openSurveyQuestionOffcanvas(surveysId) {
 
                 let questionsHtml = '';
 
-                 questionsHtml += `
-                    <div class="mb-4 p-3 bg-light border rounded">
-                        <h5>Score Summary</h5>
-                        <div class="d-flex flex-wrap gap-4">
-                            <span><strong>Total Score:</strong> ${data.department}</span>
-                            <span><strong>Maximum Score:</strong> ${data.department}</span>
-                            <span><strong>Score Percentage:</strong> ${data.department}%</span>
-                             <span><strong>Grade:</strong> ${data.department}</span>
-                        </div>
-                    </div>`;
+                //  questionsHtml += `
+                //     <div class="mb-4 p-3 bg-light border rounded">
+                //         <h5>Score Summary</h5>
+                //         <div class="d-flex flex-wrap gap-4">
+                //             <span><strong>Total Score:</strong> ${data.department}</span>
+                //             <span><strong>Maximum Score:</strong> ${data.department}</span>
+                //             <span><strong>Score Percentage:</strong> ${data.department}%</span>
+                //              <span><strong>Grade:</strong> ${data.department}</span>
+                //         </div>
+                //     </div>`;
 
 
                 if (data.questions && data.questions.length > 0) {

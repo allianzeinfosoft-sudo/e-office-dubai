@@ -107,7 +107,6 @@ class AssetAllocationController extends Controller
             'asset_model_id'    => 'nullable|array',
             'asset_project_id'  => 'required|array',
             'specification'     => 'required|array',
-            'remarks'           => 'required',
         ]);
 
 
@@ -117,7 +116,7 @@ class AssetAllocationController extends Controller
                 'user_type'   => $request->asset_user,
                 'user'   => $request->asset_employee ?? $request->asset_location ?? '',
                 'department'  => $request->department_id ?? '',
-                'remarks' => $request->remarks
+                'remarks' => $request->remarks ?? ''
             ]
         );
 
