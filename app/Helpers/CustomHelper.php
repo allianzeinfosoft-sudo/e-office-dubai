@@ -473,15 +473,15 @@ class CustomHelper{
     $averageWorkingHours = $workingDays > 0 ? round(($totalWorkingHours / $workingDays) / 60, 2) : 0;
 
     $monthlyData[] = [
-        'month' => $startOfMonth->format('F'),
-        'year' => $startOfMonth->year,
-        'avg_working_hours' => round($totalWorkHours->avg_hours ?? 0, 2),
-        'total_working_hours' => round($totalWorkHours->total_hours ?? 0, 2),
-        'working_days' => $workingDays,
-        'leaves' => $leaves,
-        'off_days' => $offDays,
-        'working_hours' => $workingHours,
-        'break_hours' => $breakHours,
+        'month'                 => $startOfMonth->format('F'),
+        'year'                  => $startOfMonth->year,
+        'avg_working_hours'     => round($totalWorkHours->avg_hours ?? 0, 2),
+        'total_working_hours'   => round($totalWorkHours->total_hours ?? 0, 2),
+        'working_days'          => $workingDays,
+        'leaves'                => $leaves,
+        'off_days'              => $offDays,
+        'working_hours'         => $workingHours,
+        'break_hours'           => $breakHours,
     ];
 
     return $monthlyData;
