@@ -50,7 +50,7 @@
                                                         @endif
                                                     </select>
                                                 </div>
-                                            </div>   
+                                            </div>
 
                                             <div class="col-sm-3 mb-2 g-2">
                                                 <div class="form-group">
@@ -59,28 +59,28 @@
                                                         <option value=""></option>
                                                     </select>
                                                 </div>
-                                            </div>    
+                                            </div>
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_records" class="form-label">Total Records / Tasks</label>
                                                     <input type="text" name="total_records" id="total_records" placeholder="Totla Records / Tasks" class="form-control" />
                                                 </div>
-                                            </div>    
+                                            </div>
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="productivity_hour" class="form-label">Productivity Per Hour</label>
                                                     <input type="text" name="productivity_hour" id="productivity_hour" placeholder="Productivity per hour" class="form-control" readonly />
                                                 </div>
-                                            </div>    
+                                            </div>
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_time" class="form-label">No. of Hours</label>
                                                     <input type="text" name="total_time" id="total_time" placeholder="No. of Hours"  value="{{ old('total_time', $missingReport->balance_time ?? '') }}" class="form-control" required />
                                                 </div>
-                                            </div>    
+                                            </div>
 
                                             <div class="col-sm-12 mb-2 g-2">
                                                 <div class="form-group">
@@ -88,7 +88,7 @@
                                                     <textarea name="comments" id="comments" class="form-control" rows="5" required></textarea>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-sm-12 mb-2 g-2 d-flex justify-content-end">
                                                 <input type="hidden" name="emp_id" value="{{ Auth::user()->id }}" />
                                                 <input type="hidden" name="report_date" value="{{ now()->format('Y-m-d') }}" />
@@ -105,7 +105,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between">
-                                        
+
                                     </div>
                                     <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> Work Report</h4>
                                 </div>
@@ -125,9 +125,9 @@
                                                             <th class="align-middle" width="10%">Performance</th>
                                                             <th class="align-middle" width="20%">Comments</th>
                                                             <th class="align-middle" width="10%">Action</th>
-                                                        </tr>                                                    
+                                                        </tr>
                                                     </thead>
-                                                    
+
                                                     <tbody >
 
                                                         @if($attendance)
@@ -135,7 +135,12 @@
                                                             <td><strong>Break time</strong></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
-                                                            <td><input class="form-control" type="text" name="break_time" id="break_time"  value="{{ ($attendance->break_time) ?? $user_shift->mini_break_time }}"></td>
+                                                            <td><select class="form-control" type="text" name="break_time" id="break_time">
+                                                                    <option value="01:00:00" {{ ($attendance->break_time === '01:00:00') ? 'selected' : '' }} >01:00:00</option>
+                                                                    <option value="00:30:00" {{ ($attendance->break_time === '00:30:00') ? 'selected' : '' }}>00:30:00</option>
+                                                                </select>
+                                                                  {{-- value="{{ ($attendance->break_time) ?? $user_shift->mini_break_time }}" --}}
+                                                            </td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
@@ -146,7 +151,7 @@
 
                                                         @if($repots_posted ->isNotEmpty())
                                                             @foreach($repots_posted as $report)
-                                                            <tr data-id="{{ $report->id }}">                                                            
+                                                            <tr data-id="{{ $report->id }}">
                                                                 <td><strong>{{ $report->project->project_name?? "-" }}</strong></td>
                                                                 <td><strong>{{ $report->tasks->name ?? "-"}}</strong></td>
                                                                 <td><strong>{{ $report->total_records ?? "-" }}</strong></td>
@@ -163,10 +168,10 @@
                                                             @endforeach
                                                         @endif
 
-                                                    </tbody> 
+                                                    </tbody>
                                                 </table>
                                             </div>
-                                        </div>                                                        
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-footer">
@@ -194,7 +199,7 @@
 @section('js')
 <script>
     $(function() {
-        
+
         $('.select2').select2();
 
         $('#project_name').on('change', function () {
@@ -225,7 +230,7 @@
 
         $('#submitForm').on('click', function(e) {
             e.preventDefault();
-            
+
             let current_working_hours = '{{ $missingReport->balance_time }}';
             let total_time = $('#total_time').val();
 
@@ -268,7 +273,7 @@
                         $('#submitForm').html('<i class="ti ti-check"></i> Add');
 
                         updateTableRow(response.data);
-                        
+
                         if (response.balance_working_hours === "00:00:00") {
                             $("#workReportFormContainer").hide();
                             setTimeout(() => {
@@ -297,7 +302,7 @@
 
                 $.ajax({
                     type: "post",
-                    url: url, 
+                    url: url,
                     data :{
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         task_id: task_id,
@@ -347,7 +352,7 @@
         html += '</tr>';
 
         $("#workReportTable tbody").append(html);
-        
+
     }
 
     function updateTableRow(workReport) {
@@ -430,7 +435,7 @@
         $.ajax({
             type: "DELETE",
             url: `/work-report/${reportId}`,
-            data: { 
+            data: {
                 _token: $('meta[name="csrf-token"]').attr('content') // CSRF token for Laravel security
             },
             success: function(response) {
