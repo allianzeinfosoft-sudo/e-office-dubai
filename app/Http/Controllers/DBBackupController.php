@@ -28,8 +28,9 @@ class DBBackupController extends Controller
         $dbUser = env('DB_USERNAME');
         $dbPass = env('DB_PASSWORD');
 
+        $mysqldumpPath = '/opt/lampp/bin/mysqldump';
         $process = new Process([
-            'mysqldump',
+            $mysqldumpPath,
             '--user=' . $dbUser,
             '--password=' . $dbPass,
             '--host=' . $dbHost,
