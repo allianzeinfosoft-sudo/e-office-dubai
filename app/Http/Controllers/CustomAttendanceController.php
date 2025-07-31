@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CustomAttendance;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomAttendanceController extends Controller
 {
@@ -111,13 +112,13 @@ class CustomAttendanceController extends Controller
                     ]
                 ); 
         }
-        CustomAttendance::where('id', $id)->update(['status' => '1']);
+        CustomAttendance::where('id', $id)->update(['status' => '1', 'approved_by' => Auth::user()->id]);
         return redirect()->back()->with('success', 'Custom Attendance Approved successfully');
     }
 
 
     public function rejectCustomMarkIn($id) {
-        CustomAttendance::where('id', $id)->update(['status' => '2']);
+        CustomAttendance::where('id', $id)->update(['status' => '2', 'approved_by' => Auth::user()->id]);
         return redirect()->back()->with('error', 'Custom Attendance Rejected successfully');
     }
 }

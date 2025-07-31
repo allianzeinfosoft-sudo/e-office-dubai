@@ -50,7 +50,7 @@
                                                         @endif
                                                     </select>
                                                 </div>
-                                            </div>   
+                                            </div>
 
                                             <div class="col-sm-3 mb-2 g-2">
                                                 <div class="form-group">
@@ -59,28 +59,28 @@
                                                         <option value=""></option>
                                                     </select>
                                                 </div>
-                                            </div>    
+                                            </div>
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_records" class="form-label">Total Records / Tasks</label>
                                                     <input type="text" name="total_records" id="total_records" placeholder="Totla Records / Tasks" class="form-control" />
                                                 </div>
-                                            </div>    
+                                            </div>
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="productivity_hour" class="form-label">Productivity Per Hour</label>
                                                     <input type="text" name="productivity_hour" id="productivity_hour" placeholder="Productivity per hour" class="form-control" readonly />
                                                 </div>
-                                            </div>    
+                                            </div>
 
                                             <div class="col-sm-2 mb-2 g-2">
                                                 <div class="form-group">
                                                     <label for="total_time" class="form-label">No. of Hours</label>
                                                     <input type="text" name="total_time" id="total_time" placeholder="No. of Hours" value="{{ date('H:i', strtotime($missingReport->balance_time)) }}" class="form-control" required />
                                                 </div>
-                                            </div>    
+                                            </div>
 
                                             <div class="col-sm-12 mb-2 g-2">
                                                 <div class="form-group">
@@ -88,7 +88,7 @@
                                                     <textarea name="comments" id="comments" class="form-control" rows="5" required></textarea>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-sm-12 mb-2 g-2 d-flex justify-content-end">
                                                 <input type="hidden" name="emp_id" value="{{ $missingReport->emp_id }}" />
                                                 <input type="hidden" name="report_date" value="{{ $missingReport->signin_date }}" />
@@ -105,7 +105,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between">
-                                        
+
                                     </div>
                                     <h4 class="card-title mb-1"> <i class="ti ti-printer ti-sm"></i> Work Report</h4>
                                 </div>
@@ -125,9 +125,9 @@
                                                             <th class="align-middle" width="10%">Performance</th>
                                                             <th class="align-middle" width="20%">Comments</th>
                                                             <th class="align-middle" width="10%">Action</th>
-                                                        </tr>                                                    
+                                                        </tr>
                                                     </thead>
-                                                    
+
                                                     <tbody >
 
                                                         @if($missingReport)
@@ -135,7 +135,13 @@
                                                             <td><strong>Break Time</strong></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
-                                                            <td><input class="form-control" type="text" name="break_time" id="break_time" value="{{ ($missingReport->break_time) ?? $user_shift->mini_break_time }}"></td>
+                                                            <td>
+                                                                <select class="form-control" type="text" name="break_time" id="break_time">
+                                                                    <option value="01:00:00" {{ ($missingReport->break_time === "01:00:00") ? 'selected' : '' }}>01:00:00</option>
+                                                                    <option value="00:30:00" {{ ($missingReport->break_time === "00:30:00") ? 'selected' : '' }}>00:30:00</option>
+                                                                </select>
+                                                                {{-- value="{{ ($missingReport->break_time) ?? $user_shift->mini_break_time }}" --}}
+                                                                </td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
                                                             <td><span class="badge bg-dark">NA</span></td>
@@ -146,7 +152,7 @@
 
                                                         @if($repots_posted ->isNotEmpty())
                                                             @foreach($repots_posted as $report)
-                                                            <tr data-id="{{ $report->id }}">                                                            
+                                                            <tr data-id="{{ $report->id }}">
                                                                 <td><strong>{{ $report->project->project_name?? "-" }}</strong></td>
                                                                 <td><strong>{{ $report->tasks->name ?? "-"}}</strong></td>
                                                                 <td><strong>{{ $report->total_records ?? "-" }}</strong></td>
@@ -163,13 +169,13 @@
                                                             @endforeach
                                                         @endif
 
-                                                    </tbody> 
+                                                    </tbody>
                                                 </table>
                                             </div>
-                                        </div>                                                        
+                                        </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="card-footer">
                                     <div class="d-flex justify-content-between"></div>
                                         <div class="d-flex align-items-right justify-content-end">
@@ -237,7 +243,7 @@
             if (enteredSeconds > currentSeconds) {
                 alert('No. of Hours cannot be greater than current working hours');
                 $('#total_time').focus();
-                return;    
+                return;
             }
 
             let form = $('#workReportForm');
@@ -247,14 +253,14 @@
             // let formData = $('#workReportForm').serialize(); // Serialize form data
             $.ajax({
                 type: method === "PUT" ? "PUT" : "POST",
-                url: actionUrl, 
+                url: actionUrl,
                 data: formData,
                 success: function(response) {
                     if (response.success) {
-                        
+
                         alert('Work report ' + (method === "PUT" ? 'updated' : 'added') + ' successfully!');
-                        
-                        $('#workReportForm')[0].reset(); 
+
+                        $('#workReportForm')[0].reset();
                         $('#project_name').val('').trigger('change');
                         $('#type_of_work').val('').trigger('change');
 
@@ -270,7 +276,7 @@
                             $("#workReportFormContainer").hide();
                         }else{
                             $("#total_time").val(response.balance_working_hours);
-                        }                        
+                        }
 
                     } else {
                         alert('Something went wrong. Please try again.');
@@ -291,7 +297,7 @@
 
                 $.ajax({
                     type: "post",
-                    url: url, 
+                    url: url,
                     data :{
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         task_id: task_id,
@@ -341,7 +347,7 @@
         html += '</tr>';
 
         $("#workReportTable tbody").append(html);
-        
+
     }
 
     function updateTableRow(workReport) {
@@ -424,7 +430,7 @@
         $.ajax({
             type: "DELETE",
             url: `/work-report/${reportId}`,
-            data: { 
+            data: {
                 _token: $('meta[name="csrf-token"]').attr('content') // CSRF token for Laravel security
             },
             success: function(response) {

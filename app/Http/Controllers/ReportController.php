@@ -653,7 +653,7 @@ class ReportController extends Controller
                     if ($att->working_hours > '03:30:00' && $att->working_hours < '06:30:00') {
                         $row->status = 'Half Day';
                         $row->statusText = '<span class="badge bg-label-warning mt-1">Half Day</span>';
-                    } elseif ($att->working_hours >= '06:30:00' && $att->working_hours <= '08:00:00') {
+                    } elseif ($att->working_hours >= '06:30:00' && $att->working_hours < '08:00:00') {
                         $row->status = 'Incomplete';
                         $row->statusText = '<span class="badge bg-label-warning mt-1">Incomplete</span>';
                     } else {
