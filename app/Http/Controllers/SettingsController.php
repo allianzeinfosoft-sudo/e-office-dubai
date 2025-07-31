@@ -54,6 +54,12 @@ class SettingsController extends Controller
         if ($request->filled('target_id')) {
             // Update existing workshift
             Workshift::where('id', $request->target_id)->update($data);
+
+            if (isset($data['login_limited_time'])) {
+                Employee::where('shift_id', $request->target_id)
+                    ->update(['login_limited_time' => $data['login_limited_time']]);
+            }
+            
             return back()->with('success', 'Work shift updated successfully!');
         } else {
             // Create new workshift
