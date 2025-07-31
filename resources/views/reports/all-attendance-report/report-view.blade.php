@@ -36,6 +36,8 @@
                                 <th>Working Hours</th>
                                 <th>Signin Note</th>
                                 <th>Signout Note</th>
+                                <th>Punch-in Type</th> <!-- ✅ New -->
+                                <th>Leave Type</th>    <!-- ✅ New -->
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -52,6 +54,8 @@
                                         <td>{{ $attendance->working_hours ?? 'N/A' }}</td>
                                         <td>{{ $attendance->signin_note ?? 'N/A' }}</td>
                                         <td>{{ $attendance->signout_note ?? 'N/A' }}</td>
+                                        <td>{{ $attendance->punchin_type }}</td> <!-- ✅ -->
+                                        <td>{{ $attendance->leave_type }}</td>   <!-- ✅ -->
                                         <td>{!! $attendance->statusText ?? 'N/A' !!}</td>
                                         <td>
                                             @if($attendance->signin_time != "N/A" && $attendance->signout_time != "N/A")

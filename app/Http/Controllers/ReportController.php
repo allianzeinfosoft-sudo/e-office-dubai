@@ -578,11 +578,13 @@ class ReportController extends Controller
             ->get();
 
         $leaveDates = [];
+        $leaveType = [];
         foreach ($leaves as $leave) {
             $from = Carbon::parse($leave->leave_from);
             $to = Carbon::parse($leave->leave_to);
             while ($from->lte($to)) {
                 $leaveDates[] = $from->format('Y-m-d');
+                $leaveType[] = $leave->leave_type;
                 $from->addDay();
             }
         }
@@ -627,6 +629,8 @@ class ReportController extends Controller
                 'signout_note'  => 'N/A',
                 'status'        => 'leave',
                 'statusText'    => 'Leave',
+                'leave_type'    => 'N/A',    // ✅ New
+                'punchin_type'  => 'N/A',    // ✅ New
                 'atte_id'       => 'N/A',
             ];
 
@@ -638,6 +642,7 @@ class ReportController extends Controller
                 $row->working_hours = $att->working_hours ?? '-';
                 $row->signin_note = $att->signin_note ?? '-';
                 $row->signout_note = $att->signout_note ?? '-';
+                $row->punchin_type = $att->punchin_type ?? ''; 
 
                 if (in_array($dateStr, $holidays)) {
                     $row->status = 'holiday';
@@ -663,13 +668,15 @@ class ReportController extends Controller
                 }
                 $row->atte_id = $att->id ?? 'N/A';
             } elseif (in_array($dateStr, $leaveDates)) {
+                $leaveIndex = array_search($dateStr, $leaveDates);
                 $row->status = 'leave';
                 $row->statusText = '<span class="badge bg-label-danger mt-1"> On Leave </span>';
+                $row->leave_type = $leaveType[$leaveIndex] ?? 'N/A';
                 $row->atte_id = $att->id ?? 'N/A';
             } elseif (in_array($dateStr, $holidays)) {
                 $row->status = 'holiday';
                 $row->statusText = '<span class="badge bg-label-secondary mt-1">Holiday</span>';
-                $row->atte_id = $att->id ?? 'N/A';
+                $row->atte_id = $att->id ?? '-';
             } elseif (in_array($dayName, ['Saturday', 'Sunday'])) {
                 $row->status = 'weekend';
                 $row->statusText = '<span class="badge bg-label-primary mt-1">'. $dayName .'</span>';
