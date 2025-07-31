@@ -554,7 +554,11 @@ class AttendanceController extends Controller{
         WorkReport::where('emp_id', $userId)
             ->whereDate('report_date', $signinDate)
             ->delete();
-
+            
+        UserEntryBlockList::where('emp_id', $userId)
+            ->whereDate('block_date', $signinDate)
+            ->delete();
+            
         // Delete the attendance record
         $attendance->delete();
 
