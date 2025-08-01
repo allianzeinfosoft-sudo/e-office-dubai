@@ -38,7 +38,6 @@
                                                     <th>Sl No</th>
                                                     <th>User</th>
                                                     <th>IP Address</th>
-                                                    <th>User Agent</th>
                                                     <th>Login At</th>
                                                     <th>Logout At</th>
                                                 </tr>
@@ -134,7 +133,6 @@ $(function () {
                     },
                     { data: 'username', title: 'User' },
                     { data: 'ip_address', title: 'IP Address' },
-                    { data: 'user_agent', title: 'User Agent' },
                     { data: 'login_at', title: 'Login At' },
                     { data: 'logout_at', title: 'Logout At' },
                 ]
