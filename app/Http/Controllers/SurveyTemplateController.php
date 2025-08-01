@@ -126,9 +126,19 @@ class SurveyTemplateController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(SurveyTemplate $surveyTemplate)
+    public function edit(string $id)
     {
-        //
+        $template = SurveyTemplate::with(['questions', 'department_info'])->findOrFail($id);
+        // Check if this template is assigned to employees
+        $isAssigned = $template->userAssignments()->exists(); // adjust relation name accordingly
+
+        return response()->json([
+            'questions' => $template->questions,
+            'department' => $template->department_info->id ?? null,
+            'name' => $template->template_name,
+            'locked' => $isAssigned,
+        ]);
+
     }
 
     /**
