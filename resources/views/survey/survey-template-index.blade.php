@@ -174,8 +174,8 @@
                             const editUrl = "{{ route('surveytemplate.edit', ':id') }}".replace(':id', row.id);
                             return `
                                 <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary view-survey-template" title="view questions"  onclick="openSurveyQuestionOffcanvas(${row.id})""><i class="ti ti-eye"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-survey-template" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
-                            // <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-survey-template" title="edit" onclick="openSurveyTemplateOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-survey-template" title="delete" data-id="${row.id}"><i class="ti ti-trash"></i></a>
+                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-survey-template" title="edit" onclick="openSurveyTemplateOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>`;
                         }
                     }
                 ]
@@ -332,21 +332,35 @@ function openSurveyTemplateOffcanvas(targetId = null) {
             type: 'GET',
             success: function (data) {
 
-                // let content = data.thoughts.thoughts_details;
-                // let cleanContent = content.replace(/^<p>|<\/p>$/g, '');
 
-                // $('#target_id').val(data.thoughts.id);
-                // $('#thoughts_title').val(data.thoughts.thoughts_title);
-                // $('#display_date').val(data.thoughts.display_date);
-                // $('#thoughts_details').val(cleanContent);
-                // // document.getElementById('thoughts-editor').textContent = cleanContent;
-                // quillEditor1.root.innerHTML = cleanContent;
+                  // Populate form fields
+                $('#target_id').val(targetId);
+                $('#template_name').val(data.name || '');
+                $('#department_id').val(data.department).trigger('change');
 
-                // const previewEdit = document.getElementById("PicturePreview");
-                // previewEdit.src = `/storage/${data.thoughts.picture}`;;
-                // previewEdit.style.display = "block";
+                // Check if locked (disable form if assigned)
+                if (data.locked) {
+                    $('#survey-template-form :input').prop('disabled', true);
+                } else {
+                    $('#survey-template-form :input').prop('disabled', false);
+                }
 
-                // $('#picture').val('');
+                // Populate questions dynamically
+                if (data.questions && data.questions.length > 0) {
+                    data.questions.forEach((q, index) => {
+                        addQuestion();
+                        $(`input[name="questions[${index}][question]"]`).val(q.question);
+                        $(`select[name="questions[${index}][answer_type]"]`).val(q.answer_type).trigger('change');
+
+                        if (q.answer_type === 'optional' && q.options) {
+                            const options = JSON.parse(q.options); // Assuming options are stored as JSON
+                            options.forEach((opt, i) => {
+                                $(`input[name="questions[${index}][option${i + 1}]"]`).val(opt);
+                            });
+                        }
+                    });
+                }
+
             }
         });
     }

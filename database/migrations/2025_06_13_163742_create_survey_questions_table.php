@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('template_id');
             $table->text('question');
-            $table->enum('answer_type', ['yes_no', 'optional', 'description']);
+            $table->enum('answer_type', ['yes_no', 'optional', 'description', 'rating']);
             $table->json('options')->nullable();     // For optional type
             $table->timestamps();
              $table->foreign('template_id')
