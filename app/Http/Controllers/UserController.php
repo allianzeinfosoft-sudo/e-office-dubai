@@ -997,6 +997,7 @@ public function checkAccountNumber(Request $request)
         $lateCount = Attendance::where('emp_id', $employee->user_id)
             ->whereBetween('signin_date', [$fromDate, $toDate])
             ->whereTime('signin_time', '>', $shift->shift_start_time)
+            ->where('working_hours', '>', '06:00:00')
             ->whereNotIn('signin_date', $leaveDates)
             ->count();
 

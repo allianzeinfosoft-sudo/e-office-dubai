@@ -159,28 +159,61 @@ function lateComersList() {
 }
 
     function viewMoreModal(id) {
-        const fromDate = $('#from_date').val();
-        const toDate = $('#to_date').val();
+    const fromDate = $('#from_date').val();
+    const toDate = $('#to_date').val();
 
-        const url = "{{ route('user-latecomers-list') }}";
-        $.ajax({
-            url: url,
-            data: {
-                id: id,
-                from_date: fromDate,
-                to_date: toDate
-            },
-            type: 'GET',
-            success: function (data) {
-                $('#viewMoreDetails .modal-body').html(data.html);
-                $('.modal-title').text(data.meta_title);
-                $('#viewMoreDetails').modal('show');
-                $('#target_id').val(id);
-            },
-            error: function () {
-                alert('Failed to load MOM data.');
+    const url = "{{ route('user-latecomers-list') }}";
+
+    $.ajax({
+        url: url,
+        data: {
+            id: id,
+            from_date: fromDate,
+            to_date: toDate
+        },
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#viewMoreDetails .modal-body').html(data.html);
+            $('.modal-title').text(data.meta_title);
+            $('#viewMoreDetails').modal('show');
+            $('#target_id').val(id);
+
+            // Destroy old instance if exists
+            if ($.fn.DataTable.isDataTable('#latecommer_details')) {
+                $('#latecommer_details').DataTable().destroy();
             }
-        });
-    }
+
+            // Initialize DataTable
+            $('#latecommer_details').DataTable({
+                processing: true,
+                serverSide: false,
+                responsive: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    { extend: 'excelHtml5', title: 'Late Comer User Details',
+                        exportOptions: {
+                            columns: ':visible:not(:eq(1))' // Exclude column 2 (index starts from 0)
+                        }
+                     },
+                    { extend: 'pdfHtml5', title: 'Late Comer User Details', orientation: 'landscape', pageSize: 'A4',
+                        exportOptions: {
+                            columns: ':visible:not(:eq(1))' // Exclude column 2 (index starts from 0)
+                        }
+                     },
+                    { extend: 'print', title: 'Late Comer User Details', exportOptions: {
+                            columns: ':visible:not(:eq(1))' // Exclude column 2 (index starts from 0)
+                        } }
+                ]
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+            alert('Failed to load Latecomer details.');
+        }
+    });
+}
+    
+
 </script>
 @endpush
