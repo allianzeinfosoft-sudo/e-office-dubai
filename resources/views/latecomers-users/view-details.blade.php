@@ -5,11 +5,11 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Name</th>
+                <th>Image</th>
                 <th>Full Name</th>
+                <th>Logged in Time</th>
                 <th>Working Hours</th>
                 <th>Signin Date</th>
-                <th>Logged in Time</th>
             </tr>
         </thead>
         <tbody>
@@ -24,9 +24,9 @@
                         @endif
                     </td>
                     <td>{{ $employee->full_name }}</td>
+                    <td><button type="button" class="btn btn-primary">{{ $entry->signin_time }}</button></td>
                     <td><button type="button" class="btn btn-primary">{{ $entry->working_hours ?? 0  }}</button></td>
                     <td>{{ \Carbon\Carbon::parse($entry->signin_date)->format('d-m-Y') }}</td>
-                    <td><button type="button" class="btn btn-primary">{{ $entry->signin_time }}</button></td>
                 </tr>
             @endforeach
         </tbody>
