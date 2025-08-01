@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\CustomHelper;
+use App\Models\LoginHistory;
 use Illuminate\Queue\Worker;
 
 class SettingsController extends Controller
@@ -59,7 +60,7 @@ class SettingsController extends Controller
                 Employee::where('shift_id', $request->target_id)
                     ->update(['login_limited_time' => $data['login_limited_time']]);
             }
-            
+
             return back()->with('success', 'Work shift updated successfully!');
         } else {
             // Create new workshift
@@ -280,4 +281,38 @@ class SettingsController extends Controller
             'data' => $attendance
         ]);
     }
+
+    public function loginHistory(Request $request)
+    {
+        if($request->ajax()){
+            $query = LoginHistory::with('user');
+            // Filter by username if provided
+            if ($request->username) {
+                $query->where('user_id', $request->username);
+            }
+
+            $histories = $query->latest()->get();
+
+            return response()->json([
+                'data' => $histories->map(function ($history) {
+                    return [
+                        'id' => $history->id,
+                        'username' => $history->employee->full_name,
+                        'ip_address' => $history->ip_address,
+                        'user_agent' => $history->user_agent,
+                        'login_at' => $history->login_at ? $history->login_at : null,
+                        'logout_at' => $history->logout_at ? $history->logout_at : 'Active',
+                    ];
+                }),
+            ]);
+
+        }
+
+        $data['meta_title'] = 'Login History';
+        $data['employees'] = Employee::get();
+        return view('auth.login_history',$data);
+
+
+    }
+
 }
