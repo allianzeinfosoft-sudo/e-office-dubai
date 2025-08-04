@@ -229,12 +229,12 @@ class AttendanceController extends Controller{
                     if($attendanceRecords){
                         foreach ($attendanceRecords as $record) {
                             $workingHours = $record->working_hours; // e.g., "06:45:00"
-        
+
                             if ($workingHours) {
                                 // Convert to seconds
                                 list($hours, $minutes, $seconds) = explode(':', $workingHours);
                                 $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
-        
+
                                 // Check if less than 7 hours (25200 seconds)
                                 if ($totalSeconds < 25200) {
                                     $date = $record->signin_date;
@@ -558,7 +558,7 @@ class AttendanceController extends Controller{
         UserEntryBlockList::where('emp_id', $userId)
             ->whereDate('block_date', $signinDate)
             ->delete();
-                  
+
         // Delete the attendance record
         $attendance->delete();
 

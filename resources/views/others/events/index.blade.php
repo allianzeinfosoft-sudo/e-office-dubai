@@ -17,7 +17,7 @@
 
 @section('content')
 <div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">    
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">
         <x-menu />
 
         <div class="layout-page">
@@ -32,7 +32,7 @@
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                    <span class="d-none d-sm-inline-block"> New</span>
+                                    <span class="d-none d-sm-inline-block"> New Event</span>
                                 </span>
                             </a>
                         </div>
@@ -51,13 +51,13 @@
                                         </tr>
                                     </thead>
                                 </table>
-                            </div>  
+                            </div>
                         </div>
 
                     </div>
                 </div>
 
-                <x-footer /> 
+                <x-footer />
                 <div class="content-backdrop fade"></div>
                 <div class="layout-overlay layout-menu-toggle"></div>
                 <div class="drag-target"></div>
@@ -69,7 +69,7 @@
 <div class="offcanvas offcanvas-end w-45" data-bs-backdrop="static" tabindex="-1" id="event_offcanvas" aria-labelledby="staticBackdropLabel">
     <div class="offcanvas-header bg-primary p-3">
         <span class="d-flex justify-content-between align-items-center gap-2">
-            <i class="ti ti-calendar-plus fs-2 text-white"></i> 
+            <i class="ti ti-calendar-plus fs-2 text-white"></i>
             <span id="offcanvas-title-container">
                 <h5 class="offcanvas-title text-white">Create Event</h5>
                 <span class="text-white slogan">Create New Event</span>
@@ -129,7 +129,7 @@
                     { data: 'eventDate', name: 'Date' },
                     { data: 'description', name: 'Description' },
                     { data: 'createdAt', name: 'Created' },
-                    { 
+                    {
                         data: null,
                         title: 'Actions',
                         render: function (data, type, row) {
@@ -144,7 +144,7 @@
         }
 
         $('#event-form').on('submit', function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
             $('#description').val(quillEvent.root.innerHTML);
             const form = $(this);
             const formData = new FormData(this);
@@ -162,7 +162,7 @@
                 success: function (response) {
                     toastr["success"](response.message);
                     form.trigger('reset');
-                    quillEvent.root.innerHTML = ''; 
+                    quillEvent.root.innerHTML = '';
                     const offcanvasElement = document.getElementById('event_offcanvas');
                     const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
                     if (offcanvas) offcanvas.hide();
