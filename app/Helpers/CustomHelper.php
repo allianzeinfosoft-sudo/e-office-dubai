@@ -175,6 +175,7 @@ class CustomHelper{
                     ')
                 ->first();
 
+
             $leaveCount = Leave::where('user_id', $empId)
                 ->whereYear('leave_from', $year)
                 ->whereMonth('leave_from', $month)
