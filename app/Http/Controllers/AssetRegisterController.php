@@ -39,7 +39,7 @@ class AssetRegisterController extends Controller
                         'invoice_number'    => $item->invoice_number,
                         'vendor_name'         => $item->vendor->vendor_name,
                         'total_amount'      => $item->total_amount,
-                        'upload_invoice'    => '<a href="' . asset('storage/' . $item->upload_invoice) . '" target="_blank"><i class="fa fa-file"></i></a>',
+                        'upload_invoice'    => $item->upload_invoice ? '<a href="' . asset('storage/' . $item->upload_invoice) . '" target="_blank"><i class="fa fa-file"></i></a>' : 'N/A',
                         'remarks'           => $item->remarks ?? ''
                     ];
 
@@ -75,13 +75,12 @@ class AssetRegisterController extends Controller
     {
         $validated = $request->validate([
             'company_name' => 'required|string',
+            'asset_number' => 'required',
             'purchase_date' => 'required',
             'invoice_number' => 'required',
             'vendor_id' => 'required',
             'upload_invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'asset_item_id' => 'required|array',
-            'asset_quantity' => 'required|array',
-            'asset_price' => 'required|array',
             'asset_total' => 'required|array',
         ]);
 
@@ -100,6 +99,7 @@ class AssetRegisterController extends Controller
             ['id' => $request->id],
             [
                 'asset_date'     => date('Y-m-d', strtotime($request->purchase_date)),
+                'asset_number'   => $request->asset_number,
                 'company_name'   => $request->company_name,
                 'purchase_date'  => date('Y-m-d', strtotime($request->purchase_date)), //$request->purchase_date,
                 'invoice_number' => $request->invoice_number,

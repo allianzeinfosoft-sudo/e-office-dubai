@@ -238,6 +238,7 @@
                 success: function(response) {
                     let data = response.data;
                     // Main form values
+                    $('#asset_number').val(data.asset_number);
                     $('#company_name').val(data.company_name).trigger('change');
                     $('#purchase_date').flatpickr().setDate(data.purchase_date);
                     $('#invoice_number').val(data.invoice_number);

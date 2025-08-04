@@ -159,7 +159,7 @@
                     <textarea class="form-control" name="asset_unit[${itemLineLength}]" placeholder="Specifications" row="5"></textarea>
                 </td>
 
-                <td width="6%"><input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" placeholder="0.00"></td>
+                <td width="6%"><input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" placeholder="0.00" value="1" required></td>
                 <td width="6%"><input class="form-control text-right" type="text" id="price_${itemLineLength}" name="asset_price[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" placeholder="0.00"></td>
                 <td width="6%"><input class="form-control text-right" type="text" id="amount_${itemLineLength}" name="asset_total[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" placeholder="0.00" readonly></td>
                 <td width="6%"><input class="form-control" type="text" name="serial_number[${itemLineLength}]" placeholder = "Serial number"></td>
