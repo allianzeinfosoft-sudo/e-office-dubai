@@ -168,7 +168,11 @@ class CustomHelper{
                 ->whereYear('signin_date', $year)
                 ->whereMonth('signin_date', $month)
                 ->where('status', 'mark-out')
-                ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
+                 ->selectRaw('
+                        DATE_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(working_hours))), "%H:%i") as avg_hours,
+                        DATE_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(working_hours))), "%H:%i") as total_hours,
+                        COUNT(*) as days
+                    ')
                 ->first();
 
             $leaveCount = Leave::where('user_id', $empId)
@@ -180,8 +184,8 @@ class CustomHelper{
 
             $report[] = [
                 'month' => Carbon::create()->month($month)->format('F'),
-                'avg_hours' => round($attendance->avg_hours ?? 0, 2),
-                'total_hours' => round($attendance->total_hours ?? 0, 2),
+                'avg_hours' => $attendance->avg_hours ?? '00:00',
+                'total_hours' => $attendance->total_hours ?? '00:00',
                 'working_days' => $attendance->days ?? 0,
                 'leaves' => $leaveCount,
                 'year' => $year
