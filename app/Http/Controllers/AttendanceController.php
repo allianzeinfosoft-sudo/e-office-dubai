@@ -555,7 +555,7 @@ class AttendanceController extends Controller{
             ->whereDate('report_date', $signinDate)
             ->delete();
 
-        UserEntryBlockList::where('emp_id', $userId)
+        UserEntryBlockList::where('user_id', $userId)
             ->whereDate('block_date', $signinDate)
             ->delete();
 
