@@ -75,15 +75,6 @@
         }
     }
 
-
-
-// form validation
-
-
-
-
-
-
+    // form validation
     </script>
-
-    @endpush
+@endpush

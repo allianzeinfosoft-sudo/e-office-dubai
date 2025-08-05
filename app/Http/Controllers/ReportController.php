@@ -559,7 +559,7 @@ class ReportController extends Controller
            // $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
             $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
         }
-        
+
         $attendances = Attendance::with('employee', 'employee.user')
             ->where('emp_id', $employeeId)
             ->whereBetween('signin_date', [$startDate->toDateString(), $endDate->toDateString()])
@@ -610,7 +610,7 @@ class ReportController extends Controller
 
         $serial = 1;
         $currentDate = $startDate->copy();
-        
+
 
         while ($currentDate->lte($endDate)) {
             $dateStr = $currentDate->format('Y-m-d');
@@ -642,7 +642,7 @@ class ReportController extends Controller
                 $row->working_hours = $att->working_hours ?? '-';
                 $row->signin_note = $att->signin_note ?? '-';
                 $row->signout_note = $att->signout_note ?? '-';
-                $row->punchin_type = $att->punchin_type ?? ''; 
+                $row->punchin_type = $att->punchin_type ?? '';
 
                 if (in_array($dateStr, $holidays)) {
                     $row->status = 'holiday';
@@ -653,7 +653,7 @@ class ReportController extends Controller
                 } elseif (!$att->signout_time) {
                     $row->status = 'mark-in';
                     $row->statusText = '<span class="badge bg-label-info mt-1">On Going</span>';
-            
+
                 }else {
                     if ($att->working_hours > '03:30:00' && $att->working_hours < '06:30:00') {
                         $row->status = 'Half Day';

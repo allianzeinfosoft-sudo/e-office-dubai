@@ -662,4 +662,10 @@ return [
         'route' => '/db-backup',
         'permission' => ['view db backup'],
     ],
+    [
+        'title' => 'Login History',
+        'icon' => 'ti ti-history',
+        'route' => '/settings/login-history',
+        'permission' => ['view login history'],
+    ]
 ];

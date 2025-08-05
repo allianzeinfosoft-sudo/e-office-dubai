@@ -137,7 +137,7 @@ class PermissionSeeder extends Seeder
                 'create department', 'edit department', 'delete department', 'view designation', 'create designation', 'edit designation',
                 'delete designation', 'assign designation', 'assign open work', 'view roles and permission', 'assign designation',
                 'view shift time', 'create shift time', 'edit shift time', 'delete shift time', 'assign shift time', 'view dashboard', 'change shift time',
-                'view feeds', 'leave approvals'
+                'view feeds', 'leave approvals', 'view login history',
             ]
         ];
 

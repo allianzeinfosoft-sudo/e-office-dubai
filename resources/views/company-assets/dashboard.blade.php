@@ -176,7 +176,7 @@
                                     </li>
 
                                     <li class="nav-item">
-                                        <a href="{{ route('classification.index') }}"
+                                        <a href="{{ route('category.index') }}"
                                             class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-info">
                                                 <i class="ti ti-settings ti-sm"></i>
                                             <h6 class="tab-widget-title mb-0 mt-2">Asset Categories</h6>
