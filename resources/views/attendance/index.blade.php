@@ -44,7 +44,7 @@
           <h4 class="fw-bold py-3 mb-4 text-muted "><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
 
           <div class="row">
-                <input type="text" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
+                <input type="hidden" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
                 <!-- Statistics -->
                 <div class="col-12 col-xl-12 col-lg-12">
                   <div class="row g-4 mb-4 justify-content-center">
@@ -603,7 +603,7 @@
             $btn.prop('disabled', false).text('Mark Out');
             return;
         }
-    var type = 'logout';
+    // var type = 'logout';
     // markOutHistory(userId,type);
     check_announcement(function (canProceed) {
 
@@ -664,22 +664,22 @@
 
   });
 
-markOutHistory(userId,type){
-    $.ajax({
-            url: '/store-markout-history',
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            data: { userId: userId, type:type },
-            success: function (res) {
+// markOutHistory(userId,type){
+//     $.ajax({
+//             url: '/store-markout-history',
+//             type: 'POST',
+//             headers: {
+//                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
+//             },
+//             data: { userId: userId, type:type },
+//             success: function (res) {
 
-            },
-            error: function () {
+//             },
+//             error: function () {
 
-            }
-        });
-}
+//             }
+//         });
+// }
 
 function check_announcement(callback) {
     $.ajax({

@@ -1291,30 +1291,30 @@ class AttendanceController extends Controller{
     }
 
 
-    public function storeMarkoutHistory(Request $request)
-    {
-        $user_id = $request->userId;
-        $type = $request->type;
+    // public function storeMarkoutHistory(Request $request)
+    // {
+    //     $user_id = $request->userId;
+    //     $type = $request->type;
 
-        $login_at = null;
-        $logout_at = null;
-        if($type === 'login')
-        {
-            $login_at = now();
-        }
+    //     $login_at = null;
+    //     $logout_at = null;
+    //     if($type === 'login')
+    //     {
+    //         $login_at = now();
+    //     }
 
-        if($type == 'logout')
-        {
-            $logout_at = now();
-        }
+    //     if($type == 'logout')
+    //     {
+    //         $logout_at = now();
+    //     }
 
-        $announcement = MarkoutHistory::create([
-            'user_id' => $user_id,
-            'ip_address' => Request::ip(),
-            'login_at' => $login_at,
-            'logout_at' => $logout_at,
-        ]);
-        return response()->json(['status' => 'success']);
-    }
+    //     $announcement = MarkoutHistory::create([
+    //         'user_id' => $user_id,
+    //         'ip_address' => Request::ip(),
+    //         'login_at' => $login_at,
+    //         'logout_at' => $logout_at,
+    //     ]);
+    //     return response()->json(['status' => 'success']);
+    // }
 
 }
