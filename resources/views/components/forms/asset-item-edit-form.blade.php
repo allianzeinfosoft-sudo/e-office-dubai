@@ -134,7 +134,7 @@
                         </select>
                     </td>
                     <td width="10%">
-                        <select name="asset_category_id[${itemLineLength}]" id="category_${itemLineLength}" onchange="getAssetTypes(this.value, '${itemLineLength}')" class="form-control select2" required>
+                        <select name="asset_category_id[${itemLineLength}]" id="category_${itemLineLength}" onchange="getAssetTypesEdit(this.value, '${itemLineLength}')" class="form-control select2" required>
                             <option value="">Select Category</option>
                             ${assetCategories.map(item => `<option value="${item.id}">${item.name}</option>`).join('')}
                         </select>
@@ -158,9 +158,9 @@
                         <textarea class="form-control" name="asset_unit[${itemLineLength}]" placeholder="Specifications" row="5"></textarea>
                     </td>
 
-                    <td width="6%"><input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" placeholder="0.00" value="1" readonly></td>
-                    <td width="6%"><input class="form-control text-right" type="text" id="price_${itemLineLength}" name="asset_price[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" placeholder="0.00">
-                        <input class="form-control text-right" type="hidden" id="amount_${itemLineLength}" name="asset_total[${itemLineLength}]" onchange="calculateAmount('${itemLineLength}')" placeholder="0.00" readonly>
+                    <td width="6%"><input class="form-control text-center" type="text" id="qty_${itemLineLength}" name="asset_quantity[${itemLineLength}]" onchange="calculateAmountEdit('${itemLineLength}')" placeholder="0.00" value="1" readonly></td>
+                    <td width="6%"><input class="form-control text-right" type="text" id="price_${itemLineLength}" name="asset_price[${itemLineLength}]" onchange="calculateAmountEdit('${itemLineLength}')" placeholder="0.00">
+                        <input class="form-control text-right" type="hidden" id="amount_${itemLineLength}" name="asset_total[${itemLineLength}]" onchange="calculateAmountEdit('${itemLineLength}')" placeholder="0.00" readonly>
                     </td>
                     <td width="6%"><input class="form-control" type="text" name="serial_number[${itemLineLength}]" placeholder = "Serial number"></td>
                     <td width="5%"><input class="form-control" type="text" name="warranty[${itemLineLength}]" placeholder="0"></td>
@@ -178,7 +178,7 @@
         });
     }
 
-    function getAssetTypes(categoryId, itemLineLength) {
+    function getAssetTypesEdit(categoryId, itemLineLength) {
         var assetTypes = {!! json_encode($assetTypes) !!};
         var categoryTypes = assetTypes.filter(type => type.asset_category_id == categoryId);
         let html = `
@@ -189,16 +189,16 @@
         $('#type_' + itemLineLength).html(html).trigger('change');
     }
 
-    function calculateAmount(itemLineLength) {
+    function calculateAmountEdit(itemLineLength) {
 
         var qty = $('#qty_' + itemLineLength).val();
         var price = $('#price_' + itemLineLength).val();
         var amount = qty * price;
         $('#amount_' + itemLineLength).val(amount);
-        calculateGrandTotal();
+        calculateGrandTotalEdit();
     }
 
-    function calculateGrandTotal() {
+    function calculateGrandTotalEdit() {
         var total = 0;
         $('#edit-item-line-container tr').each(function() {
 

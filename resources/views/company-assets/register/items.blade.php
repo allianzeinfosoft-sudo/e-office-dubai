@@ -51,14 +51,15 @@
                     <div class="row mb-3 pb-3 align-items-center">
 
                         <div class="col-md-6 pb-3">
-                            <a class="btn btn-primary" href="{{ route('assets.dashboard') }}">
-                            Assets Dashboard
+                            <a class="btn btn-danger" href="{{ route('assets.dashboard') }}">
+                                <i class="ti ti-home me-0 me-sm-1 ti-xs"></i>
                             </a>
-                             <a class="btn btn-primary" href="{{ route('assets.register.index') }}">
-                            Asset Batches
-                            </a>
+
                             <a class="btn btn-primary" href="{{ route('assets.register.items') }}">
-                            Asset Items
+                                Asset Items
+                            </a>
+                            <a class="btn btn-secondary" href="{{ route('assets.register.index') }}">
+                                Asset Batches
                             </a>
                         </div>
                         <div class="col-md-6 text-end pb-3">
@@ -113,8 +114,8 @@
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i>
             <span id="vendor-offcanvas-title">
-                <h5 class="offcanvas-title text-white">Create Asset Register</h5>
-                <span class="text-white slogan">Add new Asset Register</span>
+                <h5 class="offcanvas-title text-white">Create Asset</h5>
+                <span class="text-white slogan">Add New Asset Register</span>
             </span>
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i></button>
@@ -182,7 +183,7 @@
                     render: function (data, type, row) {
                         return `
 
-                            <a href="javascript:void(0)" onclick="openOffcanvas(${data})" class="btn btn-sm btn-icon btn-primary">
+                            <a href="javascript:void(0)" onclick="openOffcanvasEdit(${data})" class="btn btn-sm btn-icon btn-primary">
                                 <i class="ti ti-edit"></i>
                             </a>
                             <a href="javascript:void(0)" onclick="deleteAssetRegister(${data})" class="btn btn-sm btn-icon btn-danger">
@@ -198,8 +199,11 @@
         //                         <i class="ti ti-edit"></i>
         //                     </a>
         /* Store Items */
+
+
         $('#register-edit-form').submit(function (e) {
             let url = $(this).attr('action');
+
             e.preventDefault();
 
             let form = this;
@@ -219,6 +223,33 @@
                     const offcanvasedit = bootstrap.Offcanvas.getInstance(offcanvasElEdit);
                     if (offcanvasedit) {
                         offcanvasedit.hide();
+                    }
+                }
+            });
+        });
+
+
+        /* Store Items */
+        $('#register-form').submit(function (e) {
+            let url = $(this).attr('action');
+            e.preventDefault();
+
+            let form = this;
+            let formData = new FormData(form);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                contentType: false,   // MUST be false
+                processData: false,   // MUST be false
+                success: function (response) {
+                    toastr["success"](response.message);
+                    $('#asset-register-table').DataTable().ajax.reload();
+                    const offcanvasEl = document.getElementById('vendor_offcanvas');
+                    const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                    if (offcanvas) {
+                        offcanvas.hide();
                     }
                 }
             });
@@ -246,7 +277,7 @@
         }
     }
 
-    function openOffcanvas(id = null) {
+    function openOffcanvasEdit(id = null) {
         const $form = $('#register-edit-form');
         $('#edit-item-line-container').empty();
         calculateGrandTotal();
@@ -351,7 +382,7 @@
                             </tr>`;
                         $('#edit-item-line-container').append(row);
 
-// <td><button type="button" class="btn btn-xs btn-icon btn-danger" onclick="$(this).closest('tr').remove(); calculateGrandTotal();"><i class="ti ti-minus"></i></button></td>
+                    // <td><button type="button" class="btn btn-xs btn-icon btn-danger" onclick="$(this).closest('tr').remove(); calculateGrandTotal();"><i class="ti ti-minus"></i></button></td>
                     // Re-initialize select2 for dynamically added fields
                     $('#edit-item-line-container').find('select.select2').select2({
                         dropdownParent: $('#edit_vendor_offcanvas') // replace this ID with your actual offcanvas container ID
@@ -369,5 +400,24 @@
         $('#vendor-category-form')[0].reset();
     }
 
+
+function openOffcanvas(id = null) {
+
+        const $form = $('#register-form');
+        $('#item-line-container').empty();
+        calculateGrandTotal();
+        $('#company_name, #vendor_id').val('').trigger('change');
+        $form[0].reset();
+        $('#target_id').val('');
+        $('#vendor-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Create Asset</h5><span class="text-white slogan">Create New Asset Register</span>`);
+
+        const offcanvasElement = $('#vendor_offcanvas');
+
+        if (offcanvasElement.length) {
+            const offcanvas = new bootstrap.Offcanvas(offcanvasElement[0]);
+            offcanvas.show();
+        }
+
+    }
 </script>
 @endpush

@@ -90,7 +90,7 @@
                                 <h5 class="mb-0" id="total_amount">0.00</h5>
                                 <input type="hidden" name="grand_total" id="grand_total">
                             </th>
-                            <th><button type="button" class="btn btn-xs btn-icon btn-success waves-effect" onclick="addItemLine()"><i class="ti ti-plus"></i></button></th>
+                            <th><button type="button" class="btn btn-xs btn-icon btn-success waves-effect" onclick="addItemLine1()"><i class="ti ti-plus"></i></button></th>
                         </tr>
                     </tfoot>
                 </table>
@@ -120,7 +120,8 @@
         dateFormat: 'd-m-Y'
     });
 
-    function addItemLine() {
+    function addItemLine1() {
+
         var itemLineLength = $('#item-line-container tr').length + 1;
 
         var assetItems = {!! json_encode($assetItems) !!};

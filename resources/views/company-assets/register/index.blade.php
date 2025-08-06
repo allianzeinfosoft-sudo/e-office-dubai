@@ -51,14 +51,15 @@
                     <div class="row mb-3 pb-3 align-items-center">
 
                         <div class="col-md-6 pb-3">
-                            <a class="btn btn-primary" href="{{ route('assets.dashboard') }}">
-                            Assets Dashboard
+                            <a class="btn btn-danger" href="{{ route('assets.dashboard') }}">
+                                <i class="ti ti-home me-0 me-sm-1 ti-xs"></i>
                             </a>
-                            <a class="btn btn-primary" href="{{ route('assets.register.index') }}">
-                            Asset Batches
+
+                            <a class="btn btn-secondary" href="{{ route('assets.register.items') }}">
+                                Asset Items
                             </a>
-                            <a class="btn btn-primary" href="{{ route('assets.register.items') }}">
-                            Asset Items
+                            <a class="btn btn-primary " href="{{ route('assets.register.index') }}">
+                                Asset Batches
                             </a>
                         </div>
                         <div class="col-md-6 text-end pb-3">
@@ -108,8 +109,8 @@
         <span class="d-flex justify-content-between align-items-center gap-2">
             <i class="ti ti-file-description fs-2 text-white"></i>
             <span id="vendor-offcanvas-title">
-                <h5 class="offcanvas-title text-white">Create Asset Register</h5>
-                <span class="text-white slogan">Add new Asset Register</span>
+                <h5 class="offcanvas-title text-white">Create Asset</h5>
+                <span class="text-white slogan">Add new Asset</span>
             </span>
         </span>
         <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i></button>
@@ -231,7 +232,7 @@
         if (id) {
             $('#target_id').val(id);
             $('#vendor-offcanvas-title').html(`
-                <h5 class="offcanvas-title text-white">Edit Asset Register</h5>
+                <h5 class="offcanvas-title text-white">Edit Asset</h5>
                 <span class="text-white slogan">Edit Asset Vendor</span>
             `);
             $('#current-attachment').remove();

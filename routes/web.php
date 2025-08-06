@@ -121,8 +121,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
     Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
     Route::get('/update-brake-time/{id}', [AttendanceController::class, 'update_brake_time'])->name('update-brake-time');
-
     Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+    Route::post('/store-markout-history', [AttendanceController::class, 'storeMarkoutHistory']);
 
     /* roles */
     Route::resource('roles', RoleController::class);
@@ -326,6 +326,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     Route::post('/check-announcement', [AnnouncementController::class, 'checkAnnouncement']);
     Route::post('/mark-announcement-read', [AnnouncementController::class, 'markAsRead']);
+
     /* Others/Events */
     Route::get('/others/events', [EventController::class, 'index'])->name('others.events.index');
     Route::post('/others/events/store', [EventController::class, 'store'])->name('others.events.store');

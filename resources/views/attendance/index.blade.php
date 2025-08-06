@@ -44,11 +44,10 @@
           <h4 class="fw-bold py-3 mb-4 text-muted "><span class="text-muted fw-light"></span>{{ $meta_title }}</h4>
 
           <div class="row">
-
+                <input type="text" name="user_id" id="user_id" value="{{ Auth::user()->id }}">
                 <!-- Statistics -->
                 <div class="col-12 col-xl-12 col-lg-12">
                   <div class="row g-4 mb-4 justify-content-center">
-
                     <div class="col-sm-6 col-xl-4">
                       <div class="card card-bg">
                         <div class="card-body">
@@ -592,6 +591,7 @@
 
 
       var attendanceId = $('#attendance_id').val();
+      var userId = $('#user_id').val();
       var $btn = $(this);
       // Prevent double click
       if ($btn.prop('disabled')) return;
@@ -603,7 +603,9 @@
             $btn.prop('disabled', false).text('Mark Out');
             return;
         }
-      check_announcement(function (canProceed) {
+    var type = 'logout';
+    // markOutHistory(userId,type);
+    check_announcement(function (canProceed) {
 
         if (canProceed) {
                 $.ajax({
@@ -662,6 +664,22 @@
 
   });
 
+markOutHistory(userId,type){
+    $.ajax({
+            url: '/store-markout-history',
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            data: { userId: userId, type:type },
+            success: function (res) {
+
+            },
+            error: function () {
+
+            }
+        });
+}
 
 function check_announcement(callback) {
     $.ajax({
