@@ -46,6 +46,7 @@
                                             <th>Title</th>
                                             <th>Date</th>
                                             <th>Description</th>
+                                            <th>Document</th>
                                             <th>Created</th>
                                             <th>Actions</th>
                                         </tr>
@@ -128,6 +129,19 @@
                     { data: 'eventTitle', name: 'Title' },
                     { data: 'eventDate', name: 'Date' },
                     { data: 'description', name: 'Description' },
+                    {
+                        data: 'document',
+                        name: 'Document',
+                        render: function(data, type, row) {
+                            if (data) {
+                                // Assuming 'data' contains the file path stored in DB (e.g., documents/file.pdf)
+                                return `<a href="{{ url('storage') }}/${data}" target="_blank" download>
+                                            <i class="fa fa-download"></i>
+                                        </a>`;
+                            }
+                            return '-'; // Show a dash if no document exists
+                        }
+                    },
                     { data: 'createdAt', name: 'Created' },
                     {
                         data: null,

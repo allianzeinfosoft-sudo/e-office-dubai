@@ -52,8 +52,8 @@
                     <div class="row mb-3 pb-3 align-items-center">
 
                         <div class="col-md-6 pb-3">
-                            <a class="btn btn-primary" href="{{ route('assets.dashboard') }}">
-                                Assets Dashboard
+                             <a class="btn btn-danger" href="{{ route('assets.dashboard') }}">
+                                <i class="ti ti-home me-0 me-sm-1 ti-xs"></i>
                             </a>
                         </div>
                         <div class="col-md-6 text-end pb-3">

@@ -25,6 +25,7 @@ class EventController extends Controller
                         'id' => $event->id,
                         'eventTitle' => $event->eventTitle ?? '',
                         'description' => $event->description ?? '',
+                        'document' => $event->picture ?? '',
                         'eventDate' => date('d-m-Y', strtotime($event->eventDate)),
                         'createdAt' => $event->created_at->format('d-m-Y'),
                     ];
@@ -56,15 +57,23 @@ class EventController extends Controller
             'description' => 'nullable|string',
         ]);
 
+        $profileImagePath = null;
+        if ($request->hasFile('picture')) {
+            $file = $request->file('picture');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $profileImagePath = $file->storeAs('events_docs', $filename, 'public');
+        }
+
         $validatedData = $validated;
         $validatedData['eventDate'] = Carbon::parse($validated['eventDate'])->format('Y-m-d');
 
         $event = Event::updateOrCreate(
             ['id' => $validatedData['id'] ?? null],
             [
-                'eventTitle' => $validatedData['eventTitle'] ?? '',
-                'eventDate' => $validatedData['eventDate'] ?? '',
-                'description' => $validatedData['description'] ?? '',
+                'eventTitle'     => $validatedData['eventTitle'] ?? '',
+                'eventDate'      => $validatedData['eventDate'] ?? '',
+                'description'    => $validatedData['description'] ?? '',
+                'picture'        => $profileImagePath ?? ($request->id ? Event::find($request->id)->picture : 'events_docs/no-images.jpg'),
             ]
         );
 
