@@ -589,7 +589,8 @@
 
     /* Mark out function */
     $('#mark-out-btn').on('click', function() {
-    
+
+
       var attendanceId = $('#attendance_id').val();
       var $btn = $(this);
       // Prevent double click
@@ -597,6 +598,11 @@
       // Disable button and show loading text
       $btn.prop('disabled', true).text('Loading..');
 
+       if (!confirm("Are you sure you want to mark out?")) {
+
+            $btn.prop('disabled', false).text('Mark Out');
+            return;
+        }
       check_announcement(function (canProceed) {
 
         if (canProceed) {
