@@ -430,9 +430,9 @@ class ReportController extends Controller
             if ($attendance) {
                 $status = $attendance->status;
                 if ($status === 'mark-out') {
-                    if ($leave) {
+                    if ($attendance->working_hours > '03:30:00' && $attendance->working_hours < '06:29:00') {
                         $finalStatus = 'Half Day';
-                    } elseif ($attendance->working_hours < '08:00:00') {
+                    } elseif ($attendance->working_hours > '06:30:00' && $attendance->working_hours < '07:00:00') {
                         $finalStatus = 'Incomplete';
                     } else {
                         $finalStatus = 'Complete';
