@@ -47,10 +47,14 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> {{ $meta_title }}</h4>
-                    <div class="row">
-                        <div class="md-4 mb-2">
-                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+
+                    <div class="row   align-items-center">
+                        <div class="col-md-6 pb-3">
+                            <a class="btn btn-primary" href="{{ route('assets.dashboard') }}">
+                            Assets Dashboard
+                            </a>
                         </div>
+
                     </div>
                     <div class="row">
                         <div class="card mb-4">
@@ -90,61 +94,56 @@
                         </div>
 
 
-
-
-                <!-- Accordion with Icon -->
-                <div class="card mb-4 pb-4" id="asset-item-list-accodion">
-                  <div class="accordion mt-3 " id="accordionWithIcon">
-
-                        @foreach($assets as $item)
-
-                            <div id="accordion-card-{{ $item->id }}" class="card accordion-item">
-                                <h2 class="accordion-header d-flex align-items-center">
-                                    <button
-                                        type="button"
-                                        class="accordion-button {{ $item->id !== 0 ? 'collapsed' : '' }}"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#accordionWithIcon-{{ $item->id }}"
-                                        aria-expanded="{{ $item->id === 0 ? 'true' : 'false' }}">
-                                        <i class="ti ti-asset ti-xs me-2"></i>
-                                        {{-- Allocation #{{ $allocation->id }} --}}
-                                        Asset ID: {{ \App\Helpers\CustomHelper::itemCodeGenerater($item->id) }}, SN: {{ $item->serial_number }}
-                                    </button>
-                                </h2>
-
-                                <div id="accordionWithIcon-{{ $item->id }}" class="accordion-collapse collapse">
-                                    <div class="accordion-body">
-                                        <div class="row">
-
-                                            {{-- Asset Items Card --}}
-                                            <div class="col-md-12 mb-3">
-                                                <div class="card shadow-sm border">
-                                                    <div class="card-header bg-secondary text-white">
-                                                        Asset Item
-                                                    </div>
-                                                    <div class="card-body mt-4">
-
-                                                        <p><strong>Asset ID:</strong> {{ \App\Helpers\CustomHelper::itemCodeGenerater($item->id) }}, SN: {{ $item->serial_number }}</p>
-                                                        <p><strong>Brand Name:</strong> {{ $item->masterItem->name ?? 'N/A' }}</p>
-                                                        <p><strong>Model:</strong> {{ $item->model ?? '-' }}</p>
-                                                        <p><strong>Serial Number:</strong> {{ $item->serial_number ?? '-' }}</p>
-                                                        <p><strong>Specification:</strong> {{ $item->register_lineitem?->asset_description ?? '-' }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
+                     <div class="card">
+                            <div class="card-datatable table-mom">
+                                <div class="card-datatable table-responsive">
+                                    <table class="table table-bordered table-striped" id="asset-item-table" style="font-size: 12px;">
+                                        <thead>
+                                            <tr>
+                                                <th>Sl No.</th>
+                                                <th>Asset ID</th>
+                                                <th>Classificatin</th>
+                                                <th>Category</th>
+                                                <th>Type</th>
+                                                <th>Item</th>
+                                                <th>Brand Name</th>
+                                                <th>Model</th>
+                                                <th>Serial Number</th>
+                                                <th>Specifications</th>
+                                                <th>Price</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($assets as $item)
+                                             <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ \App\Helpers\CustomHelper::itemCodeGenerater($item->id) }}</td>
+                                                <td>{{ $item->register_lineitem?->asset_classification?->name ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->asset_category?->name ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->asset_type?->name ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->asset_item?->name ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->asset_brand ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->item_model ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->serial_number ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->asset_description ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->asset_price ?? '-' }}</td>
+                                                <td>
+                                                    {{-- <a href="javascript:void(0)" onclick="openOffcanvas({{$item->register_lineitem->id}})" class="btn btn-sm btn-icon btn-primary">
+                                                        <i class="ti ti-edit"></i>
+                                                    </a>--}}
+                                                    <a href="javascript:void(0)" onclick="deleteAssetItem({{$item->register_lineitem->id  ?? ''}}, this)" class="btn btn-sm btn-icon btn-danger">
+                                                        <i class="ti ti-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
 
-                  </div>
-
-                </div>
-                <div class="d-flex justify-content-end mt-3">
-                    {{ $assets->links() }}
-                </div>
 
 
                 </div>
@@ -156,8 +155,33 @@
         </div>
     </div>
 </div>
-
 @stop
 
+@push('js')
+<script>
+ function deleteAssetItem(id,element) {
+        if (confirm('Are you sure you want to delete this Asset Entry?')) {
+            $.ajax({
+                url: 'items/delete/' + id,
+                type: "DELETE",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                },
+                    success: function (response) {
+                    toastr["success"](response.message); // ✅ Use success toast
+                    $(element).closest('tr').remove();
+                },
+                error: function (xhr) {
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        toastr["error"](xhr.responseJSON.message); // Show JSON error
+                    } else {
+                        toastr["error"]("Failed to delete asset.");
+                        console.error(xhr.responseText); // Debug response in console
+                    }
+                }
+            });
+        }
+    }
 
-
+</script>
+@endpush

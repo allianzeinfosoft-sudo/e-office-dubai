@@ -70,6 +70,7 @@
                             <th width="10%">Item</th>
                             <th width="10%">Brand</th>
                             <th width="10%">Model</th>
+                            <th width="10%">Key/ID</th>
                             <th width="10%">Specifications</th>
                             <th width="6%">Qty</th>
                             <th width="6%">Price</th>
@@ -84,7 +85,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="11" class="text-right"><h5 class="mb-0">GrandTotal</h5></th>
+                            <th colspan="12" class="text-right"><h5 class="mb-0">GrandTotal</h5></th>
                             <th class="text-right fw-semibold">
                                 <h5 class="mb-0" id="total_amount">0.00</h5>
                                 <input type="hidden" name="grand_total" id="grand_total">
@@ -155,6 +156,7 @@
                 </td>
                 <td width="10%"><input class="form-control" type="text" name="asset_brand[${itemLineLength}]" placeholder="Brand name" required></td>
                 <td width="10%"><input class="form-control" type="text" name="asset_model[${itemLineLength}]" placeholder="Model name" required></td>
+                <td width="10%"><input type="text" name="item_key_id[${itemLineLength}]" class="form-control" placeholder="Key or ID" ></td>
                 <td width="10%">
                     <textarea class="form-control" name="asset_unit[${itemLineLength}]" placeholder="Specifications" row="5"></textarea>
                 </td>
