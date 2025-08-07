@@ -1027,6 +1027,24 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
         return CompanyPolicy::where('status',0)->count();
     }
+
+    /* Update attendance is_incompte and user block list - if apply for halfday leave */
+    public static function updateHalfdayLeaveIncompleteStatus($username, $date){
+        $attendance = Attendance::where('username', $username)
+                                ->where('signin_date', $date)
+                                ->first(); // Use first() instead of get() to get a single model instance
+
+        if ($attendance) {
+            $attendance->is_incomplete = 0;
+            $attendance->save(); // Save the updated model
+
+            UserEntryBlockList::where('username', $username)
+                            ->where('block_date', $date)
+                            ->update(['status' => 0]);
+        }
+    }
+    
+    
 }
 
 
