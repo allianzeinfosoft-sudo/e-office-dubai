@@ -71,6 +71,7 @@ class AssetRegisterController extends Controller
                     return [
                         'DT_RowIndex'       => $index + 1,
                         'id'                => $item->id,
+                        'batch_no'          => $item->register_lineitem?->asset_register?->asset_number,
                         'asset_id'          => CustomHelper::itemCodeGenerater($item->id) ?? '-',
                         'classification'    => $item->register_lineitem?->asset_classification?->name ?? '-', //$item->asset_date,
                         'category'          => $item->register_lineitem?->asset_category?->name ?? '-',

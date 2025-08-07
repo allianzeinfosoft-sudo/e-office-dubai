@@ -19,6 +19,7 @@ use App\Models\FeedbackAssign;
 use App\Models\ParUserAssign;
 use App\Models\SarUserAssign;
 use App\Models\SurveyUserAssign;
+use App\Models\TicketRaising;
 use App\Models\WorkFromHomeAttendance;
 
 use Illuminate\Support\Facades\DB;
@@ -1026,6 +1027,20 @@ public static function getWorkRatingAnalysisMonthly($empId)
         }
 
         return CompanyPolicy::where('status',0)->count();
+    }
+
+    public static function TicketNotification()
+    {
+         if(Auth::check()){
+            $userId = Auth::id();
+        }
+        if(Auth::user()->employee->department->name == 'Technical' )
+        {
+             return TicketRaising::where('status',0)->count();
+        }else{
+             return TicketRaising::where('user',$userId)->where('status','!=',1)->count();
+        }
+
     }
 
     /* Update attendance is_incompte and user block list - if apply for halfday leave */
