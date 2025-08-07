@@ -60,6 +60,50 @@ class AssetRegisterController extends Controller
         return view('company-assets.register.index', $data);
     }
 
+    public function registered_items(Request $request)
+    {
+
+        if($request->ajax()) {
+            $asset =  AssetMapping::with(['register_lineitem', 'masteritem'])->get();
+
+            $data = $asset->map(function($item, $index) {
+
+                    return [
+                        'DT_RowIndex'       => $index + 1,
+                        'id'                => $item->id,
+                        'asset_id'          => CustomHelper::itemCodeGenerater($item->id) ?? '-',
+                        'classification'    => $item->register_lineitem?->asset_classification?->name ?? '-', //$item->asset_date,
+                        'category'          => $item->register_lineitem?->asset_category?->name ?? '-',
+                        'type'              => $item->register_lineitem?->asset_type?->name ?? '-', //$item->purchase_date,
+                        'item'              => $item->masteritem?->name ?? '-',
+                        'brand'             => $item->register_lineitem?->asset_brand ?? '-',
+                        'model'             => $item->register_lineitem?->item_model ?? '-',
+                        'item_key_id'       => $item->register_lineitem?->item_key_id ?? '-',
+                        'serial_number'     => $item->register_lineitem?->serial_number ?? '-',
+                        'specification'     => $item->register_lineitem?->asset_description ?? '-',
+                        'price'             => $item->register_lineitem?->asset_price ?? '-',
+                        'asset_register_id' => $item->register_lineitem_id ?? '',
+                    ];
+
+                });
+
+
+
+            return response()->json(['data' => $data]);
+        }
+        //
+        $data['meta_title'] = 'Asset Items';
+        $data['vendors'] = AssetVendors::all();
+        $data['assetItems'] = AssetItemMaster::all();
+        $data['assetClassifications'] = AssetClassification::all();
+        $data['assetCategories'] = AssetCategory::all();
+        $data['assetTypes'] = AssetType::all();
+
+        return view('company-assets.register.items', $data);
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -90,10 +134,11 @@ class AssetRegisterController extends Controller
             $filePath = $request->file('upload_invoice')->store('invoices', 'public');
         }
 
-
-
         $totalAmount = array_sum($request->asset_total);
-
+        if ($request->id) {
+            $asset = AssetRegister::findOrFail($request->id);
+            $totalAmount = $asset->total_amount + $totalAmount;
+        }
         // Create or update main record
         $asset = AssetRegister::updateOrCreate(
             ['id' => $request->id],
@@ -114,10 +159,10 @@ class AssetRegisterController extends Controller
         $lineItemIds = $asset->items()->pluck('id');
 
         // Delete related mappings
-        AssetMapping::whereIn('register_lineitem_id', $lineItemIds)->delete();
+        // AssetMapping::whereIn('register_lineitem_id', $lineItemIds)->delete();
 
         // Now delete line items
-        $asset->items()->delete();
+        // $asset->items()->delete();
 
         // Save asset item lines
         foreach ($request->asset_item_id as $index => $itemId) {
@@ -126,13 +171,14 @@ class AssetRegisterController extends Controller
                 'asset_item_id'           => $itemId,
                 'asset_brand'             => $request->asset_brand[$index],
                 'item_model'              => $request->asset_model[$index],
+                'item_key_id'             => $request->item_key_id[$index],
                 'asset_description'       => $request->asset_unit[$index],  // Forgot to add unit column so I added to this field
                 'asset_classification_id' => $request->asset_classification_id[$index],
                 'asset_category_id'       => $request->asset_category_id[$index],
                 'asset_type_id'           => $request->asset_type_id[$index],
                 'asset_quantity'          => $request->asset_quantity[$index],
                 'asset_price'             => $request->asset_price[$index],
-                'asset_total' => number_format((float) $request->asset_total[$index], 2, '.', ''),
+                'asset_total'             => number_format((float) $request->asset_total[$index], 2, '.', ''),
                 'serial_number'           => $request->serial_number[$index],
                 'warranty'                => $request->warranty[$index],
             ]);
@@ -153,9 +199,92 @@ class AssetRegisterController extends Controller
         ]);
         //return redirect()->back()->with('success', 'Asset register saved successfully.');
     }
-    /**
-     * Display the specified resource.
-     */
+
+    public function update_item(Request $request)
+    {
+        $validated = $request->validate([
+            'company_name' => 'required|string',
+            'asset_number' => 'required',
+            'purchase_date' => 'required',
+            'invoice_number' => 'required',
+            'vendor_id' => 'required',
+            'asset_item_id' => 'required|array',
+            'asset_total' => 'required|array',
+        ]);
+
+        $asset_total = array_sum($request->asset_total);
+        $asset_pre_total = array_sum($request->asset_pre_total);
+
+        $asset_price = array_sum($request->asset_price);
+        $asset_pre_price = array_sum($request->asset_pre_price);
+
+
+         if ($request->line_id) {
+
+             $index = 1;
+                $assetLine = AssetItemLine::findOrFail($request->line_id);
+                $assetTotal = ($assetLine->asset_total - $asset_pre_price) + $asset_price;
+                AssetItemLine::where('id',$request->line_id)->update([
+
+                    'asset_item_id'           => $request->asset_item_id[$index],
+                    'asset_brand'             => $request->asset_brand[$index],
+                    'item_model'              => $request->asset_model[$index],
+                    'item_key_id'             => $request->item_key_id[$index],
+                    'asset_description'       => $request->asset_unit[$index],  // Forgot to add unit column so I added to this field
+                    'asset_classification_id' => $request->asset_classification_id[$index],
+                    'asset_category_id'       => $request->asset_category_id[$index],
+                    'asset_type_id'           => $request->asset_type_id[$index],
+                    'asset_quantity'          => $request->asset_quantity[$index],
+                    'asset_price'             => $request->asset_price[$index],
+                    'asset_total'             => number_format((float) $assetTotal, 2, '.', ''),
+                    'serial_number'           => $request->serial_number[$index],
+                    'warranty'                => $request->warranty[$index],
+
+                 ]);
+        }
+
+        if ($request->id) {
+
+            $asset = AssetRegister::findOrFail($request->id);
+            $assetLineNew = AssetItemLine::findOrFail($request->line_id);
+            $totalAmount = ($asset->total_amount - $asset_pre_total) + $assetLineNew->asset_total;
+
+            AssetRegister::updateOrCreate(
+                ['id' => $request->id],
+                [
+                    'asset_date'     => date('Y-m-d', strtotime($request->purchase_date)),
+                    'asset_number'   => $request->asset_number,
+                    'company_name'   => $request->company_name,
+                    'purchase_date'  => date('Y-m-d', strtotime($request->purchase_date)), //$request->purchase_date,
+                    'invoice_number' => $request->invoice_number,
+                    'vendor_id'      => $request->vendor_id,
+                    'total_amount'   => $totalAmount,
+                    'remarks'        => $request->remarks ?? '',
+                ]
+            );
+        }
+
+
+
+
+
+        if ($request->mapping_id) {
+            $index = 1;
+            AssetMapping::where('id',$request->mapping_id)->update([
+
+                'master_item_id'        => $request->asset_item_id[$index],
+                'model'                 => $request->asset_model[$index],
+                'serial_number'         => $request->serial_number[$index],
+            ]);
+        }
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset register updated successfully.',
+        ]);
+    }
+
     public function show(AssetRegister $assetRegister)
     {
         //
@@ -396,6 +525,65 @@ class AssetRegisterController extends Controller
         }
 
         return response()->json(['data' => $reportData]);
+    }
+
+    public function deleteAssetItem($id)
+    {
+
+        $mappings = AssetMapping::where('register_lineitem_id', $id)->where('allocation_status','!=',0)->first();
+        if($mappings)
+        {
+            return response()->json([
+            'message' => 'Cannot delete: Asset is mapped and allocation is active.',
+            ], 400);
+        }
+        else
+        {
+            $delete_mapping = AssetMapping::findOrFail($id);
+            if($delete_mapping)
+            {
+                $assetline  = AssetItemLine::where('id',$delete_mapping->register_lineitem_id)->first();
+
+                if($assetline){
+
+                    $assetline->asset_total = max(0, $assetline->asset_total - $assetline->asset_price);
+                    $assetline->save();
+
+                     $assetRegister = AssetRegister::find($assetline->asset_register_id); // Assuming asset_register_id is the relation field
+                    if ($assetRegister) {
+
+                        $assetRegister->total_amount = max(0, $assetRegister->total_amount - $assetline->asset_price);
+                        $assetRegister->save();
+                    }
+                }
+
+                $delete_mapping->delete();
+                return response()->json(['message' => 'Asset deleted successfully']);
+            }
+            else
+            {
+                 return response()->json([
+                'message' => 'Cannot delete: Asset is not exist.',
+                ], 400);
+            }
+
+        }
+
+    }
+
+    public function edit_item($id)
+    {
+        $regline_id = AssetMapping::find($id);
+        $register_id = AssetItemLine::find($regline_id->register_lineitem_id);
+        $register = AssetRegister::with('items')->findOrFail($register_id->asset_register_id);
+        $matchedItem = $register->items->firstWhere('id', $id);
+
+
+        return response()->json([
+            'register' => $register,
+            'item' => $matchedItem,
+            'mapping' => $regline_id
+        ]);
     }
 
 }

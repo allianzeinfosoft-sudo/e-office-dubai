@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Event extends Model
+class MarkoutHistory extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'eventTitle',
-        'eventDate',
-        'description',
-        'picture',
+        'user_id',
+        'ip_address',
+        'login_at',
+        'logout_at',
     ];
+
 }

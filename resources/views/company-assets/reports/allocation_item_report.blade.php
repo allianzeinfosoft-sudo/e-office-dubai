@@ -27,7 +27,9 @@
                     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Assets /</span> Allocated Items Report</h4>
                     <div class="row">
                         <div class="md-4 mb-2">
-                        <a class="btn btn-primary" href="{{route('assets.dashboard'); }}">Assets Dashboad</a>
+                          <a class="btn btn-danger" href="{{ route('assets.dashboard') }}">
+                                <i class="ti ti-home me-0 me-sm-1 ti-xs"></i>
+                            </a>
                         </div>
                     </div>
                     <div class="row">

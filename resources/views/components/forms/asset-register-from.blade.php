@@ -70,6 +70,7 @@
                             <th width="10%">Item</th>
                             <th width="10%">Brand</th>
                             <th width="10%">Model</th>
+                            <th width="10%">Key/ID</th>
                             <th width="10%">Specifications</th>
                             <th width="6%">Qty</th>
                             <th width="6%">Price</th>
@@ -84,12 +85,12 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="11" class="text-right"><h5 class="mb-0">GrandTotal</h5></th>
+                            <th colspan="12" class="text-right"><h5 class="mb-0">GrandTotal</h5></th>
                             <th class="text-right fw-semibold">
                                 <h5 class="mb-0" id="total_amount">0.00</h5>
                                 <input type="hidden" name="grand_total" id="grand_total">
                             </th>
-                            <th><button type="button" class="btn btn-xs btn-icon btn-success waves-effect" onclick="addItemLine()"><i class="ti ti-plus"></i></button></th>
+                            <th><button type="button" class="btn btn-xs btn-icon btn-success waves-effect" onclick="addItemLine1()"><i class="ti ti-plus"></i></button></th>
                         </tr>
                     </tfoot>
                 </table>
@@ -119,7 +120,8 @@
         dateFormat: 'd-m-Y'
     });
 
-    function addItemLine() {
+    function addItemLine1() {
+
         var itemLineLength = $('#item-line-container tr').length + 1;
 
         var assetItems = {!! json_encode($assetItems) !!};
@@ -155,6 +157,7 @@
                 </td>
                 <td width="10%"><input class="form-control" type="text" name="asset_brand[${itemLineLength}]" placeholder="Brand name" required></td>
                 <td width="10%"><input class="form-control" type="text" name="asset_model[${itemLineLength}]" placeholder="Model name" required></td>
+                <td width="10%"><input type="text" name="item_key_id[${itemLineLength}]" class="form-control" placeholder="Key or ID" ></td>
                 <td width="10%">
                     <textarea class="form-control" name="asset_unit[${itemLineLength}]" placeholder="Specifications" row="5"></textarea>
                 </td>

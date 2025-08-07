@@ -13,6 +13,7 @@ class AssetItemLine extends Model
         'asset_item_id',
         'asset_brand',
         'item_model',
+        'item_key_id',
         'asset_description',
         'asset_classification_id',
         'asset_category_id',

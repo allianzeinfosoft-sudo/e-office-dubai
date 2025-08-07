@@ -39,19 +39,19 @@
                                                 <label for="signin_date" class="form-label">Date</label>
                                                 <input type="text" class="form-control" value="{{ date('d-m-Y', strtotime($missingMarkOut->signin_date))  }}"  placeholder="Date" disabled readonly />
                                             </div>
-                                
+
                                             <div class="col-12 mb-3">
                                                 <label for="signout_time" class="form-label">Time</label>
                                                 <input type="time" id="signout_time" name="signout_time" class="form-control" step="2" value="{{ date('H:i:s', strtotime('now')) }}"  placeholder="Time" />
                                                 <input type="hidden" id="signout_date" name="signout_date" class="form-control" value="{{ $missingMarkOut->signin_date }}"  placeholder="Time" />
                                             </div>
-                                
+
                                             <div class="col-12 mb-3">
                                                 <label for="signout_late_note" class="form-label">Reason</label>
                                                 <textarea id="signout_late_note" name="signout_late_note" class="form-control"  placeholder="Reason" rows="5" required> </textarea>
                                             </div>
                                         </form>
-        
+
                                     </div>
                                 </div>
                                 <div class="card-footer">
@@ -85,7 +85,7 @@
     function customMarkOut(){
         let form = $('#customMarkOutForm');
         let formData = form.serialize();
-    
+
         $.ajax({
             url: form.attr('action'),
             type: 'POST',

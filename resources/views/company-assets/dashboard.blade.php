@@ -41,7 +41,7 @@
                                 <h5 class="card-title mb-1 pt-2">Assets in Store</h5>
                                 <small class="text-muted">Count of assets in store</small>
                                 <div class="">
-                                     <a href="{{ route('assets.register.index') }}" class="form-control btn btn-primary">Add Assets</a>
+                                     <a href="{{ route('assets.register.items') }}" class="form-control btn btn-primary">Add Assets</a>
                                 </div>
                                 </div>
                             </div>

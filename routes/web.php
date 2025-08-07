@@ -121,8 +121,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
     Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
     Route::get('/update-brake-time/{id}', [AttendanceController::class, 'update_brake_time'])->name('update-brake-time');
-
     Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+    Route::post('/store-markout-history', [AttendanceController::class, 'storeMarkoutHistory']);
 
     /* roles */
     Route::resource('roles', RoleController::class);
@@ -326,6 +326,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     Route::post('/check-announcement', [AnnouncementController::class, 'checkAnnouncement']);
     Route::post('/mark-announcement-read', [AnnouncementController::class, 'markAsRead']);
+
     /* Others/Events */
     Route::get('/others/events', [EventController::class, 'index'])->name('others.events.index');
     Route::post('/others/events/store', [EventController::class, 'store'])->name('others.events.store');
@@ -642,6 +643,10 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     /* Asset Type*/
     Route::prefix('assets')->name('assets.')->group(function () {
         Route::get('all',[AssetAllocationController::class,'allAssets'])->name('all');
+        Route::get('items',[AssetRegisterController::class,'registered_items'])->name('register.items');
+        Route::get('edit/item/{id}', [AssetRegisterController::class, 'edit_item'])->name('item.edit');
+        Route::post('update/item', [AssetRegisterController::class, 'update_item'])->name('register.update_item');
+
         Route::resource('type', AssetTypeController::class)->names('type');
         Route::resource('location', AssetLocationController::class)->names('location');
         Route::resource('vendors', AssetVendorsController::class)->names('vendors');
@@ -664,6 +669,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::get('reports/repair-items-data', [RepairRegisterController::class, 'repairItemsReport'])->name('reports.repair-items-data');
         /* Stock report */
         Route::get('reports/stock-report', [AssetRegisterController::class, 'stockReport'])->name('reports.stock-report');
+        Route::delete('items/delete/{id}', [AssetRegisterController::class, 'deleteAssetItem'])->name('items.delete');
 
         Route::post('return/{allocation}', [AssetAllocationController::class, 'returnToStore'])->name('return');
         Route::get('reports/allocated-items',[AssetAllocationController::class, 'reportAllocatedItems'])->name('reports.allocated-items');
