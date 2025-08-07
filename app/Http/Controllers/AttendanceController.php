@@ -526,7 +526,7 @@ class AttendanceController extends Controller{
         $nonApprovedIncompleteWorkingHours = Attendance::where('username', $user->username)->where('is_incomplete', 1)->where('incomplete_approved', 0)->count();
 
         if ($nonApprovedIncompleteWorkingHours > 0) {
-            $data['error'] = "Incomplete working hours found. You need to take  approve from your higher authority.";
+            $data['error'] = "Incomplete working hours found. You need to take  approve from your higher authority. If you are half day please  <a class='btn btn-xs btn-warning' href='" . route('leaves.create') . "'>Apply Leave</a>";
             return view('attendance.no_action_from', $data);
         }
 
