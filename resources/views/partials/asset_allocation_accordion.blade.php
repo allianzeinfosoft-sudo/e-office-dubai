@@ -20,7 +20,13 @@
                         @if($firstItem)
                             {{ $firstItem->item_name }} Asset ID: {{ \App\Helpers\CustomHelper::itemCodeGenerater($item->asset_mapping_id) }}, SN: {{ $item->serial_number }}
                         @endif
-                        -( {{ $allocation->employee->full_name ?? 'N/A' }} )
+                        -(
+                            @if($allocation->user_type === 'employee')
+                                {{ $allocation->employee->full_name ?? 'N/A' }}
+                            @elseif ($allocation->user_type === 'location')
+                                {{ $allocation->location->name ?? 'N/A' }}
+                            @endif
+                         )
                     </button>
                 </h2>
 
@@ -34,8 +40,12 @@
                                         Allocation Details
                                     </div>
                                     <div class="card-body mt-4">
-                                        <p><strong>Employee:</strong> {{ $allocation->employee->full_name ?? 'N/A' }}</p>
-                                        <p><strong>Department:</strong> {{ $allocation->department_name->department ?? 'N/A' }}</p>
+                                         @if($allocation->user_type === 'employee')
+                                            <p><strong>Employee:</strong> {{ $allocation->employee->full_name ?? 'N/A' }}</p>
+                                            <p><strong>Department:</strong> {{ $allocation->department_name->department ?? 'N/A' }}</p>
+                                        @elseif ($allocation->user_type === 'location')
+                                            <p><strong>Location:</strong> {{ $allocation->location->name ?? 'N/A' }}</p>
+                                        @endif
                                         {{-- <p><strong>Status:</strong> {{ ucfirst($allocation->status) }}</p> --}}
                                         <p><strong>Remarks:</strong> {{ $allocation->remarks ?? '-' }}</p>
                                         <p><strong>Allocated At:</strong> {{ $allocation->created_at->format('d-m-Y') }}</p>

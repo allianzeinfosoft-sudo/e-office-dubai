@@ -169,8 +169,13 @@ class AssetAllocationController extends Controller
    public function allotedItemSearch(Request $request)
     {
         $userType = $request->input('user');
-        $userId = $request->input('employee');
 
+        if($userType === 'employee'){
+            $userId = $request->input('employee');
+        }
+        elseif($userType === 'location'){
+            $userId = $request->input('location');
+        }
         // Fix: Tell Laravel what the current page is
         Paginator::currentPageResolver(function () use ($request) {
             return $request->input('page', 1);
@@ -178,7 +183,7 @@ class AssetAllocationController extends Controller
 
        $allocations = AssetAllocation::with(['items' => function ($query) {
                     $query->where('status', 1);
-                }, 'employee', 'department_name'])
+                }, 'employee','location', 'department_name'])
             ->where('user_type', $userType)
             ->where('user', $userId)
             ->where('status', 1)
