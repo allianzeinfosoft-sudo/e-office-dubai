@@ -233,7 +233,7 @@
 
             let current_working_hours = '{{ $missingReport->balance_time }}';
             let total_time = $('#total_time').val();
-
+            let reportComment = $('#comments').val();
             let currentSeconds = parseTimeToSeconds(current_working_hours);
             let enteredSeconds = parseTimeToSeconds(total_time);
 
@@ -241,6 +241,12 @@
             let formData = new FormData(form);
             let actionUrl = $(form).attr('action');
             let method = $('#formMethod').val(); // POST or PUT
+
+             if (reportComment == null || reportComment == '') {
+                alert('Report comment is mandatory');
+                $('#comments').focus();
+                return;
+            }
 
             // ⛳ CSRF token and method spoofing
             formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
