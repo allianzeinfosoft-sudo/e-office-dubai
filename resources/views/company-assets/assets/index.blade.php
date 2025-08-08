@@ -68,7 +68,7 @@
                                         <div class="col-md-4">
 
                                           <select class="form-control select2" name="asset_id" id="asset_id" aria-placeholder="Select Asset ID">
-                                            <option value="">Select Asset ID</option>
+                                            <option value=" ">All</option>
                                             @foreach ($assetIds as $id)
                                                 <option value="{{ $id }}" {{ request('asset_id') == $id ? 'selected' : '' }}>
                                                     {{ \App\Helpers\CustomHelper::itemCodeGenerater($id) }}
@@ -159,6 +159,21 @@
 
 @push('js')
 <script>
+
+$(document).ready(function() {
+    $('#asset-item-table').DataTable({
+        pageLength: 10,        // default rows per page
+        lengthMenu: [5, 10, 25, 50, 100],
+        ordering: true,        // enable sorting
+        searching: true,       // enable search box
+        responsive: true,      // mobile friendly
+        columnDefs: [
+            { orderable: false, targets: -1 } // disable sorting for last column (Actions)
+        ]
+    });
+});
+
+
  function deleteAssetItem(id,element) {
         if (confirm('Are you sure you want to delete this Asset Entry?')) {
             $.ajax({

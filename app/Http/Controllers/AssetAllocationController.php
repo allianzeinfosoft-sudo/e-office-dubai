@@ -169,28 +169,36 @@ class AssetAllocationController extends Controller
    public function allotedItemSearch(Request $request)
     {
         $userType = $request->input('user');
+        $userId = null;
 
-        if($userType === 'employee'){
+        if ($userType === 'employee') {
             $userId = $request->input('employee');
-        }
-        elseif($userType === 'location'){
+        } elseif ($userType === 'location') {
             $userId = $request->input('location');
         }
+
         // Fix: Tell Laravel what the current page is
         Paginator::currentPageResolver(function () use ($request) {
             return $request->input('page', 1);
         });
 
-       $allocations = AssetAllocation::with(['items' => function ($query) {
+        $allocations = AssetAllocation::with([
+                'items' => function ($query) {
                     $query->where('status', 1);
-                }, 'employee','location', 'department_name'])
-            ->where('user_type', $userType)
-            ->where('user', $userId)
+                },
+                'employee',
+                'location',
+                'department_name'
+            ])
+            ->when($userId, function ($query) use ($userId, $userType) {
+                $query->where('user_type', $userType)
+                    ->where('user', $userId);
+            })
             ->where('status', 1)
             ->whereHas('items', function ($query) {
                 $query->where('status', 1);
             })
-            ->paginate(5);
+            ->paginate(10);
 
         $html = view('partials.asset_allocation_accordion', compact('allocations'))->render();
 
@@ -199,6 +207,7 @@ class AssetAllocationController extends Controller
             'html' => $html
         ]);
     }
+
 
   public function returnToStore(Request $request, $allocationId)
     {
@@ -223,12 +232,11 @@ class AssetAllocationController extends Controller
         }
 
         // Check if AJAX
-        if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Asset returned successfully.'
-                ]);
-            }
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset returned successfully.'
+        ]);
+
 
     }
 
