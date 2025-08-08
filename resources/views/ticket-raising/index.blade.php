@@ -33,7 +33,7 @@
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-3"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
-
+                    @can('create tickets')
                         <div class="row">
                             <div class="col-sm-12 d-flex justify-content-end mb-3">
                                 <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openTicketOffcanvas()">
@@ -44,8 +44,7 @@
                                 </a>
                             </div>
                         </div>
-
-
+                    @endcan
                     <div class="card">
                         <div class="card-datatable table-responsive">
                             <table class="hover_effect datatables-basic datatables-tickets table border-top table-stripedc" id="datatables-tickets">
