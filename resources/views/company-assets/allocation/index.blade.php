@@ -433,6 +433,10 @@
 $(document).on('submit', '.return-form', function (e) {
 
     e.preventDefault();
+
+      if (!confirm('Are you sure you want to return this asset to the store?')) {
+        return; // stop if cancelled
+    }
     const form = $(this);
     const allocationId = form.data('id');
 
