@@ -64,7 +64,7 @@ class AssetRegisterController extends Controller
     {
 
         if($request->ajax()) {
-            $asset =  AssetMapping::with(['register_lineitem', 'masteritem'])->get();
+            $asset =  AssetMapping::with(['register_lineitem', 'masteritem'])->where('allocation_status',0)->get();
 
             $data = $asset->map(function($item, $index) {
 
