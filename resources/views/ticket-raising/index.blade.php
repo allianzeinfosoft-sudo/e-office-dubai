@@ -34,16 +34,16 @@
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-3"><span class="text-muted fw-light"></span> {{ $meta_title }}</h4>
 
-                    <div class="row">
-                        <div class="col-sm-12 d-flex justify-content-end mb-3">
-                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openTicketOffcanvas()">
-                                <span>
-                                    <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                    <span class="d-none d-sm-inline-block">Add New Ticket</span>
-                                </span>
-                            </a>
+                        <div class="row">
+                            <div class="col-sm-12 d-flex justify-content-end mb-3">
+                                <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openTicketOffcanvas()">
+                                    <span>
+                                        <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
+                                        <span class="d-none d-sm-inline-block">Add New Ticket</span>
+                                    </span>
+                                </a>
+                            </div>
                         </div>
-                    </div>
 
 
                     <div class="card">
@@ -261,11 +261,34 @@
                             let id = row.id;
                             let status = row.status;
                             let user = row.user;
-
+                            const authUserId = {{ auth()->id() }};
                             const editUrl = "{{ route('tickets.edit', ':id') }}".replace(':id', row.id);
-                            return `<button class="btn btn-sm btn-success me-2 open-modal" data-function="1" data-user="${user}" data-id="${id}" data-status="${status}" data-ticket_description="${description}" data-picture="${picture}"  data-bs-toggle="modal" data-bs-target="#ticketDetail"><i class="fa fa-eye"></i></button>
-                            <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-tickets" onclick="openTicketOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-tickets" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
+
+                           let buttons = `<button class="btn btn-sm btn-success me-2 open-modal"
+                                                data-function="1"
+                                                data-user="${user}"
+                                                data-id="${id}"
+                                                data-status="${status}"
+                                                data-ticket_description="${description}"
+                                                data-picture="${picture}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#ticketDetail">
+                                                <i class="fa fa-eye"></i>
+                                            </button>`;
+
+                                        // Show Edit/Delete only if row.user == current user
+                                        if (parseInt(user) === authUserId) {
+                                            buttons += `
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-tickets" onclick="openTicketOffcanvas(${id})">
+                                                    <i class="ti ti-edit"></i>
+                                                </a>
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-tickets" data-id="${id}">
+                                                    <i class="ti ti-trash"></i>
+                                                </a>
+                                            `;
+                                        }
+
+                                        return buttons
                         }
                     }
                 ]
