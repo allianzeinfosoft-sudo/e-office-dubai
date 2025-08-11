@@ -699,6 +699,7 @@ class AttendanceController extends Controller{
             'signout_date' => now()->format('Y-m-d'),
             'punchout_type' => 'Web',
             'status' => 'mark-out',
+            'break_time' => $workingTime['break_time'],
             'working_hours' => $workingTime['total_working_time'],
             'is_incomplete' => $isIncomplete
         ]);

@@ -65,20 +65,26 @@ class CustomHelper{
 
             // Handle break time
             if (!empty($break_time)) {
-                $break_time = trim((string) $break_time);
+                // $break_time = trim((string) $break_time);
 
-                if (preg_match('/\d{1,2}(:\d{2})?(:\d{2})?\s?(AM|PM)?/i', $break_time)) {
-                    try {
-                        $breakCarbon = \Carbon\Carbon::parse($break_time, $timezone);
-                        $midnight = \Carbon\Carbon::createFromTime(0, 0, 0, $timezone)->setTimezone($timezone);
-                        $breakSeconds = $breakCarbon->diffInSeconds($midnight);
-                    } catch (\Exception $e) {
-                        $breakSeconds = 3600; // fallback to 1 hour
+                // if (preg_match('/\d{1,2}(:\d{2})?(:\d{2})?\s?(AM|PM)?/i', $break_time)) {
+                //     try {
+                //         $breakCarbon = \Carbon\Carbon::parse($break_time, $timezone);
+                //         $midnight = \Carbon\Carbon::createFromTime(0, 0, 0, $timezone)->setTimezone($timezone);
+                //         $breakSeconds = $breakCarbon->diffInSeconds($midnight);
+                //     } catch (\Exception $e) {
+                //         $breakSeconds = 3600; // fallback to 1 hour
+                //     }
+                // } elseif (is_numeric($break_time)) {
+                //     // treat as minutes
+                //     $breakSeconds = max(0, intval($break_time) * 60);
+                // }
+
+                    if($totalSeconds > 16200){
+                        $breakSeconds = 3600;
+                    }else{
+                        $breakSeconds = 1800;
                     }
-                } elseif (is_numeric($break_time)) {
-                    // treat as minutes
-                    $breakSeconds = max(0, intval($break_time) * 60);
-                }
             }
 
             $actualWorkSeconds = max($totalSeconds - $breakSeconds, 0);
