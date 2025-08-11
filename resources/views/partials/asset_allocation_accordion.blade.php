@@ -9,22 +9,22 @@
                         <th>Item Name</th>
                         <th>Brand Name</th>
                         <th>Model</th>
-                        <th>Serial Number</th>
+                        <th>Key/ID</th>
                         <th>Specification</th>
                         <th>User / Location</th>
                         <th>Department</th>
                         <th>Project</th>
                         <th>Allocated At</th>
-                        <th>Remarks</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
+                @php $serial = 1; @endphp
                 <tbody>
                     @foreach($allocations as $allocIndex => $allocation)
                         @foreach($allocation->items as $itemIndex => $item)
                             <tr>
                                 {{-- Serial Number --}}
-                                <td>{{ $itemIndex+1 }}</td>
+                                <td>{{ $serial++ }}</td>
 
                                 {{-- Asset ID --}}
                                 <td>{{ \App\Helpers\CustomHelper::itemCodeGenerater($item->asset_mapping_id) }}</td>
@@ -39,7 +39,7 @@
                                 <td>{{ $item->model ?? '-' }}</td>
 
                                 {{-- Serial Number --}}
-                                <td>{{ $item->serial_number ?? '-' }}</td>
+                                <td>{{ $item->register_lineitem->item_key_id ?? '-' }}</td>
 
                                 {{-- Specification --}}
                                 <td>{{ $item->specification ?? '-' }}</td>
@@ -63,7 +63,7 @@
                                 <td>{{ $allocation->created_at->format('d-m-Y') }}</td>
 
                                 {{-- Remarks --}}
-                                <td>{{ $allocation->remarks ?? '-' }}</td>
+                                {{-- <td>{{ $allocation->remarks ?? '-' }}</td> --}}
 
                                 {{-- Actions --}}
                                 <td>
