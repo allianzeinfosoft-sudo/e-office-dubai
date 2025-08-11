@@ -389,7 +389,7 @@ class AssetAllocationController extends Controller
         }
 
         // Paginate results (with filter values preserved in pagination links)
-        $assets = $query->paginate(10)->withQueryString();
+        $assets = $query->get();
 
         // Get all asset IDs (for dropdown or search suggestion list, etc.)
         $assetIds = AssetMapping::pluck('id'); // more efficient than all()

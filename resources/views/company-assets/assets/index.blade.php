@@ -111,7 +111,7 @@
                                                 <th>Serial Number</th>
                                                 <th>Specifications</th>
                                                 <th>Price</th>
-                                                <th>Actions</th>
+                                                {{-- <th>Actions</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -128,14 +128,14 @@
                                                 <td>{{ $item->register_lineitem?->serial_number ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->asset_description ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->asset_price ?? '-' }}</td>
-                                                <td>
+                                                {{-- <td> --}}
                                                     {{-- <a href="javascript:void(0)" onclick="openOffcanvas({{$item->register_lineitem->id}})" class="btn btn-sm btn-icon btn-primary">
                                                         <i class="ti ti-edit"></i>
                                                     </a>--}}
-                                                    <a href="javascript:void(0)" onclick="deleteAssetItem({{$item->register_lineitem->id  ?? ''}}, this)" class="btn btn-sm btn-icon btn-danger">
+                                                    {{-- <a href="javascript:void(0)" onclick="deleteAssetItem({{$item->register_lineitem->id  ?? ''}}, this)" class="btn btn-sm btn-icon btn-danger">
                                                         <i class="ti ti-trash"></i>
-                                                    </a>
-                                                </td>
+                                                    </a> --}}
+                                                {{-- </td> --}}
                                             </tr>
                                             @endforeach
                                         </tbody>
