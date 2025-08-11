@@ -928,6 +928,7 @@ class AttendanceController extends Controller{
         $markOut->signout_date      = date('Y-m-d', strtotime($request->signout_date)); //$request->signout_date;
         $markOut->signout_late_note = $request->signout_late_note;
         $markOut->status            = 'mark-out';
+        $markOut->break_time        = $workingTime['break_time'];
         $markOut->punchout_type     = 'custom';
         $markOut->working_hours     = $totalWorkingTime;
 
@@ -998,6 +999,7 @@ class AttendanceController extends Controller{
                     'signout_date' => $signinDate,
                     'signout_time' => $time,
                     'status' => 'mark-out',
+                    'break_time' => $workingTime['break_time'],
                     'punchout_type' => 'emergency',
                     'signout_late_note' => $lateNote,
                     'working_hours' => $totalWorkingTime,
