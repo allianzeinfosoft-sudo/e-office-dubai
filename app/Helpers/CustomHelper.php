@@ -80,7 +80,7 @@ class CustomHelper{
                 //     $breakSeconds = max(0, intval($break_time) * 60);
                 // }
 
-                    if($totalSeconds > 16200){
+                    if($totalSeconds > 21600){
                         $breakSeconds = 3600;
                     }else{
                         $breakSeconds = 1800;
