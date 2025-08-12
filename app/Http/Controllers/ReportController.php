@@ -125,7 +125,8 @@ class ReportController extends Controller
             });
 
         // Holidays in the month
-        $holidays = DB::table('holidays')
+        $emp_holiday_group = Auth::user()->employee->holidayGroup;
+        $holidays = DB::table('holidays')->where('holiday_group',$emp_holiday_group)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
             ->pluck('date')
             ->toArray();
@@ -298,15 +299,18 @@ class ReportController extends Controller
             return !in_array($date->dayOfWeek, [0, 6]); // Exclude Sunday (0) and Saturday (6)
         });
 
-        // 2. Get holidays in the month
-        $holidays = Holiday::whereBetween('date', [$startDate, $endDate])->pluck('date')->map(fn ($d) => Carbon::parse($d)->toDateString());
 
-        // 3. Calculate working days excluding holidays
-        $workingDays = $weekdays->filter(function ($date) use ($holidays) {
-            return !$holidays->contains($date->toDateString());
-        })->count();
 
         foreach ($users as $index => $user) {
+
+            // 2. Get holidays in the month
+            $holidays = Holiday::where('holiday_group',$user->holidayGroup)->whereBetween('date', [$startDate, $endDate])->pluck('date')->map(fn ($d) => Carbon::parse($d)->toDateString());
+
+            // 3. Calculate working days excluding holidays
+            $workingDays = $weekdays->filter(function ($date) use ($holidays) {
+                return !$holidays->contains($date->toDateString());
+            })->count();
+
             $attendances = Attendance::where('emp_id', $user->user_id)
                 ->whereBetween('signin_date', [$startDate, $endDate])
                 ->get();
@@ -589,7 +593,7 @@ class ReportController extends Controller
             }
         }
 
-        $holidays = DB::table('holidays')
+        $holidays = DB::table('holidays')->where('holiday_group',$data['current_user']->holidayGroup)
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
             ->pluck('date')
             ->toArray();
