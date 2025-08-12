@@ -34,7 +34,7 @@
                 <div class="container-xxl flex-grow-1 container-p-y">
                     <h4 class="fw-bold py-3 mb-3"><span class="text-muted fw-light">Project / </span> {{ $meta_title }}</h4>
                     @can('create project task')
-                    <div class="row">
+                    {{-- <div class="row">
                         <div class="col-sm-12 d-flex justify-content-end mb-3">
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <!-- {{ route('project.create') }} -->
@@ -44,7 +44,7 @@
                                 </span>
                             </a>
                         </div>
-                    </div>
+                    </div> --}}
                     @endcan
 
                     <div class="card">
@@ -52,7 +52,7 @@
                             <table class="datatables-basic datatables-project-tasks table border-top table-stripedc">
                                 <thead>
                                     <tr>
-                                        
+
                                         <th>Task</th>
                                         <th>Project</th>
                                         @can('create project task')
@@ -121,7 +121,7 @@
         const columns = [
             { data: 'task_name', title: 'Task' },
             { data: 'project_name', title: 'Project' },
-            
+
         ];
 
         // Add action column only if the user has create permission
@@ -168,9 +168,9 @@
                 render: function (data, type, row) {
                     const editUrl = "{{ route('tasks-project.edit', ':id') }}".replace(':id', row.id);
                     return `
-                        <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-project" onclick="openOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                        <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
+                         <button type="button" class="btn btn-sm btn-icon btn-danger delete-project" onclick="deleteProjectTask(${row.id})" data-id="${row.id}"><i class="ti ti-trash"></i></button>
                     `;
+                    //  <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-project" onclick="openOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
                 }
             });
         }
