@@ -40,7 +40,8 @@ class AssetMapping extends Model
 
     public function allocation_lineitems()
     {
-        return $this->hasMany(AllocationLineItem::class, 'asset_mapping_id');
+        return $this->hasMany(AllocationLineItem::class, 'asset_mapping_id')
+                    ->where('status', 1);
     }
 
     public function allocations()
