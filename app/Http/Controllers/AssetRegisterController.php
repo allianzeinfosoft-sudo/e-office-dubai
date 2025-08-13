@@ -514,7 +514,7 @@ class AssetRegisterController extends Controller
                 'item'           => $line->asset_item?->name ?? '',
                 'model'          => $mapping->model ?? '',
                 'brand'          => $line->asset_brand ?? '',
-                'serial_number'  => $mapping->serial_number ?? '',
+                'key_id'         => $line->item_key_id ?? '',
                 'asset_id'       => CustomHelper::itemCodeGenerater($mapping->id),
                 'classification' => $line->asset_classification->name ?? '',
                 'category'       => $line->asset_category->name ?? '',

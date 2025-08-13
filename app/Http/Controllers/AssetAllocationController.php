@@ -318,10 +318,10 @@ class AssetAllocationController extends Controller
 
                 $reportData[] = [
                     'DT_RowIndex'    => $rowIndex++,
-                    'item_name' => ($item->masterItem?->brand ?? '') . ' ' . ($item->masterItem?->name ?? ''),
+                    'item_name'      => ($item->masterItem?->brand ?? '') . ' ' . ($item->masterItem?->name ?? ''),
                     'model'          => $item->model ?? '',
                     'asset_id'       => CustomHelper::itemCodeGenerater($item->asset_mapping_id),
-                    'serial_number'  => $item->serial_number ?? '',
+                    'key_id'         => $item->asset_mapping?->register_lineitem?->item_key_id ?? '',
                     'allocated_to'   => $allocatedTo ?? '',
                     'department'     => $allocation->department_name->department ?? '-',
                     'project'        => $item->project_info->project_name ?? '',

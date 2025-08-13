@@ -210,7 +210,7 @@
                                             <th>Asset ID</th>
                                             <th>Item Name</th>
                                             <th>Model</th>
-                                            <th>Serial Number</th>
+                                            <th>Key/ID</th>
                                             <th>Classification</th>
                                             <th>Category</th>
                                             <th>Type</th>
@@ -280,7 +280,7 @@
                 { data: 'asset_id'},
                 { data: 'item' },
                 { data: 'model' },
-                { data: 'serial_number'},
+                { data: 'key_id'},
                 { data: 'classification' },
                 { data: 'category' },
                 { data: 'type' },

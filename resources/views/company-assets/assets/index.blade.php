@@ -108,7 +108,7 @@
                                                 <th>Item</th>
                                                 <th>Brand Name</th>
                                                 <th>Model</th>
-                                                <th>Serial Number</th>
+                                                <th>Key/ID</th>
                                                 <th>Specifications</th>
                                                 <th>Price</th>
                                                 {{-- <th>Actions</th> --}}
@@ -125,7 +125,7 @@
                                                 <td>{{ $item->register_lineitem?->asset_item?->name ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->asset_brand ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->item_model ?? '-' }}</td>
-                                                <td>{{ $item->register_lineitem?->serial_number ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->item_key_id ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->asset_description ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->asset_price ?? '-' }}</td>
                                                 {{-- <td> --}}
