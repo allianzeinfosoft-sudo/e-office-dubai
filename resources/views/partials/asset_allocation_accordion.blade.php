@@ -39,7 +39,7 @@
                                 <td>{{ $item->model ?? '-' }}</td>
 
                                 {{-- Serial Number --}}
-                                <td>{{ $item->register_lineitem->item_key_id ?? '-' }}</td>
+                                <td>{{ $item->asset_mapping?->register_lineitem?->item_key_id ?? 'N/A' }}</td>
 
                                 {{-- Specification --}}
                                 <td>{{ $item->specification ?? '-' }}</td>
