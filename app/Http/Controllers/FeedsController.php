@@ -17,6 +17,7 @@ class FeedsController extends Controller
             $today = Carbon::today();
 
             $birthdayEmployees = Employee::select('full_name', 'profile_image')
+                ->where('status','!=',4)
                 ->whereMonth('dob', $today->month)
                 ->whereDay('dob', $today->day)
                 ->get();
