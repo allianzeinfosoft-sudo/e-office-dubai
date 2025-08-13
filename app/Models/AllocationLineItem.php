@@ -65,6 +65,11 @@ class AllocationLineItem extends Model
         return $this->belongsTo(AssetLocation::class,'allocated_user','id');
     }
 
+    public function asset_mapping()
+    {
+        return $this->belongsTo(AssetMapping::class,'asset_mapping_id','id');
+    }
+
 }
 
 

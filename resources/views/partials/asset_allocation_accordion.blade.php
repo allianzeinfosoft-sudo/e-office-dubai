@@ -30,10 +30,10 @@
                                 <td>{{ \App\Helpers\CustomHelper::itemCodeGenerater($item->asset_mapping_id) }}</td>
 
                                 {{-- Item Name --}}
-                                <td>{{ $item->item_name ?? 'N/A' }}</td>
+                                <td>{{ $item->masterItem->name ?? 'N/A' }}</td>
 
                                 {{-- Brand --}}
-                                <td>{{ $item->masterItem->name ?? 'N/A' }}</td>
+                                <td>{{ $item->asset_mapping?->register_lineitem?->asset_brand ?? 'N/A' }}</td>
 
                                 {{-- Model --}}
                                 <td>{{ $item->model ?? '-' }}</td>
