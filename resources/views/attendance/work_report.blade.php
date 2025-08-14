@@ -239,10 +239,16 @@
 
             let currentSeconds = parseTimeToSeconds(current_working_hours);
             let enteredSeconds = parseTimeToSeconds(total_time);
-
+            let reportComment = $('#comments').val();
             if (enteredSeconds > currentSeconds) {
                 alert('No. of Hours cannot be greater than current working hours');
                 $('#total_time').focus();
+                return;
+            }
+
+            if (reportComment == null || reportComment == '') {
+                alert('Report comment is mandatory');
+                $('#comments').focus();
                 return;
             }
 

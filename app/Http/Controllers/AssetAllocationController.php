@@ -169,23 +169,36 @@ class AssetAllocationController extends Controller
    public function allotedItemSearch(Request $request)
     {
         $userType = $request->input('user');
-        $userId = $request->input('employee');
+        $userId = null;
+
+        if ($userType === 'employee') {
+            $userId = $request->input('employee');
+        } elseif ($userType === 'location') {
+            $userId = $request->input('location');
+        }
 
         // Fix: Tell Laravel what the current page is
         Paginator::currentPageResolver(function () use ($request) {
             return $request->input('page', 1);
         });
 
-       $allocations = AssetAllocation::with(['items' => function ($query) {
+        $allocations = AssetAllocation::with([
+                'items' => function ($query) {
                     $query->where('status', 1);
-                }, 'employee', 'department_name'])
-            ->where('user_type', $userType)
-            ->where('user', $userId)
+                },
+                'employee',
+                'location',
+                'department_name'
+            ])
+            ->when($userId, function ($query) use ($userId, $userType) {
+                $query->where('user_type', $userType)
+                    ->where('user', $userId);
+            })
             ->where('status', 1)
             ->whereHas('items', function ($query) {
                 $query->where('status', 1);
             })
-            ->paginate(5);
+            ->paginate(10);
 
         $html = view('partials.asset_allocation_accordion', compact('allocations'))->render();
 
@@ -194,6 +207,7 @@ class AssetAllocationController extends Controller
             'html' => $html
         ]);
     }
+
 
   public function returnToStore(Request $request, $allocationId)
     {
@@ -218,12 +232,11 @@ class AssetAllocationController extends Controller
         }
 
         // Check if AJAX
-        if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Asset returned successfully.'
-                ]);
-            }
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset returned successfully.'
+        ]);
+
 
     }
 
@@ -305,10 +318,10 @@ class AssetAllocationController extends Controller
 
                 $reportData[] = [
                     'DT_RowIndex'    => $rowIndex++,
-                    'item_name' => ($item->masterItem?->brand ?? '') . ' ' . ($item->masterItem?->name ?? ''),
+                    'item_name'      => ($item->masterItem?->brand ?? '') . ' ' . ($item->masterItem?->name ?? ''),
                     'model'          => $item->model ?? '',
                     'asset_id'       => CustomHelper::itemCodeGenerater($item->asset_mapping_id),
-                    'serial_number'  => $item->serial_number ?? '',
+                    'key_id'         => $item->asset_mapping?->register_lineitem?->item_key_id ?? '',
                     'allocated_to'   => $allocatedTo ?? '',
                     'department'     => $allocation->department_name->department ?? '-',
                     'project'        => $item->project_info->project_name ?? '',
@@ -376,7 +389,7 @@ class AssetAllocationController extends Controller
         }
 
         // Paginate results (with filter values preserved in pagination links)
-        $assets = $query->paginate(10)->withQueryString();
+        $assets = $query->get();
 
         // Get all asset IDs (for dropdown or search suggestion list, etc.)
         $assetIds = AssetMapping::pluck('id'); // more efficient than all()

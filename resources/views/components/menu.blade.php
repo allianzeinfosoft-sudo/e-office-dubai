@@ -7,6 +7,7 @@ $badges = [
     'SAR' => auth()->check() ? CustomHelper::SarNotification() : 0,
     'Feedback' => auth()->check() ? CustomHelper::FeedbackNotification() : 0,
     'Company Policies' => auth()->check() ? CustomHelper::PolicyNotification() : 0,
+    'Ticket Raising' => auth()->check() ? CustomHelper::TicketNotification() : 0,
 
 ];
 ?>

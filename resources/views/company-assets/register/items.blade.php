@@ -78,6 +78,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Sl No.</th>
+                                                <th>Batch No</th>
                                                 <th>Asset ID</th>
                                                 <th>Classificatin</th>
                                                 <th>Category</th>
@@ -164,6 +165,7 @@
             ajax: '{{ route("assets.register.items") }}', // your route
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                { data: 'batch_no', name: 'Batch No'},
                 { data: 'asset_id', name: 'Asset ID'},
                 { data: 'classification', name: 'Classificatin' },
                 { data: 'category', name: 'Category' },

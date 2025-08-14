@@ -68,7 +68,7 @@
                                         <div class="col-md-4">
 
                                           <select class="form-control select2" name="asset_id" id="asset_id" aria-placeholder="Select Asset ID">
-                                            <option value="">Select Asset ID</option>
+                                            <option value=" ">All</option>
                                             @foreach ($assetIds as $id)
                                                 <option value="{{ $id }}" {{ request('asset_id') == $id ? 'selected' : '' }}>
                                                     {{ \App\Helpers\CustomHelper::itemCodeGenerater($id) }}
@@ -108,10 +108,10 @@
                                                 <th>Item</th>
                                                 <th>Brand Name</th>
                                                 <th>Model</th>
-                                                <th>Serial Number</th>
+                                                <th>Key/ID</th>
                                                 <th>Specifications</th>
                                                 <th>Price</th>
-                                                <th>Actions</th>
+                                                {{-- <th>Actions</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -125,17 +125,17 @@
                                                 <td>{{ $item->register_lineitem?->asset_item?->name ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->asset_brand ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->item_model ?? '-' }}</td>
-                                                <td>{{ $item->register_lineitem?->serial_number ?? '-' }}</td>
+                                                <td>{{ $item->register_lineitem?->item_key_id ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->asset_description ?? '-' }}</td>
                                                 <td>{{ $item->register_lineitem?->asset_price ?? '-' }}</td>
-                                                <td>
+                                                {{-- <td> --}}
                                                     {{-- <a href="javascript:void(0)" onclick="openOffcanvas({{$item->register_lineitem->id}})" class="btn btn-sm btn-icon btn-primary">
                                                         <i class="ti ti-edit"></i>
                                                     </a>--}}
-                                                    <a href="javascript:void(0)" onclick="deleteAssetItem({{$item->register_lineitem->id  ?? ''}}, this)" class="btn btn-sm btn-icon btn-danger">
+                                                    {{-- <a href="javascript:void(0)" onclick="deleteAssetItem({{$item->register_lineitem->id  ?? ''}}, this)" class="btn btn-sm btn-icon btn-danger">
                                                         <i class="ti ti-trash"></i>
-                                                    </a>
-                                                </td>
+                                                    </a> --}}
+                                                {{-- </td> --}}
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -159,6 +159,21 @@
 
 @push('js')
 <script>
+
+$(document).ready(function() {
+    $('#asset-item-table').DataTable({
+        pageLength: 10,        // default rows per page
+        lengthMenu: [5, 10, 25, 50, 100],
+        ordering: true,        // enable sorting
+        searching: true,       // enable search box
+        responsive: true,      // mobile friendly
+        columnDefs: [
+            { orderable: false, targets: -1 } // disable sorting for last column (Actions)
+        ]
+    });
+});
+
+
  function deleteAssetItem(id,element) {
         if (confirm('Are you sure you want to delete this Asset Entry?')) {
             $.ajax({

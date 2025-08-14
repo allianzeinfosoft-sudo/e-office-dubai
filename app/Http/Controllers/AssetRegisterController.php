@@ -64,13 +64,14 @@ class AssetRegisterController extends Controller
     {
 
         if($request->ajax()) {
-            $asset =  AssetMapping::with(['register_lineitem', 'masteritem'])->get();
+            $asset =  AssetMapping::with(['register_lineitem', 'masteritem'])->where('allocation_status',0)->get();
 
             $data = $asset->map(function($item, $index) {
 
                     return [
                         'DT_RowIndex'       => $index + 1,
                         'id'                => $item->id,
+                        'batch_no'          => $item->register_lineitem?->asset_register?->asset_number,
                         'asset_id'          => CustomHelper::itemCodeGenerater($item->id) ?? '-',
                         'classification'    => $item->register_lineitem?->asset_classification?->name ?? '-', //$item->asset_date,
                         'category'          => $item->register_lineitem?->asset_category?->name ?? '-',
@@ -513,7 +514,7 @@ class AssetRegisterController extends Controller
                 'item'           => $line->asset_item?->name ?? '',
                 'model'          => $mapping->model ?? '',
                 'brand'          => $line->asset_brand ?? '',
-                'serial_number'  => $mapping->serial_number ?? '',
+                'key_id'         => $line->item_key_id ?? '',
                 'asset_id'       => CustomHelper::itemCodeGenerater($mapping->id),
                 'classification' => $line->asset_classification->name ?? '',
                 'category'       => $line->asset_category->name ?? '',
@@ -549,7 +550,7 @@ class AssetRegisterController extends Controller
                     $assetline->asset_total = max(0, $assetline->asset_total - $assetline->asset_price);
                     $assetline->save();
 
-                     $assetRegister = AssetRegister::find($assetline->asset_register_id); // Assuming asset_register_id is the relation field
+                     $assetRegister = AssetRegister::find($assetline->asset_register_id);
                     if ($assetRegister) {
 
                         $assetRegister->total_amount = max(0, $assetRegister->total_amount - $assetline->asset_price);
@@ -573,16 +574,14 @@ class AssetRegisterController extends Controller
 
     public function edit_item($id)
     {
-        $regline_id = AssetMapping::find($id);
-        $register_id = AssetItemLine::find($regline_id->register_lineitem_id);
-        $register = AssetRegister::with('items')->findOrFail($register_id->asset_register_id);
-        $matchedItem = $register->items->firstWhere('id', $id);
-
+        $mapping = AssetMapping::with('register_lineitem','masteritem')->where('id',$id)->first();
+        $item = $mapping->register_lineitem;
+        $register = AssetRegister::find($mapping->register_lineitem->asset_register_id);
 
         return response()->json([
             'register' => $register,
-            'item' => $matchedItem,
-            'mapping' => $regline_id
+            'item' => $item,
+            'mapping' => $mapping
         ]);
     }
 

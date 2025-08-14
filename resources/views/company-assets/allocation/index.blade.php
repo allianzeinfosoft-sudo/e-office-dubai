@@ -78,7 +78,7 @@
                                             <div class="input-group input-group-merge">
                                               <div class="mb-3 col-12">
                                                     <select class="form-control select2" name="user" id="user">
-                                                        <option></option>
+                                                        <option value=" ">All</option>
                                                         @foreach (config('optionsData.asset_allocation_users') as $key => $value)
                                                             <option value="{{ $key }}"> {{ $value }} </option>
                                                         @endforeach
@@ -89,7 +89,7 @@
 
                                     <div class="mb-3 col-md-3 form-password-toggle" id="user_details"> </div>
 
-                                    <div>
+                                    <div class="mb-3 col-md-3 mt-4">
                                         <button type="submit" class="btn btn-primary me-2">Search</button>
                                         <button type="reset" class="btn btn-label-secondary">Cancel</button>
                                     </div>
@@ -377,7 +377,7 @@
                             <div class="input-group input-group-merge">
                                 <div class="mb-3 col-12">
                                     <select class="form-control select2" name="employee" id="employee" style="width: 100%;">
-                                        <option></option>
+                                        <option value=" ">All</option>
                                         ${Object.entries(response).map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}
                                     </select>
                                 </div>
@@ -405,7 +405,7 @@
                             <div class="input-group input-group-merge">
                                 <div class="mb-3 col-12">
                                     <select class="form-control select2" name="location" id="location" style="width: 100%;">
-                                        <option></option>
+                                        <option value=" ">All</option>
                                         ${Object.entries(response).map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}
                                     </select>
                                 </div>
@@ -433,6 +433,10 @@
 $(document).on('submit', '.return-form', function (e) {
 
     e.preventDefault();
+
+      if (!confirm('Are you sure you want to return this asset to the store?')) {
+        return; // stop if cancelled
+    }
     const form = $(this);
     const allocationId = form.data('id');
 
@@ -446,9 +450,8 @@ $(document).on('submit', '.return-form', function (e) {
         success: function (res) {
             toastr.success('Assets returned successfully');
             const accordionCard = $('#accordion-card-' + allocationId);
-            accordionCard.fadeOut(300, function () {
-                $(this).remove();
-            });
+             let table = $('#allocation-item-table').DataTable();
+                table.row(form.closest('tr')).remove().draw(false);
         },
         error: function () {
             toastr.error('Failed to return assets');
@@ -456,5 +459,19 @@ $(document).on('submit', '.return-form', function (e) {
     });
 });
 
+
+  $(document).ready(function() {
+        $('#allocation-item-table').DataTable({
+
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            ordering: true,
+            searching: true,
+            responsive: true,
+            columnDefs: [
+                { orderable: false, targets: -1 }
+            ]
+        });
+    });
 </script>
 @endpush

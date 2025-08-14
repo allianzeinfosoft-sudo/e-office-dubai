@@ -147,7 +147,7 @@
                                             <th>Asset ID</th>
                                             <th>Item Name</th>
                                             <th>Model</th>
-                                            <th>Serial Number</th>
+                                            <th>Key/ID</th>
                                             <th>Allocated To</th>
                                             <th>Department</th>
                                             <th>Project</th>
@@ -216,7 +216,7 @@
                 { data: 'asset_id' },
                 { data: 'item_name' },
                 { data: 'model' },
-                { data: 'serial_number' },
+                { data: 'key_id' },
                 { data: 'allocated_to' },
                 { data: 'department' },
                 { data: 'project' },

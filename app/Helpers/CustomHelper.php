@@ -19,6 +19,7 @@ use App\Models\FeedbackAssign;
 use App\Models\ParUserAssign;
 use App\Models\SarUserAssign;
 use App\Models\SurveyUserAssign;
+use App\Models\TicketRaising;
 use App\Models\WorkFromHomeAttendance;
 
 use Illuminate\Support\Facades\DB;
@@ -64,20 +65,26 @@ class CustomHelper{
 
             // Handle break time
             if (!empty($break_time)) {
-                $break_time = trim((string) $break_time);
+                // $break_time = trim((string) $break_time);
 
-                if (preg_match('/\d{1,2}(:\d{2})?(:\d{2})?\s?(AM|PM)?/i', $break_time)) {
-                    try {
-                        $breakCarbon = \Carbon\Carbon::parse($break_time, $timezone);
-                        $midnight = \Carbon\Carbon::createFromTime(0, 0, 0, $timezone)->setTimezone($timezone);
-                        $breakSeconds = $breakCarbon->diffInSeconds($midnight);
-                    } catch (\Exception $e) {
-                        $breakSeconds = 3600; // fallback to 1 hour
+                // if (preg_match('/\d{1,2}(:\d{2})?(:\d{2})?\s?(AM|PM)?/i', $break_time)) {
+                //     try {
+                //         $breakCarbon = \Carbon\Carbon::parse($break_time, $timezone);
+                //         $midnight = \Carbon\Carbon::createFromTime(0, 0, 0, $timezone)->setTimezone($timezone);
+                //         $breakSeconds = $breakCarbon->diffInSeconds($midnight);
+                //     } catch (\Exception $e) {
+                //         $breakSeconds = 3600; // fallback to 1 hour
+                //     }
+                // } elseif (is_numeric($break_time)) {
+                //     // treat as minutes
+                //     $breakSeconds = max(0, intval($break_time) * 60);
+                // }
+
+                    if($totalSeconds > 21600){
+                        $breakSeconds = 3600;
+                    }else{
+                        $breakSeconds = 1800;
                     }
-                } elseif (is_numeric($break_time)) {
-                    // treat as minutes
-                    $breakSeconds = max(0, intval($break_time) * 60);
-                }
             }
 
             $actualWorkSeconds = max($totalSeconds - $breakSeconds, 0);
@@ -1028,22 +1035,38 @@ public static function getWorkRatingAnalysisMonthly($empId)
         return CompanyPolicy::where('status',0)->count();
     }
 
+    public static function TicketNotification()
+    {
+         if(Auth::check()){
+            $userId = Auth::id();
+        }
+        if(Auth::user()->employee->department->name == 'Technical' )
+        {
+             return TicketRaising::where('status',0)->count();
+        }else{
+             return TicketRaising::where('user',$userId)->where('status','!=',1)->count();
+        }
+
+    }
+
     /* Update attendance is_incompte and user block list - if apply for halfday leave */
-    public static function updateHalfdayLeaveIncompleteStatus($username, $date){
-        $attendance = Attendance::where('username', $username)
+    public static function updateHalfdayLeaveIncompleteStatus($empId, $date){
+        $attendance = Attendance::where('emp_id', $empId)
                                 ->where('signin_date', $date)
                                 ->first(); // Use first() instead of get() to get a single model instance
         if ($attendance) {
             $attendance->is_incomplete = 0;
             $attendance->save(); // Save the updated model
 
-            UserEntryBlockList::where('username', $username)
+            UserEntryBlockList::where('user_id', $empId)
                             ->where('block_date', $date)
                             ->update(['status' => 0]);
         }
+
+        return true;
     }
-    
-    
+
+
 }
 
 

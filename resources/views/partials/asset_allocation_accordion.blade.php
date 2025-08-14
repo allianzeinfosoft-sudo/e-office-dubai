@@ -1,92 +1,93 @@
-@forelse($allocations as $index => $allocation)
-    @php
-        $firstItem = $allocation->items->first();
-    @endphp
+<div class="card">
+    <div class="card-datatable table-mom">
+        <div class="card-datatable table-responsive">
+            <table class="table table-bordered table-striped" id="allocation-item-table" style="font-size: 12px;">
+                <thead>
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>Asset ID</th>
+                        <th>Item Name</th>
+                        <th>Brand Name</th>
+                        <th>Model</th>
+                        <th>Key/ID</th>
+                        <th>Specification</th>
+                        <th>User / Location</th>
+                        <th>Department</th>
+                        <th>Project</th>
+                        <th>Allocated At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                @php $serial = 1; @endphp
+                <tbody>
+                    @foreach($allocations as $allocIndex => $allocation)
+                        @foreach($allocation->items as $itemIndex => $item)
+                            <tr>
+                                {{-- Serial Number --}}
+                                <td>{{ $serial++ }}</td>
 
-    {{-- @if($allocation->items->count()) --}}
-        @foreach($allocation->items as $item)
+                                {{-- Asset ID --}}
+                                <td>{{ \App\Helpers\CustomHelper::itemCodeGenerater($item->asset_mapping_id) }}</td>
 
-            <div id="accordion-card-{{ $allocation->id }}" class="card accordion-item">
-                <h2 class="accordion-header d-flex align-items-center">
-                    <button
-                        type="button"
-                        class="accordion-button {{ $item->id !== 0 ? 'collapsed' : '' }}"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#accordionWithIcon-{{ $item->id }}"
-                        aria-expanded="{{ $item->id === 0 ? 'true' : 'false' }}">
-                        <i class="ti ti-asset ti-xs me-2"></i>
-                        {{-- Allocation #{{ $allocation->id }} --}}
+                                {{-- Item Name --}}
+                                <td>{{ $item->masterItem->name ?? 'N/A' }}</td>
 
-                        @if($firstItem)
-                            {{ $firstItem->item_name }} Asset ID: {{ \App\Helpers\CustomHelper::itemCodeGenerater($item->asset_mapping_id) }}, SN: {{ $item->serial_number }}
-                        @endif
-                        -( {{ $allocation->employee->full_name ?? 'N/A' }} )
-                    </button>
-                </h2>
+                                {{-- Brand --}}
+                                <td>{{ $item->asset_mapping?->register_lineitem?->asset_brand ?? 'N/A' }}</td>
 
-                <div id="accordionWithIcon-{{ $item->id }}" class="accordion-collapse collapse">
-                    <div class="accordion-body">
-                        <div class="row">
-                            {{-- Allocation Details Card --}}
-                            <div class="col-md-6 mb-3">
-                                <div class="card shadow-sm border">
-                                    <div class="card-header bg-primary text-white">
-                                        Allocation Details
-                                    </div>
-                                    <div class="card-body mt-4">
-                                        <p><strong>Employee:</strong> {{ $allocation->employee->full_name ?? 'N/A' }}</p>
-                                        <p><strong>Department:</strong> {{ $allocation->department_name->department ?? 'N/A' }}</p>
-                                        {{-- <p><strong>Status:</strong> {{ ucfirst($allocation->status) }}</p> --}}
-                                        <p><strong>Remarks:</strong> {{ $allocation->remarks ?? '-' }}</p>
-                                        <p><strong>Allocated At:</strong> {{ $allocation->created_at->format('d-m-Y') }}</p>
-                                        <p><strong>Project: </strong>{{ $item->project_info->project_name ?? ''; }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                                {{-- Model --}}
+                                <td>{{ $item->model ?? '-' }}</td>
 
-                            {{-- Asset Items Card --}}
-                            <div class="col-md-6 mb-3">
-                                <div class="card shadow-sm border">
-                                    <div class="card-header bg-secondary text-white">
-                                        Asset Item
-                                    </div>
-                                    <div class="card-body mt-4">
+                                {{-- Serial Number --}}
+                                <td>{{ $item->asset_mapping?->register_lineitem?->item_key_id ?? 'N/A' }}</td>
 
-                                        <p><strong>Asset ID:</strong> {{ \App\Helpers\CustomHelper::itemCodeGenerater($item->asset_mapping_id) }}, SN: {{ $item->serial_number }}</p>
-                                        <p><strong>Brand Name:</strong> {{ $item->masterItem->name ?? 'N/A' }}</p>
-                                        <p><strong>Model:</strong> {{ $item->model ?? '-' }}</p>
-                                        <p><strong>Serial Number:</strong> {{ $item->serial_number ?? '-' }}</p>
-                                        <p><strong>Specification:</strong> {{ $item->specification ?? '-' }}</p>
-                                    </div>
-                                </div>
-                            </div>
+                                {{-- Specification --}}
+                                <td>{{ $item->specification ?? '-' }}</td>
 
-                        <form action="{{ route('assets.return', $item->id) }}" method="POST" class="return-form" data-id="{{ $allocation->id }}">
-                            @csrf
+                                {{-- User or Location --}}
+                                <td>
+                                    @if($allocation->user_type === 'employee')
+                                        {{ $allocation->employee->full_name ?? 'N/A' }}
+                                    @elseif ($allocation->user_type === 'location')
+                                        {{ $allocation->location->name ?? 'N/A' }}
+                                    @endif
+                                </td>
 
-                                <div class="mb-2">
-                                    <textarea name="comment" class="form-control" rows="2" placeholder="Enter return comment (optional)"></textarea>
-                                </div>
+                                {{-- Department --}}
+                                <td>{{ $allocation->department_name->department ?? 'N/A' }}</td>
 
-                                <button type="submit" class="btn btn-danger btn-sm w-20">
-                                    Return to Store
-                                </button>
-                            </form>
+                                {{-- Project --}}
+                                <td>{{ $item->project_info->project_name ?? 'N/A' }}</td>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                {{-- Allocated At --}}
+                                <td>{{ $allocation->created_at->format('d-m-Y') }}</td>
 
-        @endforeach
-    {{-- @else
-        <p>No items found for this allocation.</p>
-    @endif --}}
+                                {{-- Remarks --}}
+                                {{-- <td>{{ $allocation->remarks ?? '-' }}</td> --}}
 
-@empty
-    <p class="text-center">No allocations found for the selected user.</p>
-@endforelse
+                                {{-- Actions --}}
+                                <td>
+                                    <form action="{{ route('assets.return', $item->id) }}" method="POST" class="return-form" id="return-form" data-id="{{ $allocation->id }}">
+                                        @csrf
+                                        <div class="mb-2">
+                                            <textarea name="comment" class="form-control" rows="1" placeholder="Return comment (optional)"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            Return to Store
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
+{{-- Pagination --}}
 <div id="allocation-pagination">
     {{ $allocations->links('pagination::bootstrap-5') }}
 </div>
+
