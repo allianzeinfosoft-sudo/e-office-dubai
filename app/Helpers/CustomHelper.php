@@ -1033,7 +1033,6 @@ public static function getWorkRatingAnalysisMonthly($empId)
         $attendance = Attendance::where('username', $username)
                                 ->where('signin_date', $date)
                                 ->first(); // Use first() instead of get() to get a single model instance
-
         if ($attendance) {
             $attendance->is_incomplete = 0;
             $attendance->save(); // Save the updated model
