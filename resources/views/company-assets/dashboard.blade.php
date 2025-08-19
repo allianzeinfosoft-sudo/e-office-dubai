@@ -133,6 +133,13 @@
                                         <h6 class="tab-widget-title mb-0 mt-2">Repair Report</h6>
                                     </a>
                                     </li>
+                                    <li class="nav-item">
+                                    <a href="{{ route('assets.reports.asset-expiry') }}"
+                                        class="nav-link btn d-flex flex-column align-items-center justify-content-center bg-warning">
+                                        <i class="ti ti-clock ti-sm"></i>
+                                        <h6 class="tab-widget-title mb-0 mt-2">Asset Expiry Report</h6>
+                                    </a>
+                                    </li>
 
                                 </ul>
                                 <div class="tab-content p-0 ms-0 ms-sm-2">

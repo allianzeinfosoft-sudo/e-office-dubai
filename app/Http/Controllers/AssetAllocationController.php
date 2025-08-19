@@ -98,66 +98,96 @@ class AssetAllocationController extends Controller
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
-
             'asset_code_id'     => 'required',
             'asset_user'        => 'required',
             'asset_item_id'     => 'required|array',
             'asset_model_id'    => 'nullable|array',
-            'asset_project_id'  => 'required|array',
             'specification'     => 'required|array',
         ]);
-
 
         $asset = AssetAllocation::updateOrCreate(
             ['id' => $request->id],
             [
                 'user_type'   => $request->asset_user,
-                'user'   => $request->asset_employee ?? $request->asset_location ?? '',
+                'user'        => $request->asset_employee ?? $request->asset_location ?? '',
                 'department'  => $request->department_id ?? '',
-                'remarks' => $request->remarks ?? ''
+                'remarks'     => $request->remarks ?? ''
             ]
         );
 
-        //  Save asset item lines
+        $conflicts = []; // 🚨 collect already allocated assets here
+
+        // Save asset item lines
         foreach ($request->asset_item_id as $index => $itemId) {
 
             $master_item_code = CustomHelper::getItemCode($request->asset_item_id[$index]);
 
-            if($request->asset_user == 'employee')
-            {
+            if ($request->asset_user == 'employee') {
                 $asset_user_id = $request->asset_employee ?? '';
-            }
-            else if($request->asset_user == 'location')
-            {
+            } elseif ($request->asset_user == 'location') {
                 $asset_user_id = $request->asset_location ?? '';
-            }
-            else
-            {
+            } else {
                 $asset_user_id = '';
             }
 
-            $itemLine = $asset->items()->create([
-                'allocation_id'           => $itemId,
-                'item'                    => $request->asset_item_id[$index],
-                'model'                   => $request->asset_model_id[$index],
-                'serial_number'           => $request->asset_serialnumber[$index],
-                'project'                 => $request->asset_project_id[$index],
-                'asset_mapping_id'        => $request->asset_code_id[$index],
-                'specification'           => $request->specification[$index],
-                'allocation_type'         => $request->asset_user ?? '',
-                'allocated_user'          => $asset_user_id ?? '',
-            ]);
+            // Check if already exists
+            if ($request->asset_user == 'employee' || $request->asset_user == 'location') {
+                $query = AllocationLineItem::where('asset_mapping_id', $request->asset_code_id[$index]);
+                if (!is_null($request->asset_user)) {
+                    $query->where('allocation_type', $request->asset_user);
+                }
+                if (!is_null($asset_user_id)) {
+                    $query->where('allocated_user', $asset_user_id);
+                }
+                $exists = $query->exists();
+            } elseif ($request->asset_user == 'scrap') {
+                $exists = AllocationLineItem::where('asset_mapping_id', $request->asset_code_id[$index])
+                    ->where('status', 1)
+                    ->whereIn('allocation_type', ['employee', 'location', 'repair'])
+                    ->exists();
+            } elseif ($request->asset_user == 'repair') {
+                $exists = AllocationLineItem::where('asset_mapping_id', $request->asset_code_id[$index])
+                    ->where('status', 1)
+                    ->whereIn('allocation_type', ['employee', 'location', 'scrap'])
+                    ->exists();
+            } else {
+                $exists = false;
+            }
 
+            if ($exists) {
+                // 🚨 collect conflict instead of stopping
+                $conflicts[] = $request->asset_code_id[$index];
+                continue; // skip create
+            }
+
+            // Create new allocation
+            $itemLine = $asset->items()->create([
+                'allocation_id'    => $itemId,
+                'item'             => $request->asset_item_id[$index],
+                'model'            => $request->asset_model_id[$index],
+                'serial_number'    => $request->asset_serialnumber[$index],
+                'project'          => $request->asset_project_id[$index],
+                'asset_mapping_id' => $request->asset_code_id[$index],
+                'specification'    => $request->specification[$index],
+                'allocation_type'  => $request->asset_user ?? '',
+                'allocated_user'   => $asset_user_id ?? '',
+            ]);
 
             CustomHelper::updateAssetMapping([
-
-                'allocation_id'  => $itemLine->id,
-                'user_type'      => $request->asset_user,
+                'allocation_id'    => $itemLine->id,
+                'user_type'        => $request->asset_user,
                 'asset_mapping_id' => $request->asset_code_id[$index],
             ]);
+        }
 
+        // 🚨 return conflicts if any
+        if (!empty($conflicts)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Some assets are already allocated. Please check.',
+                'conflicts' => $conflicts
+            ]);
         }
 
         return response()->json([
@@ -165,6 +195,7 @@ class AssetAllocationController extends Controller
             'message' => 'Asset allocation saved successfully.',
         ]);
     }
+
 
    public function allotedItemSearch(Request $request)
     {
@@ -225,9 +256,15 @@ class AssetAllocationController extends Controller
                 return $id != $allocationId;
             });
 
+             // Re-index the array to avoid JSON encoding issues
+            $mapping->allocation_id = array_values($updatedIds);
+
+            // Check if there are still other allocation IDs left
+            $allocationStatus = !empty($mapping->allocation_id) ? 1 : 0;
+
             // Re-index the array to avoid JSON encoding issues
             $mapping->allocation_id = array_values($updatedIds);
-            $mapping->allocation_status = 0;
+            $mapping->allocation_status = $allocationStatus;
             $mapping->save();
         }
 

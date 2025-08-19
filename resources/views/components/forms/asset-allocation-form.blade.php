@@ -130,7 +130,7 @@
         let html = `<tr data-row="${itemLineLength}">
                         <td>
                             <select name="asset_item_id[${itemLineLength}]" id="item_${itemLineLength}" class="form-control
-                             select2 asset-item-select" data-row="${itemLineLength}">
+                             select2 asset-item-select" data-row="${itemLineLength}" required>
                                 <option value="">Select Item</option>
                                 ${assetItems.map(item => `<option value="${item.id}">${item.name} [${item.item_code}]</option>`).join('')}
                             </select>
@@ -138,7 +138,7 @@
 
                         <td>
                              <select name="asset_code_id[${itemLineLength}]" id="asset_code_${itemLineLength}"
-                             class="form-control select2 asset-code-select" data-row="${itemLineLength}">
+                             class="form-control select2 asset-code-select" data-row="${itemLineLength}" required>
                                 <option value="">Select Asset ID</option>
                             </select>
                         </td>

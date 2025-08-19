@@ -223,6 +223,8 @@ class RepairRegisterController extends Controller
         return view('company-assets.reports.repair_item_report', $data);
     }
 
+
+
     public function repairItemsReport(Request $request){
 
         $vendorId   = $request->input('vendor_id');

@@ -54,6 +54,7 @@ use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
 use App\Http\Controllers\AssetAllocationController;
 use App\Http\Controllers\AssetDashboardController;
+use App\Http\Controllers\AssetExpiryController;
 use App\Http\Controllers\AssetItemMasterController;
 use App\Http\Controllers\AssetLocationController;
 use App\Http\Controllers\AssetTypeController;
@@ -667,6 +668,9 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         /* Repair report */
         Route::get('reports/repair-items', [RepairRegisterController::class, 'reportRepairItems'])->name('reports.repair-items');
         Route::get('reports/repair-items-data', [RepairRegisterController::class, 'repairItemsReport'])->name('reports.repair-items-data');
+        /* Expiry report */
+        Route::resource('expiry-register', AssetExpiryController::class)->names('expiry-register');
+        Route::get('reports/asset-expiry', [AssetExpiryController::class, 'reportAssetExpiry'])->name('reports.asset-expiry');
         /* Stock report */
         Route::get('reports/stock-report', [AssetRegisterController::class, 'stockReport'])->name('reports.stock-report');
         Route::delete('items/delete/{id}', [AssetRegisterController::class, 'deleteAssetItem'])->name('items.delete');
