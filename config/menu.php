@@ -131,6 +131,11 @@ return [
                 'permission' => ['view all work report'],
             ],
             [
+                'title' => 'All Wfh/Wfs Work Report',
+                'route' => '/reports/all-wfs-wfs-work-report',
+                'permission' => ['view all work report'],
+            ],
+            [
                 'title' => 'Over All Work Report',
                 'route' => '/reports/over-all-work-report',
                 'permission' => ['view over all work report'],

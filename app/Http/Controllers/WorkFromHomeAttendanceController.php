@@ -7,6 +7,7 @@ use App\Models\WorkFromHomeAttendance;
 use App\Models\WorkFromHomeReport;
 use App\Models\Employee;
 use App\Models\Attendance;
+use App\Models\workReport;
 use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
@@ -155,9 +156,9 @@ class WorkFromHomeAttendanceController extends Controller
 
     public function approval_wfs_wfh($id, Request $request){
         $wfh = WorkFromHomeAttendance::find($id);
-        if($wfh){
+        $WfhReport = WorkFromHomeReport::where('wfh_attendance_id', $id)->get();
 
-            
+        if($wfh){
                 $attendanceData = [
                     'username'         => $wfh->username,
                     'emp_id'           => $wfh->emp_id,
@@ -175,7 +176,6 @@ class WorkFromHomeAttendanceController extends Controller
                     'custom_status'    => '0',
                     'ipaddress'        => $request->ip(),
                 ];
-    
                 // Insert or update attendance record
                 Attendance::updateOrCreate(
                     [
@@ -183,13 +183,42 @@ class WorkFromHomeAttendanceController extends Controller
                         'signin_date' => $wfh->signin_date,
                     ],
                     $attendanceData
-                );
-           
+                );           
 
             $wfh->approvel_status = 1;
             $wfh->approved_by = Auth::user()->id;
             $wfh->save();
         }
+
+        if ($WfhReport->isNotEmpty()) {
+            $grouped = $WfhReport->groupBy(function ($item) {
+                return $item->emp_id . '|' . $item->report_date;
+            });
+
+            foreach ($grouped as $group) {
+                $first = $group->first();
+                workReport::where('emp_id', $first->emp_id)
+                    ->where('report_date', $first->report_date)
+                    ->delete();
+                $insertData = $group->map(function ($value) {
+                    return [
+                        'username'          => $value->username,
+                        'emp_id'            => $value->emp_id,
+                        'project_name'      => $value->project_name,
+                        'type_of_work'      => $value->type_of_work,
+                        'time_of_work'      => $value->time_of_work,
+                        'total_time'        => $value->total_time,
+                        'comments'          => $value->comments,
+                        'report_date'       => $value->report_date,
+                        'total_records'     => $value->total_records,
+                        'productivity_hour' => $value->productivity_hour,
+                        'emergency'         => 0,
+                    ];
+                })->toArray();
+                workReport::insert($insertData);
+            }
+        }
+
         return redirect()->back()->with('success', 'Wfh / wfs approved successfully!');
     }
 

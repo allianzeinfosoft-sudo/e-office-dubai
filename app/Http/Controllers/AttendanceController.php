@@ -615,8 +615,6 @@ class AttendanceController extends Controller{
         $start = Carbon::parse($shiftStartTime)->format('H:i:s');
         $end = Carbon::parse($shiftEndTime)->format('H:i:s');
 
-
-
         $start = Carbon::parse($shift->shift_start_time)->format('H:i:s');
         $end = Carbon::parse($shift->shift_end_time)->format('H:i:s');
 
@@ -686,12 +684,22 @@ class AttendanceController extends Controller{
         $isIncomplete = $totalSeconds < (8 * 3600) ? 1 : 0;
 
         if($isIncomplete){
-            CustomHelper::addToBlockList([
-                'user_id'    => $attendance->emp_id,
-                'block_date' => date('Y-m-d'),
-                'username' => $attendance->username,
-                'full_name' => Employee::where('user_id', $attendance->emp_id)->first()->full_name
-            ]);
+            $leaveExists = DB::table('leaves')
+            ->where('user_id', $attendance->emp_id)
+            ->whereDate('leave_from', '<=', $attendance->signin_date)
+            ->whereDate('leave_to', '>=', $attendance->signin_date)
+            ->exists();
+
+            if ($leaveExists) {
+                $isIncomplete = 0;
+            } else {
+                CustomHelper::addToBlockList([
+                    'user_id'    => $attendance->emp_id,
+                    'block_date' => Carbon::now()->toDateString(),
+                    'username'   => $attendance->username,
+                    'full_name'  => Employee::where('user_id', $attendance->emp_id)->value('full_name')
+                ]);
+            }
         }
 
         $attendance->update([
@@ -913,14 +921,25 @@ class AttendanceController extends Controller{
 
 
         if (strtotime($totalWorkingTime) < strtotime('08:00:00')) {
-            $markOut->is_incomplete = 1;
+            
+            $leaveExists = DB::table('leaves')
+            ->where('user_id', $markOut->emp_id)
+            ->whereDate('leave_from', '<=', $markOut->signin_date)
+            ->whereDate('leave_to', '>=', $markOut->signin_date)
+            ->exists();
 
-            CustomHelper::addToBlockList([
-                'user_id'    => $markOut->emp_id,
-                'block_date' => date('Y-m-d'),
-                'username' => $markOut->username,
-                'full_name' => Employee::where('user_id', $markOut->emp_id)->first()->full_name
-            ]);
+            if ($leaveExists) {
+                $markOut->is_incomplete = 0;
+            }else{
+                $markOut->is_incomplete = 1;
+    
+                CustomHelper::addToBlockList([
+                    'user_id'    => $markOut->emp_id,
+                    'block_date' => date('Y-m-d'),
+                    'username' => $markOut->username,
+                    'full_name' => Employee::where('user_id', $markOut->emp_id)->first()->full_name
+                ]);
+            }
 
         }
 

@@ -434,6 +434,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/check-leave-allocation/{user}', [LeaveController::class, 'check_leave_allocated']);
     Route::get('/reports/all-users-report', [ReportController::class, 'allUserReport']) ->name('reports.all-user-reports');
     Route::get('/reports/all-user-report-data', [ReportController::class, 'allUserReportData'])->name('reports.all-user-data');
+    Route::get('/reports/all-wfs-wfs-work-report', [ReportController::class, 'allWfhWorkReport'])->name('reports.all-wfs-wfh-work-report');
+    Route::post('/reports/all-wfs-wfs-work-report-data', [ReportController::class, 'allWfsWorkReportData'])->name('reports.all-wfs-wfh-work-report');
 
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
