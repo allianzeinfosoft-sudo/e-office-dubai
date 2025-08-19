@@ -13,6 +13,7 @@ class AssetExpiry extends Model
         'service_name',
         'asset_categories_id',
         'asset_types_id',
+        'brand',
         'asset_vendors_id',
         'licence_id',
         'licence_count',

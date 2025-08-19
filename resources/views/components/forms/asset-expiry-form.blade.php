@@ -33,7 +33,7 @@
                 <div class="form-group">
                     <label for="asset_types_id">Type<span class="text-danger">*</span></label>
                     <select name="asset_types_id" id="asset_types_id" class="form-control select2" required>
-                        <option value="">Select Type</option>
+                        <option value=" ">Select Type</option>
                         @foreach ($types as $key => $type)
                             <option value="{{ $type->id }}">{{ $type->name }}</option>
                         @endforeach
@@ -41,13 +41,18 @@
                 </div>
             </div>
 
-
+            <div class="col-sm-6 mb-3">
+                <div class="form-group">
+                    <label for="brand">Brand</label>
+                    <input type="text" name="brand" id="brand" class="form-control" placeholder="Brand" />
+                </div>
+            </div>
 
             <div class="col-sm-6 mb-3">
                 <div class="form-group">
                     <label for="asset_vendor_id">Vendor</label>
                     <select name="asset_vendor_id" id="asset_vendor_id" class="form-control select2" required>
-                        <option value="">Select Vendor</option>
+                        <option value=" ">Select Vendor</option>
                         @foreach ($vendors as $key => $vendor)
                             <option value="{{ $vendor->id }}">{{ $vendor->vendor_name }}</option>
                         @endforeach
@@ -76,21 +81,21 @@
                 </div>
             </div>
 
-             <div class="col-sm-4 mb-3">
+             <div class="col-sm-6 mb-3">
                 <div class="form-group">
                     <label for="start_date">Start Date<span class="text-danger">*</span></label>
                     <input type="date" name="start_date" id="start_date" class="form-control" placeholder="Start Date" required />
                 </div>
             </div>
 
-            <div class="col-sm-4 mb-3">
+            <div class="col-sm-6 mb-3">
                 <div class="form-group">
                     <label for="last_updated_date">Last Updated Date<span class="text-danger">*</span></label>
                     <input type="date" name="last_updated_date" id="last_updated_date" class="form-control" placeholder="Last Updated Date" required />
                 </div>
             </div>
 
-            <div class="col-sm-4 mb-3">
+            <div class="col-sm-6 mb-3">
                 <div class="form-group">
                     <label for="expiry_date">Expiry Date<span class="text-danger">*</span></label>
                     <input type="date" name="expiry_date" id="expiry_date" class="form-control" placeholder="Expiry Date" required />
