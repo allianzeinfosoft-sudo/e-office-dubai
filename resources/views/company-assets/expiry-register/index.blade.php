@@ -90,7 +90,9 @@
                                         <tr>
                                             <th>Sl No</th>
                                             <th>Service Name</th>
-                                            <th>Category</th>
+                                            {{-- <th>Category</th> --}}
+                                            <th>Type</th>
+                                            {{-- <th>Brand</th> --}}
                                             <th>Vendor</th>
                                             <th>Licence ID</th>
                                             <th>Licence Count</th>
@@ -144,6 +146,14 @@
     $(function () {
 
         const expiryTable = $('#asset-expiry-table').DataTable({
+
+             dom: 'Blfrtip',
+            buttons: [
+                { extend: 'excelHtml5', title: 'Allocated Items Report'},
+                { extend: 'pdfHtml5', title: 'Allocated Items Report'},
+                { extend: 'print', title: 'Allocated Items Report'}
+            ],
+
             processing: false,
             serverSide: false, // If you're not using Laravel server-side processing
             ajax: {
@@ -153,7 +163,9 @@
             columns: [
                 { data: 'DT_RowIndex', title: 'Sl No' },
                 { data: 'service_name', title: 'Service Name' },
-                { data: 'asset_category', title: 'Category' },
+                // { data: 'asset_category', title: 'Category' },
+                { data: 'asset_type', title: 'Type' },
+                // { data: 'brand', title: 'Brand' },
                 { data: 'asset_vendor', title: 'Vendor' },
                 { data: 'licence_id', title: 'Licence ID' },
                 { data: 'licence_count', title: 'Licence Count' },
@@ -287,7 +299,9 @@
                     expiryAsset = response.data;
                     $('#target_id').val(expiryAsset.id);
                     $('#service_name').val(expiryAsset.service_name);
-                    $('#asset_category_id').val(String(expiryAsset.asset_categories_id)).trigger('change');
+                    // $('#asset_category_id').val(String(expiryAsset.asset_categories_id)).trigger('change');
+                    $('#asset_types_id').val(String(expiryAsset.asset_types_id)).trigger('change');
+                    $('#brand').val(expiryAsset.brand);
                     $('#asset_vendor_id').val(String(expiryAsset.asset_vendors_id)).trigger('change');
                     $('#licence_id').val(expiryAsset.licence_id);
                     $('#licence_count').val(expiryAsset.licence_count);

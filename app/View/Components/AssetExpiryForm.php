@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\AssetCategory;
+use App\Models\AssetType;
 use App\Models\AssetVendors;
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -12,11 +13,13 @@ class AssetExpiryForm extends Component
 {
     public $vendors;
     public $categories;
+    public $types;
 
     public function __construct()
     {
         $this->vendors = AssetVendors::all();
         $this->categories = AssetCategory::all();
+        $this->types = AssetType::all();
     }
 
     /**
