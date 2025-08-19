@@ -140,6 +140,7 @@ class AssetAllocationController extends Controller
                 if (!is_null($asset_user_id)) {
                     $query->where('allocated_user', $asset_user_id);
                 }
+                $query->where('status',1);
                 $exists = $query->exists();
             } elseif ($request->asset_user == 'scrap') {
                 $exists = AllocationLineItem::where('asset_mapping_id', $request->asset_code_id[$index])
