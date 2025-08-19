@@ -12,6 +12,7 @@ class AssetExpiry extends Model
      protected $fillable = [
         'service_name',
         'asset_categories_id',
+        'asset_types_id',
         'asset_vendors_id',
         'licence_id',
         'licence_count',
@@ -30,6 +31,11 @@ class AssetExpiry extends Model
     public function vendor()
     {
         return $this->belongsTo(AssetVendors::class,'asset_vendors_id');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(AssetType::class,'asset_types_id');
     }
 
 }

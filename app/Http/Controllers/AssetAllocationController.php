@@ -165,13 +165,13 @@ class AssetAllocationController extends Controller
             $itemLine = $asset->items()->create([
                 'allocation_id'    => $itemId,
                 'item'             => $request->asset_item_id[$index],
-                'model'            => $request->asset_model_id[$index],
-                'serial_number'    => $request->asset_serialnumber[$index],
-                'project'          => $request->asset_project_id[$index],
-                'asset_mapping_id' => $request->asset_code_id[$index],
+                'model'            => $request->asset_model_id[$index] ?? null,
+                'serial_number'    => $request->asset_serialnumber[$index] ?? null,
+                'project'          => $request->asset_project_id[$index] ?? null,
+                'asset_mapping_id' => $request->asset_code_id[$index] ?? null,
                 'specification'    => $request->specification[$index],
-                'allocation_type'  => $request->asset_user ?? '',
-                'allocated_user'   => $asset_user_id ?? '',
+                'allocation_type'  => $request->asset_user ?? null,
+                'allocated_user'   => !empty($asset_user_id) ? $asset_user_id : null,
             ]);
 
             CustomHelper::updateAssetMapping([

@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <div class="col-sm-6 mb-3">
+            {{-- <div class="col-sm-6 mb-3">
                 <div class="form-group">
                     <label for="asset_category_id">Category<span class="text-danger">*</span></label>
                     <select name="asset_category_id" id="asset_category_id" class="form-control select2" required>
@@ -27,7 +27,21 @@
                         @endforeach
                     </select>
                 </div>
+            </div> --}}
+
+            <div class="col-sm-6 mb-3">
+                <div class="form-group">
+                    <label for="asset_types_id">Type<span class="text-danger">*</span></label>
+                    <select name="asset_types_id" id="asset_types_id" class="form-control select2" required>
+                        <option value="">Select Type</option>
+                        @foreach ($types as $key => $type)
+                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
+
+
 
             <div class="col-sm-6 mb-3">
                 <div class="form-group">

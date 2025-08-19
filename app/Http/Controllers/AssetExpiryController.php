@@ -13,7 +13,7 @@ class AssetExpiryController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $expireItems = AssetExpiry::with(['category', 'vendor'])->get();
+            $expireItems = AssetExpiry::with(['category','type', 'vendor'])->get();
 
             $data = $expireItems->map(function ($item, $index) {
                 return [
@@ -21,6 +21,7 @@ class AssetExpiryController extends Controller
                     'id'                => $item->id,
                     'service_name'      => $item->service_name,
                     'asset_category'    => $item->category->name ?? '-',
+                    'asset_type'        => $item->type->name ?? '-',
                     'asset_vendor'      => $item->vendor->vendor_name ?? '-',
                     'licence_id'        => $item->licence_id,
                     'licence_count'     => $item->licence_count,
@@ -50,9 +51,8 @@ class AssetExpiryController extends Controller
     {
         $validated = $request->validate([
             'service_name' => 'required',
-            'asset_category_id' => 'required',
             'asset_vendor_id' => 'required',
-
+            'asset_types_id' => 'required',
         ]);
 
 
@@ -61,6 +61,7 @@ class AssetExpiryController extends Controller
             [
                 'service_name'          => $request->service_name,
                 'asset_categories_id'   => $request->asset_category_id,
+                'asset_types_id'        => $request->asset_types_id,
                 'asset_vendors_id'      => $request->asset_vendor_id,
                 'licence_id'            => $request->licence_id,
                 'licence_count'         => $request->licence_count,
