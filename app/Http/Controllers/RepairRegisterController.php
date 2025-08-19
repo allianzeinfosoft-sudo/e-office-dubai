@@ -80,13 +80,13 @@ class RepairRegisterController extends Controller
         $repairAsset = RepairRegister::updateOrCreate(
             ['id' => $request->id],
             [
-                'repair_no'     => $request->repair_no,
+                'repair_no'     => $request->repair_no ?? null,
                 'repair_date'   => date('Y-m-d', strtotime($request->repair_date)),
-                'vendor_id'     => $request->vendor_id,
+                'vendor_id'     => $request->vendor_id ?? null,
                 'status'        => 'sent',
                 'return_date'   => $request->return_date ? date('Y-m-d', strtotime($request->return_date)) : null,
-                'total_amount'  => $totalAmount,
-                'remarks'       => $request->remarks,
+                'total_amount'  => $totalAmount ?? null,
+                'remarks'       => $request->remarks ?? null,
             ]
         );
 
@@ -100,14 +100,14 @@ class RepairRegisterController extends Controller
         foreach ($request->repair_item_id as $index => $itemId) {
             $repairItemLine = $repairAsset->items()->create([
                 'item_master_id'    => $itemId,
-                'item_model'        => $request->asset_model[$index],
-                'serial_no'         => $request->serial_no[$index],
-                'asset_map_id'      => $request->asset_id[$index],
+                'item_model'        => $request->asset_model[$index] ?? null,
+                'serial_no'         => $request->serial_no[$index] ?? null,
+                'asset_map_id'      => $request->asset_id[$index] ?? null,
                 // 'unit'              => $request->unit[$index],
                 // 'quantity'          => $request->quantity[$index],
-                'rate'              => $request->rate[$index],
-                // 'amount'            => $request->amount[$index],
-                'remarks'           => $request->remarks[$index],
+                'rate'              => $request->rate[$index] ?? null,
+                'amount'            => $request->rate[$index] ?? null,
+                'remarks'           => $request->remarks[$index] ?? null,
             ]);
 
             if(!empty($request->asset_mapping_id[$index])) {

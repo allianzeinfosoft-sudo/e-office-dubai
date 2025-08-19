@@ -511,15 +511,15 @@ class AssetRegisterController extends Controller
             }
             $reportData[] = [
                 'DT_RowIndex'    => $rowIndex++,
-                'item'           => $line->asset_item?->name ?? '',
-                'model'          => $mapping->model ?? '',
-                'brand'          => $line->asset_brand ?? '',
-                'key_id'         => $line->item_key_id ?? '',
+                'item'           => $line->asset_item?->name ?? '-',
+                'model'          => $mapping->model ?? '-',
+                'brand'          => $line->asset_brand ?? '-',
+                'key_id'         => $line->item_key_id ?? '-',
                 'asset_id'       => CustomHelper::itemCodeGenerater($mapping->id),
-                'classification' => $line->asset_classification->name ?? '',
-                'category'       => $line->asset_category->name ?? '',
-                'type'           => $line->asset_type->name ?? '',
-                'vendor'         => $line->asset_register->vendor->vendor_name ?? '',
+                'classification' => $line->asset_classification->name ?? '-',
+                'category'       => $line->asset_category->name ?? '-',
+                'type'           => $line->asset_type->name ?? '-',
+                'vendor'         => $line->asset_register->vendor->vendor_name ?? '-',
                 'allocation_status'=> $mapping->allocation_status == 1 ? 'Allocated' : 'Not Allocated',
                 'user'          => implode(', ', $allocatedUsers)
             ];

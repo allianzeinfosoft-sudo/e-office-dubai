@@ -100,11 +100,12 @@ class ScrapRegisterController extends Controller
         foreach ($request->scrap_item_id as $index => $itemId) {
             $scrapItemLine = $asset->items()->create([
                 'scrap_item_id'     => $itemId,
-                'model'             => $request->asset_model[$index],
-                'serial_no'         => $request->serial_no[$index],
-                'asset_mapping_id'  => $request->asset_id[$index],
-                'rate'              => $request->rate[$index],
-                'remarks'           => $request->remarks[$index],
+                'model'             => $request->asset_model[$index] ?? null,
+                'serial_no'         => $request->serial_no[$index] ?? null,
+                'asset_mapping_id'  => $request->asset_id[$index] ?? null,
+                'rate'              => $request->rate[$index] ?? null,
+                'amount'              => $request->rate[$index] ?? null,
+                'remarks'           => $request->remarks[$index] ?? null,
             ]);
 
             if(!empty($request->asset_id[$index])) {
