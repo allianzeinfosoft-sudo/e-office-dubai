@@ -210,6 +210,7 @@
                                             <th>Asset ID</th>
                                             <th>Item Name</th>
                                             <th>Model</th>
+                                            <th>Brand</th>
                                             <th>Key/ID</th>
                                             <th>Classification</th>
                                             <th>Category</th>
@@ -280,6 +281,7 @@
                 { data: 'asset_id'},
                 { data: 'item' },
                 { data: 'model' },
+                { data: 'brand'},
                 { data: 'key_id'},
                 { data: 'classification' },
                 { data: 'category' },
