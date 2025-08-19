@@ -146,7 +146,7 @@ return [
         '4' => 'Engineering',
     ],
     'companies' => [
-        '1' => 'Alliane InfoSoft',
+        '1' => 'Allianze Infosoft',
     ],
 
     'asset_users' => [

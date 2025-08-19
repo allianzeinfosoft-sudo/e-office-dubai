@@ -226,7 +226,7 @@
                 success: function (res) {
                     toastr.success(res.message);
                     $('#repair_offcanvas').offcanvas('hide');
-                    repairTable.ajax.reload();
+                    $('#repair-register-table').DataTable().ajax.reload();
                     $('#repair-register-form')[0].reset();
                     $('#repair-item-container').empty();
                 }
