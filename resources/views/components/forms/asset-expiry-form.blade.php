@@ -41,12 +41,12 @@
                 </div>
             </div>
 
-            <div class="col-sm-6 mb-3">
+            {{-- <div class="col-sm-6 mb-3">
                 <div class="form-group">
                     <label for="brand">Brand</label>
                     <input type="text" name="brand" id="brand" class="form-control" placeholder="Brand" />
                 </div>
-            </div>
+            </div> --}}
 
             <div class="col-sm-6 mb-3">
                 <div class="form-group">

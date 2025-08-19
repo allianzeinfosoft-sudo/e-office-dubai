@@ -92,7 +92,7 @@
                                             <th>Service Name</th>
                                             {{-- <th>Category</th> --}}
                                             <th>Type</th>
-                                            <th>Brand</th>
+                                            {{-- <th>Brand</th> --}}
                                             <th>Vendor</th>
                                             <th>Licence ID</th>
                                             <th>Licence Count</th>
@@ -165,7 +165,7 @@
                 { data: 'service_name', title: 'Service Name' },
                 // { data: 'asset_category', title: 'Category' },
                 { data: 'asset_type', title: 'Type' },
-                { data: 'brand', title: 'Brand' },
+                // { data: 'brand', title: 'Brand' },
                 { data: 'asset_vendor', title: 'Vendor' },
                 { data: 'licence_id', title: 'Licence ID' },
                 { data: 'licence_count', title: 'Licence Count' },
