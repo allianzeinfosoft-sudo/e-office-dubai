@@ -78,7 +78,7 @@ class HomeController extends Controller
 
         $total_leaves_days = Leave::where('user_id', $user->id)
             // Adjust if your system uses a different label
-            ->where('leave_type','!=','off_day')
+            ->where('leave_type','=','half_day')
             ->whereMonth('leave_from', $fromDate)
             ->whereYear('leave_from', $selected_year)
             ->sum('leave_day_count');

@@ -189,10 +189,17 @@ class CustomHelper{
                 ->whereIn('leave_type', ['full_day', 'half_day'])
                 ->where('status', 2)
                 ->sum('leave_day_count');
+            
+            $halfDayLeavesCount = Leave::where('user_id', $empId)
+                ->whereYear('leave_from', $year)
+                ->whereMonth('leave_from', $month)
+                ->whereIn('leave_type', ['half_day'])
+                ->where('status', 2)
+                ->sum('leave_day_count');
 
             // convert seconds → decimal hours
             $totalHours  = $attendance->total_seconds ? round($attendance->total_seconds / 3600, 2) : 0;
-            $workingDays = ($attendance->days - $leaveCount) > 0 ? ($attendance->days - $leaveCount) : 0;
+            $workingDays = ($attendance->days - $halfDayLeavesCount) > 0 ? ($attendance->days - $halfDayLeavesCount) : 0;
             $avgHours    = $workingDays > 0 ? round($totalHours / $workingDays, 2) : 0;
 
             $report[] = [

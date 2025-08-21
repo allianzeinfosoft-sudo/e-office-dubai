@@ -76,7 +76,7 @@ class AttendanceController extends Controller{
         // Approved half day leaves
         $halfDayLeaves = Leave::where('user_id', $user->id)
             // Adjust if your system uses a different label
-            ->where('leave_type','!=','off_day')
+            ->where('leave_type','half_day')
             ->whereMonth('leave_from', $currentMon)
             ->whereYear('leave_from', $currentYear)
             ->sum('leave_day_count');
