@@ -69,12 +69,7 @@ class AttendanceController extends Controller{
                 $hours = (int) $hours;
                 $minutes = (int) $minutes;
                 $totalMinutes = ($hours * 60) + $minutes;
-
-                if ($totalMinutes >= 360) {
-                    $fullDays++;
-                } elseif ($totalMinutes > 210 && $totalMinutes < 360) {
-                    $halfDays++;
-                }
+                $fullDays++;
             }
         }
 
@@ -85,8 +80,10 @@ class AttendanceController extends Controller{
             ->whereMonth('leave_from', $currentMon)
             ->whereYear('leave_from', $currentYear)
             ->sum('leave_day_count');
+            
+            //$data['days_of_worked'] = ;
 
-        $data['days_of_worked'] = $fullDays + ($halfDays * 0.5); // - ($halfDayLeaves);
+            $data['days_of_worked'] = $fullDays  - $halfDayLeaves;
 
         /* =================================================================================================== */
 
@@ -111,10 +108,10 @@ class AttendanceController extends Controller{
         // Calculate average worked hours per day
         if ($data['days_of_worked'] > 0) {
             $avgMinutes = $totalMinutes / $data['days_of_worked'];
-            $avgHours = floor($avgMinutes / 60);
+            $avgHours = $avgMinutes / 60;
             $avgMins = $avgMinutes % 60;
             //$data['avgWorkedHours'] = round(($avgMinutes / 60),2);
-            $data['avgWorkedHours'] = sprintf('%02d:%02d', $avgHours, $avgMins);
+            $data['avgWorkedHours'] = round($avgHours, 2) ; //sprintf('%02d:%02d', $avgHours, $avgMins);
             $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
         } else {
             $data['avgWorkedHours'] = '00:00';

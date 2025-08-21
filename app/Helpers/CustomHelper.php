@@ -164,7 +164,8 @@ class CustomHelper{
         ];
     }
 
-    public static function getMonthlyWorkReport($empId, $year = null){
+    public static function getMonthlyWorkReport($empId, $year = null)
+    {
         $year = $year ?? now()->year;
         $currentMonth = now()->month;
 
@@ -175,13 +176,12 @@ class CustomHelper{
                 ->whereYear('signin_date', $year)
                 ->whereMonth('signin_date', $month)
                 ->where('status', 'mark-out')
-                 ->selectRaw('
-                        DATE_FORMAT(SEC_TO_TIME(AVG(TIME_TO_SEC(working_hours))), "%H:%i") as avg_hours,
-                        DATE_FORMAT(SEC_TO_TIME(SUM(TIME_TO_SEC(working_hours))), "%H:%i") as total_hours,
-                        COUNT(*) as days
-                    ')
+                ->selectRaw('
+                    AVG(TIME_TO_SEC(working_hours)) as avg_seconds,
+                    SUM(TIME_TO_SEC(working_hours)) as total_seconds,
+                    COUNT(*) as days
+                ')
                 ->first();
-
 
             $leaveCount = Leave::where('user_id', $empId)
                 ->whereYear('leave_from', $year)
@@ -190,13 +190,18 @@ class CustomHelper{
                 ->where('status', 2)
                 ->sum('leave_day_count');
 
+            // convert seconds → decimal hours
+            $totalHours  = $attendance->total_seconds ? round($attendance->total_seconds / 3600, 2) : 0;
+            $workingDays = ($attendance->days - $leaveCount) > 0 ? ($attendance->days - $leaveCount) : 0;
+            $avgHours    = $workingDays > 0 ? round($totalHours / $workingDays, 2) : 0;
+
             $report[] = [
-                'month' => Carbon::create()->month($month)->format('F'),
-                'avg_hours' => $attendance->avg_hours ?? '00:00',
-                'total_hours' => $attendance->total_hours ?? '00:00',
-                'working_days' => $attendance->days ?? 0,
-                'leaves' => $leaveCount,
-                'year' => $year
+                'month'        => Carbon::create()->month($month)->format('F'),
+                'total_hours'  => $totalHours,   // e.g. 92.62
+                'avg_hours'    => $avgHours,     // e.g. 8.82
+                'working_days' => $workingDays,  // e.g. 10.5
+                'leaves'       => $leaveCount,   // e.g. 1.5
+                'year'         => $year
             ];
         }
 

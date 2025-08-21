@@ -63,7 +63,6 @@ class HomeController extends Controller
 
                 return sprintf('%02d:%02d', $hours, $minutes);
             }
-
         $totalSeconds = 0;
         $validDays = 0;
 
@@ -95,9 +94,9 @@ class HomeController extends Controller
 
         //     return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         // }
-
-        $data['totalWorkingTime']   = formatTime($totalSeconds); // $totalSeconds/3600;
-        $data['averageWorkingTime'] = $validDays > 0 ? formatTime($totalSeconds / $validDays) : '00:00:00'; //$validDays > 0 ? ($totalSeconds/3600) / $validDays : '00:00:00';
+        $totalWorkingHrs = round($totalSeconds/3600, 2);
+        $data['totalWorkingTime']   = $totalWorkingHrs;  // $totalSeconds/3600;
+        $data['averageWorkingTime'] = $validDays > 0 ? round($totalWorkingHrs / $validDays, 2) : '00:00:00'; //$validDays > 0 ? ($totalSeconds/3600) / $validDays : '00:00:00';
         $data['workingDays']        = $validDays;
 
         // Leave count
