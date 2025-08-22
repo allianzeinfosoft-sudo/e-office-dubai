@@ -91,19 +91,16 @@ class AttendanceController extends Controller{
 
         // Get all working_hours OF attendances for the current month
         $attendancesWorkinghours = Attendance::where('username', $user->username) ->where('signin_date', 'like', "$currentMonth%") ->pluck('working_hours');
-
         $totalMinutes = 0;
-
         foreach ($attendancesWorkinghours as $wh) {
             if (!$wh || !str_contains($wh, ':')) continue;
             list($h, $m, $s) = explode(':', $wh);
             $totalMinutes += ((int)$h * 60) + (int)$m; // ignore seconds
         }
 
-        $data['totalWorkedHours'] = $totalMinutes/60;
+        $data['totalWorkedHours'] = CustomHelper::decimalToHoursMinutes($totalMinutes/60);
         // sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
         // dd($data['totalWorkedHours']);
-
         /******* CURRENT MONTH AVERAGE WORKED HOURS OF USERS *******/
         // Calculate average worked hours per day
         if ($data['days_of_worked'] > 0) {
@@ -111,7 +108,7 @@ class AttendanceController extends Controller{
             $avgHours = $avgMinutes / 60;
             $avgMins = $avgMinutes % 60;
             //$data['avgWorkedHours'] = round(($avgMinutes / 60),2);
-            $data['avgWorkedHours'] = round($avgHours, 2) ; //sprintf('%02d:%02d', $avgHours, $avgMins);
+            $data['avgWorkedHours'] = CustomHelper::decimalToHoursMinutes(round($avgHours, 2)) ; //sprintf('%02d:%02d', $avgHours, $avgMins);
             $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
         } else {
             $data['avgWorkedHours'] = '00:00';

@@ -204,8 +204,8 @@ class CustomHelper{
 
             $report[] = [
                 'month'        => Carbon::create()->month($month)->format('F'),
-                'total_hours'  => $totalHours,   // e.g. 92.62
-                'avg_hours'    => $avgHours,     // e.g. 8.82
+                'total_hours'  => CustomHelper::decimalToHoursMinutes($totalHours),   // e.g. 92.62
+                'avg_hours'    => CustomHelper::decimalToHoursMinutes($avgHours),     // e.g. 8.82
                 'working_days' => $workingDays,  // e.g. 10.5
                 'leaves'       => $leaveCount,   // e.g. 1.5
                 'year'         => $year
@@ -1076,6 +1076,19 @@ public static function getWorkRatingAnalysisMonthly($empId)
         }
 
         return true;
+    }
+
+     public static function decimalToHoursMinutes($decimalHours): string {
+        $hours = floor($decimalHours);
+        $minutes = round(($decimalHours - $hours) * 60);
+
+        // Handle rounding edge case
+        if ($minutes === 60) {
+            $hours++;
+            $minutes = 0;
+        }
+
+        return sprintf('%02d:%02d', $hours, $minutes); // e.g. 10.82 => "10:49"
     }
 
 
