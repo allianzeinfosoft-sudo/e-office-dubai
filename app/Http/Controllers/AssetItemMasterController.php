@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AssetItemMaster;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class AssetItemMasterController extends Controller
 {
@@ -40,25 +41,31 @@ class AssetItemMasterController extends Controller
 
     public function store(Request $request)
     {
+        try {
         $validated = $request->validate([
-            'item_code' => 'required',
-            'name' => 'required',
+            'item_code' => 'required|unique:asset_item_masters,item_code,' . $request->id,
+            'name'      => 'required',
         ]);
 
-        AssetItemMaster::updateOrCreate([
-            'id' => $request->id
-        ],
-        [
-            'name' => $request->name,
-            'item_code' => $request->item_code,
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
+        AssetItemMaster::updateOrCreate(
+            ['id' => $request->id],
+            [
+                'item_code'   => $request->item_code,
+                'name'        => $request->name,
+                'description' => $request->description,
+            ]
+        );
 
         return response()->json([
             'success' => true,
             'message' => 'Item saved successfully!',
         ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $e->errors(),   // Laravel returns array of field => messages
+            ], 422);
+        }
     }
 
 

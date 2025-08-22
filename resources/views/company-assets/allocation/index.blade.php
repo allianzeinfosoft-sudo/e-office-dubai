@@ -56,6 +56,12 @@
                             </a>
                         </div>
                         <div class="col-md-6 text-end pb-3">
+                            <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvasAssetWise()">
+                                <span>
+                                    <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
+                                    <span class="d-none d-sm-inline-block"> Allocate Item Asset Wise</span>
+                                </span>
+                            </a>
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
@@ -140,6 +146,27 @@
     </div>
 </div>
 
+
+<div class="offcanvas offcanvas-end w-90" data-bs-backdrop="static" tabindex="-1" id="asset_wise_vendor_offcanvas" aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas-header bg-primary p-3">
+        <span class="d-flex justify-content-between align-items-center gap-2">
+            <i class="ti ti-file-description fs-2 text-white"></i>
+            <span id="asset-wise-vendor-offcanvas-title">
+                <h5 class="offcanvas-title text-white">Asset Wise Allocation</h5>
+                <span class="text-white slogan">New Asset Wise Allocation</span>
+            </span>
+        </span>
+        <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <x-asset-wise-allocation-form />
+            </div>
+        </div>
+    </div>
+</div>
+
 @stop
 
 
@@ -200,6 +227,30 @@
 
 
         $('#allocation-form').submit(function (e) {
+            let url = $(this).attr('action');
+            e.preventDefault();
+
+            let form = this;
+            let formData = new FormData(form);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                contentType: false,   // MUST be false
+                processData: false,   // MUST be false
+                success: function (response) {
+                    toastr["success"](response.message);
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+                }
+            });
+        });
+
+
+        $('#asset-wise-allocation-form').submit(function (e) {
             let url = $(this).attr('action');
             e.preventDefault();
 
@@ -345,6 +396,24 @@
                     alert('Failed to load Asset Allocation data.');
                 }
             });
+        }
+    }
+
+    // assetwise allocation
+    function openOffcanvasAssetWise(id = null) {
+        const $asset_wise_form = $('#asset-wise-allocation-form');
+        $('#asset-wise-item-line-container').empty();
+
+        $('#company_name, #vendor_id').val('').trigger('change');
+        $asset_wise_form[0].reset();
+        $('#asset_wise_target_id').val('');
+        $('#asset-wise-vendor-offcanvas-title').html(`<h5 class="offcanvas-title text-white">Asset Wise Allocation</h5><span class="text-white slogan">New Asset Wise Allocation</span>`);
+
+        const offcanvasElementAssetWise = $('#asset_wise_vendor_offcanvas');
+
+        if (offcanvasElementAssetWise.length) {
+            const offcanvasassetwise = new bootstrap.Offcanvas(offcanvasElementAssetWise[0]);
+            offcanvasassetwise.show();
         }
     }
 

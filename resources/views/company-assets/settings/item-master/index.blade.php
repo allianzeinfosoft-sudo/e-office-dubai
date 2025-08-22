@@ -155,8 +155,18 @@
                     }
                 },
                 error: function(xhr) {
-                    let errors = xhr.responseJSON.errors;
-                    alert('Error: ' + errors.name[0]);
+                      if (xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        let messages = [];
+
+                        $.each(errors, function(field, msgs) {
+                            messages.push(msgs[0]); // take first error per field
+                            toastr["error"](msgs[0]); // show each error in toastr
+                        });
+
+                    } else {
+                        toastr["error"]("Something went wrong!");
+                    }
                 }
             });
         });

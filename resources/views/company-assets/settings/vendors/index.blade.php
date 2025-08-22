@@ -179,7 +179,7 @@
             });
         });
 
-        /* Store vendot */
+        /* Store vendor */
         $('#vendor-form').submit(function (e) {
             e.preventDefault();
             $.ajax({
@@ -193,6 +193,8 @@
                     const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
                     if (offcanvas) {
                         offcanvas.hide();
+                        const $form = $('#vendor-form');
+                        window.location.reload();
                     }
                 }
             });
@@ -221,6 +223,7 @@
     }
 
     function openOffcanvas(id = null) {
+
         const $form = $('#vendor-form');
         $form[0].reset();
         $('#target_id').val('');

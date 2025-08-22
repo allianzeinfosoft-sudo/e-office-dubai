@@ -53,17 +53,15 @@
                             <a class="btn btn-danger" href="{{ route('assets.dashboard') }}">
                                 <i class="ti ti-home me-0 me-sm-1 ti-xs"></i>
                             </a>
-
-                            <a class="btn btn-primary" href="{{ route('assets.scrap-register.index') }}">
+                            <a class="btn btn-secondary" href="{{ route('assets.scrap-register.index') }}">
                                 Scrapped Items
                             </a>
-                            <a class="btn btn-secondary" href="{{ route('assets.scrap-outs') }}">
+                            <a class="btn btn-primary" href="{{ route('assets.scrap-outs') }}">
                                 Scrap Outs
                             </a>
-                              <a class="btn btn-secondary" href="{{ route('assets.scrapped-batches') }}">
+                            <a class="btn btn-secondary" href="{{ route('assets.scrapped-batches') }}">
                                 Scrapped Batches
                             </a>
-
                         </div>
                         <div class="col-md-6 text-end pb-3">
                             <a class="btn btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
@@ -77,16 +75,15 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
+                                            <th>Batch No</th>
                                             <th>Asset ID</th>
-                                            <th>Classification</th>
-                                            <th>Category</th>
-                                            <th>Type</th>
                                             <th>Item</th>
-                                            <th>Brand</th>
                                             <th>Model</th>
-                                            <th>Key/Id</th>
-                                            <th>Serial Number</th>
-                                            {{-- <th>Specification</th> --}}
+                                            <th>Serial No</th>
+                                            <th>Scrap Date</th>
+                                            <th>Vendor</th>
+                                            <th>Amount</th>
+                                            <th>Remarks</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -133,25 +130,25 @@
         const scrapTable = $('#scrap-register-table').DataTable({
             processing: false,
             serverSide: false,
-            ajax: '{{ route("assets.scrap-register.index") }}',
+            ajax: '{{ route("assets.scrap-outs") }}',
             dataSrc: 'data',
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                { data: 'batch_id' },
                 { data: 'asset_id' },
-                { data: 'classificaiton' },
-                { data: 'category' },
-                { data: 'type' },
                 { data: 'item' },
-                { data: 'brand' },
                 { data: 'model' },
-                { data: 'key_id' },
-                { data: 'serial_number' },
-                // { data: 'specification' },
+                { data: 'serial_no' },
+                { data: 'scrap_date' },
+                { data: 'vendor' },
+                { data: 'amount' },
+                { data: 'remarks' },
                 {
                     data: 'id',
                     render: function (data) {
                         return `
-                            <button class="btn btn-sm btn-danger" onclick="RetrunStore(${data})" title="Back to Store"><i class="ti ti-arrow-left"></i></button>`;
+
+                            <button class="btn btn-sm btn-danger" onclick="deleteScrap(${data})"><i class="ti ti-trash"></i></button>`;
                     }
                 }
             ]
@@ -238,7 +235,8 @@
                                             <i class="ti ti-minus"></i>
                                         </button>
                                     </td>
-                                </tr>`;
+                                </tr>
+                            `;
                             $('#item-line-container').append(row);
 
                             // Set values after insertion
@@ -270,7 +268,8 @@
                 $('#item-line-container').empty();
                 $('#scrap_offcanvas-title').html(`
                     <h5 class="offcanvas-title text-white">Create Scrap Register</h5>
-                    <span class="text-white slogan">Create Scrap Register</span>`);
+                    <span class="text-white slogan">Create Scrap Register</span>
+                `);
             }
             new bootstrap.Offcanvas('#scrap_offcanvas').show();
         }
@@ -292,22 +291,6 @@
         }
     }
 
-    function RetrunStore(id){
-         if (confirm('Are you sure to return to store?')) {
-            $.ajax({
-                url: `{{ route('assets.scrap-register.return-store', ':id') }}`.replace(':id', id),
-                type: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (res) {
-                    toastr.error(res.message);
-                    $('#scrap-register-table').DataTable().ajax.reload();
-                }
-            });
-        }
-    }
-
     function appendItemLine(index, data = {}) {
         const row = `
             <tr>
@@ -319,7 +302,8 @@
                 <td><input type="text" name="amount[${index}]" class="form-control" readonly value="${data.amount ?? 0}"></td>
                 <td><textarea name="remarks[${index}]" class="form-control">${data.remarks ?? ''}</textarea></td>
                 <td><button type="button" class="btn btn-danger btn-sm" onclick="$(this).closest('tr').remove();">X</button></td>
-            </tr>`;
+            </tr>
+        `;
         $('#item-line-container').append(row);
     }
 

@@ -198,6 +198,109 @@ class AssetAllocationController extends Controller
     }
 
 
+    public function asset_wise_allocation(Request $request)
+    {
+
+        $validated = $request->validate([
+            'asset_wise_asset_code_id'      => 'required|array',
+            // 'asset_wise_user'               => 'required|array',
+            'asset_wise_asset_item_id'      => 'required|array',
+            'asset_wise_asset_model'        => 'nullable|array',
+            'asset_wise_specification'      => 'required|array',
+        ]);
+
+
+
+        $conflicts = []; // 🚨 collect already allocated assets here
+
+        // Save asset item lines
+        foreach ($request->asset_wise_asset_item_id as $index => $itemId) {
+
+            $asset = AssetAllocation::updateOrCreate(
+                ['id' => $request->asset_id],
+                [
+                    'user_type'   => $request->asset_wise_user_type[$index],
+                    'user'        => $request->asset_wise_user[$index] ?? $request->asset_wise_user[$index] ?? '',
+                    'department'  => $request->asset_wise_department_id[$index] ?? '',
+                    'remarks'     => $request->asset_wise_remarks ?? ''
+                ]
+            );
+
+            $master_item_code = CustomHelper::getItemCode($request->asset_wise_asset_item_id[$index]);
+
+            if ($request->asset_wise_user_type == 'employee' || $request->asset_wise_user_type == 'location') {
+                $asset_user_id = $request->asset_wise_user ?? '';
+            } else {
+                $asset_user_id = '';
+            }
+
+            // Check if already exists
+            if ($request->asset_wise_user_type == 'employee' || $request->asset_wise_user_type == 'location') {
+                $query = AllocationLineItem::where('asset_mapping_id', $request->asset_wise_asset_code_id[$index]);
+                if (!is_null($request->asset_wise_user_type)) {
+                    $query->where('allocation_type', $request->asset_wise_user_type);
+                }
+                if (!is_null($asset_user_id)) {
+                    $query->where('allocated_user', $asset_user_id);
+                }
+                $query->where('status',1);
+                $exists = $query->exists();
+            } elseif ($request->asset_wise_user_type == 'scrap') {
+                $exists = AllocationLineItem::where('asset_mapping_id', $request->asset_wise_asset_code_id[$index])
+                    ->where('status', 1)
+                    ->whereIn('allocation_type', ['employee', 'location', 'repair'])
+                    ->exists();
+            } elseif ($request->asset_wise_user_type == 'repair') {
+                $exists = AllocationLineItem::where('asset_mapping_id', $request->asset_wise_asset_code_id[$index])
+                    ->where('status', 1)
+                    ->whereIn('allocation_type', ['employee', 'location', 'scrap'])
+                    ->exists();
+            } else {
+                $exists = false;
+            }
+
+            if ($exists) {
+                // 🚨 collect conflict instead of stopping
+                $conflicts[] = $request->asset_wise_asset_code_id[$index];
+                continue; // skip create
+            }
+
+            // Create new allocation
+            $itemLine = $asset->items()->create([
+                'allocation_id'    => $itemId,
+                'item'             => $request->asset_wise_asset_item_id[$index],
+                'model'            => $request->asset_wise_model_id[$index] ?? null,
+                'serial_number'    => $request->asset_wise_asset_serialnumber[$index] ?? null,
+                'project'          => $request->asset_wise_asset_project_id[$index] ?? null,
+                'asset_mapping_id' => $request->asset_wise_asset_code_id[$index] ?? null,
+                'specification'    => $request->asset_wise_specification[$index],
+                'allocation_type'  => $request->asset_wise_user_type[$index] ?? null,
+                'allocated_user'   => !empty($request->asset_wise_user[$index]) ? $request->asset_wise_user[$index] : null,
+            ]);
+
+            CustomHelper::updateAssetMapping([
+                'allocation_id'    => $itemLine->id,
+                'user_type'        => $request->asset_wise_user_type[$index],
+                'asset_mapping_id' => $request->asset_wise_asset_code_id[$index],
+            ]);
+        }
+
+        // 🚨 return conflicts if any
+        if (!empty($conflicts)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Some assets are already allocated. Please check.',
+                'conflicts' => $conflicts
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset allocation saved successfully.',
+        ]);
+    }
+
+
    public function allotedItemSearch(Request $request)
     {
         $userType = $request->input('user');
