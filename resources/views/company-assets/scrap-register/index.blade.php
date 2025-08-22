@@ -131,6 +131,14 @@
 <script>
     $(function () {
         const scrapTable = $('#scrap-register-table').DataTable({
+
+            dom: 'Blfrtip',
+            buttons: [
+                { extend: 'excelHtml5', title: 'Allocated Items Report'},
+                { extend: 'pdfHtml5', title: 'Allocated Items Report'},
+                { extend: 'print', title: 'Allocated Items Report'}
+            ],
+
             processing: false,
             serverSide: false,
             ajax: '{{ route("assets.scrap-register.index") }}',

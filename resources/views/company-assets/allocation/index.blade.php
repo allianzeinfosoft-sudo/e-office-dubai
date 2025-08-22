@@ -59,13 +59,13 @@
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvasAssetWise()">
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                    <span class="d-none d-sm-inline-block"> Allocate Item Asset Wise</span>
+                                    <span class="d-none d-sm-inline-block">Asset Wise Allocate</span>
                                 </span>
                             </a>
                             <a class="btn add-new btn-primary" href="javascript:void(0);" onclick="openOffcanvas()">
                                 <span>
                                     <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
-                                    <span class="d-none d-sm-inline-block"> Allocate Item</span>
+                                    <span class="d-none d-sm-inline-block">User Wise Allocation</span>
                                 </span>
                             </a>
                         </div>
