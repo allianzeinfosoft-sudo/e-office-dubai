@@ -69,24 +69,21 @@ class AttendanceController extends Controller{
                 $hours = (int) $hours;
                 $minutes = (int) $minutes;
                 $totalMinutes = ($hours * 60) + $minutes;
-
-                if ($totalMinutes >= 360) {
-                    $fullDays++;
-                } elseif ($totalMinutes > 210 && $totalMinutes < 360) {
-                    $halfDays++;
-                }
+                $fullDays++;
             }
         }
 
         // Approved half day leaves
         $halfDayLeaves = Leave::where('user_id', $user->id)
             // Adjust if your system uses a different label
-            ->where('leave_type','!=','off_day')
+            ->where('leave_type','half_day')
             ->whereMonth('leave_from', $currentMon)
             ->whereYear('leave_from', $currentYear)
             ->sum('leave_day_count');
+            
+            //$data['days_of_worked'] = ;
 
-        $data['days_of_worked'] = $fullDays + ($halfDays * 0.5); // - ($halfDayLeaves);
+            $data['days_of_worked'] = $fullDays  - $halfDayLeaves;
 
         /* =================================================================================================== */
 
@@ -94,27 +91,24 @@ class AttendanceController extends Controller{
 
         // Get all working_hours OF attendances for the current month
         $attendancesWorkinghours = Attendance::where('username', $user->username) ->where('signin_date', 'like', "$currentMonth%") ->pluck('working_hours');
-
         $totalMinutes = 0;
-
         foreach ($attendancesWorkinghours as $wh) {
             if (!$wh || !str_contains($wh, ':')) continue;
             list($h, $m, $s) = explode(':', $wh);
             $totalMinutes += ((int)$h * 60) + (int)$m; // ignore seconds
         }
 
-        $data['totalWorkedHours'] = $totalMinutes/60;
+        $data['totalWorkedHours'] = CustomHelper::decimalToHoursMinutes($totalMinutes/60);
         // sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
         // dd($data['totalWorkedHours']);
-
         /******* CURRENT MONTH AVERAGE WORKED HOURS OF USERS *******/
         // Calculate average worked hours per day
         if ($data['days_of_worked'] > 0) {
             $avgMinutes = $totalMinutes / $data['days_of_worked'];
-            $avgHours = floor($avgMinutes / 60);
+            $avgHours = $avgMinutes / 60;
             $avgMins = $avgMinutes % 60;
             //$data['avgWorkedHours'] = round(($avgMinutes / 60),2);
-            $data['avgWorkedHours'] = sprintf('%02d:%02d', $avgHours, $avgMins);
+            $data['avgWorkedHours'] = CustomHelper::decimalToHoursMinutes(round($avgHours, 2)) ; //sprintf('%02d:%02d', $avgHours, $avgMins);
             $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
         } else {
             $data['avgWorkedHours'] = '00:00';
