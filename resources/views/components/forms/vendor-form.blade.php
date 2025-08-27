@@ -7,7 +7,7 @@
         <div class="col-sm-6 mb-3">
             <div class="form-group">
                 <label for="vendor_code">Vendor Code <span class="text-danger">*</span></label>
-                <input type="text" name="vendor_code" id="vendor_code" class="form-control" placeholder="Vendor Code" required />
+                <input type="text" name="vendor_code" id="vendor_code" class="form-control" placeholder="Vendor Code" value="{{ $vendorCode }}" readonly />
             </div>
         </div>
 
@@ -76,7 +76,7 @@
             </div>
         </div>
 
-       
+
         <div class="col-sm-12 mb-3">
             <button type="submit" class="btn btn-primary">
                 <i class="fa fa-save"></i>&nbsp;&nbsp; Save Vendor

@@ -657,7 +657,14 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::post('store-vendor-category', [AssetVendorsController::class, 'store_category'])->name('store-vendor-category');
         Route::resource('itemmaster', AssetItemMasterController::class)->names('itemmaster');
         Route::resource('allocation', AssetAllocationController::class)->names('allocation');
+        Route::post('allocation/asset-wise', [AssetAllocationController::class, 'asset_wise_allocation'])->name('allocation.asset_wise_store');
         Route::resource('scrap-register', ScrapRegisterController::class)->names('scrap-register');
+        Route::delete('scrap-register/delete/{id}', [ScrapRegisterController::class, 'deleteScrapBatch'])->name('scrap-register.delete');
+        Route::post('scrap-register/return-store/{id}', [ScrapRegisterController::class, 'returnStore'])->name('scrap-register.return-store');
+
+        Route::get('scraped-batches', [ScrapRegisterController::class, 'scrapped_batches'])->name('scrapped-batches');
+        Route::get('scrap-outs', [ScrapRegisterController::class, 'scrap_outs'])->name('scrap-outs');
+
         Route::post('scrap-register/get-item-serials', [ScrapRegisterController::class, 'getItemSerial'])->name('scrap-register.get-item-serials');
         Route::post('scrap-register/get-model-no', [ScrapRegisterController::class, 'getItemModel'])->name('scrap-register.get-model-no');
         Route::post('scrap-register/get-asset-id', [ScrapRegisterController::class, 'getAssetId'])->name('scrap-register.get-asset-id');

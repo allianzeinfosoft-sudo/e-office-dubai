@@ -152,7 +152,7 @@
                 <td>
                         <textarea class="form-control" name="specification[${itemLineLength}]" id="specification_${itemLineLength}" readonly></textarea>
                 </td>
-                <td><input class="form-control text-right" type="text" id="rate_${itemLineLength}" name="rate[${itemLineLength}]" onchange="calculateGrandTotal('${itemLineLength}')"></td>
+                <td><input class="form-control text-right" type="text" id="rate_${itemLineLength}" name="rate[${itemLineLength}]" onchange="calculateGrandTotal('${itemLineLength}')" required></td>
 
                 <td><input class="form-control" type="text" name="remarks[${itemLineLength}]" id="remarks_${itemLineLength}" value=""></td>
                 <td>

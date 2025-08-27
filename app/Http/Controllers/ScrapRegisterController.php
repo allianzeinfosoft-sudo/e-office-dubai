@@ -20,21 +20,24 @@ class ScrapRegisterController extends Controller
     {
         //
         if($request->ajax()) {
-            $scraps = ScrapRegister::with('vendor')
-                ->select('id', 'scrap_no', 'scrap_date', 'scrap_vendor_id', 'total_weight', 'total_amount', 'remarks')
-                ->get();
 
-            $data = $scraps->map(function($item, $index) {
+
+            $asset =  AssetMapping::with(['register_lineitem', 'masteritem'])->where('allocation_status',3)->where('status',1)->get();
+            $data = $asset->map(function($item, $index) {
 
                     return [
                         'DT_RowIndex'   => $index + 1,
                         'id'            => $item->id,
-                        'scrap_no'      => $item->scrap_no,
-                        'asset_mapping_id' => $item->asset_mapping_id,
-                        'scrap_date'    => date('d-m-Y', strtotime($item->scrap_date)), //$item->asset_date,
-                        'vendor_name'   => $item->vendor->vendor_name,
-                        'total_weight'  => $item->total_weight,
-                        'total_amount'  => $item->total_amount,
+                        'asset_id'      => CustomHelper::itemCodeGenerater($item->id) ?? '-',
+                        'classificaiton' => $item->register_lineitem?->asset_classification?->name ?? '-',
+                        'category'      => $item->register_lineitem?->asset_category?->name ?? '-',
+                        'type'          => $item->register_lineitem?->asset_type?->name ?? '-',
+                        'item'          => $item->masteritem?->name ?? '-',
+                        'brand'         => $item->register_lineitem?->asset_brand ?? '-',
+                        'model'         => $item->register_lineitem?->item_model ?? '-',
+                        'key_id'        => $item->register_lineitem?->item_key_id ?? '-',
+                        'serial_number' => $item->register_lineitem?->serial_number ?? '-',
+                        'specification' => $item->register_lineitem?->asset_description ?? '-',
                         'remarks'       => $item->remarks
                     ];
 
@@ -48,6 +51,77 @@ class ScrapRegisterController extends Controller
         $data['vendors'] = AssetVendors::all();
         $data['assetItems'] = AssetItemMaster::all();
         return view('company-assets.scrap-register.index', $data);
+    }
+
+
+    public function scrapped_batches(Request $request)
+    {
+
+        if($request->ajax()) {
+            $scraps = ScrapRegister::with('vendor')
+                    ->withCount('items')
+                    ->select('id', 'scrap_no', 'scrap_date', 'scrap_vendor_id', 'total_weight', 'total_amount', 'remarks')
+                    ->get();
+
+            $data = $scraps->map(function($item, $index) {
+
+                    return [
+                        'DT_RowIndex'   => $index + 1,
+                        'id'            => $item->id,
+                        'scrap_no'      => $item->scrap_no,
+                        'asset_mapping_id' => $item->asset_mapping_id,
+                        'scrap_date'    => date('d-m-Y', strtotime($item->scrap_date)), //$item->asset_date,
+                        'vendor_name'   => $item->vendor->vendor_name,
+                        'total_weight'  => $item->total_weight,
+                        'total_amount'  => $item->total_amount,
+                        'remarks'       => $item->remarks,
+                    ];
+
+                });
+
+            return response()->json(['data' => $data]);
+        }
+
+        $data['meta_title'] = 'Scrap Out Batch';
+        $data['items'] = AssetItemMaster::get();
+        $data['vendors'] = AssetVendors::all();
+        $data['assetItems'] = AssetItemMaster::all();
+        return view('company-assets.scrap-register.scrap-batch', $data);
+    }
+
+    public function scrap_outs(Request $request)
+    {
+         //
+        if($request->ajax()) {
+
+            $scraps = ScrapItemLine::with('register','item','mapping')->get();
+            $data = $scraps->map(function($item, $index) {
+
+                    return [
+                        'DT_RowIndex'   => $index + 1,
+                        'id'            => $item->id,
+                        'batch_id'      => $item->register?->scrap_no ?? '-',
+                        'asset_id'      => CustomHelper::itemCodeGenerater($item->mapping?->id) ?? '-',
+                        'item'          => $item->item?->name ?? '-',
+                        'model'         => $item->model ?? '-',
+                        'serial_no'     => $item->serial_no ?? '-',
+                        'amount'        => $item->amount ?? '-',
+                        'rate'          => $item->rate ?? '-',
+                        'vendor'        => $item->register?->vendor?->vendor_name ?? '-',
+                        'scrap_date'    => date('d-m-Y', strtotime($item->register?->scrap_date)),
+                        'remarks'       => $item->remarks ?? '-'
+                    ];
+
+                });
+
+            return response()->json(['data' => $data]);
+        }
+
+        $data['meta_title'] = 'Scrap Register';
+        $data['items'] = AssetItemMaster::get();
+        $data['vendors'] = AssetVendors::all();
+        $data['assetItems'] = AssetItemMaster::all();
+        return view('company-assets.scrap-register.scraped', $data);
     }
 
     /**
@@ -90,12 +164,6 @@ class ScrapRegisterController extends Controller
             ]
         );
 
-        $previousAssetMappingIds = $asset->items()->pluck('asset_mapping_id')->toArray();
-        AssetMapping::whereIn('id', $previousAssetMappingIds)->update(['scrap_id' => null, 'allocation_status' => 0]);
-
-        // Delete old item lines if editing
-        $asset->items()->delete();
-
         // Save asset item lines
         foreach ($request->scrap_item_id as $index => $itemId) {
             $scrapItemLine = $asset->items()->create([
@@ -110,7 +178,7 @@ class ScrapRegisterController extends Controller
 
             if(!empty($request->asset_id[$index])) {
                 AssetMapping::where('id', $request->asset_id[$index])
-                    ->update(['scrap_id' => $scrapItemLine->id, 'allocation_status' => 3]);
+                    ->update(['scrap_id' => $scrapItemLine->id, 'status' => 0]);
             }
         }
 
@@ -153,15 +221,60 @@ class ScrapRegisterController extends Controller
      */
     public function destroy($id)
     {
-        //
-        $scrapRegister = ScrapRegister::findOrFail($id);
-        $scrapRegister->items()->delete();
+        $scrapRegister = ScrapItemLine::findOrFail($id);
         $scrapRegister->delete();
+        AssetMapping::where('id', $scrapRegister->asset_mapping_id)
+                    ->update(['scrap_id' => null, 'status' => 1]);
+
         return response()->json([
             'success' => true,
-            'message' => 'Scrap register deleted successfully.',
+            'message' => 'Scrap item deleted successfully.',
         ]);
 
+    }
+
+    public function deleteScrapBatch($id)
+    {
+
+        $scrapLineCount = ScrapItemLine::where('scrap_register_id',$id)->count();
+        if($scrapLineCount == 0)
+        {
+            $scrapLine = ScrapRegister::find($id);
+            $scrapLine->delete();
+
+             return response()->json([
+                'success' => true,
+                'message' => 'Scrap Batch deleted successfully.',
+             ]);
+
+        }else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Batch contained items.',
+            ]);
+        }
+    }
+
+    public function returnStore($id)
+    {
+        $assetMapping = AssetMapping::find($id);
+
+        if (!$assetMapping) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Asset not found.',
+            ], 404);
+        }
+
+        $assetMapping->update([
+            'scrap_id' => null,
+            'allocation_status' => 0,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Scrap item returned successfully.',
+        ]);
     }
 
     /* get item serial number */
@@ -273,7 +386,7 @@ class ScrapRegisterController extends Controller
      public function getScrapAssetCode(Request $request)
     {
 
-         $asset = AssetMapping::where('allocation_status',3)->where('master_item_id', $request->item_id)
+         $asset = AssetMapping::where('allocation_status',3)->where('status',1)->where('master_item_id', $request->item_id)
         ->get()
         ->map(function ($assetCodes) {
             return [

@@ -53,14 +53,13 @@
                             <a class="btn btn-danger" href="{{ route('assets.dashboard') }}">
                                 <i class="ti ti-home me-0 me-sm-1 ti-xs"></i>
                             </a>
-
-                            <a class="btn btn-primary" href="{{ route('assets.scrap-register.index') }}">
+                            <a class="btn btn-secondary" href="{{ route('assets.scrap-register.index') }}">
                                 Scrapped Items
                             </a>
-                            <a class="btn btn-secondary" href="{{ route('assets.scrap-outs') }}">
+                             <a class="btn btn-secondary" href="{{ route('assets.scrap-outs') }}">
                                 Scrap Outs
                             </a>
-                              <a class="btn btn-secondary" href="{{ route('assets.scrapped-batches') }}">
+                            <a class="btn btn-primary" href="{{ route('assets.scrapped-batches') }}">
                                 Scrapped Batches
                             </a>
 
@@ -77,16 +76,12 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Asset ID</th>
-                                            <th>Classification</th>
-                                            <th>Category</th>
-                                            <th>Type</th>
-                                            <th>Item</th>
-                                            <th>Brand</th>
-                                            <th>Model</th>
-                                            <th>Key/Id</th>
-                                            <th>Serial Number</th>
-                                            {{-- <th>Specification</th> --}}
+                                            <th>Batch No</th>
+                                            <th>Scrap Date</th>
+                                            <th>Vendor</th>
+                                            <th>Total Weight</th>
+                                            <th>Total Amount</th>
+                                            <th>Remarks</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -131,40 +126,27 @@
 <script>
     $(function () {
         const scrapTable = $('#scrap-register-table').DataTable({
-
-            dom: 'Blfrtip',
-            buttons: [
-                { extend: 'excelHtml5', title: 'Allocated Items Report'},
-                { extend: 'pdfHtml5', title: 'Allocated Items Report'},
-                { extend: 'print', title: 'Allocated Items Report'}
-            ],
-
             processing: false,
             serverSide: false,
-            ajax: '{{ route("assets.scrap-register.index") }}',
+            ajax: '{{ route("assets.scrapped-batches") }}',
             dataSrc: 'data',
             columns: [
                 { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                { data: 'asset_id' },
-                { data: 'classificaiton' },
-                { data: 'category' },
-                { data: 'type' },
-                { data: 'item' },
-                { data: 'brand' },
-                { data: 'model' },
-                { data: 'key_id' },
-                { data: 'serial_number' },
-                // { data: 'specification' },
+                { data: 'scrap_no' },
+                { data: 'scrap_date' },
+                { data: 'vendor_name' },
+                { data: 'total_weight' },
+                { data: 'total_amount' },
+                { data: 'remarks' },
                 {
                     data: 'id',
                     render: function (data) {
                         return `
-                            <button class="btn btn-sm btn-danger" onclick="RetrunStore(${data})" title="Back to Store"><i class="ti ti-arrow-left"></i></button>`;
+                            <button class="btn btn-sm btn-danger" onclick="deleteScrapBatch(${data})"><i class="ti ti-trash"></i></button>`;
                     }
                 }
             ]
         });
-        // <button class="btn btn-sm btn-primary" onclick="openOffcanvas(${data})"><i class="ti ti-edit"></i></button>
 
         $('#scrap-register-form').submit(function (e) {
             e.preventDefault();
@@ -246,7 +228,8 @@
                                             <i class="ti ti-minus"></i>
                                         </button>
                                     </td>
-                                </tr>`;
+                                </tr>
+                            `;
                             $('#item-line-container').append(row);
 
                             // Set values after insertion
@@ -278,34 +261,21 @@
                 $('#item-line-container').empty();
                 $('#scrap_offcanvas-title').html(`
                     <h5 class="offcanvas-title text-white">Create Scrap Register</h5>
-                    <span class="text-white slogan">Create Scrap Register</span>`);
+                    <span class="text-white slogan">Create Scrap Register</span>
+                `);
             }
             new bootstrap.Offcanvas('#scrap_offcanvas').show();
         }
 
-    function deleteScrap(id) {
-        if (confirm('Delete this scrap entry?')) {
+    function deleteScrapBatch(id) {
+
+
+        if (confirm('Delete this scrap batch entry?')) {
             $.ajax({
-                url: `{{ route('assets.scrap-register.destroy', ':id') }}`.replace(':id', id),
-                type: 'POST',
+                url: `{{ route('assets.scrap-register.delete', ':id') }}`.replace(':id', id),
+                type: 'DELETE',
                 data: {
                     _method: 'DELETE',
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (res) {
-                    toastr.error(res.message);
-                    $('#scrap-register-table').DataTable().ajax.reload();
-                }
-            });
-        }
-    }
-
-    function RetrunStore(id){
-         if (confirm('Are you sure to return to store?')) {
-            $.ajax({
-                url: `{{ route('assets.scrap-register.return-store', ':id') }}`.replace(':id', id),
-                type: 'POST',
-                data: {
                     _token: '{{ csrf_token() }}'
                 },
                 success: function (res) {
@@ -327,7 +297,8 @@
                 <td><input type="text" name="amount[${index}]" class="form-control" readonly value="${data.amount ?? 0}"></td>
                 <td><textarea name="remarks[${index}]" class="form-control">${data.remarks ?? ''}</textarea></td>
                 <td><button type="button" class="btn btn-danger btn-sm" onclick="$(this).closest('tr').remove();">X</button></td>
-            </tr>`;
+            </tr>
+        `;
         $('#item-line-container').append(row);
     }
 
