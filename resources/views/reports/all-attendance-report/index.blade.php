@@ -170,9 +170,9 @@
                     $('.datatables-all-attendance-report').DataTable({
                         dom: 'Bfrtip',
                         buttons: [
-                            { extend: 'excelHtml5', title: 'All Attendance Report'},
-                            { extend: 'pdfHtml5', title: 'All Attendance Report', orientation: 'landscape', pageSize: 'A4'},
-                            { extend: 'print', title: 'All Attendance Report'}
+                            { extend: 'excelHtml5', title: 'All Attendance Report of '+ response.name },
+                            { extend: 'pdfHtml5', title: 'All Attendance Report '+ response.name , orientation: 'landscape', pageSize: 'A4'},
+                            { extend: 'print', title: 'All Attendance Report '+ response.name }
                         ],
                     });
                 }

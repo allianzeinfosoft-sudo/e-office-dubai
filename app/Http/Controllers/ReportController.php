@@ -699,7 +699,7 @@ class ReportController extends Controller
 
         $html = view('reports.all-attendance-report.report-view', $data)->render();
 
-        return response()->json(['html' => $html]);
+        return response()->json(['html' => $html, 'name' => $name]);
     }
 
     public function allWorkReport(){
