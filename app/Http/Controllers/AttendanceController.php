@@ -240,7 +240,7 @@ class AttendanceController extends Controller{
                     }
                     
                 }
-                exit();
+                
             }
 
             
@@ -377,7 +377,7 @@ class AttendanceController extends Controller{
                     
                     if ($shiftType == 'night') {
                         if (now()->hour < 12) { // 6 AM cutoff for night shifts
-                            $signinDate = ($data['attendance']?->signin_date);
+                            $signinDate = ($data['attendance']->signin_date);
                             $effectiveSigninDate = $signinDate; // Subtract 1 day from $signinDate;
                         }else{
                             
