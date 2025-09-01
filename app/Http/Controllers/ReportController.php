@@ -499,22 +499,56 @@ class ReportController extends Controller
         return view('reports.leave-report.index', $data);
     }
 
-    public function leaveReportData(Request $request){
+    public function leaveReportData(Request $request)
+    {
         $query = Leave::with('user', 'employee');
 
         if ($request->filled('username')) {
             $query->where('user_id', $request->username);
         }
 
-        if ($request->filled('start_date')) {
-            $query->whereDate('leave_from', '>=', $request->start_date);
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $filterStart = Carbon::parse($request->start_date);
+            $filterEnd   = Carbon::parse($request->end_date);
+
+            $query->where(function ($q) use ($filterStart, $filterEnd) {
+                $q->whereDate('leave_from', '<=', $filterEnd)
+                ->whereDate('leave_to', '>=', $filterStart);
+            });
+        } elseif ($request->filled('start_date')) {
+            $filterStart = Carbon::parse($request->start_date);
+            $filterEnd   = Carbon::now(); // assume till today
+            $query->whereDate('leave_to', '>=', $filterStart);
+        } elseif ($request->filled('end_date')) {
+            $filterStart = Carbon::createFromFormat('Y-m-d', '1970-01-01'); // min fallback
+            $filterEnd   = Carbon::parse($request->end_date);
+            $query->whereDate('leave_from', '<=', $filterEnd);
+        } else {
+            // If no filter provided, take full range
+            $filterStart = Carbon::createFromFormat('Y-m-d', '1970-01-01');
+            $filterEnd   = Carbon::now();
         }
 
-        if ($request->filled('end_date')) {
-            $query->whereDate('leave_to', '<=', $request->end_date);
-        }
+        $leaves = $query->get();
 
-        $leaves = $query->get()->map(function ($leave) {
+        // Total leave count in filter range
+        $totalFilteredLeave = 0;
+
+        $mapped = $leaves->map(function ($leave) use ($filterStart, $filterEnd, &$totalFilteredLeave) {
+            $leaveStart = Carbon::parse($leave->leave_from);
+            $leaveEnd   = Carbon::parse($leave->leave_to);
+
+            // calculate overlap between leave and filter range
+            $overlapStart = $leaveStart->greaterThan($filterStart) ? $leaveStart : $filterStart;
+            $overlapEnd   = $leaveEnd->lessThan($filterEnd) ? $leaveEnd : $filterEnd;
+
+            $filteredLeaveCount = 0;
+            if ($overlapStart->lte($overlapEnd)) {
+                $filteredLeaveCount = $overlapStart->diffInDays($overlapEnd) + 1;
+            }
+
+            $totalFilteredLeave += $filteredLeaveCount;
+
             $leaveBadge = match ($leave->leave_type) {
                 'full_day' => '<span class="badge bg-label-danger">Full Day</span>',
                 'half_day' => '<span class="badge bg-label-success">Half Day</span>',
@@ -523,21 +557,27 @@ class ReportController extends Controller
             };
 
             return [
-                'id'            => $leave->id,
-                'username'      => $leave->Employee->full_name ?? '-',
-                'leave_from'    => Carbon::parse($leave->leave_from)->format('d-m-Y'),
-                'leave_to'      => Carbon::parse($leave->leave_to)->format('d-m-Y'),
-                'leave_count'   => $leave->leave_day_count ?? 0,
-                'leave_type'    => $leaveBadge,
-                'reason'        => $leave->reason,
-                'apply_date'    => $leave->created_at->format('d-m-Y'),
-                'status'        => ($leave->status == 3) ? 'Rejected' : (($leave->status == 2) ? 'Approved' : 'Pending'),
-                'action'        => '<a href="#" class="btn btn-sm btn-info">Edit</a>'
+                'id'                     => $leave->id,
+                'username'               => $leave->Employee->full_name ?? '-',
+                'leave_from'             => $leaveStart->format('d-m-Y'),
+                'leave_to'               => $leaveEnd->format('d-m-Y'),
+                'leave_count'            => $leave->leave_day_count ?? 0,
+                'leave_type'             => $leaveBadge,
+                'reason'                 => $leave->reason,
+                'apply_date'             => $leave->created_at->format('d-m-Y'),
+                'status'                 => ($leave->status == 3) ? 'Rejected' : (($leave->status == 2) ? 'Approved' : 'Pending'),
+                'filtered_leave_count'   => $filteredLeaveCount,
+                'action'                 => '<a href="#" class="btn btn-sm btn-info">Edit</a>'
             ];
         });
 
-        return response()->json(['data' => $leaves]);
+        return response()->json([
+            'data' => $mapped,
+            'total_filtered_leave' => $totalFilteredLeave,
+        ]);
     }
+
+
 
     public function allAttendanceReport(){
         $data['meta_title'] = 'All Attendance Report';

@@ -9,7 +9,6 @@
 </style>
 @stop
 
-
 @section('content')
   <div class="layout-wrapper layout-content-navbar">
       <div class="layout-container {{ $background_class ?? 'bg-eoffice' }}">

@@ -8,13 +8,15 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\CustomHelper;
 
+use Webklex\IMAP\Client;
+
 
 class MailBoxController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    /* public function index(Request $request)
     {
         if($request->ajax()) {
             $mails = MailBox::with(['fromUser', 'userData'])
@@ -50,7 +52,78 @@ class MailBoxController extends Controller
         $data['employees'] = Employee::with('user')->get();
         $data['counts'] = $counts;
         return view('mailBox.index', $data);
+    } */
+
+    public function index(Request $request)
+{
+    if ($request->ajax()) {
+        $mails = MailBox::with(['fromUser', 'userData'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data'   => $mails
+        ]);
     }
+
+    $user = auth()->user();
+    $userId = $user->id;
+
+    // Folder counts
+    $counts = [
+        'inbox'   => MailBox::whereJsonContains('to_user_ids', (string) $userId)
+                        ->where('folder', 'inbox')->count(),
+        'sent'    => MailBox::where('from_user_id', $userId)
+                        ->where('folder', 'sent')->count(),
+        'draft'   => MailBox::where('from_user_id', $userId)
+                        ->where('folder', 'draft')->count(),
+        'spam'    => MailBox::where(function($q) use ($userId) {
+                            $q->where('from_user_id', $userId)
+                              ->orWhereJsonContains('to_user_ids', (string) $userId);
+                        })->where('folder', 'spam')->count(),
+        'trash'   => MailBox::where(function($q) use ($userId) {
+                            $q->where('from_user_id', $userId)
+                              ->orWhereJsonContains('to_user_ids', (string) $userId);
+                        })->where('folder', 'trash')->count(),
+        'starred' => MailBox::where(function($q) use ($userId) {
+                            $q->where('from_user_id', $userId)
+                              ->orWhereJsonContains('to_user_ids', (string) $userId);
+                        })->where('is_starred', 1)->count(),
+    ];
+
+    // Fetch emails using user's IMAP credentials
+    $imapMessages = [];
+    try {
+        $client = new Client([
+            'host'          => env('IMAP_HOST', '192.168.1.11'),
+            'port'          => env('IMAP_PORT', 143),
+            'encryption'    => env('IMAP_ENCRYPTION', 'none'), // tls/ssl/none
+            'validate_cert' => true,
+            'username'      => 'jersong',   // stored in DB per user
+            'password'      => 'jersong@mail.allianzegroup.com',   // stored in DB per user
+            'protocol'      => 'imap'
+        ]);
+
+        $client->connect();
+        $folder = $client->getFolder('INBOX');
+        $messages = $folder->messages()->all()->limit(20)->get();
+
+    } catch (\Exception $e) {
+        \Log::error("IMAP Connection Failed for {$user->email}: " . $e->getMessage());
+    }
+
+    dd($messages);
+
+    $data = [
+        'meta_title' => 'Email',
+        'employees'  => Employee::with('user')->get(),
+        'counts'     => $counts,
+        'imapMails'  => $imapMessages,
+    ];
+
+    return view('mailBox.index', $data);
+}
 
     /**
      * Show the form for creating a new resource.
