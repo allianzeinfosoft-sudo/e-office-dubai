@@ -43,7 +43,7 @@
                   use App\Helpers\CustomHelper;
                 @endphp
               <!--/ Style Switcher -->
-            @if (Auth::user()->hasRole(['HR','Developer', 'G4']))
+            @if (Auth::user()->hasRole(['HR','Developer','G3', 'G4']))
               <!-- Quick links  -->
               <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
                 <a
