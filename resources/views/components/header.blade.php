@@ -43,7 +43,7 @@
                   use App\Helpers\CustomHelper;
                 @endphp
               <!--/ Style Switcher -->
-            @if (Auth::user()->hasRole(['HR','Developer','G3', 'G4']))
+            @if (Auth::user()->hasRole(['HR','Developer','G2','G3', 'G4']))
               <!-- Quick links  -->
               <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
                 <a
@@ -245,7 +245,7 @@
                       </li>
 
 
-                    @if (Auth::user()->hasRole(['HR','Developer']))
+                    @if (Auth::user()->hasRole(['HR','Developer','G2']))
                        <li class="list-group-item list-group-item-action dropdown-notifications-item">
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
