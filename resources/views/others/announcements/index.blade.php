@@ -16,6 +16,47 @@
         padding: 28px 10px;
         border-radius: 0px;
     }
+
+/* ---------------------------------------------------------- */
+    /* Ensure the table allows proper wrapping */
+.avatar-group-wrapper {
+    max-width: 300px; /* wider than others */
+    white-space: normal;
+}
+
+.avatar-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.avatar-group li {
+    margin-bottom: 4px;
+}
+
+/* Optional: Adjust column header alignment */
+table.dataTable th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* Align cell content properly */
+table.dataTable td {
+    vertical-align: top;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .avatar-group-wrapper {
+        max-width: 150px;
+    }
+}
+
+@media (min-width: 769px) {
+    .avatar-group-wrapper {
+        max-width: 300px;
+    }
+}
 </style>
 @stop
 
@@ -50,15 +91,15 @@
                                 <table class="datatables-basic datatables-announcement table border-top table-stripedc table-hover table-striped">
                                     <thead>
                                         <tr>
-                                            <th>No.</th>
-                                            <th>Title</th>
-                                            <th>Image</th>
-                                            <th>Details</th>
-                                            <th>From</th>
-                                            <th>To</th>
+                                            <th width="5%">No.</th>
+                                            <th width="15%">Title</th>
+                                            <th width="15%">Image</th>
+                                            <th width="25%">Details</th>
+                                            <th width="5%">From</th>
+                                            <th width="5%">To</th>
                                             {{-- <th>Created</th> --}}
-                                            <th>Seen By</th>
-                                            <th>Actions</th>
+                                            <th width="25%">Seen By</th>
+                                            <th width="5%">Actions</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -191,22 +232,23 @@
                         data: 'seeb_by',
                         title: 'Seen By',
                         render: function (data, type, row) {
-                            if (!Array.isArray(data) || data.length === 0) {
-                                return `<span>No Members</span>`;
+                                if (!Array.isArray(data) || data.length === 0) {
+                                    return `<span>No Members</span>`;
+                                }
+
+                                let membersHtml = `<div class="avatar-group-wrapper">
+                                    <ul class="list-unstyled avatar-group mb-0">`;
+
+                                data.forEach(member => {
+                                    membersHtml += `
+                                    <li class="avatar avatar-sm" title="${member.full_name}">
+                                        <img class="rounded-circle" src="${member.profile_image ? '/storage/profile_pics/' + member.profile_image.replace(/^profile_pics\//, '') : '/assets/img/avatars/default-avatar.png'}" alt="Avatar">
+                                    </li>`;
+                                });
+
+                                membersHtml += `</ul></div>`;
+                                return membersHtml;
                             }
-
-                            let membersHtml = `<div class="d-flex align-items-center">
-                                <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">`;
-
-                            data.forEach(member => {
-                                membersHtml += `<li class="avatar avatar-sm pull-up" title="${member.full_name}">
-                                    <img class="rounded-circle" src="${member.profile_image ? '/storage/profile_pics/' + member.profile_image.replace(/^profile_pics\//, '') : '/assets/img/avatars/default-avatar.png'}" alt="Avatar">
-                                </li>`;
-                            });
-
-                            membersHtml += `</ul></div>`;
-                            return membersHtml;
-                        }
                     },
 
                     // { data: 'createdAt', name: 'Created' },

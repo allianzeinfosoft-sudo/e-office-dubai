@@ -64,6 +64,7 @@
                                     <tr>
                                         <th>S.No</th>
                                         <th>Survey Name</th>
+                                        <th>Description</th>
                                         <th>Department</th>
                                         <th>Created By</th>
                                         <th>Created Date</th>
@@ -164,6 +165,7 @@
                         searchable: false // Optional: exclude from search
                     },
                     { data: 'template_name', title: 'Survey Name' },
+                    { data: 'description', title: 'Description' },
                     { data: 'department', title: 'Department' },
                     { data: 'created_by', title: 'Created By' },
                     { data: 'created_date', title: 'Created Date'},

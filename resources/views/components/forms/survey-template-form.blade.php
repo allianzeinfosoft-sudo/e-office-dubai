@@ -29,6 +29,13 @@
                 </select>
             </div>
         </div>
+        <div class="col-sm-12 mb-3">
+            <div class="form-group">
+                <label for="description">Description <span class="text-danger">*</span></label>
+                <textarea name="description" id="description" class="form-control" rows="3" placeholder="Description" >
+                </textarea>
+            </div>
+        </div>
         <hr>
         <div id="question-container"></div>
         <div class="col-sm-12 mb-3 d-flex justify-content-between">

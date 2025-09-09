@@ -23,9 +23,10 @@ class SurveyTemplateController extends Controller
                 return [
                     'id' => $surveyTemplate->id,
                     'template_name' => $surveyTemplate->template_name ? $surveyTemplate->template_name : '',
-                    'department' => $surveyTemplate->department_id ? $surveyTemplate->department_info->department  : '',
-                    'created_by' => $surveyTemplate->created_by ? $surveyTemplate->creator->full_name : '',
-                    'created_date' => $surveyTemplate->created_at->format('Y-m-d')
+                    'description'   => $surveyTemplate->description ? $surveyTemplate->description : '',
+                    'department'    => $surveyTemplate->department_id ? $surveyTemplate->department_info->department  : '',
+                    'created_by'    => $surveyTemplate->created_by ? $surveyTemplate->creator->full_name : '',
+                    'created_date'  => $surveyTemplate->created_at->format('Y-m-d')
                 ];
             });
 
@@ -67,6 +68,7 @@ class SurveyTemplateController extends Controller
 
             $template->update([
                 'template_name' => $request->template_name,
+                'description' => $request->description,
                 'department_id' => $request->department_id,
                 'created_by' => auth()->id(), // optional: update on edit
             ]);
@@ -74,9 +76,10 @@ class SurveyTemplateController extends Controller
             // Delete old questions before adding new ones
             $template->questions()->delete();
         } else {
-            // Create new PAR template
+            // Create new Survey template
             $template = SurveyTemplate::create([
                 'template_name' => $request->template_name,
+                'description' => $request->description,
                 'department_id' => $request->department_id,
                 'created_by' => auth()->id(),
             ]);
@@ -136,6 +139,7 @@ class SurveyTemplateController extends Controller
             'questions' => $template->questions,
             'department' => $template->department_info->id ?? null,
             'name' => $template->template_name,
+            'description' => $template->description,
             'locked' => $isAssigned,
         ]);
 
@@ -180,6 +184,7 @@ class SurveyTemplateController extends Controller
 
         return response()->json([
             'template_name' => $template->template_name,
+            'description' => $template->description,
             'department' => optional($template->department_info)->department,
             'created_by' => optional($template->creator)->full_name,
             'questions' => $template->questions->map(function ($q) {
@@ -199,6 +204,7 @@ class SurveyTemplateController extends Controller
             $template = SurveyTemplate::with(['questions', 'department_info', 'creator'])->findOrFail($survey->template_id);
             return response()->json([
                 'template_name' => $template->template_name,
+                'survey_description' => $template->description ?? '',
                 'department' => optional($template->department_info)->department,
                 'created_by' => optional($template->creator)->full_name,
                 'questions' => $template->questions->map(function ($q) {
@@ -230,14 +236,15 @@ class SurveyTemplateController extends Controller
                 ->map(function ($surveyUsers) {
                     return [
                         'id' => $surveyUsers->id,
-                        'template_name' => $surveyUsers->template?->template_name ?? '',
+                        'template_name' => $surveyUsers->template?->template_name ?? '-',
+                        'survey_description' => $surveyUsers->template?->description ?? '-',
                         'survey_name' => $surveyUsers->survey_name ?? '-',
-                        'department' => $surveyUsers->template?->department_info?->department ?? '',
-                        'employees' => $surveyUsers->employee?->full_name ?? '',
-                        'survey_start_date' => $surveyUsers->survey_start_date ?? '',
-                        'survey_end_date' => $surveyUsers->survey_end_date ?? '',
-                        'created_by' => $surveyUsers->assigned_user?->full_name ?? '',
-                        'status' => $surveyUsers->status ?? '',
+                        'department' => $surveyUsers->template?->department_info?->department ?? '-',
+                        'employees' => $surveyUsers->employee?->full_name ?? '-',
+                        'survey_start_date' => $surveyUsers->survey_start_date ?? '-',
+                        'survey_end_date' => $surveyUsers->survey_end_date ?? '-',
+                        'created_by' => $surveyUsers->assigned_user?->full_name ?? '-',
+                        'status' => $surveyUsers->status ?? '-',
                     ];
                 });
 
@@ -259,7 +266,7 @@ class SurveyTemplateController extends Controller
     {
          $department = $request->input('department');
         $selectedEmployees = $request->input('employee');
-        $surveyName = $request->input('survey_name');
+        // $surveyName = $request->input('survey_name');
         $templateId = $request->input('template');
         $startDate = $request->input('survey_start_date');
         $endDate = $request->input('survey_end_date');
@@ -292,7 +299,7 @@ class SurveyTemplateController extends Controller
             SurveyUserAssign::create([
                 'user_id'        => $userId,
                 'template_id'    => $templateId,
-                'survey_name'    => $surveyName,
+                // 'survey_name'    => $surveyName,
                 'survey_code'    => $survey_code,
                 'assigned_by'    => $assignedBy,
                 'survey_start_date' => $startDate,
@@ -352,6 +359,7 @@ class SurveyTemplateController extends Controller
                     return [
                         'id' => $surveyUsers->id,
                         'template_name' => $surveyUsers->template?->template_name ?? '',
+                        'description' => $surveyUsers->template?->description ?? '',
                         'survey_name' => $surveyUsers->survey_name ?? '-',
                         'template_id' => $surveyUsers->template_id ?? '',
                         'department' => $surveyUsers->template?->department_info?->department ?? '',

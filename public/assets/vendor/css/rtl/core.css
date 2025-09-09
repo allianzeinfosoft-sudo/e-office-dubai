@@ -23847,3 +23847,8 @@ i.fa.fa-signal {
         background-color: #0d6efd;
         border-color: #0d6efd;
     }
+
+    .offcanvas-body {
+        overflow-y: auto; /* Adds scrollbars when content overflows vertically */
+        height: 100%; /* Ensure the height is set to the available space */
+    }

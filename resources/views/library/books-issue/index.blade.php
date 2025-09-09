@@ -12,10 +12,7 @@
         padding: 28px 10px;
         border-radius: 0px;
     }
-    .offcanvas-body {
-        overflow-y: auto; /* Adds scrollbars when content overflows vertically */
-        height: 100%; /* Ensure the height is set to the available space */
-    }
+
 </style>
 @stop
 

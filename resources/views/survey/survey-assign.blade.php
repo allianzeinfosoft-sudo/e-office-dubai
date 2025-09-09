@@ -63,8 +63,8 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Survey Template</th>
                                         <th>Survey Name</th>
+                                        <th>Description</th>
                                         <th>Department</th>
                                         <th>Employees</th>
                                         <th>Survey Start Date</th>
@@ -172,7 +172,7 @@
 
         const department = document.getElementById('department')?.value.trim();
         const template = document.getElementById('template')?.value.trim();
-        const survey_name = document.getElementById('survey_name')?.value.trim();
+        // const survey_name = document.getElementById('survey_name')?.value.trim();
         const employeeSelect = document.getElementById('employee');
         const employees = Array.from(employeeSelect.selectedOptions).map(option => option.value);
         const survey_start_date = document.getElementById('survey_start_date')?.value.trim();
@@ -184,9 +184,9 @@
             errors.push("Survey is required.");
         }
 
-        if (!survey_name) {
-            errors.push("Survey Name is required.");
-        }
+        // if (!survey_name) {
+        //     errors.push("Survey Name is required.");
+        // }
 
         if (!employees.length) {
             errors.push("At least one employee must be selected.");
@@ -248,8 +248,8 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'template_name', title: 'Survey Template' },
-                    { data: 'survey_name', title: 'Survey Name'},
+                    { data: 'template_name', title: 'Survey Name' },
+                    { data: 'survey_description', title: 'Description'},
                     { data: 'department', title: 'Department' },
                     { data: 'employees', title: 'Employees'},
                     { data: 'survey_start_date', title: 'Survey Start Date'},

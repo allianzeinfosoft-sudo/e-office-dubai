@@ -41,12 +41,12 @@
             </div>
         </div>
 
-         <div class="col-sm-12 mb-3">
+         {{-- <div class="col-sm-12 mb-3">
             <div class="form-group">
-                <label for="survey_name">Survey Name <span class="text-danger">*</span></label>
-                <input type="text" name="survey_name" id="survey_name" class="form-control" placeholder="Survey Name" require />
+                <label for="survey_name">Survey Description <span class="text-danger">*</span></label>
+                <textarea type="text" name="survey_name" id="survey_name" class="form-control" placeholder="Survey Name" rows="5"></textarea>
             </div>
-        </div>
+        </div> --}}
 
         <div class="col-sm-12 mb-3">
             <div class="form-group">

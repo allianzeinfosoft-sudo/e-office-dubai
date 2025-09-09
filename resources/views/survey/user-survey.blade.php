@@ -50,8 +50,8 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Survey Template</th>
                                         <th>Survey Name</th>
+                                        <th>Survey Description</th>
                                         <th>Survey Start Date</th>
                                         <th>Survey End Date</th>
                                         <th>Created By</th>
@@ -82,9 +82,10 @@
         <div class="modal-content p-3 p-md-4">
             <div class="modal-header-custom">
 
-                <h3 class="address-title">Survey</h3>
-                <p class="  address-subtitle">Department</p>
+                <h3 class="address-title"></h3>
+                <p class="address-subtitle">Department</p>
             </div>
+            <p class="p-3 description-title">Description</p>
             <form id="surveyQuestionForm" action="{{ route('survey.store') }}" method="post">
                 @csrf
                 <div class="modal-body">
@@ -198,8 +199,8 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'template_name', title: 'Survey Template' },
-                    { data: 'survey_name', title: 'Survey Name' },
+                    { data: 'template_name', title: 'Survey Name' },
+                    { data: 'description', title: 'Survey Description' },
                     { data: 'survey_start_date', title: 'Survey Start Date'},
                     { data: 'survey_end_date', title: 'Survey End Date'},
                     { data: 'created_by', title: 'Created By' },
@@ -236,7 +237,9 @@ function openSurveyQuestionOffcanvas(surveysId) {
             success: function (data) {
 
                 $('#surveyQuestionForm').prepend(`<input type="hidden" name="survey_id" value="${surveysId}">`);
+                $('.address-title').text(data.template_name ?? 'N/A');
                 $('.address-subtitle').text('Department: ' + (data.department ?? 'N/A') + ' | Created By: ' + (data.created_by ?? 'N/A') );
+                $('.description-title').text(data.survey_description ?? 'N/A');
 
                 let questionsHtml = '';
 

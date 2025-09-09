@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\SurveyQuestion;
 use App\Models\SurveyReport;
+use App\Models\SurveyTemplate;
 use App\Models\SurveyUserAssign;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -19,12 +20,14 @@ class SurveyReportExport implements FromCollection, WithHeadings, ShouldAutoSize
 
     protected $surveyId;
     protected $questions;
+    protected $description;
 
     public function __construct($surveyId)
         {
             $this->surveyId = $surveyId;
-
             $this->questions = SurveyQuestion::where('template_id', $surveyId)->get();
+            $survey_template = SurveyTemplate::find($surveyId);
+            $this->description = $survey_template->description;
         }
 
      public function collection()
@@ -42,7 +45,7 @@ class SurveyReportExport implements FromCollection, WithHeadings, ShouldAutoSize
                     $assignment->employee->full_name ?? 'N/A',
                     $assignment->employee->user->email ?? 'N/A',
                     $assignment->employee->department->department ?? 'N/A',
-                    $assignment->survey_name ?? 'N/A',
+                    // $assignment->survey_name ?? 'N/A',
                 ];
 
                 // Map answers to question columns
@@ -56,7 +59,7 @@ class SurveyReportExport implements FromCollection, WithHeadings, ShouldAutoSize
 
     public function headings(): array
     {
-        $headings = ['Employee Name', 'Email ID', 'Department', 'Survay Name'];
+        $headings = ['Employee Name', 'Email ID', 'Department'];
 
         // Add dynamic question headings
         foreach ($this->questions as $index => $question) {
@@ -86,7 +89,7 @@ class SurveyReportExport implements FromCollection, WithHeadings, ShouldAutoSize
                 $sheet = $event->sheet->getDelegate();
 
                 // Report Title in Row 1
-                $title = 'Survay Report';
+                $title = $this->description;
                 $highestColumn = $sheet->getHighestColumn(); // Get last column dynamically
                 $sheet->mergeCells("A1:{$highestColumn}1"); // Merge cells for title
                 $sheet->setCellValue('A1', $title);
@@ -94,11 +97,11 @@ class SurveyReportExport implements FromCollection, WithHeadings, ShouldAutoSize
                 // Style for Title
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => [
-                        'bold' => true,
-                        'size' => 16,
+                        // 'bold' => true,
+                        'size' => 10,
                     ],
                     'alignment' => [
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
                     ],
                 ]);
 

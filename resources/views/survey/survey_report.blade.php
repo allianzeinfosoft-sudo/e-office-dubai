@@ -104,8 +104,8 @@
                         orderable: false,
                         searchable: false
                     },
-                    { data: 'survey_title', title: 'Survey Title' },
-                    { data: 'survey_name', title: 'Survey Name' },
+                    { data: 'survey_title', title: 'Survey Name' },
+                    { data: 'description', title: 'Description' },
                     { data: 'department', title: 'Department' },
                     { data: 'survey_start_date', title: 'Survey Start Date'},
                     { data: 'survey_end_date', title: 'Survey End Date'},

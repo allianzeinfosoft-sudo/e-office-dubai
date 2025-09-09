@@ -11,6 +11,7 @@ class SurveyTemplate extends Model
      protected $fillable = [
 
         'template_name',
+        'description',
         'department_id',
         'created_by'
     ];

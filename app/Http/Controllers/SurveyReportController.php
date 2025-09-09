@@ -40,6 +40,7 @@ class SurveyReportController extends Controller
                     return [
                         'id' => $first->id,
                         'survey_title' => $first->template?->template_name ?? '-',
+                        'description' => $first->template?->description ?? '-',
                         'survey_name' => $first->survey_name ?? '-',
                         'survey_id' => $first->template_id ?? '',
                         'department' => $first->template?->department_info?->department ?? '',
