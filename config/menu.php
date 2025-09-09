@@ -191,7 +191,7 @@ return [
             [
                 'title' => 'Questions Templates',
                 'route' =>  'sartemplate',
-                'permission' => ['create SARs'],
+                'permission' => ['create SAR'],
             ],
             [
                 'title' => 'Assign SAR',
@@ -219,7 +219,7 @@ return [
             [
                 'title' => 'Questions Templates',
                 'route' => '/partemplate',
-                'permission' => ['create PARs'],
+                'permission' => ['create PAR'],
             ],
             [
                 'title' => 'Assign PAR',
