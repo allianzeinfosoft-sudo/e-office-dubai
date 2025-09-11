@@ -371,5 +371,7 @@ function openSurveyTemplateOffcanvas(targetId = null) {
     offcanvas.show();
 }
 
+
+
 </script>
 @endpush

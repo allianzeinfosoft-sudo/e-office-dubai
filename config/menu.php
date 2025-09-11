@@ -160,7 +160,7 @@ return [
                 'permission' => ['view surveys'],
             ],
             [
-                'title' => 'Questions Templates',
+                'title' => 'Create Survey',
                 'route' => '/surveytemplate',
                 'permission' => ['create survey'],
             ],
@@ -189,7 +189,7 @@ return [
                 'permission' => ['view SARs'],
             ],
             [
-                'title' => 'Questions Templates',
+                'title' => 'Create SAR',
                 'route' =>  'sartemplate',
                 'permission' => ['create SAR'],
             ],
@@ -217,7 +217,7 @@ return [
                 'permission' => ['view PARs'],
             ],
             [
-                'title' => 'Questions Templates',
+                'title' => 'Create PAR',
                 'route' => '/partemplate',
                 'permission' => ['create PAR'],
             ],
@@ -247,7 +247,7 @@ return [
 
             ],
             [
-                'title' => 'Questions Templates',
+                'title' => 'Create Feedback Questions',
                 'route' => '/feedback',
                 'permission' => ['create feedback']
             ],

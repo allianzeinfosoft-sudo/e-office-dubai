@@ -350,7 +350,7 @@ if (typeof $ !== 'undefined') {
       searchInput = $('.search-input'),
       contentBackdrop = $('.content-backdrop');
 
-     
+
 
     // Open search input on click of search icon
     if (searchToggler.length) {
@@ -586,3 +586,8 @@ if (typeof $ !== 'undefined') {
     }
   });
 }
+
+
+$(".offcanvas-close").click(function() {
+      location.reload();
+});
