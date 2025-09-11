@@ -166,9 +166,9 @@
                         <small class="text-muted"></small>
                       </div>
                       <div class="dropdown d-none d-sm-flex">
-                        <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{-- <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="ti ti-calendar"></i>
-                        </button>
+                        </button> --}}
                         <ul class="dropdown-menu dropdown-menu-end">
                           <li> <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" onclick="updateLeaveSummary('today')" >Today</a> </li>
                           <li> <a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" onclick="updateLeaveSummary('yesterday')">Yesterday</a></li>

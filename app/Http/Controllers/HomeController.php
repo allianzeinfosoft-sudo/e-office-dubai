@@ -294,7 +294,7 @@ public function getLeaveSummary(Request $request)
 
     // Fetch leaves within selected range
     $leavesInRange = Leave::where('user_id', $user->id)
-        ->whereBetween('leave_from', [$from, $to])
+        // ->whereBetween('leave_from', [$from, $to])
         ->get();
 
     // Get total allocation
@@ -312,7 +312,6 @@ public function getLeaveSummary(Request $request)
 
     foreach ($leavesInRange as $leave) {
         $days = Carbon::parse($leave->leave_from)->diffInDays(Carbon::parse($leave->leave_to)) + 1;
-
         if ($leave->status == 2) { // Approved
             if ($leave->leave_type === 'full_day') {
                 $fullLeaves += $days;

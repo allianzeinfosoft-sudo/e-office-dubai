@@ -478,7 +478,7 @@ class UserController extends Controller
 
         $off_day_leavecount = $user_leaves->where('leave_type', 'off_day')->where('status',2)->sum('leave_day_count');
         $full_day_leavescount = $user_leaves->where('leave_type','full_day')->where('status',2)->sum('leave_day_count');
-        $half_day_leavescount = $user_leaves->where('leave_type','half_day')->where('status',2)->sum('leave_day_count');
+        $half_day_leavescount = $user_leaves->where('leave_type','half_day')->where('status',2)->count();
         $leave_info = (object) [
 
             'pending_leaves' => $pending_leave,
