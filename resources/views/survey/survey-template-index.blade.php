@@ -117,6 +117,7 @@
                 <p class="  address-subtitle">Department</p>
             </div>
             <div class="modal-body">
+                 <p class="p-3 description-title">Description</p>
                 <div id="questionContainer" class="col-12">
                     <!-- Questions will be injected here -->
                 </div>
@@ -238,7 +239,7 @@
 
                 // Show department name and creator
                 $('.address-subtitle').text('Department: ' + (data.department ?? 'N/A') + ' | Created By: ' + (data.created_by ?? 'N/A'));
-
+                $('.description-title').text(data.description ?? 'N/A');
                 let questionsHtml = '';
                 if (data.questions && data.questions.length > 0) {
                     data.questions.forEach((q, index) => {
