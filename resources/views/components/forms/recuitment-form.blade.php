@@ -1,16 +1,17 @@
 <form action="{{ route('recruitments.store') }} " method="post" id="recuritment-form" >
-    @csrf 
+    @csrf
     <input type="hidden" name="id" id="target_id">
 
     <div class="row">
         <!-- LeftSide  -->
         <div class="col-sm-7">
- 
+
             <div class="row">
 
                 <div class="col-sm-12 mb-3">
                     <div class="form-group">
                         <label for="jobTitle">Job Title <span class="text-danger">*</span></label>
+                        <input type="hidden" name="created_by" value="{{ Auth::user()->id }}">
                         <input type="text" name="jobTitle" id="jobTitle" class="form-control" placeholder="Job Title" required />
                     </div>
                 </div>
@@ -31,7 +32,7 @@
                         </select>
                     </div>
                 </div>
-    
+
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
                         <label for="experience">Experience </label>
@@ -43,7 +44,7 @@
                         </select>
                     </div>
                 </div>
-    
+
                 <div class="col-sm-12 mb-3">
                     <div class="form-group">
                         <label for="project_id">Job Description</label>
@@ -68,7 +69,7 @@
                         </select>
                     </div>
                 </div>
-    
+
                 <div class="col-sm-12 mb-3">
                     <div class="form-group">
                         <label for="remarks">Remarks</label>
@@ -258,7 +259,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="col-sm-6 mb-3">
                     <div class="form-group">
                         <label for="schoolingMedium">Schooling </label>
@@ -376,11 +377,11 @@
 
             </div>
         </div>
-        
+
         <div class="col-sm-12 mb-3">
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i>&nbsp;&nbsp;  Save</button>
             <button type="button" class="btn btn-primary" onclick="saveAsDraft()"><i class="fa fa-save"></i>&nbsp;&nbsp;  Save as Draft</button>
-        </div>   
+        </div>
     </div>
 </form>
 
@@ -391,17 +392,17 @@
                 <h5 class="modal-title" id="exampleModalLabel1">Modal title</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        
+
             <div class="modal-body">
-                
-            </div>            
+
+            </div>
         </div>
     </div>
 </div>
 
 @push('js')
 <script>
-    
+
 
     $(function(){
         $('#rrfDate').flatpickr({

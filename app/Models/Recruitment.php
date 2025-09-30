@@ -9,6 +9,7 @@ class Recruitment extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'created_by',
         'empId',
         'rrfDate',
         'branchId',
@@ -46,7 +47,7 @@ class Recruitment extends Model
     public function project() {
         return $this->belongsTo(Project::class, 'projectId');
     }
-    
+
     public function interViewer() {
         return $this->belongsTo(Employee::class, 'interviewer');
     }

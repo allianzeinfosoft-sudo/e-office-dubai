@@ -23,8 +23,14 @@ class RecruitmentController extends Controller
     public function index(Request $request){
         /* ajax request */
         if ($request->ajax()) {
-            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where('draft_status', 0)->orderBy('id', 'desc')->get();
-
+            if(Auth::user()->role == 'Developer' || Auth::user()->role == 'HR' || Auth::user()->role == 'G1')
+            {
+                $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where('draft_status', 0)->orderBy('id', 'desc')->get();
+            }
+            else
+            {
+                $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where('draft_status', 0)->where('created_by',Auth::user()->id)->orderBy('id', 'desc')->get();
+            }
             return response()->json([
                 'success' => true,
                 'message' => 'Recruitments fetched successfully',
@@ -94,6 +100,7 @@ class RecruitmentController extends Controller
     public function store(Request $request){
         $validated = $request->validate([
             'id' => 'nullable',
+            'created_by' => 'required',
             'empId' => 'required',
             'rrfDate' => 'required|date',
             'branchId' => 'required',
