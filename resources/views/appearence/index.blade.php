@@ -95,7 +95,7 @@
                   <div class="card">
                     <div class="d-flex align-items-center p-3 justify-content-between">
                       <h5 class="fw-bold mb-0">Change Background Image</h5>
-                      <button type="button" class="btn btn-info waves-effect h-px-40 waves-light">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button>
+                      <button type="button" class="btn btn-info waves-effect h-px-40 waves-light" onclick="openBackgroundOffcanvas()">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button>
                     </div>
                     <div class="row px-3">
                         <span>No image uploaded</span>

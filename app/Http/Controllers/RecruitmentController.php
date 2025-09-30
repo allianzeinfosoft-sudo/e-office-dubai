@@ -23,8 +23,8 @@ class RecruitmentController extends Controller
     public function index(Request $request){
         /* ajax request */
         if ($request->ajax()) {
-            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where(['draft_status' => 0, 'approval_status' => 1])->orderBy('id', 'desc')->get();
-    
+            $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where('draft_status', 0)->orderBy('id', 'desc')->get();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Recruitments fetched successfully',
@@ -40,7 +40,7 @@ class RecruitmentController extends Controller
                             ];
                         });
                     }
-    
+
                     // Parse keyword
                     $keywordsRrf = [];
                     if (!empty($result->keyword)) {
@@ -54,13 +54,13 @@ class RecruitmentController extends Controller
                     }
                     $priority_colors = [
                         '0' => 'dark',
-                        '1' => 'danger', 
-                        '2' => 'info', 
-                        '3' => 'primary', 
+                        '1' => 'danger',
+                        '2' => 'info',
+                        '3' => 'primary',
                     ];
 
                     return [
-                        'row' => $index + 1, 
+                        'row' => $index + 1,
                         'id' => $result->id,
                         'rrfDate' => date('d-m-Y', strtotime($result->rrfDate)),
                         'jobTitle' => $result->jobTitle ?? '',
@@ -70,6 +70,7 @@ class RecruitmentController extends Controller
                         'priority' => $result->priority ? '<span class="badge bg-'.$priority_colors[$result->priority].'">' . config('optionsData.priority')[$result->priority] . '</span>' : '',
                         'interviewer' => $result->interViewer->full_name ?? '',
                         'status' => $result->status ?? '',
+                        'approval_status' => $result->approval_status ?? '',
                     ];
                 }),
             ]);
@@ -132,8 +133,8 @@ class RecruitmentController extends Controller
 
         // Convert empty string fields to null (especially integer ones)
         $nullableToNull = [
-            'projectId', 
-            'shiftId', 
+            'projectId',
+            'shiftId',
             'seekApproval',
             'jobType',
             'interviewer',
@@ -214,7 +215,7 @@ class RecruitmentController extends Controller
         if($elementId == 'positionId' || $elementId == 'porjectId'){
             $data['departments'] = Department::all();
         }
-    
+
         if (view()->exists('components.forms.'.$formUrl)) {
             $html = view('components.forms.'. $formUrl, $data)->render();
             return response()->json([
@@ -231,7 +232,7 @@ class RecruitmentController extends Controller
 
     /* Add grduation */
     public function storeGraduation(Request $request){
-        
+
         $validated = $request->validate([
             'graduation' => 'required|string|max:255',
         ]);
@@ -247,7 +248,7 @@ class RecruitmentController extends Controller
             'data' => $data,
             'message' => 'Graduation saved successfully!',
         ]); */
-    
+
     }
     /* Add Minimum Qualification */
     public function storeMinimumQualification(Request $request){
@@ -347,7 +348,7 @@ class RecruitmentController extends Controller
 
         if ($request->ajax()) {
             $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])->where(['draft_status' => 1])->orderBy('id', 'desc')->get();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Recruitments fetched successfully',
@@ -363,7 +364,7 @@ class RecruitmentController extends Controller
                             ];
                         });
                     }
-    
+
                     // Parse keyword
                     $keywordsRrf = [];
                     if (!empty($result->keyword)) {
@@ -377,13 +378,13 @@ class RecruitmentController extends Controller
                     }
                     $priority_colors = [
                         '0' => 'dark',
-                        '1' => 'danger', 
-                        '2' => 'info', 
-                        '3' => 'primary', 
+                        '1' => 'danger',
+                        '2' => 'info',
+                        '3' => 'primary',
                     ];
 
                     return [
-                        'row' => $index + 1, 
+                        'row' => $index + 1,
                         'id' => $result->id,
                         'rrfDate' => date('d-m-Y', strtotime($result->rrfDate)),
                         'jobTitle' => $result->jobTitle ?? '',
@@ -406,18 +407,18 @@ class RecruitmentController extends Controller
     }
 
     public function updateStatus(Request $request){
-        
+
         $request->validate([
             'id' => 'required|exists:recruitments,id',
             'status' => 'required|integer',
             'status_reason' => 'nullable|string'
         ]);
-    
+
         $recruitment = Recruitment::find($request->id);
         $recruitment->status = $request->status;
         $recruitment->status_reason = $request->status_reason;
         $recruitment->save();
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Status updated successfully!',
@@ -427,9 +428,11 @@ class RecruitmentController extends Controller
 
     public function rrf_approvals(Request $request){
 
+        $approver_id = Auth::user()->id;
         if ($request->ajax()) {
             $recruitments = Recruitment::with(['project', 'interViewer', 'designation'])
                 ->where('approval_status', 0)
+                ->where('seekApproval',$approver_id)
                 ->orderByDesc('id')
                 ->get();
 

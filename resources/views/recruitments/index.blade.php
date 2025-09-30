@@ -154,19 +154,24 @@
                     { data: 'rrfDate', title: 'Date' },
                     { data: 'jobTitle', title: 'Job Title' },
                     { data: 'designation', title: 'Designation' },
-                    { data: 'status', title: 'Status',
+                    { data: 'approval_status', title: 'Status',
                         render: function (data, type, row) {
-                            const colors = {
-                                0: 'warning',
-                                1: 'danger',
-                                2: 'primary',
-                                3: 'info',
-                                4: 'success'
-                            };
+                           const colors = {
+                                    0: 'warning',   // Pending
+                                    1: 'success',   // Approved
+                                    2: 'danger'     // Rejected
+                                };
+                                const applicationStatus = {
+                                        0: 'Pending',
+                                        1: 'Approved',
+                                        2: 'Rejected'
+                                    };
 
                             return `
-                                <span class="badge bg-${colors[row.status] ?? 'warning'} bg-glow"> ${applicationStatus[row.status] ?? 'Pending'} </span>
-                            `;
+                                    <span class="badge bg-${colors[row.approval_status] ?? 'warning'} bg-glow">
+                                        ${applicationStatus[row.approval_status] ?? 'Pending'}
+                                    </span>
+                                `;
                         }
                     },
                     { data: 'priority', title: 'Priority' },
