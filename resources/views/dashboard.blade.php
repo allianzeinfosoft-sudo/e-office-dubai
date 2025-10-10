@@ -309,6 +309,7 @@
                                   <div class="swiper gallery-top bday-card">
                                       <div class="swiper-wrapper">
                                           @foreach ($feed_data as $item)
+
                                               @if($item['type'] == 'birthday')
                                                   {{-- Each employee = one slide --}}
                                                   @foreach($item['employees'] as $employee)
@@ -318,8 +319,11 @@
                                                               <img class="bdy-img mt-5 rounded-circle"
                                                                   src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
                                                                   alt="{{ $employee['full_name'] }}" width="100" height="150">
+                                                                <br>
+                                                                     <span class="bday-name">{{ $employee['full_name'] }}</span>
                                                           </div>
                                                           <p class="bdy-name mt-2">{{ $employee['full_name'] }}</p>
+
                                                       </div>
                                                   @endforeach
                                               @else
@@ -331,6 +335,8 @@
                                                                 <img class="rounded-circle mx-1"
                                                                     src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
                                                                     title="{{ $employee['full_name'] }}" width="100" height="100">
+                                                                    <br>
+                                                                     <span class="bday-name">{{ $employee['full_name'] }}</span>
                                                             @endforeach
                                                         </div>
                                                         <div class="cng-img text-center">
@@ -338,6 +344,9 @@
                                                             <img class="w-25" src="{{ asset($item['image'] ? '/storage/appreciation_flowers/'.$item['image'] : '/assets/avatars/default-avatar.png') }}" alt="Appreciation Background">
                                                         </div>
                                                         <p class="fs-6">{!! preg_replace('/(\n|\r){2,}/', "\n", $item['message']) !!}</p>
+                                                        <div class="text-end">
+                                                            <a href="{{ route('view_appreciation') }}" class="btn btn-primary btn-sm">Read More..</a>
+                                                            </div>
                                                       </div>
                                                   </div>
                                               @endif
@@ -581,7 +590,7 @@
                 <div class="col-xl-6 col-md-6 col-6 mt-3">
                   <div class="card card-bg">
                     <div class="card-header d-flex justify-content-between align-items-md-center align-items-start">
-                      <h5 class="card-title mb-0">HOD mail List</h5>
+                      <h5 class="card-title mb-0">HOD List</h5>
                       <div class="dropdown">
                         <button type="button" class="btn dropdown-toggle p-0" data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="ti ti-calendar"></i>
@@ -594,17 +603,74 @@
                             <thead>
                               <tr>
                                <th data-sortable="true" data-direction="asc">Department</th>
-                                <th data-sortable="true">Name</th>
-                                <th data-sortable="true">Emails</th>
+                                <th data-sortable="true">POC (Point of Contact)</th>
+                                <th data-sortable="true">HOD</th>
                               </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Human Resource</td>
-                                    <td>Sujatha P</td>
-                                    <td><a href="mailto:{{ 'hr@mail.allianzegroup.com' ?? ''  }}">{{ 'hr@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                    <td>SDU</td>
+                                    <td>Nandu Sreekandan</td>
+                                    <td>Binoj Nair(<a href="mailto:{{ 'binojn@mail.allianzegroup.com' ?? ''  }}">{{ 'binojn@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
-                              @if($uniqueTeamLeads->isNotEmpty())
+                                 <tr>
+                                    <td>Debt Accounts</td>
+                                    <td>Muhammad Shafi</td>
+                                    <td>Binoj Nair<a href="mailto:{{ 'binojn@mail.allianzegroup.com' ?? ''  }}">{{ 'binojn@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>Engineering</td>
+                                    <td>Alwin Joy</td>
+                                    <td>Binoj Nair<a href="mailto:{{ 'binojn@mail.allianzegroup.com' ?? ''  }}">{{ 'binojn@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+
+                                 <tr>
+                                    <td>BPO</td>
+                                    <td>Yedu Rajeev</td>
+                                    <td>Danish Charals<a href="mailto:{{ 'danishc@mail.allianzegroup.com' ?? ''  }}">{{ 'danishc@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>SEO</td>
+                                    <td>Jaison Thomas</td>
+                                    <td>Danish Charals<a href="mailto:{{ 'danishc@mail.allianzegroup.com' ?? ''  }}">{{ 'danishc@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>Editorial</td>
+                                    <td>Jaison Thomas</td>
+                                    <td>Danish Charals<a href="mailto:{{ 'danishc@mail.allianzegroup.com' ?? ''  }}">{{ 'danishc@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>Designing</td>
+                                    <td>Jaison Thomas</td>
+                                    <td>Danish Charals<a href="mailto:{{ 'danishc@mail.allianzegroup.com' ?? ''  }}">{{ 'danishc@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>Human Resources</td>
+                                    <td>Sujatha Menon</td>
+                                    <td>Sujatha Menon<a href="mailto:{{ 'sujathap@mail.allianzegroup.com' ?? ''  }}">{{ 'sujathap@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>Administration</td>
+                                    <td>Sujatha Menon</td>
+                                    <td>Sujatha Menon<a href="mailto:{{ 'sujathap@mail.allianzegroup.com' ?? ''  }}">{{ 'sujathap@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>IT Tech Support</td>
+                                    <td>Vishnu Panicker</td>
+                                    <td>Vishnu Panicker<a href="mailto:{{ 'vishnuk@mail.allianzegroup.com' ?? ''  }}">{{ 'vishnuk@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>Finance and Accounts</td>
+                                    <td>Nirmal Sebastian</td>
+                                    <td>Nirmal Sebastian<a href="mailto:{{ 'nirmals@mail.allianzegroup.com' ?? ''  }}">{{ 'nirmals@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+                                 <tr>
+                                    <td>Marketing</td>
+                                    <td>Anuraj A N</td>
+                                    <td>Anuraj A N<a href="mailto:{{ 'anuraja@mail.allianzegroup.com' ?? ''  }}">{{ 'anuraja@mail.allianzegroup.com' ?? ''  }} </a></td>
+                                </tr>
+
+                              {{-- @if($uniqueTeamLeads->isNotEmpty())
                                 @foreach($uniqueTeamLeads as $uniqueTeamLead)
                                 <tr class="{{ $uniqueTeamLead->id }}">
                                   <td>{{ $uniqueTeamLead->department->department ?? '' }}</td>
@@ -617,7 +683,7 @@
                                     <td>Finance and Accounts</td>
                                     <td>Nirmal Sebastian</td>
                                     <td><a href="mailto:{{ 'nirmals@mail.allianzegroup.com' ?? ''  }}">{{ 'nirmals@mail.allianzegroup.com' ?? ''  }} </a></td>
-                                </tr>
+                                </tr> --}}
                             </tbody>
                           </table>
                         </div>

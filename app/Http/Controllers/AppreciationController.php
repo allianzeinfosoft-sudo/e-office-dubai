@@ -110,12 +110,14 @@ class AppreciationController extends Controller
         $today = Carbon::today()->toDateString();
 
         // Fetch all appreciations for today
-        $appreciations = Appreciation::get()->map(function ($item) {
+        $appreciations = Appreciation::orderBy('created_at', 'desc')->get()->map(function ($item) {
             // Exploding the comma-separated employee IDs and retrieving the corresponding Employee models
             $employees = $item->appreciantEmployeesView()->map(function ($emp) {
+
                 return [
-                    'full_name' => $emp->full_name,
-                    'profile_image' => $emp->profile_image,
+                    'full_name' => $emp->full_name ?? '',
+                    'profile_image' => $emp->profile_image ?? '',
+                    'email' => $emp->user->email ?? '',
                 ];
             });
 

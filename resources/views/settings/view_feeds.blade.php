@@ -555,7 +555,7 @@ function getAppreciationHtml(item) {
         .filter(email => !!email)
         .join(',');
 
-    const mailtoLink = `mailto:${mailtoList}?subject=${encodeURIComponent('Congratulations!')}&body=${encodeURIComponent('Reason: Great performance and contribution.')}`;
+    const mailtoLink = `mailto:${mailtoList}?subject=${encodeURIComponent('Congratulations!')}&body=${encodeURIComponent('Congratulations!')}`;
 
     const employeeHtml = employees.map(emp => {
         const profileImage = emp.profile_image && emp.profile_image !== '/assets/img/avatars/default.png'

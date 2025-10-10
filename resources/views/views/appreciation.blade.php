@@ -43,6 +43,9 @@
                                 <div class="col-xl-10 mb-4 mx-auto">
 
                                     @forelse ($appreciations as $item)
+                                        @php
+                                            $emails = collect($item['employees'])->pluck('email')->implode(',');
+                                        @endphp
                                         <div class="timeline-event card-app card mb-3" data-aos="fade-right">
                                             <div class="card-header p-3 bg-black mb-4 d-flex justify-content-between align-items-center flex-wrap">
                                                 <h5 class="text-white my-1">Congratulations</h5>
@@ -57,6 +60,8 @@
                                                                  class="mx-auto border-theme rounded-circle w-px-75" />
                                                             <span class="bday-name">{{ $emp['full_name'] }}</span>
                                                         </div>
+
+
                                                     @endforeach
                                                 </div>
                                                 <div class="cng-img text-center">
@@ -70,7 +75,11 @@
                                                 </p>
                                                 <div class="d-flex justify-content-between align-items-center mt-5 flex-wrap">
                                                     <div>
-                                                        <button type="button" class="btn btn-primary w-100">Congratulate...</button>
+                                                        {{-- <button type="button" class="btn btn-primary w-100">Congratulate...</button> --}}
+                                                        <a href="mailto:{{ $emails }}?subject={{ urlencode('Congratulations!') }}&body={{ urlencode('Congratulations!') }}"
+                                                        class="btn btn-primary w-100">
+                                                        Congratulate...
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
