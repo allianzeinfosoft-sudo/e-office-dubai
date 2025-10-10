@@ -343,10 +343,12 @@
                                                             <img class="w-40" src="../../assets/img/backgrounds/cng.png">
                                                             <img class="w-25" src="{{ asset($item['image'] ? '/storage/appreciation_flowers/'.$item['image'] : '/assets/avatars/default-avatar.png') }}" alt="Appreciation Background">
                                                         </div>
-                                                        <p class="fs-6">{!! preg_replace('/(\n|\r){2,}/', "\n", $item['message']) !!}</p>
+                                                        <p class="fs-6 text-truncate" style="max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                            {!! strip_tags($item['message']) !!}
+                                                        </p>
                                                         <div class="text-end">
                                                             <a href="{{ route('view_appreciation') }}" class="btn btn-primary btn-sm">Read More..</a>
-                                                            </div>
+                                                        </div>
                                                       </div>
                                                   </div>
                                               @endif
