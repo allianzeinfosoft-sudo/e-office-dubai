@@ -612,63 +612,63 @@
                             <tbody>
                                 <tr>
                                     <td>SDU</td>
-                                    <td>Nandu Sreekandan</td>
+                                    <td>Nandu Sreekantan (<a href="mailto:{{ 'nandus@mail.allianzegroup.com' ?? ''  }}">{{ 'nandus@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Binoj Nair (<a href="mailto:{{ 'binojn@mail.allianzegroup.com' ?? ''  }}">{{ 'binojn@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>Debt Accounts</td>
-                                    <td>Muhammad Shafi</td>
+                                    <td>Muhammad Shafi (<a href="mailto:{{ 'muhammedshafi@mail.allianzegroup.com' ?? ''  }}">{{ 'muhammedshafi@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Binoj Nair (<a href="mailto:{{ 'binojn@mail.allianzegroup.com' ?? ''  }}">{{ 'binojn@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>Engineering</td>
-                                    <td>Alwin Joy</td>
+                                    <td>Alwin Joy (<a href="mailto:{{ 'alwinj@mail.allianzegroup.com' ?? ''  }}">{{ 'alwinj@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Binoj Nair (<a href="mailto:{{ 'binojn@mail.allianzegroup.com' ?? ''  }}">{{ 'binojn@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
 
                                  <tr>
                                     <td>BPO</td>
-                                    <td>Yedu Rajeev</td>
+                                    <td>Yedu Rajeev (<a href="mailto:{{ 'yedur@mail.allianzegroup.com' ?? ''  }}">{{ 'yedur@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Danish Charals (<a href="mailto:{{ 'danishc@mail.allianzegroup.com' ?? ''  }}">{{ 'danishc@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>SEO</td>
-                                    <td>Jaison Thomas</td>
+                                    <td>Jaison Thomas (<a href="mailto:{{ 'jaisont@mail.allianzegroup.com' ?? ''  }}">{{ 'jaisont@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Danish Charals (<a href="mailto:{{ 'danishc@mail.allianzegroup.com' ?? ''  }}">{{ 'danishc@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>Editorial</td>
-                                    <td>Jaison Thomas</td>
+                                    <td>Jaison Thomas (<a href="mailto:{{ 'jaisont@mail.allianzegroup.com' ?? ''  }}">{{ 'jaisont@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Danish Charals (<a href="mailto:{{ 'danishc@mail.allianzegroup.com' ?? ''  }}">{{ 'danishc@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>Designing</td>
-                                    <td>Jaison Thomas</td>
+                                    <td>Jaison Thomas (<a href="mailto:{{ 'jaisont@mail.allianzegroup.com' ?? ''  }}">{{ 'jaisont@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Danish Charals (<a href="mailto:{{ 'danishc@mail.allianzegroup.com' ?? ''  }}">{{ 'danishc@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>Human Resources</td>
-                                    <td>Sujatha Menon</td>
+                                    <td>Sujatha Menon (<a href="mailto:{{ 'sujathap@mail.allianzegroup.com' ?? ''  }}">{{ 'sujathap@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Sujatha Menon (<a href="mailto:{{ 'sujathap@mail.allianzegroup.com' ?? ''  }}">{{ 'sujathap@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>Administration</td>
-                                    <td>Sujatha Menon</td>
+                                    <td>Sujatha Menon (<a href="mailto:{{ 'sujathap@mail.allianzegroup.com' ?? ''  }}">{{ 'sujathap@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Sujatha Menon (<a href="mailto:{{ 'sujathap@mail.allianzegroup.com' ?? ''  }}">{{ 'sujathap@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>IT Tech Support</td>
-                                    <td>Vishnu Panicker</td>
-                                    <td>Vishnu Panicker (<a href="mailto:{{ 'vishnuk@mail.allianzegroup.com' ?? ''  }}">{{ 'vishnuk@mail.allianzegroup.com' ?? ''  }} </a>)</td>
+                                    <td>Vishnu Panicker (<a href="mailto:{{ 'vishnukp@mail.allianzegroup.com' ?? ''  }}">{{ 'vishnukp@mail.allianzegroup.com' ?? ''  }} </a>)</td>
+                                    <td>Vishnu Panicker (<a href="mailto:{{ 'vishnukp@mail.allianzegroup.com' ?? ''  }}">{{ 'vishnukp@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>Finance and Accounts</td>
-                                    <td>Nirmal Sebastian</td>
+                                    <td>Nirmal Sebastian (<a href="mailto:{{ 'nirmals@mail.allianzegroup.com' ?? ''  }}">{{ 'nirmals@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Nirmal Sebastian (<a href="mailto:{{ 'nirmals@mail.allianzegroup.com' ?? ''  }}">{{ 'nirmals@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
                                  <tr>
                                     <td>Marketing</td>
-                                    <td>Anuraj A N</td>
+                                    <td>Anuraj A N (<a href="mailto:{{ 'anuraja@mail.allianzegroup.com' ?? ''  }}">{{ 'anuraja@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                     <td>Anuraj A N (<a href="mailto:{{ 'anuraja@mail.allianzegroup.com' ?? ''  }}">{{ 'anuraja@mail.allianzegroup.com' ?? ''  }} </a>)</td>
                                 </tr>
 
