@@ -330,7 +330,7 @@
                                                   {{-- Appreciation = one slide --}}
                                                   <div class="swiper-slide card-app">
                                                       <div class="card-app-content p-3">
-                                                        <div class="appreciation-employees mt-3">
+                                                        {{-- <div class="appreciation-employees mt-3">
                                                             @foreach($item['employees'] as $employee)
                                                                 <img class="rounded-circle mx-1"
                                                                     src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
@@ -338,11 +338,23 @@
                                                                     <br>
                                                                      <span class="bday-name">{{ $employee['full_name'] }}</span>
                                                             @endforeach
+                                                        </div> --}}
+                                                        <div class="appreciation-employees mt-3 d-flex flex-wrap align-items-center justify-content-center gap-3">
+                                                            @foreach($item['employees'] as $employee)
+                                                                <div class="text-center">
+                                                                    <img class="rounded-circle"
+                                                                        src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
+                                                                        title="{{ $employee['full_name'] }}"
+                                                                        width="80" height="80">
+                                                                    <div class="bday-name mt-2">{{ $employee['full_name'] }}</div>
+                                                                </div>
+                                                            @endforeach
                                                         </div>
-                                                        <div class="cng-img text-center">
+
+                                                        {{-- <div class="cng-img text-center">
                                                             <img class="w-40" src="../../assets/img/backgrounds/cng.png">
                                                             <img class="w-25" src="{{ asset($item['image'] ? '/storage/appreciation_flowers/'.$item['image'] : '/assets/avatars/default-avatar.png') }}" alt="Appreciation Background">
-                                                        </div>
+                                                        </div> --}}
                                                         <p class="fs-6 text-truncate" style="max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                                             {!! strip_tags($item['message']) !!}
                                                         </p>
@@ -364,10 +376,12 @@
                                   </div>
 
                                   <!-- Thumbnail Swiper -->
+                                  @if(count($feed_data)> 1)
                                   <div class="swiper gallery-thumbs">
+
                                         <div class="swiper-wrapper">
-                                            @foreach ($feed_data as $item)
-                                                @if($item['type'] == 'birthday')
+                                            {{-- @foreach ($feed_data as $item)
+                                                @if($item['type'] == 'birthday' || $item['type'] == 'appreciation')
                                                     @if(count($item['employees']) > 1)
                                                         @foreach($item['employees'] as $employee)
                                                             <div class="swiper-slide" style="background-image: url('{{ asset('storage/' . ($employee['profile_image'] ?? '/assets/avatars/default-avatar.png')) }}')"></div>
@@ -376,9 +390,10 @@
                                                 @else
                                                     <div class="swiper-slide" style="background-image: url('{{ asset($item['image'] ? '/storage/appreciation_flowers/'.$item['image'] : '/assets/avatars/default-avatar.png') }}')"></div>
                                                 @endif
-                                            @endforeach
+                                            @endforeach --}}
                                         </div>
                                     </div>
+                                    @endif
 
 
 
