@@ -351,10 +351,10 @@
                                                             @endforeach
                                                         </div>
 
-                                                        {{-- <div class="cng-img text-center">
+                                                        <div class="cng-img text-center">
                                                             <img class="w-40" src="../../assets/img/backgrounds/cng.png">
                                                             <img class="w-25" src="{{ asset($item['image'] ? '/storage/appreciation_flowers/'.$item['image'] : '/assets/avatars/default-avatar.png') }}" alt="Appreciation Background">
-                                                        </div> --}}
+                                                        </div>
                                                         <p class="fs-6 text-truncate" style="max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                                             {!! strip_tags($item['message']) !!}
                                                         </p>
