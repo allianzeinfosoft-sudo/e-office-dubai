@@ -215,7 +215,10 @@
                                             <th>Classification</th>
                                             <th>Category</th>
                                             <th>Type</th>
+                                            <th>Specifications</th>
                                             <th>Vendor</th>
+                                            <th>Purchase Date</th>
+                                            <th>Invoice No</th>
                                             <th>Allocation Status</th>
                                             <th>User</th>
                                         </tr>
@@ -286,7 +289,10 @@
                 { data: 'classification' },
                 { data: 'category' },
                 { data: 'type' },
+                { data: 'specifications' },
                 { data: 'vendor' },
+                { data: 'purchase_date'},
+                { data: 'invoice_no'},
                 {
                     data: 'allocation_status',
                     render: function (data, type, row) {

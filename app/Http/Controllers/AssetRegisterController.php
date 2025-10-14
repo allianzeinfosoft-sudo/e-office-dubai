@@ -519,6 +519,9 @@ class AssetRegisterController extends Controller
                 'classification' => $line->asset_classification->name ?? '-',
                 'category'       => $line->asset_category->name ?? '-',
                 'type'           => $line->asset_type->name ?? '-',
+                'specifications' => $line->asset_description ?? '-',
+                'purchase_date'  => $line->asset_register->purchase_date ?? '-',
+                'invoice_no'     => $line->asset_register->invoice_number ?? '-',
                 'vendor'         => $line->asset_register->vendor->vendor_name ?? '-',
                 'allocation_status'=> $mapping->allocation_status == 1 ? 'Allocated' : 'Not Allocated',
                 'user'          => implode(', ', $allocatedUsers)

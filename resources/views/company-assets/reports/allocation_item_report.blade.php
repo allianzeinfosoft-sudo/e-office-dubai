@@ -148,6 +148,7 @@
                                             <th>Item Name</th>
                                             <th>Model</th>
                                             <th>Key/ID</th>
+                                            <th>Specifications</th>
                                             <th>Allocated To</th>
                                             <th>Department</th>
                                             <th>Project</th>
@@ -217,6 +218,7 @@
                 { data: 'item_name' },
                 { data: 'model' },
                 { data: 'key_id' },
+                { data: 'specifications'},
                 { data: 'allocated_to' },
                 { data: 'department' },
                 { data: 'project' },
