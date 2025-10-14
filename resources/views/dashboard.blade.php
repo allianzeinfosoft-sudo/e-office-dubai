@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/ui-carousel.css') }}" />
 <style>
   .gallery-thumbs {
-      height: 90px; /* Adjust overall height */
+      height: 0px; /* Adjust overall height */
       padding: 10px 0;
       box-sizing: border-box;
   }
