@@ -622,7 +622,7 @@
                 <div class="col-xl-6 col-md-6 col-6 mt-3">
                   <div class="card card-bg">
                     <div class="card-header d-flex justify-content-between align-items-md-center align-items-start">
-                      <h5 class="card-title mb-0">HOD List</h5>
+                      <h5 class="card-title mb-0">POC List</h5>
                       <div class="dropdown">
                         <button type="button" class="btn dropdown-toggle p-0" data-bs-toggle="dropdown" aria-expanded="false">
                           <i class="ti ti-calendar"></i>
