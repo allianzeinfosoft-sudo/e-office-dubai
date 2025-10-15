@@ -461,7 +461,7 @@ class AssetRegisterController extends Controller
             'register_lineitem.asset_register',
             'allocation_lineitems.employee',
             'allocation_lineitems.location'
-        ]);
+        ])->where('status',1);
 
         // Apply location_status filter
         if ($location_status === 'allocated') {
