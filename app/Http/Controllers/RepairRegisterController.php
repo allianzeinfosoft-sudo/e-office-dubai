@@ -44,6 +44,8 @@ class RepairRegisterController extends Controller
                     'remarks'           => $item->remarks,
                     'asset_mapping_id'  => optional($item->assetMapping)->id,
                     'asset_id_number'   => optional($item->assetMapping)->item_number,
+
+                    CustomHelper::itemCodeGenerater($item->id)
                 ];
             });
 

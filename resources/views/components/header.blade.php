@@ -43,7 +43,7 @@
                   use App\Helpers\CustomHelper;
                 @endphp
               <!--/ Style Switcher -->
-            @if (Auth::user()->hasRole(['HR','Developer','G2','G3', 'G4']))
+            @if (Auth::user()->hasRole(['HR','Developer','G1','G2','G3', 'G4']))
               <!-- Quick links  -->
               <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
                 <a
@@ -135,7 +135,7 @@
                     <div class="row row-bordered overflow-visible g-0">
 
                       <div class="dropdown-shortcuts-item col">
-                        
+
                         <div class="float-end d-flex">
                             <a href="{{ route('wfs-wfh-approval-list') }}" class="btn btn-sm btn-icon rounded-pill btn-danger waves-effect waves-light">
                               {{ CustomHelper::wfhWfsAttendanceCount() }}
@@ -162,7 +162,7 @@
               </li>
               @endif
               <!-- Quick links -->
-               
+
 
               <!-- Notification -->
 
