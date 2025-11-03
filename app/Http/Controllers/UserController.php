@@ -709,7 +709,7 @@ public function open_work_assign(Request $request)
 
 public function users_birthday()
 {
-    $employees = Employee::whereNotNull('dob')->get();
+    $employees = Employee::whereNotNull('dob')->where('status','!=',4)->get();
     $today = Carbon::now();
 
     // 🔹 Today's Birthdays
