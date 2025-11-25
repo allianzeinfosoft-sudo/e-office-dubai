@@ -181,11 +181,25 @@ $(document).ready(function () {
                 {
                     data: 'leave_type',
                     title: 'Leave Type',
-                    render: function (data) {
+                    render: function (data, type, row) {
+
+                        // You can now access: row.leave_count
+                        const count = row.leave_count;
+
+                        if (data === 'off_day') {
+
+                            if (count == 0.50) {
+                                return `<button class="btn btn-sm btn-primary">Half off</button>`;
+                            } else if (count > 0.50) {
+                                return `<button class="btn btn-sm btn-primary">Full off</button>`;
+                            } else {
+                                return `<button class="btn btn-sm btn-primary">Off</button>`;
+                            }
+                        }
+
                         switch (data) {
-                            case 'half_day': return `<button class="btn btn-sm btn-warning">Half</button>`;
-                            case 'full_day': return `<button class="btn btn-sm btn-info">Full</button>`;
-                            case 'off_day': return `<button class="btn btn-sm btn-primary">Off</button>`;
+                            case 'half_day': return `<button class="btn btn-sm btn-warning">Half day</button>`;
+                            case 'full_day': return `<button class="btn btn-sm btn-info">Full day</button>`;
                             default: return 'N/A';
                         }
                     }

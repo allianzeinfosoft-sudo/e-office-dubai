@@ -552,7 +552,9 @@ class ReportController extends Controller
             $leaveBadge = match ($leave->leave_type) {
                 'full_day' => '<span class="badge bg-label-danger">Full Day</span>',
                 'half_day' => '<span class="badge bg-label-success">Half Day</span>',
-                'off_day'  => '<span class="badge bg-label-info">Off Day</span>',
+                'off_day'  => $leave->leave_day_count == 0.50
+                    ? '<span class="badge bg-label-primary">Half Off</span>'
+                    : '<span class="badge bg-label-primary">Full Off</span>',
                 default    => '<span class="badge bg-label-secondary">Unknown</span>',
             };
 

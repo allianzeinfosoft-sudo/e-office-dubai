@@ -231,15 +231,28 @@ let dtLeavePending;
             targets: 6,
             render: function(data, type, full, meta){
                 let leaveType = full['leave_type'];
+                let leave_count = full['leave_count'];
                 let displayType = 'N/A';
 
                 if(leaveType === 'half_day'){
-                    displayType = `<button class="btn btn-sm btn-sucess">Half</button>`;
+                    displayType = `<button class="btn btn-sm btn-warning">Half day </button>`;
                 }
                 else if(leaveType === 'full_day'){
-                    displayType = `<button class="btn btn-sm btn-danger">Full</button>`;
+                    displayType = `<button class="btn btn-sm btn-info">Full day</button>`;
                 }else if(leaveType === 'off_day'){
-                    displayType = `<button class="btn btn-sm btn-info">OFF</button>`;
+                    if(leave_count == 0.50)
+                    {
+                        displayType = `<button class="btn btn-sm btn-primary">Half off</button>`;
+                    }
+                    else if(leave_count > 0.50)
+                    {
+                        displayType = `<button class="btn btn-sm btn-primary">Full off</button>`;
+                    }
+                    else
+                    {
+                        displayType = `<button class="btn btn-sm btn-primary">N/A</button>`;
+                    }
+
                 }
 
                 return displayType;

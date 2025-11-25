@@ -40,7 +40,7 @@
                                                     <th>From Date</th>
                                                     <th>To Date</th>
                                                     <th>Total Leave Days</th>
-                                                    <th>Current Leave Days</th>
+                                                    {{-- <th>Current Leave Days</th> --}}
                                                     <th>Type</th>
                                                     <th>Leave Reason</th>
                                                     <th>Apply Date</th>
@@ -154,7 +154,7 @@
                 { data: 'leave_from', title: 'From date' },
                 { data: 'leave_to', title: 'To date' },
                 { data: 'leave_count', title: 'Total Leave Days' },
-                { data: 'filtered_leave_count', title: 'Current Leave Days'},
+                // { data: 'filtered_leave_count', title: 'Current Leave Days'},
                 { data: 'leave_type', title: 'Type' },
                 { data: 'reason', title: 'Leave Reason' },
                 { data: 'apply_date', title: 'Apply Date' },

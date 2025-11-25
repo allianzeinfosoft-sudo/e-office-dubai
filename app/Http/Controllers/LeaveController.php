@@ -128,16 +128,33 @@ class LeaveController extends Controller
 
 
         $user_id = $request['user_id'];
-
-        if($request->leave_type === 'half_day')
+        if($request->leave_category === 'leave')
         {
-            $leave_days = 0.5;
-        }
-        else
-        {
-            $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+            if($request->leave_type === 'half_day')
+            {
+                $leave_days = 0.5;
+                $leave_type = 'half_day';
+            }
+            else
+            {
+                $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+                $leave_type = 'full_day';
+            }
 
+        }else{
+
+            if($request->leave_type === 'half_day')
+            {
+                $leave_days = 0.5;
+                $leave_type = 'off_day';
+            }
+            else
+            {
+                $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
+                $leave_type = 'off_day';
+            }
         }
+
 
         $user_info = User::find($user_id);
         $user_department = $user_info->employee->department_id;
@@ -164,7 +181,7 @@ class LeaveController extends Controller
             'leave_from'     => $request->leave_from,
             'leave_to'       => $request->leave_to,
             'reason'         => $request->reason,
-            'leave_type'     => $request->leave_type,
+            'leave_type'     => $leave_type,
             'leave_day_count' => $leave_days,
             'leave_category' => $request->leave_category,
             'initial_approver_id' => $approver,
@@ -172,10 +189,12 @@ class LeaveController extends Controller
 
         $leave = Leave::create($leaveData);
         $leaveId = $leave->id;
-        if($request->leave_type === 'half_day')
-        {
-            CustomHelper::updateHalfdayLeaveIncompleteStatus($request->user_id, $request->leave_from);
-        }
+
+        // if($request->leave_type === 'half_day')
+        // {
+        CustomHelper::updateHalfdayLeaveIncompleteStatus($request->user_id, $request->leave_from);
+        // }
+
         // store approver
         $user_details = Employee::select('full_name', 'employeeID','reporting_to')
                             ->where('user_id', $request->user_id)
@@ -219,7 +238,7 @@ class LeaveController extends Controller
             'leave_reason' => strip_tags($request->reason),
             'employee_name' =>  $user_details->full_name,
             'employeeID' => $user_details->employeeID,
-            'leave_type' => $request->leave_type,
+            'leave_type' => $leave_type,
             'days_count' => $leave_days,
 
         ];
@@ -420,7 +439,7 @@ class LeaveController extends Controller
 
                     }
 
-                    if($leave->leave_type != 'off_day')
+                    if($leave->leave_category != 'off_day')
                     {
                         LeaveAllocation::where('user_id', $leave->user_id)
                             ->update([

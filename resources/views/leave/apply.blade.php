@@ -72,7 +72,7 @@
                                     <input type="hidden" name="reason" value="{{ strip_tags(old('reason' , $leave->reason ?? '')) }}" id="reason">
                                 </div>
 
-                                <div class="row mt-3">
+                                {{-- <div class="row mt-3">
                                     <label class="form-label" for="multicol-username">Leave Type (Full/Half)<span class="mandatory">*</span></label>
 
                                     <div class="col-md-4">
@@ -98,7 +98,57 @@
                                             <label class="form-check-label" for="defaultRadio3"> Off Day </label>
                                         </div>
                                     </div>
+                                </div> --}}
+
+
+                             <div class="row mt-3">
+                                <!-- Category -->
+                                <label class="form-label mb-2">Category <span class="mandatory">*</span></label>
+
+                                <div class="col-md-12 d-flex gap-4">
+                                    <div class="form-check">
+                                        <input name="leave_category" class="form-check-input" type="radio"
+                                            value="leave" id="categoryLeave"
+                                            {{ old('leave_category', $leave->leave_category ?? '') == 'leave' ? 'checked' : '' }} />
+                                        <label class="form-check-label ms-1" for="categoryLeave"> Leave </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input name="leave_category" class="form-check-input" type="radio"
+                                            value="off_day" id="categoryOffDay"
+                                            {{ old('leave_category', $leave->leave_category ?? '') == 'off_day' ? 'checked' : '' }} />
+                                        <label class="form-check-label ms-1" for="categoryOffDay"> Off Day </label>
+                                    </div>
+
                                 </div>
+                            </div>
+
+
+                            <!-- TYPE SECTION (hidden initially) -->
+                            <div class="row mt-3" id="leaveTypeSection" style="display:none;">
+                                <label class="form-label mb-2">Type <span class="mandatory">*</span></label>
+
+                                <div class="col-md-12 d-flex gap-4">
+                                    <div class="form-check">
+                                        <input name="leave_type" class="form-check-input" type="radio"
+                                            value="full_day" id="typeFull"
+                                            {{ old('leave_type', $leave->leave_type ?? '') == 'full_day' ? 'checked' : '' }} />
+                                        <label class="form-check-label ms-1" for="typeFull"> Full Day </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input name="leave_type" class="form-check-input" type="radio"
+                                            value="half_day" id="typeHalf"
+                                            {{ old('leave_type', $leave->leave_type ?? '') == 'half_day' ? 'checked' : '' }} />
+                                        <label class="form-check-label ms-1" for="typeHalf"> Half Day </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
 
                             </div>
 
@@ -166,7 +216,7 @@
         const reason = quillLeaveEditor.root.innerText.trim();
         const hiddenReason = document.getElementById('reason');
         hiddenReason.value = quillLeaveEditor.root.innerHTML.trim();
-
+        const leaveCategory = document.querySelector('input[name="leave_category"]:checked');
         const leaveTypeSelected = document.querySelector('input[name="leave_type"]:checked');
 
         let errors = [];
@@ -178,6 +228,7 @@
         if (!reason) errors.push("Leave reason is required.");
         if (reason.length > 255) errors.push("Leave reason must not exceed 255 characters.");
         if (!leaveTypeSelected) errors.push("Please select a leave type.");
+        if (!leaveCategory) errors.push("Please select a leave category.");
 
         if (!isNaN(Date.parse(leaveFrom)) && !isNaN(Date.parse(leaveTo))) {
             const fromDate = new Date(leaveFrom);
@@ -256,6 +307,25 @@
 });
 
 
+
+    function toggleTypeSection() {
+        let categorySelected = document.querySelector('input[name="leave_category"]:checked');
+        let typeSection = document.getElementById('leaveTypeSection');
+
+        if (categorySelected) {
+            typeSection.style.display = 'flex'; // show
+        } else {
+            typeSection.style.display = 'none'; // hide
+        }
+    }
+
+    // Run when user changes category
+    document.querySelectorAll('input[name="leave_category"]').forEach(radio => {
+        radio.addEventListener('change', toggleTypeSection);
+    });
+
+    // Run on page load (for edit form)
+    toggleTypeSection();
 
 </script>
 @endpush
