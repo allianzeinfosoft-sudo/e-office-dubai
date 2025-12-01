@@ -53,5 +53,10 @@ class AssetMapping extends Model
         });
     }
 
+    public function repair_lineitems()
+    {
+        return $this->hasMany(RepairItemLine::class, 'asset_map_id')
+                     ->where('status', [1]);
+    }
 
 }

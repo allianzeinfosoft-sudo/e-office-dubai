@@ -21,6 +21,7 @@ class RepairItemLine extends Model
         'repair_date',
         'return_amount',
         'remarks',
+        'status',
     ];
 
     public function register(){

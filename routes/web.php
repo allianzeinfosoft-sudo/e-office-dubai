@@ -669,7 +669,10 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::post('scrap-register/get-model-no', [ScrapRegisterController::class, 'getItemModel'])->name('scrap-register.get-model-no');
         Route::post('scrap-register/get-asset-id', [ScrapRegisterController::class, 'getAssetId'])->name('scrap-register.get-asset-id');
         Route::resource('repair-register', RepairRegisterController::class)->names('repair-register');
+        Route::get('repare-register/items', [RepairRegisterController::class,'Items'])->name('repare-register.items');
         Route::post('repair-register/update-item', [RepairRegisterController::class, 'updateItem'])->name('repair-register.update-item');
+        Route::post('repair-register/return-store/{id}', [RepairRegisterController::class, 'returnStore'])->name('repair-register.return-store');
+
         Route::post('alloted-item-search',[AssetAllocationController::class, 'allotedItemSearch'])->name('alloted-item-search');
         /* Scrap report */
         Route::get('reports/scrap-items', [ScrapRegisterController::class, 'reportScrapItems'])->name('reports.scrap-items');

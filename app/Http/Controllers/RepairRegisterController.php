@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\CustomHelper;
+use App\Models\AssetItemMaster;
 use App\Models\RepairRegister;
 use App\Models\RepairItemLine;
 use App\Models\AssetMapping;
@@ -15,6 +16,51 @@ class RepairRegisterController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    // list all repair items
+    public function Items(Request $request)
+    {
+        //
+        if($request->ajax()) {
+
+
+            $asset =  AssetMapping::with(['register_lineitem', 'masteritem', 'repair_lineitems'])
+                ->where('allocation_status',2)
+                ->where('status',1)
+                ->where(function ($q) {
+                    $q->whereDoesntHave('repair_lineitems');
+                })
+                ->get();
+            $data = $asset->map(function($item, $index) {
+
+                    return [
+                        'DT_RowIndex'   => $index + 1,
+                        'id'            => $item->id,
+                        'asset_id'      => CustomHelper::itemCodeGenerater($item->id) ?? '-',
+                        'classificaiton' => $item->register_lineitem?->asset_classification?->name ?? '-',
+                        'category'      => $item->register_lineitem?->asset_category?->name ?? '-',
+                        'type'          => $item->register_lineitem?->asset_type?->name ?? '-',
+                        'item'          => $item->masteritem?->name ?? '-',
+                        'brand'         => $item->register_lineitem?->asset_brand ?? '-',
+                        'model'         => $item->register_lineitem?->item_model ?? '-',
+                        'key_id'        => $item->register_lineitem?->item_key_id ?? '-',
+                        'serial_number' => $item->register_lineitem?->serial_number ?? '-',
+                        'specification' => $item->register_lineitem?->asset_description ?? '-',
+                        'remarks'       => $item->remarks
+                    ];
+
+                });
+
+            return response()->json(['data' => $data]);
+        }
+
+        $data['meta_title'] = 'Repare Register';
+        $data['items'] = AssetItemMaster::get();
+        $data['vendors'] = AssetVendors::all();
+        $data['assetItems'] = AssetItemMaster::all();
+        return view('company-assets.repair-register.items', $data);
+
+    }
     public function index(Request $request){
         //
 
@@ -110,6 +156,7 @@ class RepairRegisterController extends Controller
                 'rate'              => $request->rate[$index] ?? null,
                 'amount'            => $request->rate[$index] ?? null,
                 'remarks'           => $request->remarks[$index] ?? null,
+                'status'            => 1, // 1 = sent
             ]);
 
             if(!empty($request->asset_mapping_id[$index])) {
@@ -205,6 +252,7 @@ class RepairRegisterController extends Controller
                 'repair_date' => date('Y-m-d', strtotime($validated['repair_date'])),
                 'return_amount' => $validated['return_amount'],
                 'remarks' => $previousRemarks . ' | ' . $validated['remarks'],
+                'status' => 2, // 2 = received
             ]);
 
             return response()->json([
@@ -293,5 +341,27 @@ class RepairRegisterController extends Controller
             ];
         });
         return response()->json($asset);
+    }
+
+    public function returnStore($id)
+    {
+        $assetMapping = AssetMapping::find($id);
+
+        if (!$assetMapping) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Asset not found.',
+            ], 404);
+        }
+
+        $assetMapping->update([
+            'scrap_id' => null,
+            'allocation_status' => 0,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Scrap item returned successfully.',
+        ]);
     }
 }

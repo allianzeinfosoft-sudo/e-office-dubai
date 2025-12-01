@@ -65,9 +65,9 @@
                                 <div class="card-body">
                                 <div class="badge p-2 bg-label-info mb-2 rounded"><h4 class="mb-2 mt-1">{{ $stock_repaired ?? 0; }}</h4></div>
                                 <h5 class="card-title mb-1 pt-2">Reparing Assets</h5>
-                                <small class="text-muted">Count of assets on repairing</small>
+                                <small class="text-muted">Count of assets on reparing</small>
                                 <div class="">
-                                    <a href="{{ route('assets.repair-register.index') }}" class="form-control btn btn-primary">Add to repair</a>
+                                    <a href="{{ route('assets.repare-register.items') }}" class="form-control btn btn-primary">Add to repair</a>
                                 </div>
                                 </div>
                             </div>

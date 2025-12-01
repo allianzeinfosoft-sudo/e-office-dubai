@@ -52,8 +52,14 @@
                     <div class="row mb-3 pb-3 align-items-center">
 
                         <div class="col-md-6 pb-3">
-                             <a class="btn btn-danger" href="{{ route('assets.dashboard') }}">
+                            <a class="btn btn-danger" href="{{ route('assets.dashboard') }}">
                                 <i class="ti ti-home me-0 me-sm-1 ti-xs"></i>
+                            </a>
+                            <a class="btn btn-secondary" href="{{ route('assets.repare-register.items') }}">
+                                Repair Items
+                            </a>
+                            <a class="btn btn-primary" href="{{ route('assets.repair-register.index') }}">
+                                Sent / Received
                             </a>
                         </div>
                         <div class="col-md-6 text-end pb-3">
