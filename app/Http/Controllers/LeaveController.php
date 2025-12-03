@@ -401,95 +401,132 @@ class LeaveController extends Controller
         $id = $request['modalLeaveId'];
         $action = $request['modalFunctionType'];
 
-        if($action == 1)
+        if($action == 1) //action 1 is related to approve
         {
             $leave = Leave::find($id);
             if ($leave) {
 
                 if($approver->role != 'HR')
                 {
-                    $leave->initial_approve_status = 1;
-                    $leave->initial_approver_id = $approver->id;
-                    $leave->initial_approved_date = date('Y-m-d');
+                     if($leave->initial_approve_status == 0)
+                        {
+                            $leave->initial_approve_status = 1;
+                            $leave->approved_cancel_date = date('Y-m-d H:i:s');
+                            if($leave->save())
+                            {
+
+                                $startDate = Carbon::parse($leave->leave_from);
+                                $endDate = Carbon::parse($leave->leave_to);
+
+
+                                if($leave->leave_type === 'half_day')
+                                {
+                                    $leaveDays = 0.5;
+                                }
+                                else
+                                {
+                                    $leaveDays =  $startDate->diffInDays($endDate) + 1;
+
+                                }
+
+
+                                $data['details'] = [
+                                    'start_date' => $leave->leave_from,
+                                    'end_date' => $leave->leave_to,
+                                    'leave_reason' => strip_tags($leave->reason),
+                                    'employee_name' =>  $leave->employee->full_name,
+                                    'employeeID' => $leave->employee->employeeID,
+                                    'leave_type' => $leave->leave_type,
+                                    'days_count' => $leave->leave_day_count,
+
+                                ];
+                                // Send notification email
+                                $htmlBody = view('emails.leave_approve_template', $data)->render();
+                                $email = $leave->user->email ?? '';
+                                if($email)
+                                {
+                                    CustomHelper::sendNotificationMail(
+                                        $email,
+                                        'Your Leave Application Is Approved',
+                                        $htmlBody,
+                                    );
+                                }
+
+                                return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
+
+                            }
+                        }
+                        else{
+                            return response()->json(['error' => true, 'message' => 'Fail to update the leave request!']);
+                        }
+
+                }
+                else
+                {
+                    $leave->comment = $request['comment'];
+                    $leave->approved_cancel_date = date('Y-m-d H:i:s');
+                    $leave->status = 2;
                     if($leave->save())
                     {
-                        // return redirect()->back()->with('success', 'Leave Approved successfully!');
+
+                        $startDate = Carbon::parse($leave->leave_from);
+                        $endDate = Carbon::parse($leave->leave_to);
+
+
+                        if($leave->leave_type === 'half_day')
+                        {
+                            $leaveDays = 0.5;
+                        }
+                        else
+                        {
+                            $leaveDays =  $startDate->diffInDays($endDate) + 1;
+
+                        }
+
+                        if($leave->leave_type != 'off_day')
+                        {
+                            LeaveAllocation::where('user_id', $leave->user_id)
+                                ->update([
+                                    'remaining_leaves' => DB::raw('remaining_leaves - ' . $leaveDays),
+                                    'used_leaves' => DB::raw('used_leaves + ' . $leaveDays),
+                                ]);
+                        }
+
+
+
+                        $data['details'] = [
+                            'start_date' => $leave->leave_from,
+                            'end_date' => $leave->leave_to,
+                            'leave_reason' => strip_tags($leave->reason),
+                            'employee_name' =>  $leave->employee->full_name,
+                            'employeeID' => $leave->employee->employeeID,
+                            'leave_type' => $leave->leave_type,
+                            'days_count' => $leave->leave_day_count,
+
+                        ];
+                        // Send notification email
+                        $htmlBody = view('emails.leave_approve_template', $data)->render();
+                        $email = $leave->user->email ?? '';
+                        if($email)
+                        {
+                            CustomHelper::sendNotificationMail(
+                                $email,
+                                'Your Leave Application Is Approved',
+                                $htmlBody,
+                            );
+                        }
+
                         return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
 
                     }
-
                 }
-                $leave->status = 2;
-                $leave->comment = $request['comment'];
-                $leave->approved_cancel_date = date('Y-m-d H:i:s');
-                if($leave->save())
-                {
-                    $startDate = Carbon::parse($leave->leave_from);
-                    $endDate = Carbon::parse($leave->leave_to);
 
 
-                     if($leave->leave_type === 'half_day')
-                    {
-                        $leaveDays = 0.5;
-                    }
-                    else
-                    {
-                        $leaveDays = $leaveDays = $startDate->diffInDays($endDate) + 1;
-
-                    }
-
-                    if($leave->leave_type != 'off_day')
-                    {
-                        LeaveAllocation::where('user_id', $leave->user_id)
-                            ->update([
-                                'remaining_leaves' => DB::raw('remaining_leaves - ' . $leaveDays),
-                                'used_leaves' => DB::raw('used_leaves + ' . $leaveDays),
-                            ]);
-                    }
-
-
-
-                    // $recipients = [(string) $leave->user_id];
-                    // $message = 'Leave application approved';
-
-                    // NotificationHelpers::createNotification([
-                    //     'type' => 'leave',
-                    //     'recipients' => $recipients,
-                    //     'message' => $message,
-                    // ]);
-
-                    $data['details'] = [
-                        'start_date' => $leave->leave_from,
-                        'end_date' => $leave->leave_to,
-                        'leave_reason' => strip_tags($leave->reason),
-                        'employee_name' =>  $leave->employee->full_name,
-                        'employeeID' => $leave->employee->employeeID,
-                        'leave_type' => $leave->leave_type,
-                        'days_count' => $leave->leave_day_count,
-
-                    ];
-                    // Send notification email
-                    $htmlBody = view('emails.leave_approve_template', $data)->render();
-                    $email = $leave->user->email ?? '';
-                    if($email)
-                    {
-                        CustomHelper::sendNotificationMail(
-                            $email,
-                            'Your Leave Application Is Approved',
-                            $htmlBody,
-                        );
-                    }
-
-                    // return redirect()->back()->with('success', 'Leave Approved successfully!');
-                    return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
-
-                }
-                return response()->json(['error' => true, 'message' => 'Failed to update leave status!']);
             } else {
                 return response()->json(['error' => true, 'message' => 'Invalid user!']);
             }
         }
-        elseif($action == 2)
+        elseif($action == 2) //action 2 is leave rejection
         {
             $leave = Leave::find($id);
             if ($leave) {
@@ -514,14 +551,6 @@ class LeaveController extends Controller
                 $leave->approved_cancel_date = date('Y-m-d H:i:s');
                 $leave->save();
 
-                // $recipients = [(string) $leave->user_id];
-                // $message = 'Leave application rejected';
-                // NotificationHelpers::createNotification([
-                //     'type' => 'leave',
-                //     'recipients' => $recipients,
-                //     'message' => $message,
-                // ]);
-
                 $data['details'] = [
                     'start_date' => $leave->leave_from,
                     'end_date' => $leave->leave_to,
@@ -544,9 +573,7 @@ class LeaveController extends Controller
                     );
                 }
 
-
-                // return redirect()->back()->with('success', 'Leave Rejected successfully!');
-                return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
+                return response()->json(['success' => true, 'message' => 'Leave Rejected successfully!']);
 
 
 
