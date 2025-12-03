@@ -183,7 +183,6 @@ class LeaveController extends Controller
             'reason'         => $request->reason,
             'leave_type'     => $leave_type,
             'leave_day_count' => $leave_days,
-            'leave_category' => $request->leave_category,
             'initial_approver_id' => $approver,
         ];
 
@@ -439,7 +438,7 @@ class LeaveController extends Controller
 
                     }
 
-                    if($leave->leave_category != 'off_day')
+                    if($leave->leave_type != 'off_day')
                     {
                         LeaveAllocation::where('user_id', $leave->user_id)
                             ->update([
