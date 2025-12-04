@@ -231,15 +231,15 @@ $(document).on("change", ".year", function () {
                     success: function (leaveDetails) {
 
                         if (leaveDetails) {
-                            alert(leaveDetails.total_leaves);
+
                             row.find('td:nth-child(3)').html(leaveDetails.total_leaves ?? '0');
                             row.find('td:nth-child(4)').text(leaveDetails.used_leaves ?? '0'); // Leaves Taken
                             row.find('td:nth-child(5)').text(leaveDetails.remaining_leaves ?? '0'); // Leave Balance
 
                             // Attach an event listener to calculate leave balance dynamically
                             row.find('.allocated-leaves-input').on('input', function () {
-                                const allocatedLeaves = parseInt($(this).val()) || 0;
-                                const leavesTaken = parseInt(leaveDetails.used_leaves) || 0;
+                                const allocatedLeaves = parseFloat($(this).val()) || 0;
+                                const leavesTaken = parseFloat(leaveDetails.used_leaves) || 0;
 
                                 // Recalculate leave balance and update the corresponding column
                                 const leaveBalance = allocatedLeaves - leavesTaken;
@@ -276,7 +276,7 @@ $(document).on("click", ".updateLeave", function () {
         const userId = button.data('user-id');
         const leaveId = button.data('leave-id');
         const year = row.find('.year').val(); // Fetch the year from the dropdown
-        const leavesTaken = parseInt(row.find('td:nth-child(4)').text()) || 0; // Get Leaves Taken value
+        const leavesTaken = parseFloat(row.find('td:nth-child(4)').text()) || 0; // Get Leaves Taken value
 
         // Prompt user to enter allocated leaves
         const allocatedLeaves = prompt('Enter allocated leaves:');
@@ -288,6 +288,7 @@ $(document).on("click", ".updateLeave", function () {
         // Calculate remaining leaves
 
         const remainingLeaves = allocatedLeaves - leavesTaken;
+        alert(leavesTaken);
 
         $.ajax({
             url: '/update-leave-allocation', // Your backend route
@@ -324,8 +325,8 @@ $(document).on("click", ".updateLeave", function () {
 
 $(document).on('input', '.allocated-leaves-input', function () {
     const row = $(this).closest('tr'); // Get the row containing the input
-    const allocatedLeaves = parseInt($(this).val()) || 0; // Get the new allocated leave value
-    const leavesTaken = parseInt(row.find('td:nth-child(5)').text()) || 0; // Leaves Taken value from the row
+    const allocatedLeaves = parseFloat($(this).val()) || 0; // Get the new allocated leave value
+    const leavesTaken = parseFloat(row.find('td:nth-child(5)').text()) || 0; // Leaves Taken value from the row
 
     // Calculate remaining leaves
     const remainingLeaves = allocatedLeaves - leavesTaken;
