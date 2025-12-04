@@ -691,12 +691,13 @@ class LeaveController extends Controller
 
     public function updateLeaveAllocation(Request $request)
     {
+
         // Validate the incoming data
         $request->validate([
             'user_id' => 'required', // Allow null for new records
             'year' => 'required|integer',
             'total_leaves' => 'required|numeric|min:0',
-            'remaining_leaves' => 'required|numeric|min:0',
+            'remaining_leaves' => 'required|numeric',
         ]);
 
         try {

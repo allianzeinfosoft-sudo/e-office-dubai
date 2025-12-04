@@ -298,13 +298,13 @@ $(document).on("click", ".updateLeave", function () {
                 leave_id: leaveId,
                 year: year,
                 total_leaves: allocatedLeaves,
-                remaining_leaves: remainingLeaves >= 0 ? remainingLeaves : 0 // Avoid negative values
+                remaining_leaves: remainingLeaves // Avoid negative values
             },
             success: function (response) {
                 if (response.success) {
                     // Update Allocated Leaves and Remaining Leaves in the table
                     row.find('td:nth-child(3)').text(allocatedLeaves); // Allocated Leaves
-                    row.find('td:nth-child(5)').text(remainingLeaves >= 0 ? remainingLeaves : 0); // Remaining Leaves
+                    row.find('td:nth-child(5)').text(remainingLeaves); // Remaining Leaves
 
                     alert('Leave allocation updated successfully!');
                     win
