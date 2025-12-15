@@ -19,10 +19,10 @@
                     <label class="form-check-label" for="main_background">All Background</label>
                 </div>
 
-                <div class="form-check form-check-inline">
+                {{-- <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" name="background_type[]" id="feeds_background" value="feeds">
                     <label class="form-check-label" for="feeds_background">Feeds Background</label>
-                </div>
+                </div> --}}
 
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" name="background_type[]" id="login_background" value="login">

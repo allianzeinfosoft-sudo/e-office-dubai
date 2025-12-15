@@ -45,13 +45,11 @@ use App\Http\Controllers\AssetClassificationController;
 use App\Http\Controllers\AssetCategoryController;
 use App\Http\Controllers\AssetVendorsController;
 use App\Http\Controllers\AssetRegisterController;
-use App\Models\Appearence;
-use App\Models\Appreciation;
-use App\Models\Designation;
-use App\Models\Reminder;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\CustomHelper;
+
 use App\Http\Controllers\AssetAllocationController;
 use App\Http\Controllers\AssetDashboardController;
 use App\Http\Controllers\AssetExpiryController;
@@ -70,6 +68,13 @@ use App\Http\Controllers\SelfAppraisalReportController;
 use App\Http\Controllers\SurveyReportController;
 use App\Http\Controllers\SurveyTemplateController;
 use App\Http\Controllers\TicketRaisingController;
+use App\Http\Controllers\TrainingController;
+
+use App\Models\Appearence;
+use App\Models\Appreciation;
+use App\Models\Designation;
+use App\Models\Reminder;
+use App\Models\Training;
 use App\Models\AssetAllocation;
 use App\Models\AssetItemMaster;
 use App\Models\AssetLocation;
@@ -308,6 +313,14 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
     Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
     Route::get('/thoughts_view', [ThoughtsController::class, 'view_thoughts'])->name('thoughts.view');
+
+    /* Training */
+    Route::resource('trainings',TrainingController::class);
+    Route::get('/trainings/{training}/edit', [TrainingController::class, 'edit'])->name('trainings.edit');
+    Route::post('/trainings/{training}/update', [TrainingController::class, 'update'])->name('trainings.update');
+    Route::get('/trainings_view', [TrainingController::class, 'view_trainings'])->name('trainings.view');
+
+    Route::get('/employees/{department}', [TrainingController::class, 'getEmployees'])->name('department.employees');
 
     /* Views/Company policies */
 

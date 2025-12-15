@@ -53,13 +53,14 @@
               <!-- Header -->
               <div class="row mt-md-2">
                 <div class="tab row-bordered mb-3">
-                  <button class="tablinks active" onclick="openBg(event, 'Feed')">Feed Background</button>
-                  <button class="tablinks" onclick="openBg(event, 'Login')">Login Background</button>
+                  {{-- <button class="tablinks active" onclick="openBg(event, 'Feed')">Feed Background</button> --}}
+                  <button class="tablinks active" onclick="openBg(event, 'Login')">Login Background</button>
                   <button class="tablinks" onclick="openBg(event, 'All')">All Background</button>
+                  <button type="button" class="btn btn-primary tablinks float-end " onclick="openBackgroundOffcanvas()">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button>
                 </div>
 
                 <!---feed page Background change-->
-                <div id="Feed" class="tabcontent container-fluid show">
+                {{-- <div id="Feed" class="tabcontent container-fluid show">
                     <div class="card">
                       <div class="d-flex align-items-center p-3 justify-content-between">
                         <h5 class="fw-bold mb-0">Change Feed Background Style</h5>
@@ -70,23 +71,21 @@
                       <div class="row px-3">
                         <span>No image uploaded</span>
                       </div>
-                    </div> <!-- container-fluid, tm-container-content -->
-                    <!--Gallery-->
-                </div>
+                    </div>
+                </div> --}}
                 <!---feed page Background change-->
 
                 <!---login page Background change-->
-                <div id="Login" class="tabcontent container-fluid">
+                <div id="Login" class="tabcontent container-fluid show">
                   <div class="card">
                     <div class="d-flex align-items-center p-3 justify-content-between">
                       <h5 class="fw-bold mb-0">Change Login Background Image</h5>
-                      <button type="button" class="btn btn-info waves-effect h-px-40 waves-light" href="javascript:void(0);" onclick="openBackgroundOffcanvas()">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button>
+                      {{-- <button type="button" class="btn btn-info waves-effect h-px-40 waves-light" href="javascript:void(0);" onclick="openBackgroundOffcanvas()">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button> --}}
                     </div>
                     <div class="row px-3">
                         <span>No image uploaded</span>
                     </div>
-                  </div> <!-- container-fluid, tm-container-content -->
-                  <!--Gallery-->
+                  </div>
                 </div>
                 <!---login page Background change-->
 
@@ -95,7 +94,7 @@
                   <div class="card">
                     <div class="d-flex align-items-center p-3 justify-content-between">
                       <h5 class="fw-bold mb-0">Change Background Image</h5>
-                      <button type="button" class="btn btn-info waves-effect h-px-40 waves-light" onclick="openBackgroundOffcanvas()">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button>
+                    {{-- <button type="button" class="btn btn-info waves-effect h-px-40 waves-light" href="javascript:void(0);" onclick="openBackgroundOffcanvas()">Upload Image <i class="mx-1 ti ti-arrow-big-up-lines ti-sm"></i></button> --}}
                     </div>
                     <div class="row px-3">
                         <span>No image uploaded</span>
@@ -232,9 +231,9 @@ function renderImages(images) {
 
         // Append image to the correct section
         switch (cat) {
-            case 'feeds':
-                $('#Feed .row.px-3').append(imageHtml);
-                break;
+            // case 'feeds':
+            //     $('#Feed .row.px-3').append(imageHtml);
+            //     break;
             case 'login':
                 $('#Login .row.px-3').append(imageHtml);
                 break;

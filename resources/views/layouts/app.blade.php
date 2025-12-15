@@ -124,7 +124,7 @@
         <div class="spinner"></div>
     </div>
 
-    <div id="app">
+    <div id="app" class="authentication-bg" style="background-image: url('{{ asset('storage/'.$background_image) }}');">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         {{-- <main class="py-4"> --}}

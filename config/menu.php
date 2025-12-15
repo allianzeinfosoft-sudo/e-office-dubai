@@ -581,6 +581,30 @@ return [
         'permission' => ['view assets'],
     ],
     [
+        'title' => 'Training',
+        'icon' => 'ti ti-school',
+        'route' => 'javascript:void(0);',
+        'isActive' => ['training*'],
+        // 'permission' => ['view trainings','view training calendar','view training reports'],
+        'submenu' => [
+            [
+                'title' => 'Trainings',
+                'route' =>  '/trainings',
+                // 'permission' => ['view trainings'],
+            ],
+            [
+                'title' => 'Training Calendar',
+                'route' =>  '/training-calendar',
+                // 'permission' => ['view training calendar'],
+            ],
+            [
+                'title' => 'Training Reports',
+                'route' =>  '/training-reports',
+                // 'permission' => ['view training reports'],
+            ],
+        ]
+    ],
+    [
         'header' => 'Settings',
     ],
     [

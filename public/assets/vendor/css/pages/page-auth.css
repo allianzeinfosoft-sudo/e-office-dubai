@@ -91,7 +91,16 @@
 
 .light-style .authentication-wrapper.authentication-bg {
   /* background-color: #fff; */
-  background-image: url(../../../img/backgrounds/bg1.jpg);
+  /* background-image: url(../../../img/backgrounds/bg1.jpg); */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.authentication-bg {
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .light-style .auth-cover-bg-color {
   background-color: #f8f7fa;
