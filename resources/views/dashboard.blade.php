@@ -30,7 +30,7 @@
 @endsection
 
 @section('content')
-<div class="layout-wrapper layout-content-navbar bg-eoffice" style="background-image: url('{{ asset('storage/'.$background_image) }}');">
+<div class="layout-wrapper layout-content-navbar bg-eoffice" >
     <div class="layout-container">
         <x-menu /> <!-- Load the menu component here -->
       <!-- Layout container -->
