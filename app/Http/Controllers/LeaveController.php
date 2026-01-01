@@ -486,6 +486,7 @@ class LeaveController extends Controller
                         if($leave->leave_type != 'off_day')
                         {
                             LeaveAllocation::where('user_id', $leave->user_id)
+                                ->where('year', Carbon::parse($leave->leave_from)->year)
                                 ->update([
                                     'remaining_leaves' => DB::raw('remaining_leaves - ' . $leaveDays),
                                     'used_leaves' => DB::raw('used_leaves + ' . $leaveDays),

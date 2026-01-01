@@ -31,4 +31,16 @@ class Training extends Model
         return $this->hasMany(TrainingUser::class, 'training_id');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'training_users');
+    }
+
+    public function users_training_status()
+    {
+        return $this->belongsToMany(User::class, 'training_users')
+                    ->withPivot('acceptance_status')
+                    ->withTimestamps();
+    }
+
 }
