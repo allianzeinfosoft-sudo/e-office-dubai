@@ -324,6 +324,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/trainings/acceptance', [TrainingController::class, 'updateAcceptance'])->name('trainings.acceptance');
     Route::get('/trainings/{id}/view', [TrainingController::class, 'view'])->name('trainings.view');
     Route::post('/training-users/attendance', [TrainingController::class, 'markAttendance'])->name('training.attendance');
+    Route::get('/reports/training-attendance', [TrainingController::class, 'report_view'])->name('training.attendance-report');
+    Route::get('/reports/training-attendance/data', [TrainingController::class, 'data'])->name('training.attendance-report-data');
 
     /* Training Test */
     Route::resource('training-tests', TrainingTestController::class);
@@ -332,23 +334,16 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/training-tests/{id}/view', [TrainingTestController::class, 'view'])->name('training-tests.view');
     Route::get('training-tests/{id}', [TrainingTestController::class, 'show'])->name('training-tests.show');
     Route::get('training-tests/{id}/question-paper',[TrainingTestController::class, 'questionPaper']);
-
-    Route::get('training-tests/{id}/attend', [TrainingTestController::class, 'attend'])
-    ->name('training-tests.attend');
-
-    Route::post('training-tests/{id}/submit', [TrainingTestController::class, 'submit'])
-    ->name('training-tests.submit');
-
-    Route::get('training-tests/{id}/certificate', [TrainingTestController::class, 'certificate'])
-    ->name('training-tests.certificate');
-
+    Route::get('training-tests/{id}/attend', [TrainingTestController::class, 'attend'])->name('training-tests.attend');
+    Route::post('training-tests/{id}/submit', [TrainingTestController::class, 'submit'])->name('training-tests.submit');
+    Route::get('training-tests/{id}/certificate', [TrainingTestController::class, 'certificate'])->name('training-tests.certificate');
     Route::get('training-test/certificate/{id}/download', [TrainingTestController::class, 'downloadCertificate'])->name('training-test.certificate.download');
-
-
     Route::get('/trainings/{training}/available-users', [TrainingController::class, 'availableUsers']);
     Route::post('/trainings/assign-users', [TrainingController::class, 'assignUsers'])->name('trainings.assign-users');
-
     Route::get('/training-tests/{id}/completed', [TrainingTestController::class, 'completed'])->name('training-tests.completed');
+    Route::get('/reports/training-test', [TrainingTestController::class, 'report_view'])->name('training.test-report');
+    Route::get('/reports/training-test/data', [TrainingTestController::class, 'data'])->name('training.test-report-data');
+
     /* Views/Company policies */
 
     Route::get('/view/company-policies', [CompanyPolicyController::class, 'index'])->name('view.company-policies');

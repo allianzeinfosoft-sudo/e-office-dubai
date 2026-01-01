@@ -489,5 +489,59 @@ class TrainingController extends Controller
         ]);
     }
 
+     public function report_view()
+    {
+        $trainings = Training::select('id', 'training_title')->orderBy('training_title')->get();
+
+        return view('training.training_attendance_report', [
+            'trainings'   => $trainings,
+            'meta_title' => 'Training Attendance Report'
+        ]);
+    }
+
+     /**
+     * Fetch Training Attendance Report Data (AJAX)
+     */
+    public function data(Request $request)
+    {
+        $query = TrainingUser::query()
+            ->with([
+                'training:id,training_title',
+                'user:id',
+                'employee:user_id,full_name'
+            ]);
+
+        /* -----------------------------
+         | Filter: Training Title
+         |----------------------------- */
+        if ($request->filled('trainings')) {
+            $query->whereHas('training', function ($q) use ($request) {
+                $q->where('training_title', $request->trainings);
+            });
+        }
+
+        $records = $query->orderBy('id')->get();
+
+        /* -----------------------------
+         | Format for DataTable
+         |----------------------------- */
+        $data = $records->map(function ($row, $index) {
+
+            return [
+                'id'                => $index + 1,
+                'training_title'    => $row->training->training_title ?? '-',
+                'employee_name'     => $row->employee->full_name
+                                        ?? $row->employee->name
+                                        ?? '-',
+                'acceptance_status' => ucfirst($row->acceptance_status),
+                'attendance'        => ucfirst($row->attendance_status ?? 'not marked'),
+            ];
+        });
+
+        return response()->json([
+            'data' => $data
+        ]);
+    }
+
 
 }
