@@ -17,26 +17,26 @@ class HolidayController extends Controller
     public function getHolidayList()
     {
         $holidays = Holiday::select(
-            'id',
-            'name',
-            'date',
-            'holiday_group',
-        )->get()
-        ->map(function ($holidays) {
+        'id',
+        'name',
+        'date',
+        'holiday_group'
+        )
+        ->orderBy('date', 'desc')   // 🔥 sort by date
+        ->get()
+        ->map(function ($holiday) {
             return [
-                'id' => $holidays->id,
-                'name' => $holidays->name ? $holidays->name : 'N/A',
-                'date' => $holidays->date ? date('d-m-Y', strtotime($holidays->date)) : 'N/A',
-                'group' => $holidays->holiday_group ? $holidays->holiday_group : 'N/A',
-
+                'id'    => $holiday->id,
+                'name'  => $holiday->name ?? 'N/A',
+                'date'  => $holiday->date
+                            ? \Carbon\Carbon::parse($holiday->date)->format('d-m-Y')
+                            : 'N/A',
+                'group' => $holiday->holiday_group ?? 'N/A',
             ];
         });
 
+    return response()->json(['data' => $holidays]);
 
-
-        $response = response()->json(['data' => $holidays]);
-        $json_data = json_decode($response->getContent(), true)['data'];
-        return json_encode(['data' => $json_data]);
     }
 
     public function create()

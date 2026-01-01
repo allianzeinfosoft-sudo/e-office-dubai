@@ -55,8 +55,10 @@
                                         <th>Training Title</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
-                                        <th>Training Details</th>
+                                        {{-- <th>Training Details</th> --}}
                                         <th>Document</th>
+                                        <th>Training Status</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -92,6 +94,84 @@
             <div class="col-sm-12">
                 <x-training-form action="{{ route('trainings.store') }}" />
             </div>
+        </div>
+    </div>
+</div>
+
+{{-- model box --}}
+<div class="modal fade" id="viewTrainingModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Training Details</h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <h6 class="mb-2">Training Information</h6>
+                <table class="table table-bordered">
+                    <tr><th>Title</th><td id="vt_title"></td></tr>
+                    <tr><th>Start Date</th><td id="vt_start"></td></tr>
+                    <tr><th>End Date</th><td id="vt_end"></td></tr>
+                    <tr><th>Description</th><td id="vt_details"></td></tr>
+                    <tr><th>Status</th><td id="vt_status"></td></tr>
+                </table>
+
+                <h6 class="mt-4 mb-2">Assigned Users</h6>
+                @if(auth()->user()->hasAnyRole(['HR','Developer','G1']))
+                    <button class="btn btn-sm btn-primary ms-auto " id="openAddUserModal">
+                        <i class="ti ti-user-plus"></i> Add User
+                    </button>
+                @endif
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Employee</th>
+                            <th>Email</th>
+                            <th>Acceptance Status</th>
+                            <th>Attendance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vt_users"></tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- user add box --}}
+
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Users</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="assign_training_id">
+
+                <label class="mb-1">Select Users</label>
+                <select id="assign_users"
+                        class="select2 form-select"
+                        multiple
+                        style="width:100%">
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" id="assignUsersBtn">
+                    <i class="ti ti-check"></i> Assign
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
@@ -181,7 +261,7 @@
 
 
     $(function() {
-
+        const currentUserRoles = @json(Auth::user()->getRoleNames());
         var trainingsTable = $('.datatables-trainings'),
         select2 = $('.select2');
         if (trainingsTable.length) {
@@ -206,7 +286,7 @@
                     { data: 'trainings_title', title: 'Training Title' },
                     { data: 'trainings_startdate', title: 'Start Date' },
                     { data: 'trainings_enddate', title: 'End Date' },
-                    { data: 'trainings_detatils', title: 'Training Details'},
+                    // { data: 'trainings_details', title: 'Training Details'},
                     { data: 'document', title: 'Document',
                         render: function(data, type, row) {
                             if (data) {
@@ -217,16 +297,118 @@
                         }
                     },
                     {
+                        data: 'training_status',
+                        title: 'Training Status',
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row) {
+
+                            if (data === 'start_soon') {
+                                return `
+                                    <span class="badge bg-warning">
+                                        <i class="ti ti-clock"></i> Starting Soon
+                                    </span>`;
+                            }
+
+                            if (data === 'ongoing') {
+                                return `
+                                    <span class="badge bg-success">
+                                        <i class="ti ti-player-play"></i> Ongoing
+                                    </span>`;
+                            }
+
+                            if (data === 'ended') {
+                                return `
+                                    <span class="badge bg-danger">
+                                        <i class="ti ti-circle-x"></i> Ended
+                                    </span>`;
+                            }
+
+                            return `<span class="badge bg-secondary">N/A</span>`;
+                        }
+                    },
+
+                    {data: 'acceptance_status', title: 'Status'},
+                    {
                         data: null,
                         title: 'Actions',
                         render: function (data, type, row, full) {
-                            const editUrl = "{{ route('trainings.edit', ':id') }}".replace(':id', row.id);
+
+                            let isAdmin = false;
+                            if (typeof currentUserRoles !== 'undefined') {
+                                isAdmin = currentUserRoles.includes("HR") ||
+                                        currentUserRoles.includes("Developer") ||
+                                        currentUserRoles.includes("G1");
+                            }
+
+                            let buttons = '';
+
+                            // ❌ HIDE accept/reject if training is ENDED
+                            if (row.training_status !== 'ended') {
+
+                                if (isAdmin && row.acceptance_status == 'Not Assigned') {
+                                    // nothing for admin if not assigned
+                                } else {
+
+                                    // Accept button
+                                    if (row.acceptance_status !== 'accepted') {
+                                        buttons += `
+                                            <button class="btn btn-sm btn-success me-2 open-modal accept-training"
+                                                    data-bs-toggle="modal"
+                                                    data-id="${row.id}"
+                                                    data-status="accepted"
+                                                    data-bs-target="#addNewCCModal">
+                                                <i class="fa fa-check-circle"></i>
+                                            </button>`;
+                                    }
+
+                                    // Reject button
+                                    if (row.acceptance_status !== 'rejected') {
+                                        buttons += `
+                                            <button class="btn btn-sm btn-danger open-modal reject-training"
+                                                    data-bs-toggle="modal"
+                                                    data-id="${row.id}"
+                                                    data-status="rejected"
+                                                    data-bs-target="#addNewCCModal">
+                                                <i class="fa fa-times-circle"></i>
+                                            </button>`;
+                                    }
+                                }
+                            }
+
+                            // Admin-only buttons (always visible for admin)
+                            let adminButtons = '';
+                            if (isAdmin) {
+                                adminButtons = `
+                                    <a href="javascript:void(0)"
+                                    class="btn btn-sm btn-icon btn-primary edit-trainings"
+                                    onclick="openTrainingsOffcanvas(${row.id})">
+                                    <i class="ti ti-edit"></i>
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                    class="btn btn-sm btn-icon btn-danger delete-trainings"
+                                    data-id="${row.id}">
+                                    <i class="ti ti-trash"></i>
+                                    </a>`;
+                            }
+
+                            // View button → always visible
+                            let viewButton = `
+                                <button class="btn btn-sm btn-icon btn-warning me-1 view-training"
+                                        data-id="${row.id}">
+                                    <i class="ti ti-eye"></i>
+                                </button>`;
+
                             return `
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary edit-trainings" onclick="openTrainingsOffcanvas(${row.id})"><i class="ti ti-edit"></i></a>
-                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-trainings" data-id="${row.id}"><i class="ti ti-trash"></i></a>
-                            `;
+                                <div class="align-items-center">
+                                    ${viewButton}
+                                    ${adminButtons}
+                                    ${buttons}
+                                </div>`;
                         }
                     }
+
+
                 ]
             });
         }
@@ -292,6 +474,11 @@ function openTrainingsOffcanvas(targetId = null) {
                 $('#start_date_time').val(training.start_date_time);
                 $('#end_date_time').val(training.end_date_time);
 
+                 // Disable employee field in edit mode
+                if ($('#target_id').val()) {
+                    $('#employee').prop('disabled', true);
+                }
+
                 // Details -> Quill Editor
                 let cleanContent = training.training_details.replace(/^<p>|<\/p>$/g, '');
                 quillEditor1.root.innerHTML = cleanContent;
@@ -314,6 +501,204 @@ function openTrainingsOffcanvas(targetId = null) {
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
 }
+
+
+$(document).on('click', '.accept-training, .reject-training', function () {
+
+    let trainingId = $(this).data('id');
+    let status     = $(this).data('status');
+
+    $.ajax({
+        url: "{{ route('trainings.acceptance') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            training_id: trainingId,
+            status: status
+        },
+        success: function (response) {
+            toastr.success(response.message);
+            $('.datatables-trainings').DataTable().ajax.reload(null, false);
+        },
+        error: function (xhr) {
+            toastr.error(xhr.responseJSON?.message || 'Something went wrong');
+        }
+    });
+});
+
+
+// view model box
+let currentViewTrainingId = null;
+$(document).on('click', '.view-training', function () {
+    currentViewTrainingId = $(this).data('id');
+
+    $.get(`/trainings/${currentViewTrainingId}/view`, function (res) {
+
+        let statusHtml = '';
+        if (res.training_status === 'start_soon') {
+            statusHtml = '<span class="badge bg-warning"><i class="ti ti-clock"></i>Starting Soon</span>';
+        }
+        else if (res.training_status === 'ongoing') {
+            statusHtml = '<span class="badge bg-success"><i class="ti ti-player-play"></i>Training Ongoing</span>';
+        }
+        else if (res.training_status === 'ended') {
+            statusHtml = '<span class="badge bg-danger"><i class="ti ti-circle-x"></i>Training Ended</span>';
+        }
+        $('#vt_title').text(res.title);
+        $('#vt_start').text(res.start);
+        $('#vt_end').text(res.end);
+        $('#vt_details').text(res.details);
+        $('#vt_status').html(statusHtml);
+
+
+        let rows = '';
+        res.users.forEach((u, i) => {
+                let acceptBadge = 'bg-warning';
+                if (u.acceptance_status === 'accepted') acceptBadge = 'bg-success';
+                if (u.acceptance_status === 'rejected') acceptBadge = 'bg-danger';
+
+                let attendanceHtml = '<span class="text-muted">N/A</span>';
+
+                // ✅ Only Admin + Accepted users can mark attendance
+                if (u.can_mark_attendance) {
+
+                    let checked = u.attendance_status === 'present' ? 'checked' : '';
+
+                    attendanceHtml = `
+                        <div class="form-check">
+                            <input class="form-check-input mark-attendance"
+                                type="checkbox"
+                                data-id="${u.id}"
+                                ${checked}>
+                            <label class="form-check-label">
+                                Present
+                            </label>
+                        </div>`;
+                }
+                // Read-only display
+                else if (u.attendance_status) {
+
+                        if (u.attendance_status === 'present') {
+                            attendanceHtml = `
+                                <span class="badge bg-success">
+                                    ${u.attendance_status}
+                                </span>`;
+                        }
+                        else if (u.attendance_status === 'absent') {
+                            attendanceHtml = `
+                                <span class="badge bg-danger">
+                                    ${u.attendance_status}
+                                </span>`;
+                        }
+                    }
+
+
+                rows += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${u.name}</td>
+                        <td>${u.email}</td>
+                        <td>
+                            <span class="badge ${acceptBadge}">
+                                ${u.acceptance_status}
+                            </span>
+                        </td>
+                        <td>${attendanceHtml}</td>
+                    </tr>`;
+            });
+
+
+        $('#vt_users').html(rows);
+        $('#viewTrainingModal').modal('show');
+    });
+});
+
+// add user model
+
+$('#openAddUserModal').on('click', function () {
+
+     if (!currentViewTrainingId) {
+        toastr.error('Training not selected');
+        return;
+    }
+
+    $('#assign_training_id').val(currentViewTrainingId);
+
+    $.get(`/trainings/${currentViewTrainingId}/available-users`, function (res) {
+
+        let options = '';
+        res.users.forEach(u => {
+            options += `<option value="${u.user_id}">${u.full_name}</option>`;
+        });
+
+        $('#assign_users')
+            .html(options)
+            .select2({
+                dropdownParent: $('#addUserModal')
+            });
+
+        $('#addUserModal').modal('show');
+    });
+});
+
+
+// submit assigned users
+$('#assignUsersBtn').on('click', function () {
+
+    let trainingId = $('#assign_training_id').val();
+    let users = $('#assign_users').val();
+
+    if (!users || users.length === 0) {
+        toastr.warning('Please select at least one user');
+        return;
+    }
+
+    $.ajax({
+        url: "{{ route('trainings.assign-users') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            training_id: trainingId,
+            users: users
+        },
+        success: function (res) {
+            toastr.success(res.message);
+            $('#addUserModal').modal('hide');
+
+            // Reload view modal users
+            $('.view-training[data-id="' + trainingId + '"]').click();
+        },
+        error: function () {
+            toastr.error('Unable to assign users');
+        }
+    });
+});
+
+
+
+
+// mark attendance
+$(document).on('change', '.mark-attendance', function () {
+
+    let id = $(this).data('id');
+    let status = $(this).is(':checked') ? 'present' : 'absent';
+
+    $.ajax({
+        url: "{{ route('training.attendance') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            id: id,
+            attendance_status: status
+        },
+        success: function () {
+            toastr.success('Attendance updated');
+        },
+        error: function () {
+            toastr.error('Unable to update attendance');
+        }
+    });
+});
 
 </script>
 @endpush

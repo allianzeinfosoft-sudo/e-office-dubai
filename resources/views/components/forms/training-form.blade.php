@@ -38,7 +38,7 @@
         <div class="col-sm-6 mb-3">
             <div class="form-group">
                     <label for="employee">Employee <span class="text-danger">*</span></label>
-                    <select name="employee[]" id="employee" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select employee" multiple="multiple">
+                    <select name="employee[]" id="employee" class="select2 form-select form-select-lg" data-allow-clear="true" data-placeholder="Select employee" multiple="multiple" >
                         <option value=""></option>
                         @foreach ($employees as $employee)
                         <option value="{{ $employee->user_id }}"> {{ $employee->full_name  ?? '' }} </option>

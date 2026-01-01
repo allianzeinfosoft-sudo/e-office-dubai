@@ -55,7 +55,7 @@ class User extends Authenticatable
     }
 
     public function projects(){
-        return $this->hasMany(Project::class, 'project_add_person'); 
+        return $this->hasMany(Project::class, 'project_add_person');
     }
 
     public function leave_allocation()
@@ -67,5 +67,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Leave::class, 'user_id','id');
     }
+
+    public function trainings()
+    {
+        return $this->belongsToMany(Training::class, 'training_users');
+    }
+
+    public function user_trainings_status()
+    {
+        return $this->belongsToMany(Training::class, 'training_users')
+                    ->withPivot('acceptance_status')
+                    ->withTimestamps();
+    }
+
+
+
 
 }
