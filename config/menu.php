@@ -598,10 +598,15 @@ return [
                 // 'permission' => ['view training calendar'],
             ],
             [
-                'title' => 'Training Reports',
-                'route' =>  '/training-reports',
-                // 'permission' => ['view training reports'],
+                'title' => 'Training Attendance Reports',
+                'route' =>  '/reports/training-attendance',
+                'permission' => ['view training attendance report'],
             ],
+            [
+                'title' => 'Training Test Reports',
+                'route' =>  '/reports/training-test',
+                'permission' => ['view training test report'],
+            ]
         ]
     ],
     [

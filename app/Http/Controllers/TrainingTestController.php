@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TrainingTestInvitationMail;
+use App\Models\Training;
 use App\Models\TrainingTest;
 use App\Models\TrainingTestAnswer;
 use App\Models\TrainingTestQuestion;
 use App\Models\TrainingTestUser;
 use App\Models\TrainingUser;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
 
 class TrainingTestController extends Controller
 {
@@ -169,12 +173,24 @@ class TrainingTestController extends Controller
 
             foreach ($trainingUsers as $trainingUser) {
 
+                 // 1. Create test-user mapping
                 TrainingTestUser::create([
                     'training_test_id' => $trainingTest->id,
                     'user_id'          => $trainingUser->user_id,
-                    'acceptance_status'=> 'pending',   // test acceptance
+                    'acceptance_status'=> 'pending',
                     'attempt_status'   => 'not_started'
                 ]);
+
+                // 2. Send invitation email
+                $user = User::with('employee')
+                    ->where('id', $trainingUser->user_id)
+                    ->first();
+
+                if ($user && $user->email) {
+                    Mail::to($user->email)->send(
+                        new TrainingTestInvitationMail($trainingTest, $user)
+                    );
+                }
             }
 
             DB::commit();
@@ -397,6 +413,53 @@ class TrainingTestController extends Controller
         return view('training-test.completed', [
             'testUser'   => $testUser,
             'meta_title' => 'Test Completed | Training Test'
+        ]);
+    }
+
+    public function report_view()
+    {
+        $trainings = Training::select('id', 'training_title')->orderBy('training_title')->get();
+
+        return view('training-test.training_test_report', [
+            'trainings'   => $trainings,
+            'meta_title' => 'Training Test Report'
+        ]);
+    }
+
+       /**
+     * Fetch Training Test Report Data (AJAX)
+     */
+    public function data(Request $request)
+    {
+            $query = TrainingTestUser::with([
+            'test:id,training_id,title',
+            'test.training:id,training_title',
+            'user.employee:user_id,full_name'
+        ]);
+
+        // Filter by Training
+        if ($request->filled('trainings')) {
+            $query->whereHas('test.training', function ($q) use ($request) {
+                $q->where('training_title', $request->trainings);
+            });
+        }
+
+        $data = $query->get()->map(function ($row, $key) {
+            return [
+                'id' => $key + 1,
+                'training_title' => $row->test->training->training_title ?? '-',
+                'test_title' => $row->test->title ?? '-',
+                'employee_name' => $row->user->employee
+                    ? $row->user->employee->full_name
+                    : $row->user->email,
+                'attendance' => ucfirst($row->attempt_status),
+                'score' => $row->score ?? '0',
+                'result' => ucfirst($row->result ?? 'Pending'),
+            ];
+        });
+
+        return response()->json([
+            'data' => $data
         ]);
     }
 
