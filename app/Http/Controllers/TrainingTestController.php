@@ -110,7 +110,7 @@ class TrainingTestController extends Controller
             'title'              => 'required|string|max:255',
             'training_id'        => 'required|numeric',
             'start_date'         => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date'           => 'required|date|after:start_date',
             'questions'          => 'nullable|array',
             'questions.*.title'  => 'nullable|string',
             'questions.*.marks'  => 'nullable|numeric|min:1',

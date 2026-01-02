@@ -59,8 +59,11 @@ class TrainingController extends Controller
 
                 if ($now->lt($startDate)) {
                     $trainingStatus = 'start_soon';
-                } elseif ($now->between($startDate, $endDate)) {
+
+                } elseif ($now->between($startDate, $endDate, true)) {
+                    // 🔥 third parameter TRUE makes it inclusive
                     $trainingStatus = 'ongoing';
+
                 } else {
                     $trainingStatus = 'ended';
                 }
@@ -174,9 +177,9 @@ class TrainingController extends Controller
                         $user = User::with('employee')->find($empId);
 
                         if ($user && $user->email) {
-                            Mail::to($user->email)->queue(
-                                new TrainingAssignedMail($training, $user)
-                            );
+                            // Mail::to($user->email)->queue(
+                            //     new TrainingAssignedMail($training, $user)
+                            // );
                         }
                     }
                 }
