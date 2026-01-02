@@ -20,6 +20,7 @@ use App\Models\ParUserAssign;
 use App\Models\SarUserAssign;
 use App\Models\SurveyUserAssign;
 use App\Models\TicketRaising;
+use App\Models\TrainingTestUser;
 use App\Models\WorkFromHomeAttendance;
 
 use Illuminate\Support\Facades\DB;
@@ -189,7 +190,7 @@ class CustomHelper{
                 ->whereIn('leave_type', ['full_day', 'half_day'])
                 ->where('status', 2)
                 ->sum('leave_day_count');
-            
+
             $halfDayLeavesCount = Leave::where('user_id', $empId)
                 ->whereYear('leave_from', $year)
                 ->whereMonth('leave_from', $month)
@@ -1058,6 +1059,15 @@ public static function getWorkRatingAnalysisMonthly($empId)
         }else{
              return TicketRaising::where('user',$userId)->where('status','!=',1)->count();
         }
+
+    }
+
+    public static function TrainingTestNotification()
+    {
+         if(Auth::check()){
+            $userId = Auth::id();
+        }
+        return TrainingTestUser::where('user_id',$userId)->where('attempt_status','=','not_started')->count();
 
     }
 

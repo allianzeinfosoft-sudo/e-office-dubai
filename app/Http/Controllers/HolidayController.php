@@ -22,7 +22,8 @@ class HolidayController extends Controller
         'date',
         'holiday_group'
         )
-        ->orderBy('date', 'desc')   // 🔥 sort by date
+        ->orderByRaw('YEAR(date) DESC')   // 🔥 year descending
+        ->orderBy('date', 'ASC')          // 🔥 date ascending within year
         ->get()
         ->map(function ($holiday) {
             return [
@@ -36,6 +37,7 @@ class HolidayController extends Controller
         });
 
     return response()->json(['data' => $holidays]);
+
 
     }
 

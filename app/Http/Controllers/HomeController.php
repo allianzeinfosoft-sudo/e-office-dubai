@@ -39,7 +39,12 @@ class HomeController extends Controller
 
         $data['employee'] = Employee::with('department', 'designation', 'workshift', 'reportingToEmployee')->where('user_id', $selected_user)->first();
         $data['attendance_analytics'] = CustomHelper::currentAttendanceAnalytics($selected_user, $selected_year);
-        $data['holidays'] = Holiday::where('holiday_group', $data['employee']?->holidayGroup)->get();
+
+        $data['holidays'] = Holiday::whereNotNull('holiday_group')->where('holiday_group', $data['employee']?->holidayGroup)
+                            ->whereYear('date', now()->year)   // 🔥 only current year
+                            ->orderBy('date', 'ASC')            // 🔥 Jan → Dec
+                            ->get();
+
 
         $user = Auth::user();
         $fromDate = Carbon::now()->startOfMonth();
