@@ -62,13 +62,27 @@
 
     <li class="menu-item {{ $isActive ? 'active open' : '' }}">
         <a href="{{ isset($item['route']) ? url($item['route']) : '#' }}"
-           class="menu-link {{ isset($item['submenu']) ? 'menu-toggle' : '' }}">
-            <i class="menu-icon tf-icons {{ $item['icon'] ?? '' }}"></i>
-            <div data-i18n="{{ $item['title'] }}">{{ $item['title'] }}</div>
-            @if(isset($item['badge']))
-                <div class="badge bg-label-primary rounded-pill ms-auto">{{ $item['badge'] }}</div>
-            @endif
-        </a>
+            class="menu-link {{ isset($item['submenu']) ? 'menu-toggle' : '' }}">
+                <i class="menu-icon tf-icons {{ $item['icon'] ?? '' }}"></i>
+
+                <div data-i18n="{{ $item['title'] }}">
+                    {{ $item['title'] }}
+                </div>
+
+                {{-- 🔥 Dynamic badge (main + submenu) --}}
+                @if(isset($badges) && isset($badges[$item['title']]) && $badges[$item['title']] > 0)
+                    <div class="badge bg-label-danger rounded-pill ms-auto">
+                        new {{ $badges[$item['title']] }}
+                    </div>
+
+                {{-- Static badge fallback --}}
+                @elseif(isset($item['badge']))
+                    <div class="badge bg-label-primary rounded-pill ms-auto">
+                        {{ $item['badge'] }}
+                    </div>
+                @endif
+            </a>
+
 
         @if(!empty($item['submenu']))
             <ul class="menu-sub {{ $isActive ? 'active' : '' }}">

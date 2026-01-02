@@ -61,6 +61,37 @@
     font-size: 14px;
 }
 
+
+/* MONTH–YEAR SEAL */
+.certificate-seal {
+    position: absolute;
+    bottom: 161px;   /* fine-tuned for this layout */
+    left: 294px;
+    width: 148px;
+    height: 140px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 3;
+    font-family: "DejaVu Sans", sans-serif;
+}
+
+.certificate-seal .month {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #b38b2d; /* elegant gold */
+}
+
+.certificate-seal .year {
+    font-size: 46px;
+    font-weight: 700;
+    margin-top: 4px;
+    color: #b38b2d;
+}
+
 </style>
 @stop
 
@@ -113,6 +144,21 @@
                                     </div>
 
                                 </div>
+
+
+                                <div class="certificate-seal">
+                                    <div>
+                                        <div class="month">
+
+                                            {{ strtoupper(\Carbon\Carbon::parse($testUser->test->start_at)->format('F')) }}
+                                        </div>
+                                        <div class="year">
+                                            {{ \Carbon\Carbon::parse($testUser->test->start_at)->format('Y') }}
+                                        </div>
+                                    </div>
+                                </div>
+
+
                             </div>
 
 

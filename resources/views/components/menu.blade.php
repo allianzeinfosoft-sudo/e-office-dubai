@@ -3,11 +3,16 @@
 use App\helpers\CustomHelper;
 $badges = [
     'Survey' => auth()->check() ? CustomHelper::SurveyNotification() : 0,
+    'Survey`s' => auth()->check() ? CustomHelper::SurveyNotification() : 0,
     'PAR' => auth()->check() ? CustomHelper::ParNotification() : 0,
+    'PAR`s' => auth()->check() ? CustomHelper::ParNotification() : 0,
     'SAR' => auth()->check() ? CustomHelper::SarNotification() : 0,
+    'SAR`s' => auth()->check() ? CustomHelper::SarNotification() : 0,
     'Feedback' => auth()->check() ? CustomHelper::FeedbackNotification() : 0,
     'Company Policies' => auth()->check() ? CustomHelper::PolicyNotification() : 0,
     'Ticket Raising' => auth()->check() ? CustomHelper::TicketNotification() : 0,
+    'Training Test' => auth()->check() ? CustomHelper::TrainingTestNotification() : 0,
+    'Training' => auth()->check() ? CustomHelper::TrainingTestNotification() : 0,
 
 ];
 ?>

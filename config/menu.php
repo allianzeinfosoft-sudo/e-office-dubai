@@ -212,7 +212,7 @@ return [
         'permission' => ['view PARs','create PARs', 'assign PARs', 'view PARs report'],
         'submenu' => [
             [
-                'title' => 'PAR`S',
+                'title' => 'PAR`s',
                 'route' => '/user-pars',
                 'permission' => ['view PARs'],
             ],

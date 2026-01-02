@@ -211,7 +211,7 @@
 <script>
 $(function () {
   // Check if current user has HR role (from Blade)
-  window.isHR = @json(Auth::user()->hasRole('HR'));
+  window.isHR = @json(Auth::user()->hasRole(['HR', 'Developer']));
 
   // Define salary slip table buttons
   let salarySlipButtons = [];
