@@ -106,6 +106,8 @@ class TrainingController extends Controller
         $validated = $request->validate([
             'trainings_title'     => 'required|string|max:255',
             'department'          => 'required',
+            'employee'            => 'nullable|array',        // 🔥 optional
+            'employee.*'          => 'exists:users,id',
             'start_date_time'     => 'required|date',
             'end_date_time'       => 'required|date|after_or_equal:start_date_time',
             'trainings_details'   => 'required|string',
@@ -153,6 +155,7 @@ class TrainingController extends Controller
                 'status'           => $training->exists ? $training->status : 1,
             ])->save();
 
+
             // --------------------------
             // Sync Employees
             // --------------------------
@@ -160,18 +163,24 @@ class TrainingController extends Controller
 
                 TrainingUser::where('training_id', $training->id)->delete();
 
-                foreach ($validated['employee'] as $empId) {
-                    TrainingUser::create([
-                        'training_id' => $training->id,
-                        'user_id'     => $empId,
-                    ]);
-                    $user = User::with('employee')->where('id', $empId)->first();
+                if (!empty($validated['employee'])) {
+                    foreach ($validated['employee'] as $empId) {
 
-                    Mail::to($user->email)->send(
-                        new TrainingAssignedMail($training, $user)
-                    );
+                        TrainingUser::firstOrCreate([
+                            'training_id' => $training->id,
+                            'user_id'     => $empId,
+                        ]);
 
+                        $user = User::with('employee')->find($empId);
+
+                        if ($user && $user->email) {
+                            Mail::to($user->email)->queue(
+                                new TrainingAssignedMail($training, $user)
+                            );
+                        }
+                    }
                 }
+
 
             }
 
