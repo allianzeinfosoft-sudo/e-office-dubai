@@ -157,6 +157,85 @@ class AttendanceController extends Controller{
             $latestMarkIn = $shiftStartTime->copy()->addMinutes(15);
             $now = now();
             $data['disableCustomMarkIn'] = !$now->between($earliestMarkIn, $latestMarkIn);
+            
+            /* Report Checking */
+            $missingReport = Attendance::with('employee')->where('attendances.emp_id', Auth::user()->id)
+                ->leftJoin('work_reports', function ($join) {
+                    $join->on('work_reports.report_date', '=', 'attendances.signin_date')
+                        ->on('work_reports.username', '=', 'attendances.username');
+                })
+                ->select(
+                    'attendances.id',
+                    'attendances.emp_id',
+                    'attendances.username',
+                    'attendances.signin_date',
+                    'attendances.working_hours',
+                    'attendances.break_time',
+                    'attendances.status',
+                    DB::raw('COALESCE(SUM(TIME_TO_SEC(work_reports.total_time)), 0) as total_reported_time'),
+                    DB::raw('TIME_TO_SEC(attendances.working_hours) as total_attendance_time')
+                )
+                ->groupBy(
+                    'attendances.id',
+                    'attendances.emp_id',
+                    'attendances.username',
+                    'attendances.signin_date',
+                    'attendances.working_hours',
+                    'attendances.break_time',
+                    'attendances.status'
+                )
+                ->havingRaw('total_reported_time < total_attendance_time')
+                ->where('attendances.status', 'mark-out')
+                ->orderBy('attendances.signin_date', 'desc')
+                ->first();
+
+                //dd($missingReport);
+
+                if ($missingReport) {
+
+                    $attendance = Attendance::where('emp_id', $missingReport->emp_id)
+                        ->where('signin_date', $missingReport->signin_date)
+                        ->first();
+
+                    // ✅ Ensure 'working_hours' is correctly converted to seconds
+                    if (strpos($attendance->working_hours, ':') !== false) {
+                        list($hours, $minutes, $seconds) = explode(":", $attendance->working_hours);
+                    } else {
+                        // Default seconds to 00 if missing
+                        list($hours, $minutes) = explode(":", $attendance->working_hours);
+                        $seconds = 0;
+                    }
+
+                    $totalAttendanceTime = ($hours * 3600) + ($minutes * 60) + $seconds;
+
+                    // ✅ Sum reported time in seconds (using TIME_TO_SEC)
+                    $totalReportedTime = WorkReport::where('emp_id', $missingReport->emp_id)
+                        ->where('report_date', $missingReport->signin_date)
+                        ->sum(DB::raw('TIME_TO_SEC(total_time)'));
+
+                    // 🔍 Debug: Log values to check
+                    Log::info("Attendance Time: { $attendance->working_hours } -> $totalAttendanceTime seconds");
+                    Log::info("Reported Time: $totalReportedTime seconds");
+
+                    // ✅ Calculate balance time
+                    $balanceTime = max($totalAttendanceTime - $totalReportedTime, 0);
+                    $formattedBalanceTime = gmdate("H:i:s", $balanceTime);
+
+                    Log::info("Balance Time: $formattedBalanceTime");
+
+                    $missingReport->balance_time = $formattedBalanceTime;
+
+                    $data['meta_title'] = 'Add Work Report';
+                    $data['projects'] = Project::all();
+                    $data['missingReport'] = $missingReport;
+                    $data['repots_posted'] = WorkReport::with(['project', 'projectTask', 'tasks'])
+                        ->where('username', Auth::user()->username)
+                        ->where('report_date', $missingReport->signin_date)
+                        ->get();
+                    $data['user_shift'] = Workshift::where('id', $missingReport->employee->shift_id)->first();
+                    return view('attendance.work_report', $data);
+                }
+
             return view('attendance.index', $data);
         }
         
