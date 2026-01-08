@@ -43,6 +43,7 @@
                   use App\Helpers\CustomHelper;
                 @endphp
               <!--/ Style Switcher -->
+              
             @if (Auth::user()->hasRole(['HR','Developer','G1','G2','G3', 'G4']))
               <!-- Quick links  -->
               <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
@@ -135,7 +136,6 @@
                     <div class="row row-bordered overflow-visible g-0">
 
                       <div class="dropdown-shortcuts-item col">
-
                         <div class="float-end d-flex">
                             <a href="{{ route('wfs-wfh-approval-list') }}" class="btn btn-sm btn-icon rounded-pill btn-danger waves-effect waves-light">
                               {{ CustomHelper::wfhWfsAttendanceCount() }}
@@ -244,6 +244,21 @@
                         </div>
                       </li>
 
+                      <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                        <div class="d-flex">
+                          <div class="flex-shrink-0 me-3">
+                            <i class="menu-icon tf-icons ti ti-login"></i>
+                          </div>
+                          <div class="flex-grow-1">
+                            <a href="{{ route('wfs-wfh-approval-list') }}"> <h6 class="mb-1">WFH / WFS &nbsp; &nbsp;<small class="text-muted"></small></h6></a>
+                          </div>
+                          <div class="flex-shrink-0 dropdown-notifications-actions">
+                            <a href="{{ route('wfs-wfh-approval-list') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
+                                {{ CustomHelper::wfhWfsAttendanceCount() }} </a>
+                          </div>
+                        </div>
+                      </li>
+
 
                     @if (Auth::user()->hasRole(['HR','Developer','G2']))
                        <li class="list-group-item list-group-item-action dropdown-notifications-item">
@@ -325,10 +340,11 @@
                           </div>
                         </div>
                       </li>
-                      @endif
+                    @endif
 
                     </ul>
                   </li>
+
                   {{-- <li class="dropdown-menu-footer border-top">
                     <a
                       href="javascript:void(0);"
