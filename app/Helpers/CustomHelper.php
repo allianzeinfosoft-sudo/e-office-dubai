@@ -21,6 +21,7 @@ use App\Models\SarUserAssign;
 use App\Models\SurveyUserAssign;
 use App\Models\TicketRaising;
 use App\Models\TrainingTestUser;
+use App\Models\TrainingUser;
 use App\Models\WorkFromHomeAttendance;
 
 use Illuminate\Support\Facades\DB;
@@ -1099,6 +1100,12 @@ public static function getWorkRatingAnalysisMonthly($empId)
         }
 
         return sprintf('%02d:%02d', $hours, $minutes); // e.g. 10.82 => "10:49"
+    }
+
+    public static function trainingPendingAcceptanceCount()
+    {
+        $userId = Auth::id();
+        return TrainingUser::where(['acceptance_status' => 'pending', 'user_id' => $userId])->count();
     }
 
 
