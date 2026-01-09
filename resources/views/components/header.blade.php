@@ -170,7 +170,7 @@
           <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class="ti ti-bell ti-md"></i>
             <span class="badge bg-danger rounded-pill badge-notifications" id="notif-count">
-              {{ CustomHelper::customAttendanceCount() + CustomHelper::getBlockedUsersCount() + CustomHelper::pendingIncompleteWorkCount() + CustomHelper::customPendingLeaveCount() + CustomHelper::wfhWfsAttendanceCount() }}
+              {{ CustomHelper::customAttendanceCount() + CustomHelper::getBlockedUsersCount() + CustomHelper::pendingIncompleteWorkCount() + CustomHelper::customPendingLeaveCount() + CustomHelper::wfhWfsAttendanceCount() + CustomHelper::trainingPendingAcceptanceCount() }}
             </span>
           </a>
           
@@ -187,6 +187,7 @@
             
             <li class="dropdown-notifications-list scrollable-container">
               <ul class="list-group list-group-flush" id="notification-dropdown">
+                
                 {{-- @foreach(auth()->user()->unreadNotifications->take(5) as $notification)
                   <li class="list-group-item list-group-item-action dropdown-notifications-item">
                     <div class="d-flex">
@@ -215,6 +216,25 @@
                     </div>
                   </li>
                   @endforeach --}}
+
+                  <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0 me-3">
+                        <i class="menu-icon tf-icons ti ti-login"></i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <a href="{{ route('trainings.index') }}">
+                          <h6 class="mb-1">Trainings &nbsp; &nbsp;<small class="text-muted"></small></h6>
+                        </a>
+                      </div>
+
+                      <div class="flex-shrink-0 dropdown-notifications-actions">
+                        <a href="{{ route('trainings.index') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
+                          {{ CustomHelper::trainingPendingAcceptanceCount() }}
+                        </a>
+                      </div>
+                    </div>
+                  </li>
 
                   <li class="list-group-item list-group-item-action dropdown-notifications-item">
                     <div class="d-flex">
@@ -359,47 +379,10 @@
           
           <ul class="dropdown-menu dropdown-menu-end py-0">
 
-            {{-- <li class="dropdown-menu-header border-bottom">
-              <div class="dropdown-header d-flex align-items-center py-3">
-                <h5 class="text-body mb-0 me-auto">Notification</h5>
-                <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read">
-                  <i class="ti ti-mail-opened fs-4"></i>
-                </a>
-              </div>
-            </li> --}}
-            
             <li class="dropdown-notifications-list scrollable-container">
 
               <ul class="list-group list-group-flush" id="notification-dropdown">
-                {{-- @foreach(auth()->user()->unreadNotifications->take(5) as $notification)
-                  <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                    <div class="d-flex">
-                      <div class="flex-shrink-0 me-3">
-                        <div class="avatar">
-                          <img src="../../assets/img/avatars/default-avatar.png" alt class="h-auto rounded-circle" />
-                        </div>
-                      </div>
-                      
-                      <div class="flex-grow-1">
-                        <h6 class="mb-1">Congratulation Lettie 🎉</h6>
-                        <a href="#" class="dropdown-item mark-as-read" data-id="{{ $notification->id }}">
-                          {{ $notification->data['message'] }}
-                        </a>
-                        <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
-                      </div>
-                      
-                      <div class="flex-shrink-0 dropdown-notifications-actions">
-                        <a href="javascript:void(0)" class="dropdown-notifications-read">
-                          <span class="badge badge-dot"></span>
-                        </a>
-                        <a href="javascript:void(0)" class="dropdown-notifications-archive">
-                          <span class="ti ti-x"></span>
-                        </a>
-                      </div>
-                    </div>
-                  </li>
-                  @endforeach --}}
-
+                
                   <li class="list-group-item list-group-item-action dropdown-notifications-item">
                     <div class="d-flex">
                       <div class="flex-shrink-0 me-3">
