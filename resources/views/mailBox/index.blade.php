@@ -130,7 +130,7 @@
                               </div>
 
                               <div class="email-pagination d-sm-flex d-none align-items-center flex-wrap justify-content-between justify-sm-content-end">
-                                <span class="d-sm-block d-none mx-3 text-muted">1-10 of 653</span>
+                                <span class="d-sm-block d-none mx-3 text-muted"></span>
                                 <i class="email-prev ti ti-chevron-left scaleX-n1-rtl cursor-pointer text-muted me-2"></i>
                                 <i class="email-next ti ti-chevron-right scaleX-n1-rtl cursor-pointer"></i>
                               </div>
@@ -403,49 +403,60 @@
           url: '/mail-boxes/folder/' + folder,
           type: 'GET',
           success: function(response) {
+              const total = response.data.length;
+              const start = total > 0 ? 1 : 0;
+              const end = Math.min(10, total);
+
+              $('.email-pagination span').text(`${start}-${end} of ${total}`);
+
               $('#app-email-view').removeClass('show');
               let emailList = '';
 
               if (response.status && response.data.length > 0) {
                   response.data.forEach(function(mail) {
 
-                    const profileImage = mail && mail.fromUser && mail.fromUser.profile_image
-                    ? `/storage/${mail.fromUser.profile_image}`
-                    : '../../assets/img/avatars/default-avatar.png';
+                    const profileImage = mail.fromUser && mail.fromUser.profile_image
+                        ? `/storage/${mail.fromUser.profile_image}`
+                        : '/assets/img/avatars/default-avatar.png';
 
-                    const name = mail?.from_user?.full_name || mail?.user_data?.username || 'Unknown';
+                    const name = (() => {
+                        if (mail.external_from) return mail.external_from;
+                        if (mail.fromUser && mail.fromUser.full_name) return mail.fromUser.full_name;
+                        if (mail.user_data && mail.user_data.username) return mail.user_data.username;
+                        return 'Unknown';
+                    })();
 
-                      emailList += `
-                      <li class="email-list-item" data-starred="${mail.is_starred == 1 ? 'true' : 'false'}" onclick="openMail(${mail.id})">
-                          <div class="d-flex align-items-center">
-                              <div class="form-check mb-0">
-                                  <input class="email-list-item-input form-check-input" type="checkbox" id="email-${mail.id}" value="${mail.id}" onclick="event.stopPropagation()" />
-                                  <label class="form-check-label" for="email-${mail.id}"></label>
-                              </div>
-                              <i class="email-list-item-bookmark ti ti-star ti-xs d-sm-inline-block d-none cursor-pointer ms-2 me-3 ${mail.is_starred ? 'text-warning' : ''}" onclick="markAsStarred(${mail.id})" id="bookmark_${mail.id}"></i>
-                              <img src="${ profileImage }" alt="user-avatar" class="d-block flex-shrink-0 rounded-circle me-sm-3 me-2" height="32" width="32" />
-                              <div class="email-list-item-content ms-2 ms-sm-0 me-2">
-                                  ${mail.mark_as_read ? '<em>' : '<strong>' }
-                                  <span class="h6 email-list-item-username me-2">${ name }</span>
-                                  <span class="email-list-item-subject d-xl-inline-block d-block">${mail.subject.substring(0, 60)}...</span>
-                                  ${mail.mark_as_read ? '</em>'  : '</strong>' }
-                              </div>
-                              <div class="email-list-item-meta ms-auto d-flex align-items-center">
-                                  ${ mail.attachments ? `<span class="email-list-item-attachment ti ti-paperclip ti-xs cursor-pointer me-2 float-end float-sm-none"></span>` : '' }
-                                  <span class="email-list-item-label badge badge-dot bg-danger d-none d-md-inline-block me-2" data-label="private"></span>
-                                  <small class="email-list-item-time text-muted">${ timeAgo(mail.created_at) }</small>
-                                  <ul class="list-inline email-list-item-actions text-nowrap">
-                                      <li class="list-inline-item email-read">
-                                        ${mail.mark_as_read
-                                        ? `<i class="ti ti-mail-opened" onclick="markAsRead(${mail.id})"></i>`
-                                        : `<i class="ti ti-mail" onclick="markAsRead(${mail.id})"></i>` }
-                                        </li>
-                                      <li class="list-inline-item email-delete"><i class="ti ti-trash" onclick="moveToFolder('trash', ${mail.id})"></i></li>
-                                  </ul>
-                              </div>
-                          </div>
-                      </li>`;
-                  });
+                    const hasAttachment = mail.attachments && mail.attachments.length > 0;
+
+                    emailList += `
+                    <li class="email-list-item" data-starred="${mail.is_starred ? 'true' : 'false'}" onclick="openMail(${mail.id})">
+                        <div class="d-flex align-items-center">
+                            <div class="form-check mb-0">
+                                <input class="email-list-item-input form-check-input" type="checkbox" id="email-${mail.id}" value="${mail.id}" onclick="event.stopPropagation()" />
+                                <label class="form-check-label" for="email-${mail.id}"></label>
+                            </div>
+
+                            <i class="email-list-item-bookmark ti ti-star ti-xs d-sm-inline-block d-none cursor-pointer ms-2 me-3 ${mail.is_starred ? 'text-warning' : ''}" onclick="markAsStarred(${mail.id})" id="bookmark_${mail.id}"></i>
+
+                            <img src="${profileImage}" alt="user-avatar" class="d-block flex-shrink-0 rounded-circle me-sm-3 me-2" height="32" width="32" />
+
+                            <div class="email-list-item-content ms-2 ms-sm-0 me-2">
+                                ${mail.mark_as_read ? '<em>' : '<strong>' }
+                                <span class="h6 email-list-item-username me-2">${name}</span>
+                                <span class="email-list-item-subject d-xl-inline-block d-block">${mail.subject.substring(0, 60)}...</span>
+                                ${mail.mark_as_read ? '</em>'  : '</strong>' }
+                            </div>
+
+                            <div class="email-list-item-meta ms-auto d-flex align-items-center">
+                                ${ (mail.attachments && mail.attachments.length > 0)
+                                    ? `<span class="email-list-item-attachment ti ti-paperclip ti-xs cursor-pointer me-2"></span>`
+                                    : ''
+                                }
+                                <small class="email-list-item-time text-muted">${ timeAgo(mail.external_date ?? mail.created_at) }</small>
+                            </div>
+                        </div>
+                    </li>`;
+                });
               } else {
                   emailList = `<li class="p-3 text-center text-muted">📨 No mail fetched in "${folder}".</li>`;
               }
@@ -537,27 +548,24 @@ function openMail(mailId = null){
 }
 
 function timeAgo(dateStr) {
-  const now = new Date();
-  const date = new Date(dateStr);
-  const seconds = Math.floor((now - date) / 1000);
+    const now = new Date();
+    const date = new Date(dateStr);
+    const seconds = Math.floor((now - date) / 1000);
 
-  const intervals = {
-    year: 31536000,
-    month: 2592000,
-    week: 604800,
-    day: 86400,
-    hour: 3600,
-    minute: 60,
-    second: 1
-  };
+    const minute = 60;
+    const hour = 3600;
+    const day = 86400;
 
-  for (let unit in intervals) {
-    const value = Math.floor(seconds / intervals[unit]);
-    if (value > 0) {
-      return value === 1 ? `1 ${unit} ago` : `${value} ${unit}s ago`;
-    }
-  }
-  return 'just now';
+    if (seconds < minute) return "just now";
+    if (seconds < hour) return `${Math.floor(seconds / minute)} minutes ago`;
+    if (seconds < day) return `${Math.floor(seconds / hour)} hours ago`;
+
+    const days = Math.floor(seconds / day);
+    if (days === 1) return "Yesterday";
+
+    if (days < 30) return `${days} days ago`;
+
+    return date.toLocaleDateString(); // fallback
 }
 
 function moveToTrash(){

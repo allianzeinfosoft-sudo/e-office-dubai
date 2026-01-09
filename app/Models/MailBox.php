@@ -5,8 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MailBox extends Model
-{
+class MailBox extends Model{
     use HasFactory;
 
     protected $fillable = [
@@ -21,6 +20,11 @@ class MailBox extends Model
         'is_starred',
         'from_user_id',
         'mark_as_read',
+        'external_email_id',
+        'external_from',
+        'external_date',
+        'raw_headers',
+        'owner_id',
     ];
 
     protected $casts = [

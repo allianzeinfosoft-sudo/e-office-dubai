@@ -411,10 +411,6 @@
       
       @endif
 
-
-
-
-
               <!-- User -->
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -450,6 +446,8 @@
                    @else
                    <li><a class="dropdown-item" href="{{ route('users.limited.edit', Auth::user()->id); }}"> <i class="ti ti-edit me-2 ti-sm"></i> <span class="align-middle">Edit Profile</span></a></li>
                    @endif
+
+                   <li><a class="dropdown-item" href="{{ route('email-configurations.index') }}"> <i class="ti ti-mail me-2 ti-sm"></i> <span class="align-middle">Mail Configuration </span></a></li>
 
 
                   <li><a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#changePasswordModal" > <i class="ti ti-lock me-2 ti-sm"></i> <span class="align-middle">Change Password</span></a></li>

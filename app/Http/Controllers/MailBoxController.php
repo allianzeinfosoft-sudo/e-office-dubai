@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\MailBox;
 use App\Models\Employee;
 use App\Models\User;
+use App\Models\EmailConfiguration;
 use Illuminate\Http\Request;
 use App\Helpers\CustomHelper;
 
-use Webklex\IMAP\Client;
+
 
 
 class MailBoxController extends Controller
@@ -55,75 +56,101 @@ class MailBoxController extends Controller
     } */
 
     public function index(Request $request)
-{
-    if ($request->ajax()) {
-        $mails = MailBox::with(['fromUser', 'userData'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+    {
+        /** --------------------------------------------------------------
+         * AJAX Request — Return only stored DB emails (no external fetch)
+         * --------------------------------------------------------------
+         */
+        if ($request->ajax()) {
+            $mails = MailBox::with(['fromUser', 'userData'])
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-        return response()->json([
-            'status' => true,
-            'data'   => $mails
-        ]);
+            return response()->json([
+                'status' => true,
+                'data'   => $mails
+            ]);
+        }
+
+        $user     = auth()->user();
+        $userId   = $user->id;
+
+        /** --------------------------------------------------------------
+         * Count Internal Emails for Sidebar
+         * -------------------------------------------------------------- */
+        $counts = [
+            'inbox'   => MailBox::where(['owner_id' => $userId, 'folder' => 'inbox'])->count(),
+
+            'sent'    => MailBox::where('from_user_id', $userId)
+                            ->where('folder', 'sent')->count(),
+
+            'draft'   => MailBox::where('from_user_id', $userId)
+                            ->where('folder', 'draft')->count(),
+
+            'spam'    => MailBox::where(function ($q) use ($userId) {
+                                $q->where('from_user_id', $userId)
+                                    ->orWhereJsonContains('to_user_ids', (string) $userId);
+                            })->where('folder', 'spam')->count(),
+
+            'trash'   => MailBox::where(function ($q) use ($userId) {
+                                $q->where('from_user_id', $userId)
+                                    ->orWhereJsonContains('to_user_ids', (string) $userId);
+                            })->where('folder', 'trash')->count(),
+
+            'starred' => MailBox::where(function ($q) use ($userId) {
+                                $q->where('from_user_id', $userId)
+                                    ->orWhereJsonContains('to_user_ids', (string) $userId);
+                            })->where('is_starred', 1)->count(),
+        ];
+
+        /** --------------------------------------------------------------
+         * Load User's POP3 Email Configuration
+         * -------------------------------------------------------------- */
+        $config = EmailConfiguration::where('user_id', $userId)->first();
+
+        /** --------------------------------------------------------------
+         * Fetch External Emails (POP3) & Store into DB
+         * -------------------------------------------------------------- */
+        if ($config) {
+            try {
+                $pop3mails = CustomHelper::fetchPOP3(
+                    host: $config->incoming_host,
+                    port: $config->incoming_port,
+                    username: $config->incoming_username,
+                    password: $config->incoming_password,
+                    ssl: $config->incoming_encryption === 'ssl'
+                );
+            
+                // Save fetched mails into database (no duplicates)
+                $this->storeFetchedEmails($pop3mails);
+
+            } catch (\Exception $e) {
+                \Log::error("POP3 Fetch Failed: " . $e->getMessage());
+            }
+        }
+
+        /** --------------------------------------------------------------
+         * Load Stored Mails from DB (Inbox Only)
+         * -------------------------------------------------------------- */
+        $storedMails = MailBox::with(['fromUser', 'userData'])
+        ->where('folder', 'inbox')
+        ->where('owner_id', $userId)
+        ->orderBy('external_date', 'desc')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        /** --------------------------------------------------------------
+         * Load View
+         * -------------------------------------------------------------- */
+        $data = [
+            'meta_title' => 'Email',
+            'employees'  => Employee::with('user')->get(),
+            'counts'     => $counts,
+            'imapMails'  => $storedMails,
+        ];
+
+        return view('mailBox.index', $data);
     }
-
-    $user = auth()->user();
-    $userId = $user->id;
-
-    // Folder counts
-    $counts = [
-        'inbox'   => MailBox::whereJsonContains('to_user_ids', (string) $userId)
-                        ->where('folder', 'inbox')->count(),
-        'sent'    => MailBox::where('from_user_id', $userId)
-                        ->where('folder', 'sent')->count(),
-        'draft'   => MailBox::where('from_user_id', $userId)
-                        ->where('folder', 'draft')->count(),
-        'spam'    => MailBox::where(function($q) use ($userId) {
-                            $q->where('from_user_id', $userId)
-                              ->orWhereJsonContains('to_user_ids', (string) $userId);
-                        })->where('folder', 'spam')->count(),
-        'trash'   => MailBox::where(function($q) use ($userId) {
-                            $q->where('from_user_id', $userId)
-                              ->orWhereJsonContains('to_user_ids', (string) $userId);
-                        })->where('folder', 'trash')->count(),
-        'starred' => MailBox::where(function($q) use ($userId) {
-                            $q->where('from_user_id', $userId)
-                              ->orWhereJsonContains('to_user_ids', (string) $userId);
-                        })->where('is_starred', 1)->count(),
-    ];
-
-    // Fetch emails using user's IMAP credentials
-    $imapMessages = [];
-    try {
-        $client = new Client([
-            'host'          => env('IMAP_HOST', '192.168.1.11'),
-            'port'          => env('IMAP_PORT', 143),
-            'encryption'    => env('IMAP_ENCRYPTION', 'none'), // tls/ssl/none
-            'validate_cert' => true,
-            'username'      => 'jersong',   // stored in DB per user
-            'password'      => 'jersong@mail.allianzegroup.com',   // stored in DB per user
-            'protocol'      => 'imap'
-        ]);
-
-        $client->connect();
-        $folder = $client->getFolder('INBOX');
-        $messages = $folder->messages()->all()->limit(20)->get();
-
-    } catch (\Exception $e) {
-        \Log::error("IMAP Connection Failed for {$user->email}: " . $e->getMessage());
-    }
-
-    dd($messages);
-
-    $data = [
-        'meta_title' => 'Email',
-        'employees'  => Employee::with('user')->get(),
-        'counts'     => $counts,
-        'imapMails'  => $imapMessages,
-    ];
-
-    return view('mailBox.index', $data);
-}
 
     /**
      * Show the form for creating a new resource.
@@ -204,7 +231,8 @@ class MailBoxController extends Controller
      */
     public function show(MailBox $mailBox)
     {
-        $mailBox->load(['fromUser', 'userData']); // Eager load the relation
+        // Load relations
+        $mailBox->load(['fromUser', 'userData']);
 
         if (!$mailBox) {
             return response()->json([
@@ -213,9 +241,10 @@ class MailBoxController extends Controller
             ], 404);
         }
 
-        $data['mail'] = $mailBox;
+        // Extract + clean message before sending to view
+        $mailBox->message = $this->formatEmailBody($mailBox);
 
-        $html = view('mailBox.readEmail', $data)->render();
+        $html = view('mailBox.readEmail', ['mail' => $mailBox])->render();
 
         return response()->json([
             'status' => true,
@@ -273,59 +302,60 @@ class MailBoxController extends Controller
             return response()->json(['status' => true, 'message' => 'Emails deleted successfully.']);
         }
 
-    public function folder($folder){
+    public function folder($folder)
+{
+    $allowedFolders = ['inbox', 'draft', 'sent', 'starred', 'spam', 'trash'];
 
-        $allowedFolders = ['inbox', 'draft', 'sent', 'starred',  'spam', 'trash'];
-
-        if (!in_array($folder, $allowedFolders)) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid folder specified.'
-            ], 400);
-        }
-
-        $userId = auth()->id();
-
-        $query = MailBox::with('fromUser', 'userData');
-
-        switch ($folder) {
-            case 'inbox':
-                $query->whereJsonContains('to_user_ids', (string) $userId)
-                ->where('folder', 'sent');
-                break;
-
-            case 'sent':
-                $query->where('from_user_id', $userId)
-                    ->where('folder', 'sent');
-                break;
-
-            case 'draft':
-                $query->where('from_user_id', $userId)
-                    ->where('folder', 'draft');
-                break;
-
-            case 'starred':
-                $query->where('is_starred', $userId)
-                    ->where('folder', 'sent');
-                break;
-            case 'spam':
-            case 'trash':
-                // assuming the folder field is set for these too
-                $query->where(function($q) use ($userId) {
-                    $q->where('from_user_id', $userId)
-                    ->orWhereJsonContains('to_user_ids', (string) $userId);
-                })->where('folder', $folder);
-                break;
-        }
-
-        $mails = $query->orderBy('created_at', 'desc')->get();
-
+    if (!in_array($folder, $allowedFolders)) {
         return response()->json([
-            'status' => true,
-            'folder' => $folder,
-            'data' => $mails
-        ]);
+            'status' => false,
+            'message' => 'Invalid folder specified.'
+        ], 400);
     }
+
+    $userId = auth()->id();
+
+    $query = MailBox::with(['fromUser', 'userData']);
+
+    switch ($folder) {
+        case 'inbox':
+            // External POP3 + Internal mailbox emails
+            $query->where('folder', 'inbox')
+                  ->where('owner_id', $userId);
+            break;
+
+        case 'sent':
+            // Internal emails only
+            $query->where('from_user_id', $userId)
+                  ->where('folder', 'sent');
+            break;
+
+        case 'draft':
+            $query->where('from_user_id', $userId)
+                  ->where('folder', 'draft');
+            break;
+
+        case 'starred':
+            // Starred internal + starred external
+            $query->where('is_starred', 1)
+                  ->where('owner_id', $userId);
+            break;
+        case 'spam':
+        case 'trash':
+            // External + Internal
+            $query->where('folder', $folder)
+                  ->where('owner_id', $userId);
+            break;
+    }
+
+    $mails = $query->orderByRaw('COALESCE(external_date, created_at) DESC')->get();
+
+    return response()->json([
+        'status' => true,
+        'folder' => $folder,
+        'data'   => $mails
+    ]);
+}
 
     public function starred(){
         $mails = MailBox::where('is_starred', true)
@@ -397,4 +427,99 @@ class MailBoxController extends Controller
             'message' => 'Mail mark as read updated.',
         ]);
     }
+
+
+    private function storeFetchedEmails($emails){
+    $userId = auth()->id();
+
+    foreach ($emails as $email) {
+
+        $messageId = $email['message_id']
+            ?: md5(
+                ($email['subject'] ?? '') .
+                ($email['date'] ?? '') .
+                ($email['from'] ?? '') .
+                ($email['body_plain'] ?? '')
+            );
+
+        if (MailBox::where('external_email_id', $messageId)->exists()) {
+            continue;
+        }
+
+        $body = $email['body_html']
+            ?: $email['body_plain']
+            ?: '(No Content)';
+
+        try {
+            MailBox::create([
+                'owner_id'          => $userId,
+                'from_user_id'      => $userId,
+                'to_user_ids'       => json_encode([]),
+                'cc_user_ids'       => json_encode([]),
+                'bcc_user_ids'      => json_encode([]),
+
+                'subject'           => $email['subject'] ?? '(No Subject)',
+                'message'           => $body,
+
+                'folder'            => 'inbox',
+                'status'            => 0,
+                'is_starred'        => 0,
+                'mark_as_read'      => 0,
+
+                'attachments'       => json_encode($email['attachments'] ?? []),
+                'raw_headers'       => json_encode($email['headers'] ?? null),
+
+                'external_email_id' => $messageId,
+                'external_from'     => $email['from'] ?? '',
+                'external_date'     => $email['date'] ?? null,
+            ]);
+
+        } catch (\Exception $e) {
+            dd("Insert failed: " . $e->getMessage());
+        }
+    }
+}
+
+private function formatEmailBody($mail)
+{
+    $body = $mail->message;
+    $headers = json_decode($mail->raw_headers ?? "[]", true);
+
+    // 1. If Outlook HTML exists inside X-ALT-DESC
+    if (isset($headers['X-ALT-DESC'])) {
+        $raw = $headers['X-ALT-DESC'];
+
+        // Remove prefix
+        $raw = preg_replace('/X-ALT-DESC;FMTTYPE=text\/html:/i', '', $raw);
+
+        // Use this as body
+        return $this->cleanHtml($raw);
+    }
+
+    // 2. If body contains VCALENDAR → extract only description
+    if (str_contains($body, 'BEGIN:VCALENDAR')) {
+
+        // Extract DESCRIPTION block
+        if (preg_match('/DESCRIPTION:(.*?)DTEND/s', $body, $matches)) {
+            $desc = $matches[1];
+
+            // Clean Outlook escaped chars: \n \, \;
+            $desc = str_replace(['\\n', '\\,', '\\;'], ["\n", ',', ';'], $desc);
+
+            return nl2br(e(trim($desc)));
+        }
+
+        // If no description found, fallback
+        return '(This is a calendar event email)';
+    }
+
+    // 3. If HTML body — return safely
+    if (stripos($body, '<html') !== false || stripos($body, '<p') !== false) {
+        return $this->cleanHtml($body);
+    }
+
+    // 4. Plain text → convert \n to <br>
+    return nl2br(e($body));
+}
+
 }

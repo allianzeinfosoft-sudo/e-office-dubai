@@ -45,6 +45,7 @@ use App\Http\Controllers\AssetClassificationController;
 use App\Http\Controllers\AssetCategoryController;
 use App\Http\Controllers\AssetVendorsController;
 use App\Http\Controllers\AssetRegisterController;
+use App\Http\Controllers\EmailConfigurationController;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -345,7 +346,6 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/reports/training-test/data', [TrainingTestController::class, 'data'])->name('training.test-report-data');
 
     /* Views/Company policies */
-
     Route::get('/view/company-policies', [CompanyPolicyController::class, 'index'])->name('view.company-policies');
     Route::post('/view/company-policies/store', [CompanyPolicyController::class, 'store'])->name('view.company-policies.store');
     Route::get('/view/company-policies/edit/{companyPolicy}', [CompanyPolicyController::class, 'edit'])->name('view.company-policies.edit');
@@ -739,6 +739,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/get-asset-ids', [AssetAllocationController::class, 'getAssetId']);
     Route::get('/get-asset-mapped-item', [AssetAllocationController::class, 'getAssetItemInfo']);
 
-
+    /* Email Configuration */
+    Route::resource('email-configurations', EmailConfigurationController::class)->names('email-configurations');
 
 });

@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Support\Facades\Http;
 
 class CustomHelper{
 
@@ -1106,6 +1107,30 @@ public static function getWorkRatingAnalysisMonthly($empId)
     {
         $userId = Auth::id();
         return TrainingUser::where(['acceptance_status' => 'pending', 'user_id' => $userId])->count();
+    }
+
+    // Ge emails of all users in a specific role
+     public static function fetchPOP3($host, $port, $username, $password, $ssl = false)
+    {
+        $response = Http::post("http://127.0.0.1:5000/fetch-pop3-mails", [
+            "host" => $host,
+            "port" => $port,
+            "username" => $username,
+            "password" => $password,
+            "ssl" => $ssl
+        ]);
+
+        if (!$response->ok()) {
+            throw new \Exception("Cannot connect Flask POP3 service");
+        }
+
+        $data = $response->json();
+
+        if (!$data["status"]) {
+            throw new \Exception($data["message"]);
+        }
+
+        return $data["emails"] ?? [];
     }
 
 
