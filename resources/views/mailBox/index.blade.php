@@ -2,10 +2,23 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-email.css') }}" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" rel="stylesheet">
 <style>
   .app-email .app-emails-list .email-list li .email-list-item-time {
     width: 100px;
   }
+
+  .bootstrap-tagsinput {
+    width: 100% !important;
+    min-height: 38px;
+    display: block;
+}
+.bootstrap-tagsinput .tag {
+    background: #0d6efd;
+    padding: 4px 8px;
+    border-radius: 3px;
+    margin-right: 2px;
+}
 </style>
 @stop
 
@@ -159,108 +172,123 @@
                     </div>
 
                     <!-- Compose Email -->
-                    <div class="app-email-compose modal" id="emailComposeSidebar" tabindex="-1" aria-labelledby="emailComposeSidebarLabel" aria-hidden="true">
-                      <div class="modal-dialog m-0 me-md-4 mb-4 modal-lg">
-                        <div class="modal-content p-0">
-                          <div class="modal-header py-3 bg-body">
-                            <h5 class="modal-title fs-5">Compose Mail</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <div class="modal-body flex-grow-1 pb-sm-0 p-4 py-2">
+                    <div class="app-email-compose modal" id="emailComposeSidebar" tabindex="-1">
+                        <div class="modal-dialog m-0 me-md-4 mb-4 modal-lg">
+                            <div class="modal-content p-0">
+                                <div class="modal-header py-3 bg-body">
+                                    <h5 class="modal-title">Compose Mail</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
 
-                            <form class="email-compose-form" method="POST">
-                              @csrf
-                              <div class="email-compose-to d-flex justify-content-between align-items-center">
-                                <label class="form-label mb-0" for="emailContacts">To:</label>
-                                <div class="select2-primary border-0 shadow-none flex-grow-1 mx-2">
-                                  <select class="select2 select-email-contacts form-select" id="emailContacts" name="emailContacts" multiple>
-                                    @if($employees->isnotempty())
-                                        @foreach($employees as $employee)
-                                            <option data-avatar="{{$employee->profile_image}}" value="{{$employee->user_id}}">{{ $employee->full_name }} < {{ $employee->user->email }} ></option>
-                                        @endforeach
-                                    @endif
-                                  </select>
-                                </div>
-                                <div class="email-compose-toggle-wrapper">
-                                  <a class="email-compose-toggle-cc" href="javascript:void(0);">Cc</a> | <a class="email-compose-toggle-bcc" href="javascript:void(0);">Bcc</a>
-                                </div>
-                              </div>
+                                <div class="modal-body p-4">
 
-                              <div class="email-compose-cc d-none">
-                                <hr class="container-m-nx my-2" />
-                                <div class="d-flex align-items-center">
-                                  <label for="email-cc" class="form-label mb-0">Cc: </label>
-                                  <input type="text" class="form-control border-0 shadow-none flex-grow-1 mx-2" id="email-cc" placeholder="someone@email.com" />
-                                </div>
-                              </div>
-                              <div class="email-compose-bcc d-none">
-                                <hr class="container-m-nx my-2" />
-                                <div class="d-flex align-items-center">
-                                  <label for="email-bcc" class="form-label mb-0">Bcc: </label>
-                                  <input type="text" class="form-control border-0 shadow-none flex-grow-1 mx-2" id="email-bcc" placeholder="someone@email.com" />
-                                </div>
-                              </div>
-                              <hr class="container-m-nx my-2" />
-                              <div class="email-compose-subject d-flex align-items-center mb-2">
-                                <label for="email-subject" class="form-label mb-0">Subject:</label>
-                                <input type="text" class="form-control border-0 shadow-none flex-grow-1 mx-2" id="email-subject" placeholder="Project Details" />
-                              </div>
-                              <div class="email-compose-message container-m-nx">
-                                <div class="d-flex justify-content-end">
-                                  <div class="email-editor-toolbar border-bottom-0 w-100">
-                                    <span class="ql-formats me-0">
-                                      <button class="ql-bold"></button>
-                                      <button class="ql-italic"></button>
-                                      <button class="ql-underline"></button>
-                                      <button class="ql-list" value="ordered"></button>
-                                      <button class="ql-list" value="bullet"></button>
-                                      <button class="ql-link"></button>
-                                      <button class="ql-image"></button>
-                                    </span>
-                                  </div>
-                                </div>
-                                <div class="email-editor"></div>
-                              </div>
-                              <hr class="container-m-nx mt-0 mb-2" />
-                              <div class="email-compose-actions d-flex justify-content-between align-items-center mt-3 mb-3">
-                              <div class="d-flex align-items-center">
-                                <div class="btn-group">
-                                  <button type="button" class="btn btn-primary btn-send-mail" data-folder="sent">
-                                    <i class="ti ti-send ti-xs me-1"></i>Send
-                                  </button>
-                                  <button type="button" class="btn btn-outline-secondary btn-save-draft ms-2" data-folder="draft">
-                                    <i class="ti ti-file-text ti-xs me-1"></i>Save Draft
-                                  </button>
-                                </div>
-                                <label for="attach-file"><i class="ti ti-paperclip cursor-pointer ms-2"></i></label>
-                                <input type="file" name="file-input" class="d-none" id="attach-file" />
-                              </div>
+                                    <form class="email-compose-form" method="POST" enctype="multipart/form-data">
+                                        @csrf
 
-                                <div class="d-flex align-items-center">
-                                  <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="dropdownMoreActions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                      <i class="ti ti-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMoreActions">
-                                      <li><button type="button" class="dropdown-item">Add Label</button></li>
-                                      <li><button type="button" class="dropdown-item">Plain text mode</button></li>
-                                      <li> <hr class="dropdown-divider" /></li>
-                                      <li><button type="button" class="dropdown-item">Print</button></li>
-                                      <li><button type="button" class="dropdown-item">Check Spelling</button></li>
-                                    </ul>
-                                  </div>
-                                  <button type="reset" class="btn" data-bs-dismiss="modal" aria-label="Close">
-                                    <i class="ti ti-trash"></i>
-                                  </button>
-                                </div>
-                              </div>
-                            </form>
+                                        <!-- TO -->
+                                        <div class="email-compose-to d-flex align-items-center">
+                                            <label class="form-label mb-0" style="width: 40px;">To:</label>
+                                            <input type="text"
+                                                  id="emailContacts"
+                                                  name="emailContacts"
+                                                  data-role="tagsinput"
+                                                  class="form-control mx-2"
+                                                  placeholder="Type email and press Enter">
+                                            <div class="email-compose-toggle-wrapper ms-2">
+                                                <a class="email-compose-toggle-cc" href="javascript:void(0)">Cc</a> |
+                                                <a class="email-compose-toggle-bcc" href="javascript:void(0)">Bcc</a>
+                                            </div>
+                                        </div>
 
-                          </div>
+                                        <!-- CC -->
+                                        <div class="email-compose-cc d-none mt-2">
+                                            <hr>
+                                            <div class="d-flex align-items-center">
+                                                <label style="width: 40px;" class="form-label mb-0">Cc:</label>
+                                                <input type="text"
+                                                      id="email-cc"
+                                                      name="email_cc"
+                                                      data-role="tagsinput"
+                                                      class="form-control mx-2"
+                                                      placeholder="Type CC email">
+                                            </div>
+                                        </div>
+
+                                        <!-- BCC -->
+                                        <div class="email-compose-bcc d-none mt-2">
+                                            <hr>
+                                            <div class="d-flex align-items-center">
+                                                <label style="width: 40px;" class="form-label mb-0">Bcc:</label>
+                                                <input type="text"
+                                                      id="email-bcc"
+                                                      name="email_bcc"
+                                                      data-role="tagsinput"
+                                                      class="form-control mx-2"
+                                                      placeholder="Type BCC email">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+
+                                        <!-- SUBJECT -->
+                                        <div class="email-compose-subject d-flex align-items-center mb-2">
+                                            <label style="width: 70px;" class="form-label mb-0">Subject:</label>
+                                            <input type="text" class="form-control mx-2" id="email-subject">
+                                        </div>
+
+                                        <!-- MESSAGE -->
+                                        <div class="email-compose-message">
+                                            <div class="email-editor-toolbar w-100">
+                                                <span class="ql-formats">
+                                                    <button class="ql-bold"></button>
+                                                    <button class="ql-italic"></button>
+                                                    <button class="ql-underline"></button>
+                                                    <button class="ql-list" value="ordered"></button>
+                                                    <button class="ql-list" value="bullet"></button>
+                                                    <button class="ql-link"></button>
+                                                    <button class="ql-image"></button>
+                                                </span>
+                                            </div>
+                                            <div class="email-editor"></div>
+                                        </div>
+
+                                        <hr>
+
+                                        <!-- ACTIONS -->
+                                        <div class="email-compose-actions d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <button type="button" class="btn btn-primary btn-send-mail">
+                                                    <i class="ti ti-send me-1"></i>Send
+                                                </button>
+
+                                                <button type="button" class="btn btn-outline-secondary btn-save-draft ms-2">
+                                                    <i class="ti ti-file-text me-1"></i>Save Draft
+                                                </button>
+
+                                                <label for="attach-file">
+                                                    <i class="ti ti-paperclip cursor-pointer ms-3"></i>
+                                                </label>
+
+                                                <input type="file"
+                                                      id="attach-file"
+                                                      multiple
+                                                      class="d-none">
+                                            </div>
+
+                                            <button type="reset" class="btn" data-bs-dismiss="modal">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
                         </div>
-                      </div>
                     </div>
                     <!-- /Compose Email -->
+
+
                   </div>
 
 
@@ -287,6 +315,7 @@
 
 @push('js')
 <!-- <script src="{{ asset('assets/js/app-email.js') }}"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
 <script>
   var massgeQuill = new Quill('.email-editor', {
     modules: {
@@ -474,20 +503,22 @@
 
   function submitMail(status) {
 
-    let toUsers = $('#emailContacts').val();
-    let ccUsers = $('#email-cc').val().split(',').map(email => email.trim()).filter(Boolean);
-    let bccUsers = $('#email-bcc').val().split(',').map(email => email.trim()).filter(Boolean);
+    let toEmails  = $('#emailContacts').val().split(',').map(e => e.trim()).filter(Boolean);
+    let ccEmails  = $('#email-cc').val().split(',').map(e => e.trim()).filter(Boolean);
+    let bccEmails = $('#email-bcc').val().split(',').map(e => e.trim()).filter(Boolean);
+
     let subject = $('#email-subject').val();
     let message = massgeQuill.root.innerHTML;
+
     let formData = new FormData();
 
-    formData.append('_token', $('input[name="_token"]').val());
-    formData.append('to_user_ids', JSON.stringify(toUsers));
-    formData.append('cc_user_ids', JSON.stringify(ccUsers));
-    formData.append('bcc_user_ids', JSON.stringify(bccUsers));
+    formData.append('_token', '{{ csrf_token() }}');
+    formData.append('to_emails', JSON.stringify(toEmails));
+    formData.append('cc_emails', JSON.stringify(ccEmails));
+    formData.append('bcc_emails', JSON.stringify(bccEmails));
     formData.append('subject', subject);
     formData.append('message', message);
-    formData.append('status', status);  // 1 = Sent, 0 = Draft
+    formData.append('status', status);
 
     let files = $('#attach-file')[0].files;
     for (let i = 0; i < files.length; i++) {
@@ -495,30 +526,19 @@
     }
 
     $.ajax({
-        url: '/mail-boxes',  // Laravel route
+        url: '/mail-boxes',
         method: 'POST',
         data: formData,
         processData: false,
         contentType: false,
         success: function(response) {
-            if(response.status) {
-              alert(status === 3 ? 'Mail sent!' : 'Draft saved!');
-              $('.email-compose-form')[0].reset();
-              $('#emailContacts').val(null).trigger('change');
-              massgeQuill.root.innerHTML = '';
-              const composeModalEl = document.getElementById('emailComposeSidebar');
-              const composeModal = bootstrap.Modal.getInstance(composeModalEl);
-              if (composeModal) {
-                composeModal.hide();  // ✅ Properly hides the modal
-              }
-
-            } else {
-                alert('Something went wrong!');
-            }
+            alert('Mail sent successfully');
+            $('#emailComposeSidebar').modal('hide');
+            $('.email-compose-form')[0].reset();
         },
         error: function(xhr) {
-            console.error(xhr.responseJSON);
-            alert('Error occurred.');
+            console.error(xhr.responseText);
+            alert('Error sending email');
         }
     });
 }

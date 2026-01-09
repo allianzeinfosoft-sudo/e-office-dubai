@@ -45,60 +45,95 @@
 <hr class="m-0" />
 
 <!-- Email View : Content-->
-<div class="app-email-view-content py-4">
-    <!-- Email View : Last mail-->
-    <div class="card email-card-last mx-sm-4 mx-3 mt-4">
-    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-        <div class="d-flex align-items-center mb-sm-0 mb-3">
-        <img src="../../assets/img/avatars/default-avatar.png" alt="user-avatar" class="flex-shrink-0 rounded-circle me-3" height="40" width="40" />
-        <div class="flex-grow-1 ms-1">
-            <h6 class="m-0">{{ $mail->fromUser->full_name ?? $mail->userData->username }}</h6>
-            <small class="text-muted"> < {{ $mail->userData->email ?? '' }} ></small>
+<div class="email-read-content p-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+            <h5 class="mb-1">{{ $mail->subject }}</h5>
+            <small class="text-muted">
+                {{ \Carbon\Carbon::parse($mail->external_date ?? $mail->created_at)->format('d M Y h:i A') }}
+            </small>
         </div>
-        </div>
-        <div class="d-flex align-items-center">
-        <p class="mb-0 me-3 text-muted"> {{ \Carbon\Carbon::parse($mail->created_at)->format('F jS Y, h:i A') }} </p>
-        <i class="email-list-item-bookmark ti ti-star ti-xs cursor-pointer me-2 {{ $mail->is_starred ? 'text-warning' : '' }}" onclick="markAsStarred({{ $mail->id }})" id="bookmark_{{ $mail->id }}"></i>
-        <div class="dropdown me-3 d-flex align-self-center">
-            <button class="btn p-0" type="button" id="dropdownEmailTwo" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ti ti-dots-vertical"></i></button>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownEmailTwo">
-                <a class="dropdown-item scroll-to-reply reply-button"
-                    href="javascript:void(0)"
-                    data-from-id="{{ $mail->from_user_id }}"
-                    data-from-name="{{ $mail->userData->username ?? '' }}"
-                    data-subject="{{ $mail->subject }}"
-                    data-message="{!! htmlentities($mail->message) !!}"
-                    data-date="{{ $mail->created_at->format('d M Y, h:i A') }}">
-                    <i class="ti ti-corner-up-left me-1"></i>
-                    <span class="align-middle">Reply</span>
-                </a>
-                <a class="dropdown-item scroll-to-forward forward-button"
-                    href="javascript:void(0)"
-                    data-from-id="{{ $mail->from_user_id }}"
-                    data-from-name="{{ $mail->userData->username ?? '' }}"
-                    data-subject="Fwd: {{ $mail->subject }}"
-                    data-message="{!! htmlentities($mail->message) !!}"
-                    data-date="{{ $mail->created_at->format('d M Y, h:i A') }}">
-                    <i class="ti ti-share me-1"></i>
-                    <span class="align-middle">Forward</span>
-                </a>
+        <button class="btn-close" onclick="$('#app-email-view').removeClass('show')"></button>
+    </div>
+
+    <hr>
+
+    <!-- Sender Section -->
+    <div class="d-flex align-items-center mb-3">
+
+        <!-- Sender Avatar -->
+        <img src="{{ $mail->fromUser && $mail->fromUser->profile_image 
+                        ? asset('storage/' . $mail->fromUser->profile_image)
+                        : asset('assets/img/avatars/default-avatar.png') }}"
+             class="rounded-circle me-3"
+             width="45" height="45">
+
+        <div>
+            <div class="fw-bold">
+
+                @if($mail->external_from)
+                    {{ $mail->external_from }}
+                @elseif($mail->fromUser)
+                    {{ $mail->fromUser->full_name }}
+                @else
+                    Unknown Sender
+                @endif
+
+            </div>
+
+            <div class="text-muted small">
+
+                @if($mail->external_from)
+                    {{-- Extract clean email from format: "Name <email>" --}}
+                    @php
+                        preg_match('/<(.*?)>/', $mail->external_from, $match);
+                    @endphp
+                    {{ $match[1] ?? $mail->external_from }}
+
+                @elseif($mail->userData)
+                    {{ $mail->userData->email }}
+
+                @else
+                    N/A
+                @endif
+
             </div>
         </div>
-        </div>
     </div>
-    <div class="card-body">
+
+    <hr>
+
+    <!-- Email Body -->
+    <div class="email-body mt-3">
         {!! $mail->message !!}
-        <hr />
-        @php
-            $attachments = json_decode($mail->attachments, true);
-        @endphp
-        @if($attachments)
-            <p class="email-attachment-title mb-2"> <i class="ti ti-paperclip cursor-pointer me-2"></i> Attachments </p>
-            @foreach($attachments as $file)
-            <div class="cursor-pointer"> <i class="ti ti-file"></i> <a href="{{ asset('storage/mail_attachments/' . $file) }}" target="_blank"><span class="align-middle ms-1">{{ $file }}</span></a>
+    </div>
+
+    @if(!empty($mail->attachments) && is_array($mail->attachments) && count($mail->attachments) > 0)
+        <hr>
+
+        <h6 class="fw-bold">Attachments ({{ count($mail->attachments) }})</h6>
+
+        <div class="mt-2">
+            @foreach($mail->attachments as $file)
+                <div class="d-flex align-items-center mb-2">
+
+                    <i class="ti ti-paperclip me-2"></i>
+
+                    <div>
+                        <div>{{ $file['filename'] }}</div>
+
+                        <a href="{{ route('mail-boxes.download-attachment', [$mail->id, $loop->index]) }}"
+                        class="small text-primary">
+                            Download
+                        </a>
+                    </div>
+
+                </div>
             @endforeach
-        @endif
         </div>
-    </div>
-    </div>
+    @endif
+
 </div>
+

@@ -163,67 +163,92 @@ class MailBoxController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request){
-        $request->validate([
-            'to_user_ids' => 'required|json',
-            'cc_user_ids' => 'nullable|json',
-            'bcc_user_ids' => 'nullable|json',
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
-        ]);
+    public function store(Request $request)
+{
+    $request->validate([
+        'to_emails'  => 'required|string',
+        'cc_emails'  => 'nullable|string',
+        'bcc_emails' => 'nullable|string',
+        'subject'    => 'required|string|max:255',
+        'message'    => 'required|string',
+        'status'     => 'required|integer'
+    ]);
 
-        $mail = new MailBox();
-        $mail->from_user_id = auth()->id();
-        $mail->to_user_ids = json_decode($request->to_user_ids, true);
-        $mail->cc_user_ids = $request->cc_user_ids ? json_decode($request->cc_user_ids, true) : [];
-        $mail->bcc_user_ids = $request->bcc_user_ids ? json_decode($request->bcc_user_ids, true) : [];
-        $mail->subject = $request->subject;
-        $mail->message = $request->message;
-        $mail->status = $request->status ?? 0;
+    $toEmails  = json_decode($request->to_emails, true) ?? [];
+    $ccEmails  = json_decode($request->cc_emails, true) ?? [];
+    $bccEmails = json_decode($request->bcc_emails, true) ?? [];
 
+    // SAVE TO DB ---------------------------------------------------------
+    $mail = new MailBox();
+    $mail->from_user_id = auth()->id();
+    $mail->to_user_ids = $toEmails;
+    $mail->cc_user_ids = $ccEmails;
+    $mail->bcc_user_ids = $bccEmails;
+    $mail->subject = $request->subject;
+    $mail->message = $request->message;
+    $mail->status  = $request->status;
 
-        // Assign folder name based on status
-        if ($mail->status >= 0 && $mail->status <= 7) {
-            $folders = MailBox::folders();
-            $mail->folder = $folders[$mail->status] ?? 'inbox';  // Fallback to inbox
+    $folders = MailBox::folders();
+    $mail->folder = $folders[$mail->status] ?? 'sent';
+
+    $attachedFiles = [];
+    if ($request->hasFile('attachments')) {
+        foreach ($request->file('attachments') as $file) {
+            $name = uniqid() . '_' . $file->getClientOriginalName();
+            $file->storeAs('mail_attachments', $name, 'public');
+            $attachedFiles[] = $name;
         }
+    }
+    $mail->attachments = json_encode($attachedFiles);
+    $mail->save();
 
-        // Handling multiple attachments
-        if ($request->hasFile('attachments')) {
-            $files = [];
+    // SMTP SEND ---------------------------------------------------------
+    try {
+        \Mail::send([], [], function ($message) use ($request, $toEmails, $ccEmails, $bccEmails) {
 
-            foreach ($request->file('attachments') as $file) {
-                $fileName = $file->hashName(); // Get unique file name
-                $file->storeAs('mail_attachments', $fileName, 'public'); // Store using custom name
-                $files[] = $fileName;
+            $message->to($toEmails);
+
+            if (!empty($ccEmails)) $message->cc($ccEmails);
+            if (!empty($bccEmails)) $message->bcc($bccEmails);
+
+            $message->subject($request->subject);
+
+            // FIXED LINE
+            $message->html($request->message);
+
+            if (request()->hasFile('attachments')) {
+                foreach (request()->file('attachments') as $file) {
+                    $message->attach(
+                        $file->getRealPath(),
+                        [
+                            'as'   => $file->getClientOriginalName(),
+                            'mime' => $file->getClientMimeType()
+                        ]
+                    );
+                }
             }
+        });
 
-            $mail->attachments = json_encode($files); // Save as JSON array
-        }
+    } catch (\Throwable $e) {
+
+        \Log::error("SMTP Failed: " . $e->getMessage());
+
+        $mail->status = MailBox::STATUS_FAILED;
+        $mail->folder = 'failed';
         $mail->save();
 
-        $toUserIds = json_decode($request->to_user_ids, true); // ensure this is an array
-
-        if (is_array($toUserIds) && !empty($toUserIds)) {
-            $emails = User::whereIn('id', $toUserIds)->pluck('email')->toArray();
-        } else {
-            $emails = [];
-        }
-
-        // Send notification email
-        $htmlBody = view('emails.notification', [
-            'name' => 'Team',
-            'message' => 'You are receiving a new email',
-        ])->render();
-
-        CustomHelper::sendNotificationMail(
-            $emails,
-            $mail->subject,
-            $htmlBody,
-        );
-
-        return response()->json(['status' => true, 'message' => 'Mail saved successfully!']);
+        return response()->json([
+            'status'  => false,
+            'message' => $e->getMessage()
+        ], 500);
     }
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Email sent successfully'
+    ]);
+}
+
 
 
     /**
@@ -387,6 +412,7 @@ class MailBoxController extends Controller
             'mailId' => $mail->id
         ]);
     }
+
     public function moveToFolder(Request $request){
         $validated = $request->validate([
             'mailIds' => 'required|array',
@@ -428,98 +454,107 @@ class MailBoxController extends Controller
         ]);
     }
 
-
     private function storeFetchedEmails($emails){
-    $userId = auth()->id();
+            $userId = auth()->id();
 
-    foreach ($emails as $email) {
+            foreach ($emails as $email) {
 
-        $messageId = $email['message_id']
-            ?: md5(
-                ($email['subject'] ?? '') .
-                ($email['date'] ?? '') .
-                ($email['from'] ?? '') .
-                ($email['body_plain'] ?? '')
-            );
+                $messageId = $email['message_id']
+                    ?: md5(
+                        ($email['subject'] ?? '') .
+                        ($email['date'] ?? '') .
+                        ($email['from'] ?? '') .
+                        ($email['body_plain'] ?? '')
+                    );
 
-        if (MailBox::where('external_email_id', $messageId)->exists()) {
-            continue;
+                if (MailBox::where('external_email_id', $messageId)->exists()) {
+                    continue;
+                }
+
+                $body = $email['body_html']
+                    ?: $email['body_plain']
+                    ?: '(No Content)';
+
+                try {
+                    MailBox::create([
+                        'owner_id'          => $userId,
+                        'from_user_id'      => $userId,
+                        'to_user_ids'       => json_encode([]),
+                        'cc_user_ids'       => json_encode([]),
+                        'bcc_user_ids'      => json_encode([]),
+
+                        'subject'           => $email['subject'] ?? '(No Subject)',
+                        'message'           => $body,
+
+                        'folder'            => 'inbox',
+                        'status'            => 0,
+                        'is_starred'        => 0,
+                        'mark_as_read'      => 0,
+
+                        'attachments'       => json_encode($email['attachments'] ?? []),
+                        'raw_headers'       => json_encode($email['headers'] ?? null),
+
+                        'external_email_id' => $messageId,
+                        'external_from'     => $email['from'] ?? '',
+                        'external_date'     => $email['date'] ?? null,
+                    ]);
+
+                } catch (\Exception $e) {
+                    dd("Insert failed: " . $e->getMessage());
+                }
+            }
         }
 
-        $body = $email['body_html']
-            ?: $email['body_plain']
-            ?: '(No Content)';
+        private function formatEmailBody($mail)
+        {
+            $body = $mail->message;
+            $headers = json_decode($mail->raw_headers ?? "[]", true);
 
-        try {
-            MailBox::create([
-                'owner_id'          => $userId,
-                'from_user_id'      => $userId,
-                'to_user_ids'       => json_encode([]),
-                'cc_user_ids'       => json_encode([]),
-                'bcc_user_ids'      => json_encode([]),
+            // 1. If Outlook HTML exists inside X-ALT-DESC
+            if (isset($headers['X-ALT-DESC'])) {
+                $raw = $headers['X-ALT-DESC'];
 
-                'subject'           => $email['subject'] ?? '(No Subject)',
-                'message'           => $body,
+                // Remove prefix
+                $raw = preg_replace('/X-ALT-DESC;FMTTYPE=text\/html:/i', '', $raw);
 
-                'folder'            => 'inbox',
-                'status'            => 0,
-                'is_starred'        => 0,
-                'mark_as_read'      => 0,
+                // Use this as body
+                return $this->cleanHtml($raw);
+            }
 
-                'attachments'       => json_encode($email['attachments'] ?? []),
-                'raw_headers'       => json_encode($email['headers'] ?? null),
+            // 2. If body contains VCALENDAR → extract only description
+            if (str_contains($body, 'BEGIN:VCALENDAR')) {
 
-                'external_email_id' => $messageId,
-                'external_from'     => $email['from'] ?? '',
-                'external_date'     => $email['date'] ?? null,
-            ]);
+                // Extract DESCRIPTION block
+                if (preg_match('/DESCRIPTION:(.*?)DTEND/s', $body, $matches)) {
+                    $desc = $matches[1];
 
-        } catch (\Exception $e) {
-            dd("Insert failed: " . $e->getMessage());
-        }
-    }
-}
+                    // Clean Outlook escaped chars: \n \, \;
+                    $desc = str_replace(['\\n', '\\,', '\\;'], ["\n", ',', ';'], $desc);
 
-private function formatEmailBody($mail)
-{
-    $body = $mail->message;
-    $headers = json_decode($mail->raw_headers ?? "[]", true);
+                    return nl2br(e(trim($desc)));
+                }
 
-    // 1. If Outlook HTML exists inside X-ALT-DESC
-    if (isset($headers['X-ALT-DESC'])) {
-        $raw = $headers['X-ALT-DESC'];
+                // If no description found, fallback
+                return '(This is a calendar event email)';
+            }
 
-        // Remove prefix
-        $raw = preg_replace('/X-ALT-DESC;FMTTYPE=text\/html:/i', '', $raw);
+            // 3. If HTML body — return safely
+            if (stripos($body, '<html') !== false || stripos($body, '<p') !== false) {
+                return $this->cleanHtml($body);
+            }
 
-        // Use this as body
-        return $this->cleanHtml($raw);
-    }
-
-    // 2. If body contains VCALENDAR → extract only description
-    if (str_contains($body, 'BEGIN:VCALENDAR')) {
-
-        // Extract DESCRIPTION block
-        if (preg_match('/DESCRIPTION:(.*?)DTEND/s', $body, $matches)) {
-            $desc = $matches[1];
-
-            // Clean Outlook escaped chars: \n \, \;
-            $desc = str_replace(['\\n', '\\,', '\\;'], ["\n", ',', ';'], $desc);
-
-            return nl2br(e(trim($desc)));
+            // 4. Plain text → convert \n to <br>
+            return nl2br(e($body));
         }
 
-        // If no description found, fallback
-        return '(This is a calendar event email)';
-    }
+        private function cleanHtml($html)
+        {
+            // Remove unwanted meta, XML, Word junk
+            $html = preg_replace('/<\?xml.*?\?>/i', '', $html);
+            $html = preg_replace('/<!--\[if.*?endif\]-->/is', '', $html);
+            $html = preg_replace('/<style[^>]*>.*?<\/style>/is', '', $html);
 
-    // 3. If HTML body — return safely
-    if (stripos($body, '<html') !== false || stripos($body, '<p') !== false) {
-        return $this->cleanHtml($body);
-    }
-
-    // 4. Plain text → convert \n to <br>
-    return nl2br(e($body));
-}
+            return $html;
+        }
 
 }
