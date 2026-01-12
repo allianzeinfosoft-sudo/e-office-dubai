@@ -584,52 +584,47 @@ class MailBoxController extends Controller
 
         private function cleanHtml($html)
         {
-            if (!$html) {
-                return '';
-            }
+            if (!$html) return '';
 
-            // 1. Remove XML declaration
+            // Remove XML declarations
             $html = preg_replace('/<\?xml[^>]*\?>/i', '', $html);
 
-            // 2. Remove Word / Outlook conditional comments
+            // Remove namespace attributes (vml, mso, w, o)
+            $html = preg_replace('/xmlns:[A-Za-z0-9]+="[^"]*"/i', '', $html);
+
+            // Remove Word namespace tags like <w:...>
+            $html = preg_replace('/<\/?[ovwxp]:[^>]*>/i', '', $html);
+
+            // Remove MSO conditional comments
             $html = preg_replace('/<!--\[if.*?\[endif\]-->/is', '', $html);
             $html = preg_replace('/<!--\[if.*?\]>.*?<!\[endif\]-->/is', '', $html);
 
-            // 3. Remove Outlook <o:> and <w:> namespace tags
-            $html = preg_replace('/<\/?[ovwxp]:[^>]*>/i', '', $html);
-
-            // 4. Remove <style> blocks – usually huge in Word emails
+            // Remove style blocks
             $html = preg_replace('/<style[^>]*>.*?<\/style>/is', '', $html);
 
-            // 5. Remove <xml> blocks – contain Word junk
+            // Remove XML Word garbage
             $html = preg_replace('/<xml[^>]*>.*?<\/xml>/is', '', $html);
 
-            // 6. Remove comments
+            // Remove HTML comments
             $html = preg_replace('/<!--.*?-->/s', '', $html);
 
-            // 7. Remove META tags (Word injects many)
+            // Remove meta tags
             $html = preg_replace('/<meta[^>]+>/i', '', $html);
 
-            // 8. Remove scripts for safety
+            // Remove script tags
             $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html);
 
-            // 9. Remove empty spans/divs with only whitespace
-            $html = preg_replace('/<(span|div)[^>]*>\s*<\/(span|div)>/is', '', $html);
-
-            // 10. Optional: Remove Word inline styles like mso-*
+            // Remove inline mso styles
             $html = preg_replace('/\s*mso-[^:]+:[^;"]+;?/i', '', $html);
 
-            // 11. Remove excessive whitespace
+            // Remove excessive whitespace
             $html = preg_replace('/\s{2,}/', ' ', $html);
 
-            // 12. Trim left/right
             $html = trim($html);
 
-            // 13. SAFETY LIMIT: prevent MySQL packet overflow
-            $max = 5 * 1024 * 1024; // 5MB
-
-            if (strlen($html) > $max) {
-                $html = substr($html, 0, $max);
+            // SAFETY LIMIT
+            if (strlen($html) > 5 * 1024 * 1024) {
+                $html = substr($html, 0, 5 * 1024 * 1024);
             }
 
             return $html;
