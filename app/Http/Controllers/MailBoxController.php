@@ -202,9 +202,39 @@ class MailBoxController extends Controller
     $mail->attachments = json_encode($attachedFiles);
     $mail->save();
 
+    // LOAD USER SMTP CONFIG
+    $userConfig = EmailConfiguration::where('user_id', auth()->id())->first();
+
+    if (!$userConfig) {
+        return response()->json([
+            'status' => false,
+            'message' => 'SMTP configuration not found for this user.'
+        ], 400);
+    }
+
+    // APPLY USER-SPECIFIC SMTP CONFIG
+    config([
+        'mail.default' => 'smtp',
+
+        'mail.mailers.smtp' => [
+            'transport'  => 'smtp',
+            'host'       => $userConfig->incoming_host,
+            'port'       => $userConfig->incoming_port,
+            'encryption' => $userConfig->incoming_encryption == 'none' ? null : $userConfig->incoming_encryption,
+            'username'   => $userConfig->incoming_username,
+            'password'   => $userConfig->incoming_password,
+        ],
+
+        'mail.from' => [
+            'address' => $userConfig->incoming_username,
+            'name'    => auth()->user()->name ?? 'User Mailbox'
+        ]
+    ]);
+
     // SMTP SEND ---------------------------------------------------------
     try {
-        \Mail::send([], [], function ($message) use ($request, $toEmails, $ccEmails, $bccEmails) {
+
+        \Mail::send([], [], function ($message) use ($request, $toEmails, $ccEmails, $bccEmails, $userConfig) {
 
             $message->to($toEmails);
 
@@ -212,10 +242,9 @@ class MailBoxController extends Controller
             if (!empty($bccEmails)) $message->bcc($bccEmails);
 
             $message->subject($request->subject);
-
-            // FIXED LINE
             $message->html($request->message);
 
+            // Attachments
             if (request()->hasFile('attachments')) {
                 foreach (request()->file('attachments') as $file) {
                     $message->attach(
@@ -232,10 +261,6 @@ class MailBoxController extends Controller
     } catch (\Throwable $e) {
 
         \Log::error("SMTP Failed: " . $e->getMessage());
-
-        $mail->status = MailBox::STATUS_FAILED;
-        $mail->folder = 'failed';
-        $mail->save();
 
         return response()->json([
             'status'  => false,
