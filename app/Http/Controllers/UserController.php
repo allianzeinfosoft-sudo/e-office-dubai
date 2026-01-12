@@ -131,6 +131,14 @@ class UserController extends Controller
                 $profileImagePath = $file->storeAs('profile_pics', $filename, 'public');
             }
 
+            $shiftTimeLimit = null;
+            if (!empty($request->shift_id)) {
+                $shift = WorkShift::find($request->shift_id);
+                if ($shift) {
+                    $shiftTimeLimit = $shift->login_limited_time;
+                }
+            }
+
             $employee = Employee::create([
                 'user_id'   => $user->id,
                 'employeeID' => $request->employeeID,
@@ -157,7 +165,7 @@ class UserController extends Controller
                 'department_id' => !empty($request->department_id) ? $request->department_id : null,
                 'designation_id' => !empty($request->designation_id) ? $request->designation_id : null,
                 'join_date' => !empty($request->join_date) ? $request->join_date : null,
-                'shift_id' => !empty($request->shift_id) ? $request->shift_id : null,
+                'shift_id' => $shiftTimeLimit,
                 'holidayGroup' => !empty($request->holidayGroup) ? $request->holidayGroup : null,
                 'role' => !empty($request->role) ? $request->role : null,
                 'status' => !empty($request->status) ? $request->status : null,
