@@ -227,7 +227,7 @@ class MailBoxController extends Controller
 
         'mail.from' => [
             'address' => $userConfig->incoming_username.'@mail.alliazegroup.com',
-            'name'    => auth()->user()->name ?? 'User Mailbox'
+            'name'    => auth()->user()->username ?? 'User Mailbox'
         ]
     ]);
 
@@ -499,9 +499,16 @@ class MailBoxController extends Controller
                     continue;
                 }
 
-                $body = $email['body_html']
+                $bodyRaw = $email['body_html']
                     ?: $email['body_plain']
                     ?: '(No Content)';
+
+                $body = $this->cleanHtml($bodyRaw);
+
+                // SAFETY LIMIT: Prevent packet overflow
+                if (strlen($body) > 5 * 1024 * 1024) {     // 5MB limit
+                    $body = substr($body, 0, 5 * 1024 * 1024);
+                }
 
                 try {
                     MailBox::create([
@@ -577,12 +584,57 @@ class MailBoxController extends Controller
 
         private function cleanHtml($html)
         {
-            // Remove unwanted meta, XML, Word junk
-            $html = preg_replace('/<\?xml.*?\?>/i', '', $html);
-            $html = preg_replace('/<!--\[if.*?endif\]-->/is', '', $html);
+            if (!$html) {
+                return '';
+            }
+
+            // 1. Remove XML declaration
+            $html = preg_replace('/<\?xml[^>]*\?>/i', '', $html);
+
+            // 2. Remove Word / Outlook conditional comments
+            $html = preg_replace('/<!--\[if.*?\[endif\]-->/is', '', $html);
+            $html = preg_replace('/<!--\[if.*?\]>.*?<!\[endif\]-->/is', '', $html);
+
+            // 3. Remove Outlook <o:> and <w:> namespace tags
+            $html = preg_replace('/<\/?[ovwxp]:[^>]*>/i', '', $html);
+
+            // 4. Remove <style> blocks – usually huge in Word emails
             $html = preg_replace('/<style[^>]*>.*?<\/style>/is', '', $html);
+
+            // 5. Remove <xml> blocks – contain Word junk
+            $html = preg_replace('/<xml[^>]*>.*?<\/xml>/is', '', $html);
+
+            // 6. Remove comments
+            $html = preg_replace('/<!--.*?-->/s', '', $html);
+
+            // 7. Remove META tags (Word injects many)
+            $html = preg_replace('/<meta[^>]+>/i', '', $html);
+
+            // 8. Remove scripts for safety
+            $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html);
+
+            // 9. Remove empty spans/divs with only whitespace
+            $html = preg_replace('/<(span|div)[^>]*>\s*<\/(span|div)>/is', '', $html);
+
+            // 10. Optional: Remove Word inline styles like mso-*
+            $html = preg_replace('/\s*mso-[^:]+:[^;"]+;?/i', '', $html);
+
+            // 11. Remove excessive whitespace
+            $html = preg_replace('/\s{2,}/', ' ', $html);
+
+            // 12. Trim left/right
+            $html = trim($html);
+
+            // 13. SAFETY LIMIT: prevent MySQL packet overflow
+            $max = 5 * 1024 * 1024; // 5MB
+
+            if (strlen($html) > $max) {
+                $html = substr($html, 0, $max);
+            }
 
             return $html;
         }
+
+        
 
 }
