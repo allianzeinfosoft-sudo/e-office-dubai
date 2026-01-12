@@ -248,7 +248,8 @@ class TrainingController extends Controller
                     // Attendance allowed only when training is ongoing & accepted
                     'can_mark_attendance' =>
                         $isAdmin &&
-                        $trainingStatus === 'ongoing' &&
+                        $trainingStatus === 'ongoing' ||
+                        $tu->attendance_status === 'absent' &&
                         $tu->acceptance_status === 'accepted',
                 ];
             });
