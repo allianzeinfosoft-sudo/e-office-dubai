@@ -21,24 +21,31 @@ class NotificationController extends Controller
 
     public function getNotifications()
     {
-        if (auth()->check()) {
-
-            $userId = auth()->id();
-           $notifications = HelperNotification::whereJsonContains('recipients_ids', (string) $userId)
-                            ->where(function ($query) use ($userId) {
-                                $query->whereNull('readers_ids')
-                                    ->orWhereJsonDoesntContain('readers_ids', (string) $userId);
-                            })
-                            ->get();
-
-            return response()->json([
-                'notifications' => $notifications,
-                'count' => $notifications->count()
-            ]);
-
-
+        if (!auth()->check()) {
+            return [];
         }
-        return [];
+
+        $user = auth()->user();
+        $userId = (string) $user->id;
+
+        // FIXED — safe join_date from employee table
+        $joinDate = $user->employee?->join_date;
+
+        $notifications = HelperNotification::whereJsonContains('recipients_ids', $userId)
+            ->where(function ($query) use ($userId) {
+                $query->whereNull('readers_ids')
+                    ->orWhereJsonDoesntContain('readers_ids', $userId);
+            })
+            ->when($joinDate, function ($q) use ($joinDate) {
+                $q->whereDate('created_at', '>=', $joinDate);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'count' => $notifications->count(),
+        ]);
     }
 
     public function markAsRead($id)
