@@ -425,25 +425,11 @@
 
     });
 
+    // GLOBAL PAGINATION VARIABLES
+    var currentPage = currentPage || 1;
+    var perPage = 10;
+
     function getMails(folder = 'inbox') {
-      // GLOBAL PAGINATION VARIABLES
-      var currentPage = currentPage || 1;
-      var perPage = 10;
-
-      // Next Page
-      $('.email-next').on('click', function () {
-          currentPage++;
-          getMails($('#current_folder').val());
-      });
-
-      // Previous Page
-      $('.email-prev').on('click', function () {
-          if (currentPage > 1) {
-              currentPage--;
-              getMails($('#current_folder').val());
-          }
-      });
-
       $('#current_folder').val(folder);
       $('#emails-list-title').text(folder);
       $.ajax({
@@ -517,9 +503,22 @@
               console.error(xhr.responseJSON?.message || 'Request failed');
           }
       });
-
-      
+    
   }
+
+  // Next Page
+      $('.email-next').on('click', function () {
+          currentPage++;
+          getMails($('#current_folder').val());
+      });
+
+      // Previous Page
+      $('.email-prev').on('click', function () {
+          if (currentPage > 1) {
+              currentPage--;
+              getMails($('#current_folder').val());
+          }
+      });
 
   
 
