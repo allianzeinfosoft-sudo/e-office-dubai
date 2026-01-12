@@ -219,21 +219,20 @@ class MailBoxController extends Controller
         'mail.mailers.smtp' => [
             'transport'  => 'smtp',
             'host'       => $userConfig->incoming_host,
-            'port'       => $userConfig->incoming_port,
+            'port'       => 25,
             'encryption' => $userConfig->incoming_encryption == 'none' ? null : $userConfig->incoming_encryption,
             'username'   => $userConfig->incoming_username,
             'password'   => $userConfig->incoming_password,
         ],
 
         'mail.from' => [
-            'address' => $userConfig->incoming_username,
+            'address' => $userConfig->incoming_username.'@mail.alliazegroup.com',
             'name'    => auth()->user()->name ?? 'User Mailbox'
         ]
     ]);
 
     // SMTP SEND ---------------------------------------------------------
     try {
-
         \Mail::send([], [], function ($message) use ($request, $toEmails, $ccEmails, $bccEmails, $userConfig) {
 
             $message->to($toEmails);
