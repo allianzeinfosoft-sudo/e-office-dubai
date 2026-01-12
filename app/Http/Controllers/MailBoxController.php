@@ -79,7 +79,7 @@ class MailBoxController extends Controller
          * Count Internal Emails for Sidebar
          * -------------------------------------------------------------- */
         $counts = [
-            'inbox'   => MailBox::where(['owner_id' => $userId, 'folder' => 'inbox'])->count(),
+            'inbox'   => MailBox::where(['owner_id' => $userId, 'folder' => 'inbox', 'mark_as_read' => 0])->count(),
 
             'sent'    => MailBox::where('from_user_id', $userId)
                             ->where('folder', 'sent')->count(),
@@ -351,60 +351,64 @@ class MailBoxController extends Controller
             return response()->json(['status' => true, 'message' => 'Emails deleted successfully.']);
         }
 
-    public function folder($folder)
-{
-    $allowedFolders = ['inbox', 'draft', 'sent', 'starred', 'spam', 'trash'];
+    public function folder(Request $request, $folder)
+    {
+        $allowedFolders = ['inbox', 'draft', 'sent', 'starred', 'spam', 'trash'];
 
-    if (!in_array($folder, $allowedFolders)) {
+        if (!in_array($folder, $allowedFolders)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid folder specified.'
+            ], 400);
+        }
+
+        $userId  = auth()->id();
+        $perPage = (int) $request->input('per_page', 10);
+
+        $query = MailBox::with(['fromUser', 'userData']);
+
+        switch ($folder) {
+            case 'inbox':
+                $query->where('folder', 'inbox')
+                    ->where('owner_id', $userId);
+                break;
+
+            case 'sent':
+                $query->where('from_user_id', $userId)
+                    ->where('folder', 'sent');
+                break;
+
+            case 'draft':
+                $query->where('from_user_id', $userId)
+                    ->where('folder', 'draft');
+                break;
+
+            case 'starred':
+                $query->where('is_starred', 1)
+                    ->where('owner_id', $userId);
+                break;
+
+            case 'spam':
+            case 'trash':
+                $query->where('folder', $folder)
+                    ->where('owner_id', $userId);
+                break;
+        }
+
+        $mails = $query
+            ->orderByRaw('COALESCE(external_date, created_at) DESC')
+            ->paginate($perPage);
+
         return response()->json([
-            'status' => false,
-            'message' => 'Invalid folder specified.'
-        ], 400);
+            'status'     => true,
+            'folder'     => $folder,
+            'data'       => $mails->items(),
+            'total'      => $mails->total(),
+            'page'       => $mails->currentPage(),
+            'last_page'  => $mails->lastPage()
+        ]);
     }
 
-    $userId = auth()->id();
-
-    $query = MailBox::with(['fromUser', 'userData']);
-
-    switch ($folder) {
-        case 'inbox':
-            // External POP3 + Internal mailbox emails
-            $query->where('folder', 'inbox')
-                  ->where('owner_id', $userId);
-            break;
-
-        case 'sent':
-            // Internal emails only
-            $query->where('from_user_id', $userId)
-                  ->where('folder', 'sent');
-            break;
-
-        case 'draft':
-            $query->where('from_user_id', $userId)
-                  ->where('folder', 'draft');
-            break;
-
-        case 'starred':
-            // Starred internal + starred external
-            $query->where('is_starred', 1)
-                  ->where('owner_id', $userId);
-            break;
-        case 'spam':
-        case 'trash':
-            // External + Internal
-            $query->where('folder', $folder)
-                  ->where('owner_id', $userId);
-            break;
-    }
-
-    $mails = $query->orderByRaw('COALESCE(external_date, created_at) DESC')->get();
-
-    return response()->json([
-        'status' => true,
-        'folder' => $folder,
-        'data'   => $mails
-    ]);
-}
 
     public function starred(){
         $mails = MailBox::where('is_starred', true)

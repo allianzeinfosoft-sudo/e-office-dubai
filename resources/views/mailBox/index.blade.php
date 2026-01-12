@@ -426,10 +426,29 @@
     });
 
     function getMails(folder = 'inbox') {
+      // GLOBAL PAGINATION VARIABLES
+      var currentPage = currentPage || 1;
+      var perPage = 10;
+
+      // Next Page
+      $('.email-next').on('click', function () {
+          currentPage++;
+          getMails($('#current_folder').val());
+      });
+
+      // Previous Page
+      $('.email-prev').on('click', function () {
+          if (currentPage > 1) {
+              currentPage--;
+              getMails($('#current_folder').val());
+          }
+      });
+
       $('#current_folder').val(folder);
       $('#emails-list-title').text(folder);
       $.ajax({
-          url: '/mail-boxes/folder/' + folder,
+          // url: '/mail-boxes/folder/' + folder,
+          url: `/mail-boxes/folder/${folder}?page=${currentPage}&per_page=${perPage}`,
           type: 'GET',
           success: function(response) {
               const total = response.data.length;
@@ -498,7 +517,11 @@
               console.error(xhr.responseJSON?.message || 'Request failed');
           }
       });
+
+      
   }
+
+  
 
 
   function submitMail(status) {
@@ -546,6 +569,16 @@
 function openMail(mailId = null){
 
   if(mailId){
+
+    $.ajax({
+      type: "POST",
+      url: "{{ route('mail-boxes.mark-read') }}",
+      data: {
+        _token: '{{ csrf_token() }}',
+        mailId: mailId
+      }
+    });
+
     let url = "{{ route('mail-boxes.show', ':mailBox') }}".replace(':mailBox', mailId);
     $.ajax({
       type: "get",
