@@ -27,7 +27,6 @@ class TrainingController extends Controller
             $adminRoles = ['Developer', 'HR', 'G1'];
 
             if (in_array($user->role, $adminRoles)) {
-
                 $trainings = Training::with([
                     'trainingUsers' => function ($q) use ($user) {
                         $q->where('user_id', $user->id);
@@ -244,13 +243,14 @@ class TrainingController extends Controller
                     'email' => $tu->user->email,
                     'acceptance_status' => $tu->acceptance_status ?? 'pending',
                     'attendance_status' => $tu->attendance_status,
+                    'document' => $tu->user->document,
 
                     // Attendance allowed only when training is ongoing & accepted
                     'can_mark_attendance' =>
                         $isAdmin &&
                         $trainingStatus === 'ongoing' ||
-                        $tu->attendance_status === 'absent' &&
-                        $tu->acceptance_status === 'accepted',
+                        $tu->acceptance_status === 'accepted' &&
+                        $tu->attendance_status === 'absent' 
                 ];
             });
 
@@ -282,6 +282,7 @@ class TrainingController extends Controller
             'start'   => $training->start_date_time,
             'end'     => $training->end_date_time,
             'details'=> $training->training_details,
+            'document'=> $training->document,
 
             // ✅ UPDATED STATUS (date-based)
             'training_status' => $trainingStatus,

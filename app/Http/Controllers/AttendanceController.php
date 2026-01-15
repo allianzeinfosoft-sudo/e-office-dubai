@@ -63,7 +63,6 @@ class AttendanceController extends Controller{
             $wh = $result->working_hours;
             if (strpos($wh, ':') !== false) {
                 list($hours, $minutes) = explode(':', $wh);
-                
                 // Convert to integers to avoid string math issues
                 $hours = (int) $hours;
                 $minutes = (int) $minutes;

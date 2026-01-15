@@ -3,8 +3,8 @@
       <div class="footer-container d-flex align-items-center justify-content-between py-2 flex-md-row flex-column">
         <div>
           <!-- <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank" >License</a>
-          <a href="https://demos.pixinvent.com/vuexy-html-admin-template/documentation/" target="_blank" class="footer-link me-4">Documentation</a>
-          <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block">Support11</a> -->
+            <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block">Support11</a> -->
+            <a href="{{ url('http://192.168.1.107:8003') }}" target="_blank" class="footer-link me-4">User Guide</a>
         </div>
         <div> ©
           <script>

@@ -116,6 +116,7 @@
                     <tr><th>Start Date</th><td id="vt_start"></td></tr>
                     <tr><th>End Date</th><td id="vt_end"></td></tr>
                     <tr><th>Description</th><td id="vt_details"></td></tr>
+                    <tr><th>Documents</th><td id="vt_document"></td></tr>
                     <tr><th>Status</th><td id="vt_status"></td></tr>
                 </table>
 
@@ -548,6 +549,11 @@ $(document).on('click', '.view-training', function () {
         $('#vt_start').text(res.start);
         $('#vt_end').text(res.end);
         $('#vt_details').text(res.details);
+        $('#vt_document').html(
+            res.document
+                ? `<a href="/storage/trainings/${res.document}" target="_blank" class="btn btn-sm btn-info">View Document</a>`
+                : 'No Document'
+        );
         $('#vt_status').html(statusHtml);
 
 
