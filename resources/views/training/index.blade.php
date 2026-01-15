@@ -288,13 +288,23 @@
                     { data: 'trainings_startdate', title: 'Start Date' },
                     { data: 'trainings_enddate', title: 'End Date' },
                     // { data: 'trainings_details', title: 'Training Details'},
-                    { data: 'document', title: 'Document',
-                        render: function(data, type, row) {
+                    {
+                        data: 'document',
+                        title: 'Document',
+                        render: function (data, type, row) {
+                            
+                            let isAdmin = false;
+                            // Restrict access unless accepted or user is admin
+                            if (row.acceptance_status !== 'accepted' && !isAdmin) {
+                                return 'Please accept to view document';
+                            }
+                            
                             if (data) {
                                 return `<a href="/storage/trainings/${data}" target="_blank" class="btn btn-sm btn-info">View Document</a>`;
-                            } else {
-                                return 'No Document';
                             }
+
+                            // If no document found
+                            return 'No Document';
                         }
                     },
                     {
@@ -379,6 +389,7 @@
 
                             // Admin-only buttons (always visible for admin)
                             let adminButtons = '';
+
                             if (isAdmin) {
                                 adminButtons = `
                                     <a href="javascript:void(0)"
@@ -394,12 +405,17 @@
                             }
 
                             // View button → always visible
-                            let viewButton = `
-                                <button class="btn btn-sm btn-icon btn-warning me-1 view-training"
-                                        data-id="${row.id}">
-                                    <i class="ti ti-eye"></i>
-                                </button>`;
-
+                            let viewButton = '';
+                            if(row.acceptance_status !== 'accepted' && !isAdmin){
+                                viewButton = '';
+                            }else{
+                                viewButton = `
+                                    <button class="btn btn-sm btn-icon btn-warning me-1 view-training"
+                                            data-id="${row.id}">
+                                        <i class="ti ti-eye"></i>
+                                    </button>`;
+                            }
+                            
                             return `
                                 <div class="align-items-center">
                                     ${viewButton}
