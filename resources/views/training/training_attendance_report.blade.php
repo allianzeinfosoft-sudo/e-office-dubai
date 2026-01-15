@@ -36,6 +36,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Sl No</th>
+                                                    <th>Training Date</th>
                                                     <th>Training Title</th>
                                                     <th>Employee Name</th>
                                                     <th>Acceptance Status</th>
@@ -149,6 +150,7 @@ $(function () {
             ],
             columns: [
                 { data: 'id', title: 'Sl No' },
+                { data: 'trainings_startdate', title: 'Training Date' },
                 { data: 'training_title', title: 'Training Title' },
                 { data: 'employee_name', title: 'Employee Name' },
                 { data: 'acceptance_status', title: 'Acceptance Status' },

@@ -433,7 +433,7 @@ class TrainingTestController extends Controller
     {
             $query = TrainingTestUser::with([
             'test:id,training_id,title',
-            'test.training:id,training_title',
+            'test.training:id,training_title,start_date_time',
             'user.employee:user_id,full_name'
         ]);
 
@@ -448,6 +448,7 @@ class TrainingTestController extends Controller
             return [
                 'id' => $key + 1,
                 'training_title' => $row->test->training->training_title ?? '-',
+                'trainings_startdate' => date('d-m-Y H:i', strtotime($row->test->training->start_date_time ?? '-')),
                 'test_title' => $row->test->title ?? '-',
                 'employee_name' => $row->user->employee
                     ? $row->user->employee->full_name

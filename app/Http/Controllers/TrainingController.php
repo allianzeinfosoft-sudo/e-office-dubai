@@ -505,7 +505,7 @@ class TrainingController extends Controller
 
      public function report_view()
     {
-        $trainings = Training::select('id', 'training_title')->orderBy('training_title')->get();
+        $trainings = Training::select('id', 'start_date_time', 'training_title')->orderBy('training_title')->get();
 
         return view('training.training_attendance_report', [
             'trainings'   => $trainings,
@@ -520,7 +520,7 @@ class TrainingController extends Controller
     {
         $query = TrainingUser::query()
             ->with([
-                'training:id,training_title',
+                'training:id,training_title,start_date_time',
                 'user:id',
                 'employee:user_id,full_name'
             ]);
@@ -544,6 +544,7 @@ class TrainingController extends Controller
             return [
                 'id'                => $index + 1,
                 'training_title'    => $row->training->training_title ?? '-',
+                'trainings_startdate' => date('d-m-Y H:i', strtotime($row->training->start_date_time ?? '-')),
                 'employee_name'     => $row->employee->full_name
                                         ?? $row->employee->name
                                         ?? '-',
