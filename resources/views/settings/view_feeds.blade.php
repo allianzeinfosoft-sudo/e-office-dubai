@@ -555,6 +555,7 @@ function getWorkAnniversaryHtml(item) {
                     alt="${emp.full_name}">
             </div>
             <p class="bdy-name">${emp.full_name}</p>
+            <h1>  🎉 🎉 Congratulations  🎉 🎉 </h1>
             <p class="text-muted">Completed ${emp.years} year(s)</p>
         </div>
     `).join('');
@@ -584,7 +585,7 @@ function getWorkAnniversaryHtml(item) {
 
             <div class="text-center">
                 <div id="swiper-gallery">
-                    <div class="swiper gallery-top bday-card">
+                    <div class="swiper gallery-top">
                         <div class="swiper-wrapper">
                             ${slidesHtml}
                         </div>
