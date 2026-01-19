@@ -299,34 +299,72 @@
                 </div>
                 <!--Leave Summary-->
 
-                {{-- If Current Feeds Birthdays and Appriciations  will show else not--}}
-               @if(!empty($feed_data))
-                  <div class="col-md-6 col-12 mt-15">
-                      <div class="card card-bg">
-                          <div class="card-body p-0">
-                              <div class="text-center">
-                                  <!-- Main Swiper -->
-                                  <div class="swiper gallery-top bday-card">
-                                      <div class="swiper-wrapper">
-                                          @foreach ($feed_data as $item)
+              {{-- If Current Feeds Birthdays and Appriciations  will show else not--}}
+              @php
+                  $isBirthdayFeed = false;
+                  foreach ($feed_data as $feedItem) {
+                      if ($feedItem['type'] === 'birthday') {
+                          $isBirthdayFeed = true;
+                          break;
+                      }
+                  }
+              @endphp
 
-                                              @if($item['type'] == 'birthday')
-                                                  {{-- Each employee = one slide --}}
-                                                  @foreach($item['employees'] as $employee)
-                                                      <div class="swiper-slide bday-card">
-                                                          <canvas class="confetti-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:10;"></canvas>
-                                                          <div class="card-bday">
-                                                              <img class="bdy-img mt-5 rounded-circle"
-                                                                  src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
-                                                                  alt="{{ $employee['full_name'] }}" width="100" height="150">
-                                                                <br>
-                                                                     <span class="bday-name">{{ $employee['full_name'] }}</span>
-                                                          </div>
-                                                          <p class="bdy-name mt-2">{{ $employee['full_name'] }}</p>
+                @if(!empty($feed_data))
+                <div class="col-md-6 col-12 mt-15">
+                  <div class="card card-bg">
+                    <div class="card-body p-0">
+                      <div class="text-center">
+                        <!-- Main Swiper -->
+                        <div class="swiper gallery-top {{ $isBirthdayFeed ? 'bday-card' : '' }}">
+                          <div class="swiper-wrapper">
+                            @foreach ($feed_data as $item)
+                              @if($item['type'] == 'birthday')
+                                  {{-- Each employee = one slide --}}
+                                  @foreach($item['employees'] as $employee)
+                                      <div class="swiper-slide bday-card">
+                                          <canvas class="confetti-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:10;"></canvas>
+                                          <div class="card-bday">
+                                              <img class="bdy-img mt-5 rounded-circle"
+                                                  src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
+                                                  alt="{{ $employee['full_name'] }}" width="100" height="150">
+                                                <br>
+                                                      <span class="bday-name">{{ $employee['full_name'] }}</span>
+                                          </div>
+                                          <p class="bdy-name mt-2">{{ $employee['full_name'] }}</p>
 
-                                                      </div>
-                                                  @endforeach
-                                              @else
+                                      </div>
+                                  @endforeach
+
+                                  @elseif($item['type'] == 'work_anniversary')
+
+                                    {{-- Each employee = one slide --}}
+                                    @foreach($item['employees'] as $employee)
+                                        <div class="swiper-slide">
+
+                                            <canvas class="confetti-canvas"
+                                                style="position:absolute; top:0; left:0; width:100%; height:100%;
+                                                      pointer-events:none; z-index:10;">
+                                            </canvas>
+
+                                            <div class="card-bday">
+
+                                                <img class="bdy-img mt-3 rounded-circle"
+                                                    src="{{ asset('storage/' . ($employee['profile_image'] ?? 'profile_pics/default-avatar.png')) }}"
+                                                    alt="{{ $employee['full_name'] }}"
+                                                    width="100" height="150">
+
+                                                <h3 class="mt-3">🎉🎉 Congratulations 🎉🎉</h3>
+
+                                                <p class="mt-2 text-primary fw-bold">
+                                                    {{ $employee['full_name'] }} <br /> <span class="text-muted">completed {{ $employee['years'] }} year{{ $employee['years'] > 1 ? 's' : '' }} of service!</span>
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    @endforeach
+
+                                    @else
                                                   {{-- Appreciation = one slide --}}
                                                   <div class="swiper-slide card-app">
                                                       <div class="card-app-content p-3">
@@ -376,7 +414,7 @@
                                   </div>
 
                                   <!-- Thumbnail Swiper -->
-                                  @if(count($feed_data)> 1)
+                                  @if(count($feed_data) > 1)
                                   <div class="swiper gallery-thumbs">
 
                                         <div class="swiper-wrapper">
@@ -396,7 +434,7 @@
                                     @else
 
                                              @foreach ($feed_data as $item)
-                                                @if($item['type'] == 'birthday')
+                                                @if($item['type'] == 'birthday' || $item['type'] == 'work_anniversary')
                                                     @if(count($item['employees']) > 1)
                                                         @foreach($item['employees'] as $employee)
                                                             <div class="swiper-slide" style="background-image: url('{{ asset('storage/' . ($employee['profile_image'] ?? '/assets/avatars/default-avatar.png')) }}')"></div>

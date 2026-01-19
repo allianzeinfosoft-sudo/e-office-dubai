@@ -141,6 +141,36 @@ class HomeController extends Controller
             $feedData->push($birthdayFeed);
         }
 
+         // WORK ANNIVERSARY FEED
+            $workAnniversaryEmployees = Employee::select('full_name', 'profile_image', 'join_date')
+                ->where('status','!=',4)
+                ->whereMonth('join_date', $today->month)
+                ->whereDay('join_date', $today->day)
+                ->get();
+            
+            $workAnniversaryFeed = null;
+
+            if ($workAnniversaryEmployees->isNotEmpty()) {
+
+                $workAnniversaryFeed = [
+                    'type' => 'work_anniversary',
+                    'display_date' => $today->format('d-F'),
+                    'sort_date' => $today->format('Y-m-d'),
+                    'employees' => $workAnniversaryEmployees->map(function ($employee) use ($today) {
+
+                        // Calculate Years of Service
+                        $yearsCompleted = Carbon::parse($employee->join_date)->diffInYears($today);
+
+                        return [
+                            'full_name' => $employee->full_name,
+                            'years' => $yearsCompleted,
+                            'profile_image' => $employee->profile_image ?: '/profile_pics/default-avatar.png',
+                        ];
+                    }),
+                ];
+                 $feedData->push($workAnniversaryFeed);
+            }
+
         /* Appreciations */
         $rawAppreciations = Appreciation::whereDate('display_date', '<=', $today)
             ->whereDate('display_end_date', '>=', $today)
