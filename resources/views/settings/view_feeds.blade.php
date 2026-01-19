@@ -414,6 +414,7 @@ function renderTimeline(data) {
         const htmlMap = {
             announcement: getAnnouncementHtml,
             birthday: getBirthdayHtml,
+            work_anniversary: getWorkAnniversaryHtml,
             appreciation: getAppreciationHtml
         };
 
@@ -541,6 +542,69 @@ function getBirthdayHtml(item) {
         </div>`;
 }
 
+function getWorkAnniversaryHtml(item) {
+
+    const employees = item.employees || [];
+    const displayDate = item.display_date || 'N/A';
+
+    const slidesHtml = employees.map(emp => `
+        <div class="swiper-slide text-center" style="position: relative;">
+            <div class="card-bday">
+                <img class="bdy-img mt-5 rounded-circle" 
+                    src="/storage/${emp.profile_image}" 
+                    alt="${emp.full_name}">
+            </div>
+            <p class="bdy-name">${emp.full_name}</p>
+            <p class="text-muted">Completed ${emp.years} year(s)</p>
+        </div>
+    `).join('');
+
+    const thumbsHtml = employees.map(emp => `
+        <div class="swiper-slide" 
+            style="background-image: url('/storage/${emp.profile_image}')">
+        </div>
+    `).join('');
+
+    return `
+        <span class="timeline-indicator timeline-custom timeline-indicator-primary" 
+              data-aos="zoom-in" data-aos-delay="200">
+            <i class="fa fa-briefcase"></i> <!-- Work Icon -->
+        </span>
+
+        <div class="timeline-event card-sm card p-0" data-aos="fade-right">
+            <div class="card-header p-3 bg-black mb-4 d-flex 
+                        justify-content-between align-items-center flex-wrap">
+                <h6 class="text-white my-1">Work Anniversary</h6>
+                <div class="meta my-1">
+                    <button type="button" class="btn btn-primary w-100">
+                        <i class="fa fa-handshake-o me-2"></i>Wish Them
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <div id="swiper-gallery">
+                    <div class="swiper gallery-top bday-card">
+                        <div class="swiper-wrapper">
+                            ${slidesHtml}
+                        </div>
+
+                        <div class="swiper-button-next swiper-button-white"></div>
+                        <div class="swiper-button-prev swiper-button-white"></div>
+                    </div>
+
+                    <div class="swiper gallery-thumbs">
+                        <div class="swiper-wrapper">
+                            ${thumbsHtml}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-event-time">${displayDate}</div>
+        </div>`;
+}
+
 
 function getAppreciationHtml(item) {
     const employees = item.employees || [];
@@ -634,6 +698,7 @@ function renderTimeline(data) {
         const htmlMap = {
             announcement: getAnnouncementHtml,
             birthday: getBirthdayHtml,
+            work_anniversary: getWorkAnniversaryHtml,   // <-- add this
             appreciation: getAppreciationHtml
         };
 

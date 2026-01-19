@@ -38,6 +38,38 @@ class FeedsController extends Controller
                     ];
                 }
 
+            // WORK ANNIVERSARY FEED
+            $workAnniversaryEmployees = Employee::select('full_name', 'profile_image', 'join_date')
+                ->where('status','!=',4)
+                ->whereMonth('join_date', $today->month)
+                ->whereDay('join_date', $today->day)
+                ->get();
+            
+            $workAnniversaryFeed = null;
+
+            if ($workAnniversaryEmployees->isNotEmpty()) {
+
+                $workAnniversaryFeed = [
+                    'type' => 'work_anniversary',
+                    'display_date' => $today->format('d-F'),
+                    'sort_date' => $today->format('Y-m-d'),
+                    'employees' => $workAnniversaryEmployees->map(function ($employee) use ($today) {
+
+                        // Calculate Years of Service
+                        $yearsCompleted = Carbon::parse($employee->join_date)->diffInYears($today);
+
+                        return [
+                            'full_name' => $employee->full_name,
+                            'years' => $yearsCompleted,
+                            'profile_image' => $employee->profile_image ?: '/profile_pics/default-avatar.png',
+                        ];
+                    }),
+                ];
+            }
+
+            
+
+
 
             $rawAnnouncements = Announcement::whereDate('display_start_date', '<=', $today)
                 ->whereDate('display_end_date', '>=', $today)
@@ -109,6 +141,11 @@ class FeedsController extends Controller
                 $feeds->push($birthdayFeed);
             }
 
+            if (!is_null($workAnniversaryFeed)) {
+                $feeds->push($workAnniversaryFeed);
+            }
+
+            
             $feeds = $feeds->merge($announcements)->merge($appreciations);
 
             // Merge announcements if not empty
