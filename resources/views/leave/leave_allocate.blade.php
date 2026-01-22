@@ -242,7 +242,7 @@ $(document).on("change", ".year", function () {
                                 const leavesTaken = parseFloat(leaveDetails.used_leaves) || 0;
 
                                 // Recalculate leave balance and update the corresponding column
-                                const leaveBalance = allocatedLeaves - leavesTaken;
+                                const leaveBalance = allocatedLeaves - Math.abs(leavesTaken);
                                 row.find('td:nth-child(5)').text(leaveBalance >= 0 ? leaveBalance : 0); // Avoid negative balance
                             });
 
