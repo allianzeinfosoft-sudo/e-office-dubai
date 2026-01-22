@@ -287,7 +287,7 @@ $(document).on("click", ".updateLeave", function () {
 
         // Calculate remaining leaves
 
-        const remainingLeaves = allocatedLeaves - leavesTaken;
+        const remainingLeaves = allocatedLeaves - Math.abs(leavesTaken);
         alert(leavesTaken);
 
         $.ajax({
