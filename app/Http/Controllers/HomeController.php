@@ -331,7 +331,9 @@ public function getLeaveSummary(Request $request)
         ->get();
 
     // Get total allocation
-    $leave_allocated = LeaveAllocation::where('user_id', $user->id)->first();
+    $leaveAllocated = LeaveAllocation::where('user_id', $user->id)
+    ->where('year', now()->year)
+    ->first();
 
     // Initialize counters
     $leaveThisMonth = 0;
