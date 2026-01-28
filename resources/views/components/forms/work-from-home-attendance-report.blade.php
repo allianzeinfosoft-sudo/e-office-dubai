@@ -20,9 +20,14 @@
                     </select>
                 </div>
 
-                <div class="form-group mb-2 col-sm-6">
-                    <label>Attendance Date <span class="text-danger">*</span></label>
+                <div class="form-group mb-2 col-sm-3">
+                    <label>Sign-in Date <span class="text-danger">*</span></label>
                     <input type="text" name="signin_date" id="{{ $type }}_signin_date" class="form-control">
+                </div>
+
+                <div class="form-group mb-2 col-sm-3">
+                    <label>Sign-out Date <span class="text-danger">*</span></label>
+                    <input type="text" name="signout_date" id="{{ $type }}_signout_date" class="form-control">
                 </div>
 
                 <div class="form-group mb-2 col-sm-4">

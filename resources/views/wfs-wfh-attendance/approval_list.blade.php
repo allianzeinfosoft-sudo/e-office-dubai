@@ -75,6 +75,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    </div>
                       
                                     <div class="tab-pane fade active show" id="navs-pills-top-profile" role="tabpanel">
                                         

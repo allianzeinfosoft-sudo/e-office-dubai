@@ -39,6 +39,7 @@ class WorkFromHomeAttendanceController extends Controller
         $validatedData = $request->validate([
             'employee_id'   => 'required|exists:employees,user_id',
             'signin_date'   => 'required|date',
+            'signout_date'  => 'required|date',
             'signin_time'   => 'required',
             'brake_time'    => 'required',
             'signout_time'  => 'required',
@@ -48,13 +49,14 @@ class WorkFromHomeAttendanceController extends Controller
         $employee = Employee::with('user')->where('user_id', $validatedData['employee_id'])->firstOrFail();
 
         $signinDate   = date('Y-m-d', strtotime($validatedData['signin_date']));
+        $signoutDate  = date('Y-m-d', strtotime($validatedData['signout_date']));
         $signinTime   = CustomHelper::formatTimeToSeconds($validatedData['signin_time']);
         $signoutTime  = CustomHelper::formatTimeToSeconds($validatedData['signout_time']);
         $breakTime    = CustomHelper::formatTimeToSeconds($validatedData['brake_time']);
         $workingHrs   = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signinDate, $signoutTime, $breakTime);
         $totalWorkingTime = $workingHrs['total_working_time'] ?? '00:00:00';
 
-        $is_incomplete = (strtotime($totalWorkingTime) < strtotime('08:00:00')) ? 1 : 0;
+        $is_incomplete = 0; //(strtotime($totalWorkingTime) < strtotime('08:00:00')) ? 1 : 0;
 
         if ($is_incomplete) {
             CustomHelper::addToBlockList([
@@ -76,7 +78,7 @@ class WorkFromHomeAttendanceController extends Controller
                 'emp_id'        => $validatedData['employee_id'],
                 'signin_date'   => $signinDate,
                 'signin_time'   => $signinTime,
-                'signout_date'  => $signinDate,
+                'signout_date'  => $signoutDate,
                 'signout_time'  => $signoutTime,
                 'working_hours' => $totalWorkingTime,
                 'break_time'    => $breakTime,

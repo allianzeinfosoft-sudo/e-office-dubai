@@ -900,7 +900,7 @@ function wfh_attendance(){
     offcanvas.show();
     const workType = 'wfh';
     //$('#modelCustom').modal('show');
-    $('#' + workType + '_signin_date').flatpickr({
+    $('#' + workType + '_signin_date, #' + workType + '_signout_date').flatpickr({
         monthSelectorType: 'static',
         altInput: true,
         altFormat: 'd-m-Y',
@@ -914,7 +914,7 @@ function wos_attendance(){
     offcanvas.show();
     const workType = 'wfs';
     //$('#modelCustom').modal('show');
-    $('#' + workType + '_signin_date').flatpickr({
+    $('#' + workType + '_signin_date, #' + workType + '_signout_date').flatpickr({
         monthSelectorType: 'static',
         altInput: true,
         altFormat: 'd-m-Y',
