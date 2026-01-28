@@ -662,6 +662,30 @@
       window.location.reload();
     });
 
+    document.getElementById('signin_time').addEventListener('change', function () {
+        let selected = this.value; // "HH:MM"
+
+        if (!selected) return;
+
+        // Build selected datetime object
+        const today = new Date();
+        const [hour, minute] = selected.split(":");
+        const selectedTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hour, minute);
+
+        // Current datetime object
+        const now = new Date();
+
+        if (selectedTime > now) {
+            alert("You cannot select a future time.");
+            // Reset to current time
+            this.value = now.toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
+    });
+
   });
 
 // markOutHistory(userId,type){
