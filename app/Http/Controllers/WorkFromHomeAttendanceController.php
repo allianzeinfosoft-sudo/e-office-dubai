@@ -150,6 +150,7 @@ class WorkFromHomeAttendanceController extends Controller
 
     public function get_wfs_wfh_approval_list(){
         $data['meta_title'] = 'WFS /WFS Approval List';
+        $data['employees'] = Employee::where('status', 2)->get();
         $data['wfs_wfh_pending'] = WorkFromHomeAttendance::with('employee')->where('approvel_status', 0)->get();
         return view('wfs-wfh-attendance.approval_list', $data);
     }
@@ -232,4 +233,18 @@ class WorkFromHomeAttendanceController extends Controller
         return redirect()->back()->with('success', 'Wfh / wfs rejected successfully!');
     }
     
+    public function wfs_wfh_attendance_report(Request $request){
+        $from_date = $request->input('from_date')?? now()->format('Y-m-d');
+        $to_date = $request->input('to_date')?? now()->format('Y-m-d');
+        $employee_id = $request->input('employee_id')?? null;
+        $data['meta_title'] = 'WFS / WFH Attendance Report';
+        $data['wfs_wfh_reports'] = WorkFromHomeAttendance::with('employee')->whereBetween('signin_date', [$from_date, $to_date])
+            ->when($employee_id, function ($query) use ($employee_id) {
+                return $query->where('emp_id', $employee_id);
+            })
+        ->get();
+        $data['html'] = view('wfs-wfh-attendance.attendance_report', $data);
+        return response()->json(['status' => 'success', 'html' => $data['html'] ->render()]);
+
+    }
 }

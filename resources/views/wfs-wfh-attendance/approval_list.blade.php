@@ -40,13 +40,39 @@
 
                                 <div class="tab-content ">
                                     <div class="tab-pane fade" id="navs-pills-top-home" role="tabpanel">
-                                        <div class="row">
-                                            <div class="col-12">
-
-                                                
-
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4 class="card-title mb-1"> <i class="ti ti-report ti-sm"></i> WFH/WFS Report</h4>
+                                                <form id="reportForm" method="POST" action="{{ route('wfs_wfh_attendance_report') }}">
+                                                    @csrf
+                                                    <div class="row g-3 align-items-center">
+                                                        <div class="col-md-3">
+                                                            <label for="from_date" class="form-label"> From Date </label>
+                                                            <input type="date" id="from_date" name="from_date" class="form-control" required>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label for="to_date" class="form-label"> To Date </label>
+                                                            <input type="date" id="to_date" name="to_date" class="form-control" required>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label for="employee_id" class="form-label"> Employee </label>
+                                                            <select id="employee_id" name="employee_id" class="form-select select2">
+                                                                <option value="">-- Select Employee --</option>
+                                                                @foreach($employees as $employee)
+                                                                    <option value="{{ $employee->user_id }}">{{ $employee->full_name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-3 mt-4 pt-2">
+                                                            <button type="submit" class="btn btn-primary"> Generate Report </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
                                             </div>
-                                            <div class="col-sm-12" id="reportView"></div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-sm-12" id="reportView"></div>
+                                            </div>
                                         </div>
                                     </div>
                       
@@ -111,7 +137,7 @@
                                                         </tr>
                                                     @empty
                                                         <tr>
-                                                            <td colspan="7" class="text-center">No records found.</td>
+                                                            <td colspan="12" class="text-center">No records found.</td>
                                                         </tr>
                                                     @endforelse
                                                 </tbody>
@@ -148,24 +174,22 @@
 @push('js')
 <script>
     $(function(){
-
+        $('#reportForm').on('submit', function(e){
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response){
+                    $('#reportView').html(response.html);
+                    $('#reportForm')[0].reset();
+                },
+                error: function(xhr, status, error){
+                    alert('An error occurred while generating the report. Please try again.');
+                }
+            });
+        });
     });
-    
-    /* Get Incomplete Working Hours */
-    function getIncompleteWorkingHoursReport() {
-        var year = $('#years').val();
-        var month = $('#months').val();
-        var url = "{{ route('attendance.get-incomplete-working-hours-report') }}";
-        $.ajax({
-            type: "get",
-            url: url,
-            data: { year: year, month: month },
-            dataType: "json",
-            success: function (response) {
-                $('#reportView').html(response.html);
-                $('#incompleteWorkingHoursTable').DataTable();
-            }
-        });    
-    }
+  
 </script>
 @endpush

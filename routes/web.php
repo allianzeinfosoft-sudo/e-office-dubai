@@ -483,6 +483,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/wfs-wfh-approval-list', [WorkFromHomeAttendanceController::class, 'get_wfs_wfh_approval_list'])->name('wfs-wfh-approval-list');
     Route::get('/wfs-wfh-approve/{id}', [WorkFromHomeAttendanceController::class, 'approval_wfs_wfh'])->name('wfs-wfh-approve');
     Route::get('/wfs-wfh-reject/{id}', [WorkFromHomeAttendanceController::class, 'reject_wfs_wfh'])->name('wfs-wfh-reject');
+    Route::post('/wfs_wfh_attendance_report', [WorkFromHomeAttendanceController::class, 'wfs_wfh_attendance_report'])->name('wfs_wfh_attendance_report');
 
     /* conference hall */
     Route::get('/conferance-hall', [ConferenceHallController::class, 'index'])->name('conferance-hall.index');
