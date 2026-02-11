@@ -53,7 +53,7 @@ class WorkFromHomeAttendanceController extends Controller
         $signinTime   = CustomHelper::formatTimeToSeconds($validatedData['signin_time']);
         $signoutTime  = CustomHelper::formatTimeToSeconds($validatedData['signout_time']);
         $breakTime    = CustomHelper::formatTimeToSeconds($validatedData['brake_time']);
-        $workingHrs   = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signinDate, $signoutTime, $breakTime);
+        $workingHrs   = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signoutDate, $signoutTime, $breakTime);
         $totalWorkingTime = $workingHrs['total_working_time'] ?? '00:00:00';
 
         $is_incomplete = 0; //(strtotime($totalWorkingTime) < strtotime('08:00:00')) ? 1 : 0;
