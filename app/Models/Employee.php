@@ -55,7 +55,9 @@ class Employee extends Model
 
     public function holidays()
     {
-        return $this->hasMany(Holiday::class, 'holiday_group', 'holidayGroup');
+        return $this->hasMany(Holiday::class, 'holiday_group', 'holidayGroup')
+        ->orderByRaw('YEAR(date) DESC')  
+        ->orderBy('date', 'ASC');        
     }
 
 }

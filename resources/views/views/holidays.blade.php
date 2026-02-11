@@ -63,8 +63,8 @@
 
         if(eventTable.length){
             eventTable.DataTable({
-                processing: true,
-                serverSide: true,
+                processing: false,
+                serverSide: false,
                 ajax: {
                     type: "GET",
                     url: "{{ route('view.holiday') }}",
