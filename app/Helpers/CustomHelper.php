@@ -758,7 +758,17 @@ public static function getWorkRatingAnalysisMonthly($empId)
     }
     public static function formatTimeToSeconds(string $time): string
     {
-        return Carbon::createFromFormat(strlen($time) === 5 ? 'H:i' : 'H:i:s', $time)->format('H:i:s');
+        $formats = ['H:i:s', 'H:i'];
+
+        foreach ($formats as $format) {
+            try {
+                return Carbon::createFromFormat($format, trim($time))->format('H:i:s');
+            } catch (\Exception $e) {
+                // try next format
+            }
+        }
+
+        throw new \InvalidArgumentException("Invalid time format: {$time}");
     }
 
     public static function getCurrentWorkingTime($userId)
