@@ -91,7 +91,9 @@
                                     @foreach ($images as $index => $image)
                                         <div class="position-relative" id="image-wrapper-{{ $index }}">
                                             <img src="{{ asset($image) }}" alt="Gallery Image {{ $index + 1 }}" onclick="openModal({{ $index }})">
-                                            <button class="delete-btn" onclick="deleteImage('{{ $image }}', {{ $index }})">&times;</button>
+                                            @if (Auth::user()->hasRole(['HR','Developer','G2']))
+                                                <button class="delete-btn" onclick="deleteImage('{{ $image }}', {{ $index }})">&times;</button>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
