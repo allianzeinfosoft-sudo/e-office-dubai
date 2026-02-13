@@ -756,6 +756,7 @@ public static function getWorkRatingAnalysisMonthly($empId)
     public static function customPendingLeaveCount(){
         return Leave::where(['status' => 1])->count();
     }
+    
     public static function formatTimeToSeconds(string $time): string
     {
         $formats = ['H:i:s', 'H:i'];

@@ -192,6 +192,16 @@
                           </div>
                           <!--/ emergency -->
 
+                          <!-- work from home -->
+                            <div class="col-6 col-md-6 col-xl-6 col-lg-6">
+                              <button type="button" class="btn btn-primary w-100" onclick="wfh_attendance()">Work From Home</button>
+                            </div>
+
+                            <div class="col-6 col-md-6 col-xl-6 col-lg-6">
+                              <button type="button" class="btn btn-danger w-100" onclick="wos_attendance()">Work On Site</button>
+                            </div>
+                          <!--/ work from home -->
+
                           <div class="col-12 col-xl-12 col-lg-12 pb-4">
                             <div class="card badge bg-label-dark w-100 pt-3 pb-3">
                                 <div class="d-flex align-items-start justify-content-between">
@@ -246,6 +256,37 @@
 
   </div>
   <!-- / Layout wrapper -->
+
+
+<!-- work from home -->
+ <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wfhOffcanvas" aria-labelledby="staticBackdropLabel">
+  <div class="offcanvas-header bg-primary">
+      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  WFH Attendance & Report </h5>
+      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
+          <x-work-from-home-attendance-report type="wfh" />
+    </div>
+  </div>
+  <div class="offcanvas-footer"></div>
+</div>
+
+
+<!-- work from site -->
+
+<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wosOffcanvas" aria-labelledby="staticBackdropLabel">
+  <div class="offcanvas-header bg-primary">
+      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  Work On Site & Report </h5>
+      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="row">
+          <x-work-from-home-attendance-report type="wfs" />
+    </div>
+  </div>
+  <div class="offcanvas-footer"></div>
+</div>
 
 @endsection
 
@@ -482,6 +523,33 @@ function emergencyMark(type) {
 }
 
 
+function wfh_attendance(){
+    var offcanvasElement = $('#wfhOffcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+    const workType = 'wfh';
+    //$('#modelCustom').modal('show');
+    $('#' + workType + '_signin_date, #' + workType + '_signout_date').flatpickr({
+        monthSelectorType: 'static',
+        altInput: true,
+        altFormat: 'd-m-Y',
+        dateFormat: 'd-m-Y'
+    });
+}
+
+function wos_attendance(){
+    var offcanvasElement = $('#wosOffcanvas');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+    const workType = 'wfs';
+    //$('#modelCustom').modal('show');
+    $('#' + workType + '_signin_date, #' + workType + '_signout_date').flatpickr({
+        monthSelectorType: 'static',
+        altInput: true,
+        altFormat: 'd-m-Y',
+        dateFormat: 'd-m-Y'
+    });
+}
 
 </script>
 @stop
