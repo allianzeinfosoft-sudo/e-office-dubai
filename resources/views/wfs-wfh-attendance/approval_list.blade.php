@@ -183,6 +183,14 @@
                 data: $(this).serialize(),
                 success: function(response){
                     $('#reportView').html(response.html);
+                    $('#wfh-wsf-report-table').DataTable({
+                        dom: 'Bfrtip',
+                        buttons: [
+                            { extend: 'excelHtml5', title: 'WFH/WFS Report' },
+                            { extend: 'pdfHtml5', title: 'WFH/WFS Report', orientation: 'landscape', pageSize: 'A4' },
+                            { extend: 'print', title: 'WFH/WFS Report' }
+                        ],
+                    });
                     $('#reportForm')[0].reset();
                 },
                 error: function(xhr, status, error){

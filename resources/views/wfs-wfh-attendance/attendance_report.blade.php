@@ -1,7 +1,7 @@
 <div class="row">
      <div class="col-sm-12">
           <div class="table-responsive">
-               <table class="table table-bordered">
+               <table class="table table-bordered" id="wfh-wsf-report-table">
                     <thead>
                          <tr>
                               <th>Employee Name</th>

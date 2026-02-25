@@ -183,7 +183,14 @@
             dataType: "json",
             success: function (response) {
                 $('#reportView').html(response.html);
-                $('#incompleteWorkingHoursTable').DataTable();
+                $('#incompleteWorkingHoursTable').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        { extend: 'excelHtml5', title: 'Incomplete Working Hours Report of ' + month + ' ' + year },
+                        { extend: 'pdfHtml5', title: 'Incomplete Working Hours Report of ' + month + " " + year, orientation: 'landscape', pageSize: 'A4'},
+                        { extend: 'print', title: 'Incomplete Working Hours Report of ' + month + ' ' + year }
+                    ],
+                });
             }
         });    
     }
