@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Schema;
 use App\Models\BackgroundImage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +22,10 @@ class ViewServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (!Schema::hasTable('background_images')) {
+            return;
+        }
+
         $bgImage = BackgroundImage::with('appearance')
                         ->where('background_type', 'all')
                         ->first();

@@ -1,0 +1,4 @@
+Some issues facing in after clone the project
+=========================================================
+1. Duplicate permission table create in migrate table. I have delete the last migration file
+2. asset_lineitem_id unknown column after - just change to asset_mapping_id

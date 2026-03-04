@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('allocation_line_items', function (Blueprint $table) {
-            $table->string('allocation_type')->nullable()->after('asset_itemline_id'); // replace 'existing_column' with the column after which it should appear
+            $table->string('allocation_type')->nullable()->after('asset_mapping_id'); // replace 'existing_column' with the column after which it should appear
             $table->unsignedBigInteger('allocated_user')->nullable()->after('allocation_type');
         });
     }
