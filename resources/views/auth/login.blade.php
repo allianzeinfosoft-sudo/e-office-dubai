@@ -12,7 +12,8 @@
                 alt="auth-login-cover"
                 class="img-fluid my-5 auth-illustration w-75"
                 data-app-light-img="illustrations/auth-login-illustration-light.png"
-                data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
+                data-app-dark-img="illustrations/auth-login-illustration-dark.png"
+                />
             </div>
         </div>
       <!-- /Left Text -->
