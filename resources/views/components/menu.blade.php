@@ -20,7 +20,7 @@ $badges = [
     <div class="app-brand demo">
         <a href="{{ route('home') }}" class="app-brand-link">
             <span class="logo-white">
-                <img class="w-100" src="{{asset('assets/img/icons/logo-white.png') }} ">
+                <img class="w-100" src="{{asset('assets/img/icons/ae-logo-light.png') }} ">
             </span>
         </a>
 

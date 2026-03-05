@@ -12,7 +12,7 @@
             <div class="app-brand justify-content-center mb-4 mt-2">
               <a href="feeds.html" class="app-brand-link">
                   <span class="logo-white">
-                    <img class="w-100" src="../../assets/img/icons/logo-white.png">
+                    <img class="w-100" src="{{ asset('assets/img/icons/ae-logo-light.png') }}">
                   </span>
                 </a>
             </div>

@@ -1066,7 +1066,7 @@ public static function getWorkRatingAnalysisMonthly($empId)
          if(Auth::check()){
             $userId = Auth::id();
         }
-        if(Auth::user()->employee->department->name == 'Technical' )
+        if(Auth::user()->employee->department?->name == 'Technical' )
         {
              return TicketRaising::where('status',0)->count();
         }else{

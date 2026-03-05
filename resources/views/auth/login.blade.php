@@ -8,7 +8,7 @@
       <div class="d-none d-lg-flex col-lg-7 p-0">
             <div class="auth-cover-bg d-flex justify-content-center align-items-center">
             <img
-                src="../assets/img/icons/logo-white.png"
+                src="{{ asset('assets/img/icons/ae-logo-light.png') }}"
                 alt="auth-login-cover"
                 class="img-fluid my-5 auth-illustration w-75"
                 data-app-light-img="illustrations/auth-login-illustration-light.png"
