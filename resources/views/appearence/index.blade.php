@@ -217,7 +217,7 @@ function renderImages(images) {
 
         const imageHtml = `<div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 col-12 mb-5" id="bg-${image.id}">
             <div class="parent shadow">
-                <img src="/storage/${image.image}" alt="Image" class="img-fluid w-100 galery-cover" >
+                <img src="${image.image}" alt="Image" class="img-fluid w-100 galery-cover" >
             </div>
             <div class="d-flex justify-content-between shadow br-lb10 br-rb10 bg-white p-3">
                 <button class="btn btn-danger waves-effect waves-light delete-background-image delete-image-${image.id}" data-id="${image.id}" data-bg_type="${cat}">
