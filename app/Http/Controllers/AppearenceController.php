@@ -27,7 +27,7 @@ class AppearenceController extends Controller
                     return [
                         'id' => $background->id,
                         'background_type' => $type, // now a string
-                        'image' => asset('storage/' . ($background->image ?? '')),
+                        'image' => asset('public_storage/' . ($background->image ?? '')),
                         'is_active' => $isActive,
                     ];
                 });
