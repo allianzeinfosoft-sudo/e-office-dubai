@@ -19,7 +19,7 @@
 
     .modal-content {
         border-radius: 15px;
-        border: 2px solid #ff5f10;
+        border: 2px solid #276166;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         background-color: #fdfdfd;
     }

@@ -32,12 +32,12 @@
                 <a id="y" style="font-size: 20px;">0</a>
 
               </div>
-          <h3 class="mb-1 text-primary fw-bold">{{ __('en.welcome') }} </h3>
+          <h3 class="mb-1  text-white fw-bold">{{ __('en.welcome') }} </h3>
           <!-- <p class="mb-4">{{ __('en.slogan') }}</p>  -->
           <form id="formAuthentication" class="mb-3" method="POST" action="/login">
             @csrf
             <div class="mb-3">
-              <label for="email" class="form-label">{{ __('en.email')}}</label>
+              <label for="email" class="form-label text-white">{{ __('en.email')}}</label>
               <input id="email" type="email" class="form-control h-px-50 @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="{{ __('en.email_placeholder')}}" autofocus tabindex="1" >
                 @error('email')
                     <span class="invalid-feedback" role="alert">
@@ -47,10 +47,10 @@
             </div>
             <div class="mb-3 form-password-toggle">
               <div class="d-flex justify-content-between">
-                <label class="form-label" for="password">{{ __('en.password')}} </label>
+                <label class="form-label text-white" for="password">{{ __('en.password')}} </label>
                 @if (Route::has('password.request'))
 
-                    <a class="text-primary" href="mailto:hr@mail.allianzegroup.com?subject={{ 'Please Reset My Password' }}&body={{ urlencode('Reason:') }}">
+                    <a class="" href="mailto:hr@mail.allianzegroup.com?subject={{ 'Please Reset My Password' }}&body={{ urlencode('Reason:') }}">
                         <small>{{ __('en.forgot_password')}}</small>
                     </a>
 
@@ -69,7 +69,7 @@
             <div class="mb-3">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} tabindex="4">
-                <label class="form-check-label" for="remember">
+                <label class="form-check-label text-white" for="remember">
                     {{ __('en.remember_me') }}
                 </label>
               </div>
@@ -77,9 +77,9 @@
             <button  type="submit" class="btn btn-primary d-grid w-100" tabindex="5">{{ __('en.login') }}</button>
           </form>
 
-          <p class="text-center">
-            <span>New on our platform?</span>
-            <a class="text-primary" href="{{ route('register') }}" tabindex="6">
+          <p class="text-center ">
+            <span class="text-white">New on our platform?</span>
+            <a class=" " href="{{ route('register') }}" tabindex="6">
               <span>{{ __('en.register')}}</span>
             </a>
           </p>

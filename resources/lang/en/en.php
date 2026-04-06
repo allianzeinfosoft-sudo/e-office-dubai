@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'welcome' => 'Welcome to E-Office! 👋',
+    'welcome' => 'Welcome to E-Office!',
     'slogan' => 'Allianze Staff Portal - Connecting Teams, Unlocking Potential.',
     'email' => 'Email',
     'email_placeholder' => 'Enter your email',

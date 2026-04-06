@@ -12501,7 +12501,7 @@ html:not([dir=rtl]) .card .card-separator {
 
 .bg-danger {
   --bs-bg-opacity: 1;
-  background-color: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity)) !important;
+  background-color: #04666f  !important;
 }
 
 .bg-light {
@@ -20778,7 +20778,7 @@ a.bg-twitter:hover, a.bg-twitter:focus {
 }
 
 .bg-google-plus {
-  background-color: #dd4b39 !important;
+  background-color: #04666f !important;
 }
 
 a.bg-google-plus:hover, a.bg-google-plus:focus {
@@ -20786,18 +20786,18 @@ a.bg-google-plus:hover, a.bg-google-plus:focus {
 }
 
 .dropdown-notifications-item:not(.mark-as-read) .dropdown-notifications-read span {
-  background-color: #dd4b39;
+  background-color: #04666f;
 }
 
 .bg-label-google-plus {
   background-color: #fae4e1 !important;
-  color: #dd4b39 !important;
+  color: #04666f !important;
 }
 
 .btn-google-plus {
   color: #fff;
-  background-color: #dd4b39;
-  border-color: #dd4b39;
+  background-color: #04666f;
+  border-color: #04666f;
 }
 .btn-google-plus:hover {
   color: #fff !important;
@@ -20817,8 +20817,8 @@ a.bg-google-plus:hover, a.bg-google-plus:focus {
 }
 .btn-google-plus.disabled, .btn-google-plus:disabled {
   color: #fff !important;
-  background-color: #dd4b39 !important;
-  border-color: #dd4b39 !important;
+  background-color: #04666f !important;
+  border-color: #04666f !important;
   box-shadow: none !important;
 }
 
@@ -20829,7 +20829,7 @@ a.bg-google-plus:hover, a.bg-google-plus:focus {
 }
 
 .btn-label-google-plus {
-  color: #dd4b39;
+  color: #04666f;
   border-color: transparent;
   background: #fae2df;
 }
@@ -20839,15 +20839,15 @@ a.bg-google-plus:hover, a.bg-google-plus:focus {
 .btn-label-google-plus:hover {
   border-color: transparent !important;
   background: #f7d4cf !important;
-  color: #dd4b39 !important;
+  color: #04666f !important;
 }
 .btn-label-google-plus:focus, .btn-label-google-plus.focus {
-  color: #dd4b39;
+  color: #04666f;
   background: #f7d4cf;
   box-shadow: none !important;
 }
 .btn-label-google-plus:active, .btn-label-google-plus.active, .btn-label-google-plus.show.dropdown-toggle, .show > .btn-label-google-plus.dropdown-toggle {
-  color: #dd4b39 !important;
+  color: #04666f !important;
   background-color: #f7d4cf !important;
   border-color: transparent !important;
 }
@@ -20855,7 +20855,7 @@ a.bg-google-plus:hover, a.bg-google-plus:focus {
   box-shadow: none;
 }
 .btn-label-google-plus.disabled, .btn-label-google-plus:disabled {
-  color: #dd4b39 !important;
+  color: #04666f !important;
   border-color: transparent !important;
   background: #fae4e1 !important;
   box-shadow: none;
@@ -20868,40 +20868,40 @@ a.bg-google-plus:hover, a.bg-google-plus:focus {
 }
 
 .btn-outline-google-plus {
-  color: #dd4b39;
-  border-color: #dd4b39;
+  color: #04666f;
+  border-color: #04666f;
   background: transparent;
 }
 .btn-outline-google-plus.waves-effect .waves-ripple {
   background: radial-gradient(rgba(221, 75, 57, 0.2) 0, rgba(221, 75, 57, 0.3) 40%, rgba(221, 75, 57, 0.4) 50%, rgba(221, 75, 57, 0.5) 60%, rgba(255, 255, 255, 0) 70%);
 }
 .btn-outline-google-plus:hover {
-  color: #dd4b39 !important;
+  color: #04666f !important;
   background-color: #fcf1ef !important;
-  border-color: #dd4b39 !important;
+  border-color: #04666f !important;
 }
 .btn-check:focus + .btn-outline-google-plus, .btn-outline-google-plus:focus {
-  color: #dd4b39;
+  color: #04666f;
   background-color: #fcf1ef;
-  border-color: #dd4b39;
+  border-color: #04666f;
   box-shadow: none;
 }
 .btn-check:checked + .btn-outline-google-plus, .btn-check:active + .btn-outline-google-plus, .btn-outline-google-plus:active, .btn-outline-google-plus.active, .btn-outline-google-plus.dropdown-toggle.show {
-  color: #dd4b39 !important;
+  color: #04666f !important;
   background-color: #fae2df !important;
-  border-color: #dd4b39 !important;
+  border-color: #04666f !important;
 }
 .btn-check:checked + .btn-outline-google-plus:focus, .btn-check:active + .btn-outline-google-plus:focus, .btn-outline-google-plus:active:focus, .btn-outline-google-plus.active:focus, .btn-outline-google-plus.dropdown-toggle.show:focus {
   box-shadow: none;
 }
 .btn-outline-google-plus.disabled, .btn-outline-google-plus:disabled {
-  color: #dd4b39 !important;
+  color: #04666f !important;
   background-color: transparent !important;
 }
 
 .btn-outline-google-plus .badge {
-  background: #dd4b39;
-  border-color: #dd4b39;
+  background: #04666f;
+  border-color: #04666f;
   color: #fff;
 }
 
@@ -20910,8 +20910,8 @@ a.bg-google-plus:hover, a.bg-google-plus:focus {
 .btn-outline-google-plus:active .badge,
 .btn-outline-google-plus.active .badge,
 .show > .btn-outline-google-plus.dropdown-toggle .badge {
-  background: #dd4b39;
-  border-color: #dd4b39;
+  background: #04666f;
+  border-color: #04666f;
 }
 
 .bg-instagram {
