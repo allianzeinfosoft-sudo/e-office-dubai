@@ -6,6 +6,7 @@ use App\Models\Appearence;
 use App\Models\BackgroundImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AppearenceController extends Controller
 {
@@ -27,7 +28,8 @@ class AppearenceController extends Controller
                     return [
                         'id' => $background->id,
                         'background_type' => $type, // now a string
-                        'image' => asset('storage/' . ($background->image ?? '')),
+                        //'image' => asset('storage/' . ($background->image ?? '')),
+                        'image' => Storage::disk('public')->url($background->image ?? ''),
                         'is_active' => $isActive,
                     ];
                 });
