@@ -28,8 +28,8 @@ class AppearenceController extends Controller
                     return [
                         'id' => $background->id,
                         'background_type' => $type, // now a string
-                        //'image' => asset('storage/' . ($background->image ?? '')),
-                        'image' => Storage::disk('public')->url($background->image ?? ''),
+                        'image' => asset('storage/' . ($background->image ?? '')),
+                        //'image' => Storage::disk('public')->url($background->image ?? ''),
                         'is_active' => $isActive,
                     ];
                 });
