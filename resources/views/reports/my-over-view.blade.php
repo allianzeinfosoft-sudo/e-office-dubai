@@ -35,7 +35,7 @@
                                                     <!-- user avatar -->
                                                     <div class="user-avatar-section">
                                                         <div class="d-flex align-items-center flex-column">
-                                                        <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image ) : '../../assets/img/avatars/15.png' }}" height="150" width="150" alt="User avatar">
+                                                        <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image ) : '../../assets/img/avatars/default-avatar.png' }}" height="150" width="150" alt="User avatar">
                                                         <div class="user-info text-center">
                                                             <h4 class="mb-2">{{ $current_user->full_name ?? '' }}</h4>
                                                             <span class="badge bg-label-secondary mt-1">{{ $current_user->designation ? $current_user->designation->designation : '' }}</span>

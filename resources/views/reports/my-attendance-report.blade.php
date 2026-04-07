@@ -39,7 +39,7 @@
                                                             <!-- user avatar -->
                                                             <div class="user-avatar-section">
                                                                 <div class="d-flex align-items-center jestify-content-center gap-3">
-                                                                <img class="img-fluid rounded mb-3 pt-1" src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image ) : '../../assets/img/avatars/15.png' }}" height="100" width="100" alt="User avatar">
+                                                                <img class="img-fluid rounded mb-3 pt-1" src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image ) : '../../assets/img/avatars/default-avatar.png' }}" height="100" width="100" alt="User avatar">
                                                                 <div class="user-info">
                                                                     <h4 class="mb-2">{{ $current_user->full_name ?? '' }}</h4>
                                                                     <span class="badge bg-label-danger mt-1">{{ $current_user->employeeID ?? '' }}</span>
