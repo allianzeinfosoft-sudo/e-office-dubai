@@ -287,21 +287,12 @@ document.addEventListener('DOMContentLoaded', function (e) {
           },
         mobile_number: {
             validators: {
-
-                regexp: {
-                    regexp: /^[6-9]\d{9}$/,
-                    message: 'Enter a valid 10-digit mobile number'
-                }
             }
         },
         phonenumber: {
             validators: {
                 notEmpty: {
                     message: 'Phone number is required'
-                },
-                regexp: {
-                    regexp: /^[6-9]\d{9}$/,
-                    message: 'Enter a valid 10-digit phone number'
                 }
             }
           },
