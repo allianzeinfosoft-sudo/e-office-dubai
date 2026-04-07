@@ -235,6 +235,28 @@ class AttendanceController extends Controller{
                     return view('attendance.work_report', $data);
                 }
 
+                 $todayMinutes = Attendance::where('username', Auth::user()->username)
+                    ->whereDate('signin_date', now()->format('Y-m-d'))
+                    ->selectRaw("
+                        COALESCE(SUM(
+                            TIMESTAMPDIFF(
+                                MINUTE,
+                                STR_TO_DATE(CONCAT(signin_date, ' ', signin_time), '%Y-%m-%d %H:%i:%s'),
+                                CASE
+                                    WHEN signout_date IS NOT NULL AND signout_time IS NOT NULL
+                                    THEN STR_TO_DATE(CONCAT(signout_date, ' ', signout_time), '%Y-%m-%d %H:%i:%s')
+                                    ELSE STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s')
+                                END
+                            )
+                        ), 0) as today_minutes
+                    ", [now()->format('Y-m-d H:i:s')])
+                    ->value('today_minutes') ?? 0;
+
+                $todayHours = intdiv($todayMinutes, 60);
+                $todayMins  = $todayMinutes % 60;
+                $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
+                $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
+
             return view('attendance.index', $data);
         }
         
