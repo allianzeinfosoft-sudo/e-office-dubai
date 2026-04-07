@@ -27,19 +27,21 @@ $(function () {
 
 function updateClock(element) {
     var currentTime = new Date();
-    var hours = currentTime.getHours();
-    var minutes = currentTime.getMinutes();
-    var seconds = currentTime.getSeconds();
 
-    // Format hours, minutes, and seconds to always show two digits
-    hours = (hours < 10 ? "0" : "") + hours;
-    minutes = (minutes < 10 ? "0" : "") + minutes;
-    seconds = (seconds < 10 ? "0" : "") + seconds;
+    // Fallback to 'UTC' if the config isn't found
+    var tz = window.AppConfig ? window.AppConfig.timezone : 'UTC';
 
-    // Combine to form the time string
-    var timeString = hours + ":" + minutes + ":" + seconds;
+    // Use toLocaleString to get the time in Dubai (Asia/Dubai)
+    var dubaiTimeStr = currentTime.toLocaleString("en-US", {
+       // timeZone: "Asia/Dubai",
+        timeZone: tz,
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
 
     // Display the time on the page
-    $('#clock').html('<i class="ti ti-clock fis rounded-circle fs-4"></i> ' +timeString);
-    $('#attendance_clock').html(timeString);
+    $('#clock').html('<i class="ti ti-clock fis rounded-circle fs-4"></i> ' + dubaiTimeStr);
+    $('#attendance_clock').html(dubaiTimeStr);
 }

@@ -75,6 +75,11 @@
             background-color: #00000075;
         }
     </style>
+    <script>
+        window.AppConfig = {
+            timezone: "{{ config('app.timezone') }}"
+        };
+    </script>
     @yield('css')
 
 

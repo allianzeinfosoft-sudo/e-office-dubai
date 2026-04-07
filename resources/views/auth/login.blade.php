@@ -99,31 +99,45 @@
 });
 
 function updateClock() {
-  var now = new Date();
-  var sec = now.getSeconds(),
-      min = now.getMinutes(),
-      hou = now.getHours(),
-      mo = now.getMonth(),
-      dy = now.getDate(),
-      yr = now.getFullYear();
+    var now = new Date();
+    // Get the timezone from Laravel config, default to UTC if missing
+    var tz = window.AppConfig ? window.AppConfig.timezone : 'UTC';
 
-  var months = ["January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"];
+    // Format the date parts according to the specific timezone
+    var formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
 
-  // Add pad function to Number prototype if not already present
-  Number.prototype.pad = function(size) {
-    var s = String(this);
-    while (s.length < size) s = "0" + s;
-    return s;
-  };
+    // Extract individual parts (month, day, year, etc.) from the formatted date
+    var parts = formatter.formatToParts(now);
+    var dateMap = {};
+    parts.forEach(function(part) {
+        dateMap[part.type] = part.value;
+    });
 
-  var tags = ["mon", "d", "y", "h", "m", "s"];
-  var corr = [months[mo], dy, yr, hou.pad(2), min.pad(2), sec.pad(2)];
+    // Map the extracted parts to your HTML element IDs
+    var tags = ["mon", "d", "y", "h", "m", "s"];
+    var corr = [
+        dateMap.month,  // e.g., "April"
+        dateMap.day,    // e.g., "07"
+        dateMap.year,   // e.g., "2026"
+        dateMap.hour,   // e.g., "11"
+        dateMap.minute, // e.g., "13"
+        dateMap.second  // e.g., "15"
+    ];
 
-  for (var i = 0; i < tags.length; i++) {
-    var el = document.getElementById(tags[i]);
-    if (el) el.textContent = corr[i];
-  }
+    // Update the DOM
+    for (var i = 0; i < tags.length; i++) {
+        var el = document.getElementById(tags[i]);
+        if (el) el.textContent = corr[i];
+    }
 }
 
 function initClock() {
