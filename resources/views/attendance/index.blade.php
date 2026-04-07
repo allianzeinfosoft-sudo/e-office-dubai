@@ -182,7 +182,7 @@
                                           <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance_current?->id }}" />
                                       </div>
                                       <div class="text-center">
-                                          <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100">
+                                          <button type="button" id="mark-out-btn" class="btn p-3 btn-danger w-100">
                                               <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out
                                           </button>
                                       </div>
@@ -217,7 +217,7 @@
                                       </div>
 
                                       <div class="text-center">
-                                          <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100">
+                                          <button type="button" id="mark-out-btn" class="btn p-3 btn-danger w-100">
                                               <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out
                                           </button>
                                       </div>
@@ -240,7 +240,7 @@
                                             <input type="hidden" name="attendance_id" id="attendance_id" value="{{ $attendance?->id }}" />
                                         </div>
                                         <div class="text-center">
-                                            <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
+                                            <button type="button" id="mark-out-btn" class="btn p-3 btn-danger w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
                                         </div>
                                     @elseif($attendance->status === 'mark-out')
                                         <div class="badge bg-label-warning p-3 w-100 mb-3" id="last-punch-time" role="alert">
@@ -280,7 +280,7 @@
 
                               @else
                                 <div class="text-center">
-                                  <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
+                                  <button type="button" id="mark-out-btn" class="btn p-3 btn-danger w-100"> <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out </button>
                                 </div>
                               @endif
 
