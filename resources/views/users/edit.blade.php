@@ -256,9 +256,10 @@
                     <div class="col-md-4 mb-3">
                       <label for="shift_id" class="form-label">Shift No:</label>
                         <select id="shift_id" name="shift_id" class="select2 form-select form-select-lg" data-allow-clear="true">
-                         @foreach ($work_shifts as $work_shift)
-                            <option value="{{  $work_shift->id ?? '' }}" {{ old('shift_id', $user->employee?->shift_id) == $work_shift->id ? 'selected' : '' }}>{{  $work_shift->shift_id ?? '' }} </option>
-                         @endforeach
+                             <option value="">Select Shift</option>
+                             @foreach ($work_shifts as $work_shift)
+                                <option value="{{  $work_shift->id ?? '' }}" data-login_limit="{{ $work_shift->login_limited_time ?? '' }}" {{ old('shift_id', $user->employee?->shift_id) == $work_shift->id ? 'selected' : '' }}>{{  $work_shift->shift_id ?? '' }} </option>
+                             @endforeach
                         </select>
                     </div>
 
@@ -448,6 +449,12 @@
             // On status change
             $('#status').on('change', function () {
                 toggleResignedDateField();
+            });
+
+            $('#shift_id').on('change', function () {
+                const selectedShift = $(this).find(':selected');
+                const loginLimit = selectedShift.data('login_limit');
+                $('#login_limited_time').val(loginLimit);
             });
         });
     </script>
