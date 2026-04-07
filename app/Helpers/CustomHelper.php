@@ -37,7 +37,8 @@ use Illuminate\Support\Facades\Http;
 class CustomHelper{
 
     public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null){
-        $timezone = 'Asia/Kolkata';
+        $timezone = config('app.timezone', 'UTC');
+        //$timezone = 'Asia/Kolkata';
 
         try {
             // Ensure all inputs are strings
@@ -774,7 +775,8 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
     public static function getCurrentWorkingTime($userId)
     {
-        $timezone = 'Asia/Kolkata';
+        $timezone = config('app.timezone', 'UTC');
+        //$timezone = 'Asia/Kolkata';
 
         $attendance = Attendance::where('emp_id', $userId)
             ->whereDate('signin_date', Carbon::now($timezone)->toDateString())

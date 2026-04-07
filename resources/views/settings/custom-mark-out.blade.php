@@ -113,7 +113,7 @@
 
                     <div class="col-6 mb-3">
                         <label for="signout_time" class="form-label">Mark-out Time <span class="text-danger">*</span></label>
-                        <input class="form-control" type="time" id="signout_time" name="signout_time" value="{{ \Carbon\Carbon::now('Asia/Kolkata')->format('H:i') }}"  placeholder="Time" />
+                        <input class="form-control" type="time" id="signout_time" name="signout_time" value="{{ \Carbon\Carbon::now(config('app.timezone', 'UTC'))->format('H:i') }}"  placeholder="Time" />
                     </div>
                     <div class="col-6 mb-3">
                         <label for="signout_time" class="form-label">Mark-out Date <span class="text-danger">*</span></label>

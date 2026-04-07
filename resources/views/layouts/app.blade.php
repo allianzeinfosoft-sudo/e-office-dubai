@@ -77,7 +77,7 @@
     </style>
     <script>
         window.AppConfig = {
-            timezone: "{{ config('app.timezone') }}"
+            timezone: "{{ config('app.timezone', 'UTC') }}"
         };
     </script>
     @yield('css')
