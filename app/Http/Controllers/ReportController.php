@@ -995,7 +995,7 @@ class ReportController extends Controller
             return [
                 'id'           => $employee->id,
                 'name'         => $employee->full_name ?? '-',
-                'emp_id'       => 'AIS-'.$employee->employeeID ?? '-',
+                'emp_id'       => 'AISUAE-'.$employee->employeeID ?? '-',
                 'email'        => $employee->user?->email ?? '-',
                 'phone'        => $employee->phonenumber ?? '-',
                 'role'         => $employee->role ?? '-',
