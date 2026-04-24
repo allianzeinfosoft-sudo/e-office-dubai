@@ -61,7 +61,7 @@
                             @endif
 
                             <span class="btn btn-primary">
-                              <li class="list-inline-item"><i class="ti ti-user mt-n2"></i>AIS-{{ $user->employee->employeeID ?? 'N/A' }}</li>
+                              <li class="list-inline-item"><i class="ti ti-user mt-n2"></i>AISUAE-{{ $user->employee->employeeID ?? 'N/A' }}</li>
                             </span>
 
                             @if ($user->employee->status === 4)
