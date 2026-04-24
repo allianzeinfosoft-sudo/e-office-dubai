@@ -202,6 +202,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/departments/{department}/designations', [BranchController::class, 'getDesignations'])->name('department.designations');
     Route::post('/designation/save',[BranchController::class, 'designation_store'])->name('designation.store');
 
+    
+
 
     // leave route
     Route::resource('leaves',LeaveController::class);

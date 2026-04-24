@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Designation;
 use Illuminate\Http\Request;
@@ -11,18 +12,18 @@ class DepartmentController extends Controller
 
     public function index(Request $request)
     {
-         /* ajax request */
-         if ($request->ajax()) {
+        /* ajax request */
+        if ($request->ajax()) {
             // Handle the AJAX request here
             $designation = Designation::with('department')->get()
-            ->map(function ($designation) {
-                return [
-                    'id' => $designation->id,
-                    'department' => $designation->department ? $designation->department->department : '',
-                    'designation' =>  $designation->designation ? $designation->designation : '',
-                    'created_at' => $designation->created_at ? $designation->created_at : '',
-                ];
-            });
+                ->map(function ($designation) {
+                    return [
+                        'id' => $designation->id,
+                        'department' => $designation->department ? $designation->department->department : '',
+                        'designation' => $designation->designation ? $designation->designation : '',
+                        'created_at' => $designation->created_at ? $designation->created_at : '',
+                    ];
+                });
 
             return response()->json([
                 'data' => $designation
@@ -46,12 +47,16 @@ class DepartmentController extends Controller
     {
         $branch = $request->branch_select ? $request->branch_select : null;
         $department_name = $request->department_name ? $request->department_name : null;
-
-        Department::create([
+        $branchName = Branch::find($branch)->branch;
+        $department = Department::create([
             'branch_id' => $branch,
+            'branch' => $branchName,
             'department' => $department_name,
         ]);
-        return back()->with('success', 'Department created successfully!');
+        return response()->json([
+            'message' => 'Department created successfully!',
+            'data' => $department
+        ]);
 
     }
 

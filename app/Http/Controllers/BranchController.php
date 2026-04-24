@@ -20,8 +20,8 @@ class BranchController extends Controller
 
     public function index()
     {
-      $branches = Branch::all();
-      return view('branch.index',compact('branches'));
+        $branches = Branch::all();
+        return view('branch.index', compact('branches'));
     }
 
     public function getBranches()
@@ -50,13 +50,18 @@ class BranchController extends Controller
     public function store(Request $request)
     {
 
-        $branch_name =  $request->branch_name;
+        $branch_name = $request->branch_name;
         $branch_location = $request->branch_location;
-        Branch::create([
+        $data = Branch::create([
             'branch' => $branch_name,
             'location' => $branch_location,
         ]);
-        return back()->with('success', 'Branch created successfully!');
+
+        if ($data) {
+            return response()->json(['success' => 'Branch created successfully!', 'data' => $data]);
+        } else {
+            return response()->json(['error' => 'Branch creation failed!']);
+        }
     }
 
 
@@ -97,14 +102,14 @@ class BranchController extends Controller
 
     public function getDepartments($branchId)
     {
-        $departments = Department::select('id','department')->where('branch_id', $branchId)->get();
+        $departments = Department::select('id', 'department')->where('branch_id', $branchId)->get();
         return response()->json($departments);
     }
 
     public function getDesignations($departmentId)
     {
 
-        $designations = Designation::select('id','designation')->where('department_id', $departmentId)->get();
+        $designations = Designation::select('id', 'designation')->where('department_id', $departmentId)->get();
         return response()->json($designations);
     }
 }
