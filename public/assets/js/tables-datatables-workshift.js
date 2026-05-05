@@ -146,11 +146,17 @@ $(function () {
             searchable: false // Optional: exclude from search
         },
         {
-
            targets: 1,
            render: function (data, type, full, meta) {
              let $ShiftId = full['shift_id'];
-             return "<span class='text-truncate d-flex align-items-center'>" + $ShiftId + '</span>';
+             let $workingDays = full['working_days'] || [];
+             let daysHtml = $workingDays.length > 0 
+                ? `<div class="text-muted small">${$workingDays.join(' ')}</div>` 
+                : '';
+             return `<div>
+                        <span class='fw-bold'>${$ShiftId}</span>
+                        ${daysHtml}
+                     </div>`;
            }
         },
 
@@ -201,6 +207,7 @@ $(function () {
             render: function (data, type, row, full) {
                 return `
                      <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success edit-workshift" onclick="openShiftOffcanvas(${row.id})"><i class="ti ti-pencil"></i></a>
+                     <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-info configure-working-days" onclick="openWorkingDaysOffcanvas(${row.id})"><i class="ti ti-calendar"></i></a>
                       <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger delete-workshift" data-id="${row.id}"><i class="ti ti-trash"></i></a>`;
             }
         }
@@ -296,4 +303,115 @@ function openShiftOffcanvas(targetId = null) {
     var offcanvasElement = $('#add-new-shift');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
+}
+
+
+
+let mainShiftDefaults = {};
+
+function openWorkingDaysOffcanvas(workshiftId) {
+    $('#workshift_id_detail').val(workshiftId);
+    $('#working-days-offcanvas-title').html('Configure Working Days');
+    
+    // Fetch main shift data to use as defaults
+    $.ajax({
+        url: `/workshift/${workshiftId}/edit`,
+        type: 'GET',
+        success: function(data) {
+            mainShiftDefaults = {
+                start: data.workshift.shift_start_time,
+                end: data.workshift.shift_end_time,
+                min: data.workshift.mini_break_time,
+                max: data.workshift.max_break_time
+            };
+            resetDetailForm(); // This will now use the defaults
+        }
+    });
+
+    loadWorkingDays(workshiftId);
+    
+    var offcanvasElement = $('#offcanvas-working-days');
+    var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvas.show();
+}
+
+function resetDetailForm() {
+    $('#form-working-days')[0].reset();
+    $('#target_detail_id').val('');
+    $('.data-submit').text('Save Day Configuration');
+    
+    // Clear/Set flatpickr with defaults
+    if (mainShiftDefaults.start) {
+        $('#detail_start_time')[0]._flatpickr.setDate(mainShiftDefaults.start);
+        $('#detail_end_time')[0]._flatpickr.setDate(mainShiftDefaults.end);
+        $('#detail_min_break')[0]._flatpickr.setDate(mainShiftDefaults.min);
+        $('#detail_max_break')[0]._flatpickr.setDate(mainShiftDefaults.max);
+    } else {
+        $('#detail_start_time')[0]._flatpickr.clear();
+        $('#detail_end_time')[0]._flatpickr.clear();
+        $('#detail_min_break')[0]._flatpickr.clear();
+        $('#detail_max_break')[0]._flatpickr.clear();
+    }
+}
+
+function loadWorkingDays(workshiftId) {
+    $.ajax({
+        url: `/settings/workshift/all-details/${workshiftId}`,
+        type: 'GET',
+        success: function(data) {
+            let html = '';
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${item.day}</td>
+                            <td>${item.shift_start_time} - ${item.shift_end_time}</td>
+                            <td>Min: ${item.mini_break_time}<br>Max: ${item.max_break_time}</td>
+                            <td>
+                                <button class="btn btn-sm btn-icon btn-primary" onclick="editWorkshiftDetail(${item.id})"><i class="ti ti-pencil"></i></button>
+                                <button class="btn btn-sm btn-icon btn-danger" onclick="deleteWorkshiftDetail(${item.id}, ${workshiftId})"><i class="ti ti-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                html = '<tr><td colspan="4" class="text-center">No configurations set for this shift.</td></tr>';
+            }
+            $('#working-days-list').html(html);
+        }
+    });
+}
+
+function editWorkshiftDetail(detailId) {
+    $.ajax({
+        url: `/settings/workshift/details/fetch/${detailId}`,
+        type: 'GET',
+        success: function(data) {
+            $('#target_detail_id').val(data.id);
+            $('#working_day').val(data.day);
+            
+            // Set values and update flatpickr
+            $('#detail_start_time')[0]._flatpickr.setDate(data.shift_start_time);
+            $('#detail_end_time')[0]._flatpickr.setDate(data.shift_end_time);
+            $('#detail_min_break')[0]._flatpickr.setDate(data.mini_break_time);
+            $('#detail_max_break')[0]._flatpickr.setDate(data.max_break_time);
+            
+            $('.data-submit').text('Update Day Configuration');
+        }
+    });
+}
+
+function deleteWorkshiftDetail(detailId, workshiftId) {
+    if (confirm('Are you sure you want to delete this day configuration?')) {
+        $.ajax({
+            url: `/settings/workshift/details/delete/${detailId}`,
+            type: 'DELETE',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                loadWorkingDays(workshiftId);
+            }
+        });
+    }
 }

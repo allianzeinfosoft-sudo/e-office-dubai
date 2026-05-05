@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\LoginLimitedTime;
 use App\Models\Workshift;
+use App\Models\WorkshiftDetail;
 use App\Models\Project;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
@@ -25,18 +26,20 @@ class SettingsController extends Controller
 
     public function getWorkShift()
     {
-        $workshifts = Workshift::with('shift_department')->get()
-                ->map(function ($workshifts) {
+        $workshifts = Workshift::with('shift_department', 'working_days')->get()
+                ->map(function ($workshift) {
                     return [
-                        'id' => $workshifts->id,
-                        'shift_id' => $workshifts->shift_id,
-                        'department' => $workshifts->shift_department ? $workshifts->shift_department->department : '',
-                        'shift_start_time' => $workshifts->shift_start_time,
-                        'shift_end_time' => $workshifts->shift_end_time,
-                        'login_limited_time' => $workshifts->login_limited_time ?? '-',
-                        'mini_break_time' => $workshifts->mini_break_time,
-                        'max_break_time' => $workshifts->max_break_time,
-
+                        'id' => $workshift->id,
+                        'shift_id' => $workshift->shift_id,
+                        'department' => $workshift->shift_department ? $workshift->shift_department->department : '',
+                        'shift_start_time' => $workshift->shift_start_time,
+                        'shift_end_time' => $workshift->shift_end_time,
+                        'login_limited_time' => $workshift->login_limited_time ?? '-',
+                        'mini_break_time' => $workshift->mini_break_time,
+                        'max_break_time' => $workshift->max_break_time,
+                        'working_days' => $workshift->working_days->pluck('day')->map(function($day) {
+                            return substr($day, 0, 1);
+                        })->toArray()
                     ];
                 });
 
@@ -67,6 +70,52 @@ class SettingsController extends Controller
             Workshift::create($data);
             return back()->with('success', 'Work shift created successfully!');
         }
+    }
+
+    public function store_work_shift_details(Request $request)
+    {
+        $data = $request->except('_token', 'target_detail_id');
+        
+        if ($request->filled('target_detail_id')) {
+            WorkshiftDetail::where('id', $request->target_detail_id)->update($data);
+        } else {
+            // Use updateOrCreate to handle unique day settings for a shift if ID not provided
+            WorkshiftDetail::updateOrCreate(
+                [
+                    'workshift_id' => $request->workshift_id,
+                    'day' => $request->day
+                ],
+                $data
+            );
+        }
+
+        return back()->with('success', 'Work shift details updated successfully!');
+    }
+
+    public function fetch_work_shift_detail($id)
+    {
+        $details = WorkshiftDetail::find($id);
+        return response()->json($details);
+    }
+
+    public function get_work_shift_details($id, $day)
+    {
+        $details = WorkshiftDetail::where('workshift_id', $id)->where('day', $day)->first();
+        return response()->json($details);
+    }
+
+    public function get_all_work_shift_details($id)
+    {
+        $details = WorkshiftDetail::where('workshift_id', $id)
+            ->orderByRaw("FIELD(day, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')")
+            ->get();
+        return response()->json($details);
+    }
+
+    public function delete_work_shift_detail($id)
+    {
+        WorkshiftDetail::find($id)->delete();
+        return response()->json(['success' => true]);
     }
 
     public function delete_work_shift($id)

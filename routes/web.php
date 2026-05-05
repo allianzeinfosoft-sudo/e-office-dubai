@@ -415,6 +415,11 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/settings/userstastus',[SettingsController::class, 'list_user_status'])->name('userstatus');
     Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
     Route::post('/settings/workshift/save',[SettingsController::class, 'store_work_shift'])->name('store.workshift');
+    Route::post('/settings/workshift/details/save',[SettingsController::class, 'store_work_shift_details'])->name('store.workshift.details');
+    Route::get('/settings/workshift/details/fetch/{id}',[SettingsController::class, 'fetch_work_shift_detail']);
+    Route::get('/settings/workshift/details/{id}/{day}',[SettingsController::class, 'get_work_shift_details']);
+    Route::get('/settings/workshift/all-details/{id}',[SettingsController::class, 'get_all_work_shift_details']);
+    Route::delete('/settings/workshift/details/delete/{id}',[SettingsController::class, 'delete_work_shift_detail'])->name('delete.workshift.detail');
     Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
     Route::get('/settings/custom-mark-out', [SettingsController::class, 'customMakeOut'])->name('settings.custom-mark-out');
     Route::get('/settings/custom-attendance-entry', [SettingsController::class, 'customAttendanceEntry'])->name('settings.custom-attendance-entry');

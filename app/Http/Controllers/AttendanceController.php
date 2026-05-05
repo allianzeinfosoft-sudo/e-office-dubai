@@ -11,6 +11,7 @@ use App\Models\Workshift;
 use App\Models\UserEntryBlockList;
 use App\Models\Holiday;
 use App\Models\Leave;
+use App\Models\WorkshiftDetail;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,29 @@ class AttendanceController extends Controller{
     /**
      * Display a listing of the resource.
      */
+    private function getBreakTime($userId, $date) {
+        $employee = Employee::where('user_id', $userId)->first();
+        if (!$employee || !$employee->shift_id) {
+            return '01:00:00';
+        }
+
+        $dayName = Carbon::parse($date)->format('l');
+        $detail = WorkshiftDetail::where('workshift_id', $employee->shift_id)
+            ->where('day', $dayName)
+            ->first();
+
+        if ($detail && $detail->max_break_time) {
+            return $detail->max_break_time;
+        }
+
+        $shift = Workshift::find($employee->shift_id);
+        if ($shift && $shift->max_break_time) {
+            return $shift->max_break_time;
+        }
+
+        return '01:00:00';
+    }
+
     public function index() {
         $today              = now()->format('Y-m-d');
         $yesterday          = now()->subDay()->format('Y-m-d');
@@ -39,11 +63,41 @@ class AttendanceController extends Controller{
         $currentMon         = now()->month;
         $currentYear        = now()->year;
         $daysInMonth        = now()->daysInMonth;
-        $weekOffDays        = [0, 6]; // Sunday = 0, Saturday = 6
         
         $user               = Auth::user();
-        $shift              = Workshift::find($user->employee?->shift_id);
-        $shiftType          = (strtotime($shift->shift_start_time) < strtotime('16:00:00')) ? 'day' : 'night';
+        $shift_id           = $user->employee?->shift_id;
+
+        // Dynamic weekOffDays calculation
+        $workingDays = WorkshiftDetail::where('workshift_id', $shift_id)->pluck('day')->toArray();
+        $todayName = now()->format('l');
+        $isWorkingDay = true;
+
+        if (!empty($workingDays)) {
+            $dayMap = ['Sunday' => 0, 'Monday' => 1, 'Tuesday' => 2, 'Wednesday' => 3, 'Thursday' => 4, 'Friday' => 5, 'Saturday' => 6];
+            $workingDayNumbers = array_map(fn($day) => $dayMap[$day], $workingDays);
+            $weekOffDays = array_values(array_diff([0, 1, 2, 3, 4, 5, 6], $workingDayNumbers));
+            
+            $isWorkingDay = in_array($todayName, $workingDays);
+        } else {
+            $weekOffDays = [0, 6]; // Default fallback: Saturday and Sunday
+        }
+        
+        $data['isWorkingDay'] = $isWorkingDay;
+        $data['todayName'] = $todayName;
+        
+        $shift              = Workshift::find($shift_id);
+        
+        // Fetch day-specific details if they exist
+        $dayDetail = WorkshiftDetail::where('workshift_id', $shift_id)
+            ->where('day', $todayName)
+            ->first();
+
+        // Use day-specific times if available, otherwise fall back to main shift times
+        $actualStartTime = ($dayDetail && $dayDetail->shift_start_time) ? $dayDetail->shift_start_time : $shift->shift_start_time;
+        $actualEndTime = ($dayDetail && $dayDetail->shift_end_time) ? $dayDetail->shift_end_time : $shift->shift_end_time;
+        $actualBreakTime = ($dayDetail && $dayDetail->max_break_time) ? $dayDetail->max_break_time : $shift->max_break_time;
+
+        $shiftType = (strtotime($actualStartTime) < strtotime('16:00:00')) ? 'day' : 'night';
         
         $data['meta_title']     = 'Attendance';
         $data['shiftType']      = $shiftType;
@@ -100,6 +154,23 @@ class AttendanceController extends Controller{
         // sprintf('%02d:%02d', floor($totalMinutes / 60), $totalMinutes % 60);
         // dd($data['totalWorkedHours']);
         /******* CURRENT MONTH AVERAGE WORKED HOURS OF USERS *******/
+        
+        // Calculate expected working minutes for the shift
+        $expectedMinutes = 480; // Default 8 hours
+        if ($shift) {
+            $startParsed = Carbon::parse($actualStartTime);
+            $endParsed = Carbon::parse($actualEndTime);
+            if ($endParsed < $startParsed) $endParsed->addDay(); // Handle overnight shifts
+            
+            $totalShiftMinutes = $endParsed->diffInMinutes($startParsed);
+            $breakMinutes = 0;
+            if ($actualBreakTime) {
+                list($bh, $bm) = explode(':', $actualBreakTime);
+                $breakMinutes = ((int)$bh * 60) + (int)$bm;
+            }
+            $expectedMinutes = $totalShiftMinutes - $breakMinutes;
+        }
+
         // Calculate average worked hours per day
         if ($data['days_of_worked'] > 0) {
             $avgMinutes = $totalMinutes / $data['days_of_worked'];
@@ -107,7 +178,7 @@ class AttendanceController extends Controller{
             $avgMins = $avgMinutes % 60;
             //$data['avgWorkedHours'] = round(($avgMinutes / 60),2);
             $data['avgWorkedHours'] = CustomHelper::decimalToHoursMinutes(round($avgHours, 2)) ; //sprintf('%02d:%02d', $avgHours, $avgMins);
-            $data['avgProgressPercentage'] = min(round(($avgMinutes / 480) * 100), 100);
+            $data['avgProgressPercentage'] = min(round(($avgMinutes / $expectedMinutes) * 100), 100);
         } else {
             $data['avgWorkedHours'] = '00:00';
             $data['avgProgressPercentage'] = 0;
@@ -115,8 +186,8 @@ class AttendanceController extends Controller{
         
         /* =================================================================================================== */
         
-        $shiftStartTime     = Carbon::parse($data['employee']?->workshift?->shift_start_time);
-        $shiftEndTime       = Carbon::parse($data['employee']?->workshift?->shift_end_time);
+        $shiftStartTime     = Carbon::parse($actualStartTime);
+        $shiftEndTime       = Carbon::parse($actualEndTime);
         
         $start  = Carbon::parse($shiftStartTime)->format('H:i:s');
         $end    = Carbon::parse($shiftEndTime)->format('H:i:s');
@@ -255,7 +326,7 @@ class AttendanceController extends Controller{
                 $todayHours = intdiv($todayMinutes, 60);
                 $todayMins  = $todayMinutes % 60;
                 $data['todayWorkedHours'] = sprintf('%02d:%02d', $todayHours, $todayMins);
-                $data['todayProgressPercentage'] = min(round(($todayMinutes / 480) * 100), 100);
+                $data['todayProgressPercentage'] = min(round(($todayMinutes / $expectedMinutes) * 100), 100);
 
             return view('attendance.index', $data);
         }
@@ -659,7 +730,27 @@ class AttendanceController extends Controller{
      * Store a newly created resource in storage.
      */
     public function markIn(Request $request) {
-        $existingAttendance = Attendance::where('emp_id', Auth::user()->id)->where('signin_date', now()->format('Y-m-d'))->first();
+        $user = Auth::user();
+        $shiftId = $user->employee?->shift_id;
+        $todayName = now()->format('l');
+
+        // Check if the shift has any specific working days configured
+        $hasConfiguredDays = WorkshiftDetail::where('workshift_id', $shiftId)->exists();
+
+        if ($hasConfiguredDays) {
+            $isWorkingDay = WorkshiftDetail::where('workshift_id', $shiftId)
+                ->where('day', $todayName)
+                ->exists();
+
+            if (!$isWorkingDay) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Today ($todayName) is not a scheduled working day for your shift."
+                ]);
+            }
+        }
+
+        $existingAttendance = Attendance::where('emp_id', $user->id)->where('signin_date', now()->format('Y-m-d'))->first();
 
         if ($existingAttendance) {
             return response()->json([
@@ -677,7 +768,7 @@ class AttendanceController extends Controller{
             'signin_date' => now()->format('Y-m-d'),
             'signin_time' => CustomHelper::formatTimeToSeconds(now()->format('H:i')),
             'punchin_type' => 'Web',
-            'break_time' => '01:00:00',
+            'break_time' => $this->getBreakTime(Auth::user()->id, now()->format('Y-m-d')),
             'ipaddress' => $request->ip(),
             'status' => 'mark-in'
         ]);
@@ -939,7 +1030,7 @@ class AttendanceController extends Controller{
             $customAttendance->update([
                 'picktime'    => CustomHelper::formatTimeToSeconds($request->signin_time),
                 'reason'      => $request->signin_late_note ?? 'custom Mark In',
-                'break_time' => '01:00:00',
+                'break_time' => $this->getBreakTime($userId, $signinDate),
                 'status'      => 0, // Reset to pending on update
                 'approved_by' => null
             ]);
@@ -959,7 +1050,7 @@ class AttendanceController extends Controller{
                     'emp_id'      => $userId,
                     'picktime'    => CustomHelper::formatTimeToSeconds($request->signin_time),
                     'reason'      => $request->signin_late_note ?? 'custom Mark In',
-                    'break_time' => '01:00:00',
+                    'break_time' => $this->getBreakTime($userId, $signinDate),
                     'signin_date' => $signinDate,
                     'status'      => 0,
                     'approved_by' => null,
@@ -974,7 +1065,7 @@ class AttendanceController extends Controller{
                     'picktime'    => CustomHelper::formatTimeToSeconds($request->signin_time),
                     'reason'      => $request->signin_late_note ?? 'custom Mark In',
                     'signin_date' => $signinDate,
-                    'break_time' => '01:00:00',
+                    'break_time' => $this->getBreakTime($userId, $signinDate),
                     'status'      => 0,
                     'approved_by' => null,
                 ]);
@@ -1071,7 +1162,7 @@ class AttendanceController extends Controller{
                     'signin_date' => $signinDate,
                     'signin_time' => $time,
                     'punchin_type' => 'emergency',
-                    'break_time' => '01:00:00',
+                    'break_time' => $this->getBreakTime($userId, $signinDate),
                     'signin_late_note' => $lateNote,
                 ]);
 
@@ -1233,7 +1324,7 @@ class AttendanceController extends Controller{
                 'signin_time' => $signinTime,
                 'signin_late_note' => $request->signin_late_note ?? null,
                 'punchin_type' => 'Custom',
-                'break_time' => '01:00:00',
+                'break_time' => $this->getBreakTime($employee->user_id, $signinDate),
                 'ipaddress' => $request->ip(),
                 'status' => 'custom',
                 'custom_status' => '1'

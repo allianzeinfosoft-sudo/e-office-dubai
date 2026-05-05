@@ -16,4 +16,10 @@ class Workshift extends Model
     {
          return $this->belongsTo(Department::class, 'department', 'id');
     }
+
+    public function working_days()
+    {
+        return $this->hasMany(WorkshiftDetail::class, 'workshift_id')
+            ->orderByRaw("FIELD(day, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')");
+    }
 }

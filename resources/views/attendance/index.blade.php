@@ -166,12 +166,7 @@
                                 $loginLimitTime   = \Carbon\Carbon::parse(Auth::user()->employee->login_limited_time);
                                 $now              = \Carbon\Carbon::now();
                                 $isLate           = ($shiftType == 'fullday') ? false : $now->gt($loginLimitTime);
-                                $todayName        = $now->format('l'); // E.g., "Monday"
-                                $fixedWeekOffs    = ['Saturday', 'Sunday'];
-                                $employeeWeekOffs = Auth::user()->employee->week_off_days ?? '';
-                                $customWeekOffs   = array_map('trim', explode(',', $employeeWeekOffs));
-                                $allWeekOffs      = array_unique(array_merge($fixedWeekOffs, $customWeekOffs));
-                                $isWeekOffToday   = in_array($todayName, $allWeekOffs);
+                                $isWeekOffToday   = !$isWorkingDay;
                               @endphp
 
                               @if(isset($attendance) || isset($attendance_current))
@@ -261,7 +256,7 @@
 
                               @elseif(!isset($attendance) || !$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
 
-                                  @if($disableCustomMarkIn || $isLate || $isWeekOffToday)
+                                  @if(($disableCustomMarkIn || $isLate) && !$isWeekOffToday)
                                       <div class="badge bg-label-warning p-3 w-100 mb-3">
                                           You can mark in only between {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A') : '' }}
                                           and {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->addMinutes(15)->format('h:i A') : '' }}.
