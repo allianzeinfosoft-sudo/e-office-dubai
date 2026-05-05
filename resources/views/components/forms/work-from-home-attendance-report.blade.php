@@ -37,7 +37,7 @@
 
                 <div class="form-group mb-2 col-sm-4">
                     <label>Break Time <span class="text-danger">*</span></label>
-                    <input type="time" name="brake_time" class="form-control" id="{{ $type }}_brake_time" value="01:00">
+                    <input type="time" name="brake_time" class="form-control" id="{{ $type }}_brake_time" value="01:00" readonly>
                 </div>
 
                 <div class="form-group mb-2 col-sm-4">
@@ -213,6 +213,43 @@ function getProductivity(taskId, index) {
         }
     });
 }
+function updateBreakTime(workType) {
+    const employeeId = $(`#${workType}_emp_id`).val();
+    const date = $(`#${workType}_signin_date`).val();
+
+    if (employeeId && date) {
+        $.ajax({
+            url: "{{ route('attendance.get-break-time-ajax') }}",
+            type: "GET",
+            data: {
+                user_id: employeeId,
+                date: date
+            },
+            success: function(response) {
+                if (response.break_time) {
+                    // Convert H:i:s to H:i for input[type="time"]
+                    const timeParts = response.break_time.split(':');
+                    const formattedTime = timeParts[0].padStart(2, '0') + ':' + timeParts[1].padStart(2, '0');
+                    $(`#${workType}_brake_time`).val(formattedTime);
+                }
+            }
+        });
+    }
+}
+
+$(document).ready(function() {
+    const type = "{{ $type }}";
+    
+    // Listen for employee change
+    $(`#${type}_emp_id`).on('change', function() {
+        updateBreakTime(type);
+    });
+
+    // Listen for date change
+    $(`#${type}_signin_date`).on('change', function() {
+        updateBreakTime(type);
+    });
+});
 </script>
 
 @endpush

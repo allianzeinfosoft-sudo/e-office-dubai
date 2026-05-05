@@ -230,8 +230,8 @@
                                 @else
                                   <div class="text-center">
                                     <button type="button" id="mark-in-btn"
-                                      class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}"
-                                      {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}>
+                                      class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday || $isHolidayToday) ? 'disabled' : '' }}"
+                                      {{ ($disableCustomMarkIn || $isWeekOffToday || $isHolidayToday) ? 'disabled' : '' }}>
                                       Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i>
                                     </button>
                                   </div>
@@ -261,8 +261,8 @@
                                 @else
                                   <div class="text-center">
                                     <button type="button" id="mark-in-btn"
-                                      class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}"
-                                      {{ ($disableCustomMarkIn || $isWeekOffToday) ? 'disabled' : '' }}>
+                                      class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isWeekOffToday || $isHolidayToday) ? 'disabled' : '' }}"
+                                      {{ ($disableCustomMarkIn || $isWeekOffToday || $isHolidayToday) ? 'disabled' : '' }}>
                                       Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i>
                                     </button>
                                   </div>
@@ -272,7 +272,7 @@
 
                             @elseif(!isset($attendance) || !$attendance || !in_array($attendance->status, ['mark-in', 'custom', 'emergency']))
 
-                              @if(($disableCustomMarkIn || $isLate) && !$isWeekOffToday)
+                              @if(($disableCustomMarkIn || $isLate) && !$isWeekOffToday && !$isHolidayToday)
                                 <div class="badge bg-label-warning p-3 w-100 mb-3">
                                   You can mark in only between
                                   {{ $employee->workshift->shift_start_time ? \Carbon\Carbon::createFromFormat('H:i:s', $employee->workshift->shift_start_time)->subMinutes(30)->format('h:i A') : '' }}
@@ -287,10 +287,16 @@
                                 </div>
                               @endif
 
+                              @if($isHolidayToday)
+                                <div class="badge bg-label-info p-3 w-100 mb-3" id="last-punch-time" role="alert">
+                                  <strong>Today is a holiday.</strong>
+                                </div>
+                              @endif
+
                               <div class="text-center">
                                 <button type="button" id="mark-in-btn"
-                                  class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isLate || $isWeekOffToday) ? 'disabled' : '' }}"
-                                  {{ ($disableCustomMarkIn || $isLate || $isWeekOffToday) ? 'disabled' : '' }}> Mark-in <i
+                                  class="btn p-3 btn-primary w-100 {{ ($disableCustomMarkIn || $isLate || $isWeekOffToday || $isHolidayToday) ? 'disabled' : '' }}"
+                                  {{ ($disableCustomMarkIn || $isLate || $isWeekOffToday || $isHolidayToday) ? 'disabled' : '' }}> Mark-in <i
                                     class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
                               </div>
 

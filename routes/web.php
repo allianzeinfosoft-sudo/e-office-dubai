@@ -437,6 +437,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/get-user-shifts/{userId}', [SettingsController::class, 'getUserShifts']);
     Route::get('/settings/get-working-hours', [SettingsController::class, 'getWorkingHours']) ->name('settings.get-working-hours');
     Route::get('/settings/login-history', [SettingsController::class, 'loginHistory'])->name('settings.login-history');
+    Route::get('attendance/get-break-time-ajax', [AttendanceController::class, 'getBreakTimeAjax'])->name('attendance.get-break-time-ajax');
     /* shifts */
 
     /* Appearence */
