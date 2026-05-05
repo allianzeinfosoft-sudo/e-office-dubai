@@ -1003,8 +1003,26 @@ class AttendanceController extends Controller{
     public function customMarkIn(Request $request) {
         $userId = Auth::user()->id;
         $signinDate = date('Y-m-d', strtotime($request->signin_date));
+        $dayName = Carbon::parse($signinDate)->format('l');
 
         $employee = Employee::where('user_id', $userId)->first();
+        $shiftId = $employee?->shift_id;
+
+        // Check if the shift has any specific working days configured
+        $hasConfiguredDays = WorkshiftDetail::where('workshift_id', $shiftId)->exists();
+
+        if ($hasConfiguredDays) {
+            $isWorkingDay = WorkshiftDetail::where('workshift_id', $shiftId)
+                ->where('day', $dayName)
+                ->exists();
+
+            if (!$isWorkingDay) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "The selected date ($signinDate) is not a scheduled working day for your shift."
+                ]);
+            }
+        }
 
         $existingAttendance = Attendance::where('emp_id', $userId)
         ->where('signin_date', $signinDate)
@@ -1144,10 +1162,29 @@ class AttendanceController extends Controller{
         $username = Auth::user()->username;
         $userId = Auth::user()->id;
         $signinDate = date('Y-m-d', strtotime($request->signin_date));
+        $dayName = Carbon::parse($signinDate)->format('l');
         $time = CustomHelper::formatTimeToSeconds($request->time_in_out);
         $lateNote = $request->signin_late_note;
 
         if ($request->type === 'mark-in') {
+            $employee = Employee::where('user_id', $userId)->first();
+            $shiftId = $employee?->shift_id;
+
+            // Check if the shift has any specific working days configured
+            $hasConfiguredDays = WorkshiftDetail::where('workshift_id', $shiftId)->exists();
+
+            if ($hasConfiguredDays) {
+                $isWorkingDay = WorkshiftDetail::where('workshift_id', $shiftId)
+                    ->where('day', $dayName)
+                    ->exists();
+
+                if (!$isWorkingDay) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "The selected date ($signinDate) is not a scheduled working day for your shift."
+                    ]);
+                }
+            }
             // Check if already marked in
             $existing = Attendance::where('username', $username)
                 ->whereDate('signin_date', $signinDate)
