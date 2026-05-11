@@ -180,30 +180,38 @@ class AnnouncementController extends Controller
 
     public function checkAnnouncement(Request $request)
     {
+        $user = auth()->user();
 
-       $userId = auth()->user()->employee->id;
-
-      $announcements = Announcement::where(function ($query) use ($userId) {
-        $query->whereNull('readers') // readers is null
-            ->orWhereJsonLength('readers', 0) // readers is []
-            ->orWhereRaw("JSON_CONTAINS(readers, '\"$userId\"') = 0"); // user NOT in readers
-        })
-        ->orderBy('display_start_date', 'asc')
-        ->get();
-
-        if ($announcements->isNotEmpty()) {
+        if (!$user || !$user->employee) {
             return response()->json([
-                'found' => true,
-                'already_read' => false,
-                'announcements' => $announcements,
+                'found' => false,
             ]);
         }
 
+        $userId = (string) $user->employee->id;
+        $joinDate = $user->employee->join_date;
+
+        $announcements = Announcement::query()
+            ->when($joinDate, function ($query) use ($joinDate) {
+                $query->whereDate('created_at', '>=', $joinDate);
+            })
+            ->where(function ($query) use ($userId) {
+
+                $query->whereNull('readers')
+                    ->orWhereJsonLength('readers', 0)
+                    ->orWhereRaw(
+                        "JSON_CONTAINS(readers, ?) = 0",
+                        ['"' . $userId . '"']
+                    );
+            })
+            ->orderBy('display_start_date', 'asc')
+            ->get();
+
         return response()->json([
-            'found' => false,
+            'found' => $announcements->isNotEmpty(),
+            'already_read' => false,
+            'announcements' => $announcements,
         ]);
-
-
     }
 
 
