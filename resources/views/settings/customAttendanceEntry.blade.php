@@ -50,6 +50,11 @@
                                                 <label for="signin_time" class="form-label">Time</label>
                                                 <input type="time" id="signin_time" name="signin_time" class="form-control" value="{{ \Carbon\Carbon::now(config('app.timezone', 'UTC'))->format('H:i') }}"  placeholder="Time" />
                                             </div>
+
+                                            <div class="col-12 mb-3">
+                                                <label for="signin_late_note" class="form-label">Reason</label>
+                                                <textarea name="signin_late_note" id="signin_late_note" class="form-control" rows="3" placeholder="Reason"></textarea>
+                                            </div>
                                             
                                             <div class="col-sm-12 d-flex justify-content-end align-items-center gap-2">
                                                 <button type="button" class="btn btn-label-secondary" data-bs-dismiss="offcanvas" aria-label="Close"> Close </button>

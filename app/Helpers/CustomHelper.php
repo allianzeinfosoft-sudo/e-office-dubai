@@ -34,10 +34,12 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\Http;
 
-class CustomHelper{
+class CustomHelper
+{
 
-    public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null){
-        $timezone = config('app.timezone', 'UTC');
+    public static function calculateTotalWorkingTime($signin_date, $signin_time, $signout_date, $signout_time, $break_time = null)
+    {
+        $timezone = config('app.timezone', 'Asia/Dubai');
         //$timezone = 'Asia/Kolkata';
 
         try {
@@ -69,38 +71,25 @@ class CustomHelper{
 
             // Handle break time
             if (!empty($break_time)) {
-                // $break_time = trim((string) $break_time);
-
-                // if (preg_match('/\d{1,2}(:\d{2})?(:\d{2})?\s?(AM|PM)?/i', $break_time)) {
-                //     try {
-                //         $breakCarbon = \Carbon\Carbon::parse($break_time, $timezone);
-                //         $midnight = \Carbon\Carbon::createFromTime(0, 0, 0, $timezone)->setTimezone($timezone);
-                //         $breakSeconds = $breakCarbon->diffInSeconds($midnight);
-                //     } catch (\Exception $e) {
-                //         $breakSeconds = 3600; // fallback to 1 hour
-                //     }
-                // } elseif (is_numeric($break_time)) {
-                //     // treat as minutes
-                //     $breakSeconds = max(0, intval($break_time) * 60);
-                // }
-
-                    if($totalSeconds > 21600){
-                        $breakSeconds = 3600;
-                    }else{
-                        $breakSeconds = 1800;
-                    }
+                $breakParts = explode(':', $break_time);
+                $bh = isset($breakParts[0]) ? (int) $breakParts[0] : 0;
+                $bm = isset($breakParts[1]) ? (int) $breakParts[1] : 0;
+                $bs = isset($breakParts[2]) ? (int) $breakParts[2] : 0;
+                $breakSeconds = ($bh * 3600) + ($bm * 60) + $bs;
             }
 
             $actualWorkSeconds = max($totalSeconds - $breakSeconds, 0);
 
             // Format to H:i:s even if greater than 24 hours
             return [
-                'total_working_time' => sprintf('%02d:%02d:%02d',
+                'total_working_time' => sprintf(
+                    '%02d:%02d:%02d',
                     floor($actualWorkSeconds / 3600),
                     ($actualWorkSeconds / 60) % 60,
                     $actualWorkSeconds % 60
                 ),
-                'break_time' => sprintf('%02d:%02d:%02d',
+                'break_time' => sprintf(
+                    '%02d:%02d:%02d',
                     floor($breakSeconds / 3600),
                     ($breakSeconds / 60) % 60,
                     $breakSeconds % 60
@@ -117,34 +106,44 @@ class CustomHelper{
     }
 
 
-    public static function calculateGrade($productivity_hour) {
-        if ($productivity_hour >= 10) return 'A';
-        if ($productivity_hour >= 7) return 'B';
-        if ($productivity_hour >= 5) return 'C';
+    public static function calculateGrade($productivity_hour)
+    {
+        if ($productivity_hour >= 10)
+            return 'A';
+        if ($productivity_hour >= 7)
+            return 'B';
+        if ($productivity_hour >= 5)
+            return 'C';
         return 'D';
     }
 
-    public static function calculatePerformance($productivity_hour) {
-        if ($productivity_hour >= 10) return 'Excellent';
-        if ($productivity_hour >= 7) return 'Good';
-        if ($productivity_hour >= 5) return 'Average';
+    public static function calculatePerformance($productivity_hour)
+    {
+        if ($productivity_hour >= 10)
+            return 'Excellent';
+        if ($productivity_hour >= 7)
+            return 'Good';
+        if ($productivity_hour >= 5)
+            return 'Average';
         return 'Needs Improvement';
     }
 
-    public function getMonthNames($month_id){
+    public function getMonthNames($month_id)
+    {
         return DateTime::createFromFormat('!m', $month_id)->format('F');
 
     }
 
 
     /* get monthly avarage working hours */
-    public static function getMonthlyAverageHours($empId, $year = null){
+    public static function getMonthlyAverageHours($empId, $year = null)
+    {
         $year = $year ?? Carbon::now()->year;
 
         $monthlyData = Attendance::select(
-                DB::raw('MONTH(signin_date) as month'),
-                DB::raw('AVG(working_hours) as avg_hours')
-            )
+            DB::raw('MONTH(signin_date) as month'),
+            DB::raw('AVG(working_hours) as avg_hours')
+        )
             ->whereYear('signin_date', $year)
             ->where('emp_id', $empId)
             ->where('status', 'mark-out')
@@ -202,31 +201,32 @@ class CustomHelper{
                 ->sum('leave_day_count');
 
             // convert seconds → decimal hours
-            $totalHours  = $attendance->total_seconds ? round($attendance->total_seconds / 3600, 2) : 0;
+            $totalHours = $attendance->total_seconds ? round($attendance->total_seconds / 3600, 2) : 0;
             $workingDays = ($attendance->days - $halfDayLeavesCount) > 0 ? ($attendance->days - $halfDayLeavesCount) : 0;
-            $avgHours    = $workingDays > 0 ? round($totalHours / $workingDays, 2) : 0;
+            $avgHours = $workingDays > 0 ? round($totalHours / $workingDays, 2) : 0;
 
             $report[] = [
-                'month'        => Carbon::create()->month($month)->format('F'),
-                'total_hours'  => CustomHelper::decimalToHoursMinutes($totalHours),   // e.g. 92.62
-                'avg_hours'    => CustomHelper::decimalToHoursMinutes($avgHours),     // e.g. 8.82
+                'month' => Carbon::create()->month($month)->format('F'),
+                'total_hours' => CustomHelper::decimalToHoursMinutes($totalHours),   // e.g. 92.62
+                'avg_hours' => CustomHelper::decimalToHoursMinutes($avgHours),     // e.g. 8.82
                 'working_days' => $workingDays,  // e.g. 10.5
-                'leaves'       => $leaveCount,   // e.g. 1.5
-                'year'         => $year
+                'leaves' => $leaveCount,   // e.g. 1.5
+                'year' => $year
             ];
         }
 
         return $report;
     }
 
-    public static function getMonthlyTotalHours($empId, $year = null){
+    public static function getMonthlyTotalHours($empId, $year = null)
+    {
 
         $year = $year ?? Carbon::now()->year;
 
         $monthlyData = Attendance::select(
-                DB::raw('MONTH(signin_date) as month'),
-                DB::raw('SUM(working_hours) as total_hours')
-            )
+            DB::raw('MONTH(signin_date) as month'),
+            DB::raw('SUM(working_hours) as total_hours')
+        )
             ->whereYear('signin_date', $year)
             ->where('emp_id', $empId)
             ->where('status', 'mark-out')
@@ -249,7 +249,8 @@ class CustomHelper{
         ];
     }
 
-    public static function getWorkRatingAnalysis($empId, $year = null){
+    public static function getWorkRatingAnalysis($empId, $year = null)
+    {
         $year = $year ?? Carbon::now()->year;
 
         $records = WorkReport::where('emp_id', $empId)
@@ -293,7 +294,8 @@ class CustomHelper{
         return $analysis;
     }
 
-    public static function currentAttendanceAnalytics($empId, $year = null, $month = null){
+    public static function currentAttendanceAnalytics($empId, $year = null, $month = null)
+    {
         $now = Carbon::now();
         $month = $month ?? $now->month;
         $year = $year ?? $now->year;
@@ -305,7 +307,7 @@ class CustomHelper{
             ->get();
 
 
-            if ($attendances->isEmpty()) {
+        if ($attendances->isEmpty()) {
             return [
                 'emp_id' => $empId,
                 'year' => $year,
@@ -369,16 +371,16 @@ class CustomHelper{
             ->count();
 
         return [
-            'emp_id'                    => $empId,
-            'username'                  => $username,
-            'year'                      => $year,
-            'month'                     => $month,
-            'completed_days'            => ($markOutCount - $customDays),
-            'incomplete_or_half_days'   => $incompleteOrHalfDays,
-            'off_days'                  => $offDays,
-            'custom_days'               => $customDays,
-            'total_holidays'            => $holidayWorked,
-            'total_leaves'              => $totalLeaves,
+            'emp_id' => $empId,
+            'username' => $username,
+            'year' => $year,
+            'month' => $month,
+            'completed_days' => ($markOutCount - $customDays),
+            'incomplete_or_half_days' => $incompleteOrHalfDays,
+            'off_days' => $offDays,
+            'custom_days' => $customDays,
+            'total_holidays' => $holidayWorked,
+            'total_leaves' => $totalLeaves,
         ];
     }
 
@@ -443,247 +445,249 @@ class CustomHelper{
         ];
     }
 
-    public static function getMonthlyWorkBreakData($userId = null){
-    $monthlyData = [];
+    public static function getMonthlyWorkBreakData($userId = null)
+    {
+        $monthlyData = [];
 
-    $today = Carbon::now();
-    $startOfMonth = $today->copy()->startOfMonth();
-    $endOfMonth = $today->copy()->endOfDay(); // current day till now
+        $today = Carbon::now();
+        $startOfMonth = $today->copy()->startOfMonth();
+        $endOfMonth = $today->copy()->endOfDay(); // current day till now
 
-    // Attendance records for current month up to today
-    $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth])->where('status', 'mark-out');
+        // Attendance records for current month up to today
+        $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth])->where('status', 'mark-out');
 
-    if ($userId) {
-        $query->where('emp_id', $userId);
-    }
-
-    $attendanceRecords = $query->get();
-
-    // Leaves within the current month till date
-    $leaveRecords = Leave::where(function ($q) use ($startOfMonth, $endOfMonth) {
-        $q->whereBetween('leave_from', [$startOfMonth, $endOfMonth])
-          ->orWhereBetween('leave_to', [$startOfMonth, $endOfMonth]);
-    });
-
-    if ($userId) {
-        $leaveRecords->where('user_id', $userId);
-    }
-
-    $leaveRecords = $leaveRecords->get();
-
-    // Holidays in current month up to today
-    $holidays = Holiday::whereBetween('date', [$startOfMonth, $endOfMonth])->get();
-
-    $totalWorkHours = Attendance::where('emp_id', $userId)
-        ->whereYear('signin_date', $startOfMonth)
-        ->whereBetween('signin_date', [$startOfMonth, $endOfMonth])
-        ->where('status', 'mark-out')
-        ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
-        ->first();
-
-    $totalWorkingHours = 0;
-    $totalBreakTime = 0;
-    $workingDays = 0;
-    $leaves = 0;
-    $offDays = count($holidays);
-    $workingHours = [];
-    $breakHours = [];
-
-    foreach ($attendanceRecords as $attendance) {
-        $signinTime = Carbon::parse($attendance->signin_time);
-        $signoutTime = Carbon::parse($attendance->signout_time);
-        $workedDuration = $signinTime->diffInMinutes($signoutTime);
-        $breakDuration = is_numeric($attendance->break_time) ? $attendance->break_time : 0;
-
-        $totalWorkingHours += $workedDuration - $breakDuration;
-        $totalBreakTime += $breakDuration;
-
-        if ($attendance->signin_time && $attendance->signout_time) {
-            $workingDays++;
+        if ($userId) {
+            $query->where('emp_id', $userId);
         }
 
-        if ($attendance->status == 'Leave') {
-            $leaves++;
+        $attendanceRecords = $query->get();
+
+        // Leaves within the current month till date
+        $leaveRecords = Leave::where(function ($q) use ($startOfMonth, $endOfMonth) {
+            $q->whereBetween('leave_from', [$startOfMonth, $endOfMonth])
+                ->orWhereBetween('leave_to', [$startOfMonth, $endOfMonth]);
+        });
+
+        if ($userId) {
+            $leaveRecords->where('user_id', $userId);
         }
 
-        $workingHours[] = round(($workedDuration - $breakDuration) / 60, 2);
-        $breakHours[] = round($breakDuration / 60, 2);
+        $leaveRecords = $leaveRecords->get();
+
+        // Holidays in current month up to today
+        $holidays = Holiday::whereBetween('date', [$startOfMonth, $endOfMonth])->get();
+
+        $totalWorkHours = Attendance::where('emp_id', $userId)
+            ->whereYear('signin_date', $startOfMonth)
+            ->whereBetween('signin_date', [$startOfMonth, $endOfMonth])
+            ->where('status', 'mark-out')
+            ->selectRaw('AVG(working_hours) as avg_hours, SUM(working_hours) as total_hours, COUNT(*) as days')
+            ->first();
+
+        $totalWorkingHours = 0;
+        $totalBreakTime = 0;
+        $workingDays = 0;
+        $leaves = 0;
+        $offDays = count($holidays);
+        $workingHours = [];
+        $breakHours = [];
+
+        foreach ($attendanceRecords as $attendance) {
+            $signinTime = Carbon::parse($attendance->signin_time);
+            $signoutTime = Carbon::parse($attendance->signout_time);
+            $workedDuration = $signinTime->diffInMinutes($signoutTime);
+            $breakDuration = is_numeric($attendance->break_time) ? $attendance->break_time : 0;
+
+            $totalWorkingHours += $workedDuration - $breakDuration;
+            $totalBreakTime += $breakDuration;
+
+            if ($attendance->signin_time && $attendance->signout_time) {
+                $workingDays++;
+            }
+
+            if ($attendance->status == 'Leave') {
+                $leaves++;
+            }
+
+            $workingHours[] = round(($workedDuration - $breakDuration) / 60, 2);
+            $breakHours[] = round($breakDuration / 60, 2);
+        }
+
+        $averageWorkingHours = $workingDays > 0 ? round(($totalWorkingHours / $workingDays) / 60, 2) : 0;
+
+        $monthlyData[] = [
+            'month' => $startOfMonth->format('F'),
+            'year' => $startOfMonth->year,
+            'avg_working_hours' => round($totalWorkHours->avg_hours ?? 0, 2),
+            'total_working_hours' => round($totalWorkHours->total_hours ?? 0, 2),
+            'working_days' => $workingDays,
+            'leaves' => $leaves,
+            'off_days' => $offDays,
+            'working_hours' => $workingHours,
+            'break_hours' => $breakHours,
+        ];
+
+        return $monthlyData;
     }
 
-    $averageWorkingHours = $workingDays > 0 ? round(($totalWorkingHours / $workingDays) / 60, 2) : 0;
+    public static function getMonthlyWorkBreakDataForBarChart($userId = null)
+    {
+        $today = Carbon::now();
+        $startOfMonth = $today->copy()->startOfMonth();
+        $endOfMonth = $today->copy()->endOfDay();
 
-    $monthlyData[] = [
-        'month'                 => $startOfMonth->format('F'),
-        'year'                  => $startOfMonth->year,
-        'avg_working_hours'     => round($totalWorkHours->avg_hours ?? 0, 2),
-        'total_working_hours'   => round($totalWorkHours->total_hours ?? 0, 2),
-        'working_days'          => $workingDays,
-        'leaves'                => $leaves,
-        'off_days'              => $offDays,
-        'working_hours'         => $workingHours,
-        'break_hours'           => $breakHours,
-    ];
+        // Step 1: Get leave dates for the current user in the current month
+        $leaveDates = collect();
+        if ($userId) {
+            $leaves = Leave::where('user_id', $userId)
+                ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                    $q->whereBetween('leave_from', [$startOfMonth, $endOfMonth])
+                        ->orWhereBetween('leave_to', [$startOfMonth, $endOfMonth]);
+                })
+                ->get();
 
-    return $monthlyData;
-}
+            foreach ($leaves as $leave) {
+                $from = Carbon::parse($leave->leave_from);
+                $to = Carbon::parse($leave->leave_to);
+                while ($from->lte($to)) {
+                    $leaveDates->push($from->format('Y-m-d'));
+                    $from->addDay();
+                }
+            }
+        }
 
-public static function getMonthlyWorkBreakDataForBarChart($userId = null)
-{
-    $today = Carbon::now();
-    $startOfMonth = $today->copy()->startOfMonth();
-    $endOfMonth = $today->copy()->endOfDay();
+        // Step 2: Get attendance records for the current month
+        $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth]);
+        if ($userId) {
+            $query->where('emp_id', $userId);
+        }
 
-    // Step 1: Get leave dates for the current user in the current month
-    $leaveDates = collect();
-    if ($userId) {
-        $leaves = Leave::where('user_id', $userId)
-            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
-                $q->whereBetween('leave_from', [$startOfMonth, $endOfMonth])
-                  ->orWhereBetween('leave_to', [$startOfMonth, $endOfMonth]);
-            })
+        $attendanceRecords = $query->get()->groupBy(function ($item) {
+            return Carbon::parse($item->signin_date)->format('Y-m-d');
+        });
+
+        $workingHours = [];
+        $breakHours = [];
+        $dateMap = collect();
+
+        // Step 3: Loop through each day of the current month up to today
+        for ($day = 1; $day <= $today->day; $day++) {
+            $date = Carbon::createFromDate($today->year, $today->month, $day);
+            $dateKey = $date->format('Y-m-d');
+
+            // Skip Saturdays and Sundays
+            if ($date->isSaturday() || $date->isSunday()) {
+                continue;
+            }
+
+            $dateMap->put($dateKey, [
+                'isLeave' => $leaveDates->contains($dateKey),
+            ]);
+        }
+
+        // Also include leave days even if they fall on weekends
+        foreach ($leaveDates as $leaveDate) {
+            if (!$dateMap->has($leaveDate)) {
+                $dateMap->put($leaveDate, ['isLeave' => true]);
+            }
+        }
+
+        // Sort by date
+        $sortedDates = $dateMap->keys()->sort()->values();
+
+        foreach ($sortedDates as $dateKey) {
+            $workingHours[$dateKey] = 0;
+            $breakHours[$dateKey] = 0;
+
+            if (isset($attendanceRecords[$dateKey])) {
+                foreach ($attendanceRecords[$dateKey] as $attendance) {
+
+                    $breakTime = $attendance->break_time ?? '00:00:00';
+                    $breakParts = explode(':', $breakTime);
+                    $hours = isset($breakParts[0]) ? (int) $breakParts[0] : 0;
+                    $minutes = isset($breakParts[1]) ? (int) $breakParts[1] : 0;
+                    $seconds = isset($breakParts[2]) ? (int) $breakParts[2] : 0;
+                    $breakDurationMinutes = ($hours * 60) + $minutes + ($seconds / 60);
+
+                    $signinTime = Carbon::parse($attendance->signin_time);
+                    $signoutTime = Carbon::parse($attendance->signout_time);
+                    $workedDurationMinutes = $signinTime->diffInMinutes($signoutTime);
+
+                    // Convert both to hours and round
+                    $workingHours[$dateKey] += round(($workedDurationMinutes - $breakDurationMinutes) / 60, 2);
+                    $breakHours[$dateKey] += round($breakDurationMinutes / 60, 2);
+                }
+            }
+        }
+
+        return [
+            'dates' => $sortedDates->toArray(),                              // e.g. ['2025-05-01', ..., '2025-05-13']
+            'working_hours' => array_values($workingHours),       // in hours
+            'break_hours' => array_values($breakHours),           // in hours
+            'leave_dates' => $leaveDates->unique()->values()->toArray(),     // useful for front-end to highlight leave
+        ];
+    }
+
+    public static function getWorkRatingAnalysisMonthly($empId)
+    {
+        $now = Carbon::now();
+        $month = $now->month;
+        $year = $now->year;
+
+        $records = WorkReport::where('emp_id', $empId)
+            ->whereYear('report_date', $year)
+            ->whereMonth('report_date', $month)
             ->get();
 
-        foreach ($leaves as $leave) {
-            $from = Carbon::parse($leave->leave_from);
-            $to = Carbon::parse($leave->leave_to);
-            while ($from->lte($to)) {
-                $leaveDates->push($from->format('Y-m-d'));
-                $from->addDay();
+        $analysis = [
+            'Outstanding' => 0,
+            'Very Good' => 0,
+            'Good' => 0,
+            'Above Average' => 0,
+            'Average' => 0,
+            'Poor' => 0,
+        ];
+
+        foreach ($records as $record) {
+            $totalTime = floatval($record->total_time);
+            $productiveTime = floatval($record->productivity_hour);
+
+            if ($totalTime <= 0) {
+                continue; // skip invalid entries
+            }
+
+            $percentage = ($productiveTime / $totalTime) * 100;
+
+            if ($percentage >= 90) {
+                $analysis['Outstanding']++;
+            } elseif ($percentage >= 75) {
+                $analysis['Very Good']++;
+            } elseif ($percentage >= 60) {
+                $analysis['Good']++;
+            } elseif ($percentage >= 50) {
+                $analysis['Above Average']++;
+            } elseif ($percentage >= 30) {
+                $analysis['Average']++;
+            } else {
+                $analysis['Poor']++;
             }
         }
+
+        return $analysis;
     }
-
-    // Step 2: Get attendance records for the current month
-    $query = Attendance::whereBetween('signin_date', [$startOfMonth, $endOfMonth]);
-    if ($userId) {
-        $query->where('emp_id', $userId);
-    }
-
-    $attendanceRecords = $query->get()->groupBy(function ($item) {
-        return Carbon::parse($item->signin_date)->format('Y-m-d');
-    });
-
-    $workingHours = [];
-    $breakHours = [];
-    $dateMap = collect();
-
-    // Step 3: Loop through each day of the current month up to today
-    for ($day = 1; $day <= $today->day; $day++) {
-        $date = Carbon::createFromDate($today->year, $today->month, $day);
-        $dateKey = $date->format('Y-m-d');
-
-        // Skip Saturdays and Sundays
-        if ($date->isSaturday() || $date->isSunday()) {
-            continue;
-        }
-
-        $dateMap->put($dateKey, [
-            'isLeave' => $leaveDates->contains($dateKey),
-        ]);
-    }
-
-    // Also include leave days even if they fall on weekends
-    foreach ($leaveDates as $leaveDate) {
-        if (!$dateMap->has($leaveDate)) {
-            $dateMap->put($leaveDate, ['isLeave' => true]);
-        }
-    }
-
-    // Sort by date
-    $sortedDates = $dateMap->keys()->sort()->values();
-
-    foreach ($sortedDates as $dateKey) {
-        $workingHours[$dateKey] = 0;
-        $breakHours[$dateKey] = 0;
-
-        if (isset($attendanceRecords[$dateKey])) {
-            foreach ($attendanceRecords[$dateKey] as $attendance) {
-
-                $breakTime      = $attendance->break_time ?? '00:00:00';
-                $breakParts     = explode(':', $breakTime);
-                $hours          = isset($breakParts[0]) ? (int)$breakParts[0] : 0;
-                $minutes        = isset($breakParts[1]) ? (int)$breakParts[1] : 0;
-                $seconds        = isset($breakParts[2]) ? (int)$breakParts[2] : 0;
-                $breakDurationMinutes = ($hours * 60) + $minutes + ($seconds / 60);
-
-                $signinTime = Carbon::parse($attendance->signin_time);
-                $signoutTime = Carbon::parse($attendance->signout_time);
-                $workedDurationMinutes = $signinTime->diffInMinutes($signoutTime);
-
-                // Convert both to hours and round
-                $workingHours[$dateKey] += round(($workedDurationMinutes - $breakDurationMinutes) / 60, 2);
-                $breakHours[$dateKey] += round($breakDurationMinutes / 60, 2);
-            }
-        }
-    }
-
-    return [
-        'dates' => $sortedDates->toArray(),                              // e.g. ['2025-05-01', ..., '2025-05-13']
-        'working_hours' => array_values($workingHours),       // in hours
-        'break_hours' => array_values($breakHours),           // in hours
-        'leave_dates' => $leaveDates->unique()->values()->toArray(),     // useful for front-end to highlight leave
-    ];
-}
-
-public static function getWorkRatingAnalysisMonthly($empId)
-{
-    $now = Carbon::now();
-    $month = $now->month;
-    $year = $now->year;
-
-    $records = WorkReport::where('emp_id', $empId)
-        ->whereYear('report_date', $year)
-        ->whereMonth('report_date', $month)
-        ->get();
-
-    $analysis = [
-        'Outstanding'   => 0,
-        'Very Good'     => 0,
-        'Good'          => 0,
-        'Above Average' => 0,
-        'Average'       => 0,
-        'Poor'          => 0,
-    ];
-
-    foreach ($records as $record) {
-        $totalTime = floatval($record->total_time);
-        $productiveTime = floatval($record->productivity_hour);
-
-        if ($totalTime <= 0) {
-            continue; // skip invalid entries
-        }
-
-        $percentage = ($productiveTime / $totalTime) * 100;
-
-        if ($percentage >= 90) {
-            $analysis['Outstanding']++;
-        } elseif ($percentage >= 75) {
-            $analysis['Very Good']++;
-        } elseif ($percentage >= 60) {
-            $analysis['Good']++;
-        } elseif ($percentage >= 50) {
-            $analysis['Above Average']++;
-        } elseif ($percentage >= 30) {
-            $analysis['Average']++;
-        } else {
-            $analysis['Poor']++;
-        }
-    }
-
-    return $analysis;
-}
 
     /**
-         * Send notification email with HTML body
-         *
-         * @param string|array $to
-         * @param string $subject
-         * @param string $htmlBody
-         * @param array $cc
-         * @param array $bcc
-         * @return bool
+     * Send notification email with HTML body
+     *
+     * @param string|array $to
+     * @param string $subject
+     * @param string $htmlBody
+     * @param array $cc
+     * @param array $bcc
+     * @return bool
      */
-    public static function sendNotificationMail($to, string $subject, string $htmlBody, array $cc = [], array $bcc = []): bool{
+    public static function sendNotificationMail($to, string $subject, string $htmlBody, array $cc = [], array $bcc = []): bool
+    {
         try {
             Mail::send([], [], function ($message) use ($to, $subject, $htmlBody, $cc, $bcc) {
 
@@ -711,14 +715,14 @@ public static function getWorkRatingAnalysisMonthly($empId)
         return UserEntryBlockList::updateOrCreate(
             // Conditions to check for existing user
             [
-                'user_id'    => $data['user_id'],
+                'user_id' => $data['user_id'],
                 'block_date' => $data['block_date'] ?? Carbon::now()->toDateString(),
             ],
             // Values to insert or update
             [
-                'username'   => $data['username'],
-                'full_name'  => $data['full_name'] ?? null,
-                'status'     => $data['status'] ?? 1,
+                'username' => $data['username'],
+                'full_name' => $data['full_name'] ?? null,
+                'status' => $data['status'] ?? 1,
             ]
         );
     }
@@ -728,12 +732,11 @@ public static function getWorkRatingAnalysisMonthly($empId)
     {
         $join = Carbon::parse($user->employee->join_date);
         $now = Carbon::now();
-        if($user->employee->resigned_date != null)
-        {
+        if ($user->employee->resigned_date != null) {
             $resigned_date = $user->employee->resigned_date;
             $diff = $join->diff($resigned_date);
-        }else{
-             $diff = $join->diff($now);
+        } else {
+            $diff = $join->diff($now);
         }
 
 
@@ -750,14 +753,16 @@ public static function getWorkRatingAnalysisMonthly($empId)
         return Attendance::where(['is_incomplete' => 1, 'incomplete_approved' => 0])->count();
     }
 
-    public static function customAttendanceCount(){
+    public static function customAttendanceCount()
+    {
         return CustomAttendance::where(['status' => 0])->count();
     }
 
-    public static function customPendingLeaveCount(){
+    public static function customPendingLeaveCount()
+    {
         return Leave::where(['status' => 1])->count();
     }
-    
+
     public static function formatTimeToSeconds(string $time): string
     {
         $formats = ['H:i:s', 'H:i'];
@@ -798,7 +803,7 @@ public static function getWorkRatingAnalysisMonthly($empId)
         $breakTime = $attendance->break_time ?? '00:00:00';
 
         $breakParts = explode(':', $breakTime);
-        $hours   = isset($breakParts[0]) ? (int) $breakParts[0] : 0;
+        $hours = isset($breakParts[0]) ? (int) $breakParts[0] : 0;
         $minutes = isset($breakParts[1]) ? (int) $breakParts[1] : 0;
         $seconds = isset($breakParts[2]) ? (int) $breakParts[2] : 0;
 
@@ -811,23 +816,25 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
         return gmdate('H:i:s', $totalSeconds);
     }
-    public static function timeToSeconds($time){
+    public static function timeToSeconds($time)
+    {
         list($h, $m, $s) = array_pad(explode(':', $time), 3, 0);
         return ($h * 3600) + ($m * 60) + $s;
     }
 
-    public static function storeMail($data, $template = null, $files = []){
+    public static function storeMail($data, $template = null, $files = [])
+    {
         try {
             $mail = new MailBox();
 
             // Ensure to_user_ids, cc_user_ids, bcc_user_ids are arrays (decode if string)
-            $toUserIds = is_string($data->to_user_ids) ? json_decode($data->to_user_ids, true) ?? [] : (array)$data->to_user_ids;
+            $toUserIds = is_string($data->to_user_ids) ? json_decode($data->to_user_ids, true) ?? [] : (array) $data->to_user_ids;
             $ccUserIds = isset($data->cc_user_ids)
-                        ? (is_string($data->cc_user_ids) ? json_decode($data->cc_user_ids, true) ?? [] : (array)$data->cc_user_ids)
-                        : [];
+                ? (is_string($data->cc_user_ids) ? json_decode($data->cc_user_ids, true) ?? [] : (array) $data->cc_user_ids)
+                : [];
             $bccUserIds = isset($data->bcc_user_ids)
-                        ? (is_string($data->bcc_user_ids) ? json_decode($data->bcc_user_ids, true) ?? [] : (array)$data->bcc_user_ids)
-                        : [];
+                ? (is_string($data->bcc_user_ids) ? json_decode($data->bcc_user_ids, true) ?? [] : (array) $data->bcc_user_ids)
+                : [];
 
             $mail->from_user_id = $data->from_user_id ?? null;  // Can be int or string
             $mail->to_user_ids = json_encode($toUserIds);
@@ -873,7 +880,8 @@ public static function getWorkRatingAnalysisMonthly($empId)
             return ['send' => false, 'error' => $e->getMessage()];
         }
     }
-    public static function getTimeAge($datetime, $timezone = null): ?string{
+    public static function getTimeAge($datetime, $timezone = null): ?string
+    {
         if (!$datetime) {
             return null;
         }
@@ -889,12 +897,13 @@ public static function getWorkRatingAnalysisMonthly($empId)
         }
     }
 
-    public static function updateOrCreateAssetMapping(array $dataAsset){
+    public static function updateOrCreateAssetMapping(array $dataAsset)
+    {
         // Delete existing mappings for the same line item
         AssetMapping::where('register_lineitem_id', $dataAsset['register_lineitem_id'])->delete();
 
         // Count previous mappings for the same item-model-serial combo to continue item_number sequence
-       $lastItemNumber = AssetMapping::where([
+        $lastItemNumber = AssetMapping::where([
             'master_item_id' => $dataAsset['master_item_id'],
         ])->max('item_number') ?? 0;
 
@@ -907,11 +916,11 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
         for ($i = 1; $i <= $quantity; $i++) {
             AssetMapping::create([
-                'master_item_id'       => $dataAsset['master_item_id'],
+                'master_item_id' => $dataAsset['master_item_id'],
                 'register_lineitem_id' => $dataAsset['register_lineitem_id'],
-                'model'                => $dataAsset['model'],
-                'serial_number'        => $dataAsset['serial_number'],
-                'item_number'          => $startNumber + $i,
+                'model' => $dataAsset['model'],
+                'serial_number' => $dataAsset['serial_number'],
+                'item_number' => $startNumber + $i,
             ]);
         }
     }
@@ -921,8 +930,7 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
         $record = AssetMapping::find($dataAsset['asset_mapping_id']);
 
-        if($dataAsset['user_type'] === 'employee' || $dataAsset['user_type'] === 'location')
-        {
+        if ($dataAsset['user_type'] === 'employee' || $dataAsset['user_type'] === 'location') {
             $allocationId = $dataAsset['allocation_id'] ?? null;
             $allocationId = $allocationId ?? [];
             $status = 1;
@@ -945,12 +953,11 @@ public static function getWorkRatingAnalysisMonthly($empId)
             }
         }
 
-        if($dataAsset['user_type'] == 'scrap')
-        {
+        if ($dataAsset['user_type'] == 'scrap') {
             $scrap_id = $dataAsset['allocation_id'] ?? null;
             $status = 3;
 
-             if ($record) {
+            if ($record) {
 
                 $record->scrap_id = $scrap_id ?? null;
                 $record->allocation_status = $status;
@@ -959,8 +966,7 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
         }
 
-        if($dataAsset['user_type'] == 'repair')
-        {
+        if ($dataAsset['user_type'] == 'repair') {
             $repair_id = $dataAsset['allocation_id'] ?? null;
             $status = 2;
 
@@ -989,14 +995,14 @@ public static function getWorkRatingAnalysisMonthly($empId)
 
     public static function getItemCode($item_id)
     {
-        return AssetItemMaster::select('item_code')->where('id',$item_id)->first();
+        return AssetItemMaster::select('item_code')->where('id', $item_id)->first();
 
     }
 
     public static function itemCodeGenerater($mapping_id)
     {
 
-         $item_map = AssetMapping::find($mapping_id);
+        $item_map = AssetMapping::find($mapping_id);
 
         if (!$item_map) {
             return '-';
@@ -1015,7 +1021,8 @@ public static function getWorkRatingAnalysisMonthly($empId)
     }
 
 
-    public static function wfhWfsAttendanceCount(){
+    public static function wfhWfsAttendanceCount()
+    {
         return WorkFromHomeAttendance::where(['approvel_status' => 0])->count();
     }
 
@@ -1024,86 +1031,87 @@ public static function getWorkRatingAnalysisMonthly($empId)
         if (Auth::check()) {
             $userId = Auth::id(); // or Auth::user()->id
         }
-       return SurveyUserAssign::where('status', 1)->where('user_id',$userId)->count();
+        return SurveyUserAssign::where('status', 1)->where('user_id', $userId)->count();
     }
 
     public static function ParNotification()
     {
-        if(Auth::check()){
+        if (Auth::check()) {
             $userId = Auth::id();
         }
 
-        return ParUserAssign::where('status',1)->where('user_id',$userId)->count();
+        return ParUserAssign::where('status', 1)->where('user_id', $userId)->count();
     }
 
     public static function SarNotification()
     {
-         if(Auth::check()){
+        if (Auth::check()) {
             $userId = Auth::id();
         }
 
-        return SarUserAssign::where('status',1)->where('user_id',$userId)->count();
+        return SarUserAssign::where('status', 1)->where('user_id', $userId)->count();
     }
 
     public static function FeedbackNotification()
     {
-        if(Auth::check()){
+        if (Auth::check()) {
             $userId = Auth::id();
         }
 
-        return FeedbackAssign::where('status',1)->where('user_id',$userId)->count();
+        return FeedbackAssign::where('status', 1)->where('user_id', $userId)->count();
     }
 
     public static function PolicyNotification()
     {
-         if(Auth::check()){
+        if (Auth::check()) {
             $userId = Auth::id();
         }
 
-        return CompanyPolicy::where('status',0)->count();
+        return CompanyPolicy::where('status', 0)->count();
     }
 
     public static function TicketNotification()
     {
-         if(Auth::check()){
+        if (Auth::check()) {
             $userId = Auth::id();
         }
-        if(Auth::user()->employee->department?->name == 'Technical' )
-        {
-             return TicketRaising::where('status',0)->count();
-        }else{
-             return TicketRaising::where('user',$userId)->where('status','!=',1)->count();
+        if (Auth::user()->employee->department?->name == 'Technical') {
+            return TicketRaising::where('status', 0)->count();
+        } else {
+            return TicketRaising::where('user', $userId)->where('status', '!=', 1)->count();
         }
 
     }
 
     public static function TrainingTestNotification()
     {
-         if(Auth::check()){
+        if (Auth::check()) {
             $userId = Auth::id();
         }
-        return TrainingTestUser::where('user_id',$userId)->where('attempt_status','=','not_started')->count();
+        return TrainingTestUser::where('user_id', $userId)->where('attempt_status', '=', 'not_started')->count();
 
     }
 
     /* Update attendance is_incompte and user block list - if apply for halfday leave */
-    public static function updateHalfdayLeaveIncompleteStatus($empId, $date){
+    public static function updateHalfdayLeaveIncompleteStatus($empId, $date)
+    {
         $attendance = Attendance::where('emp_id', $empId)
-                                ->where('signin_date', $date)
-                                ->first(); // Use first() instead of get() to get a single model instance
+            ->where('signin_date', $date)
+            ->first(); // Use first() instead of get() to get a single model instance
         if ($attendance) {
             $attendance->is_incomplete = 0;
             $attendance->save(); // Save the updated model
 
             UserEntryBlockList::where('user_id', $empId)
-                            ->where('block_date', $date)
-                            ->update(['status' => 0]);
+                ->where('block_date', $date)
+                ->update(['status' => 0]);
         }
 
         return true;
     }
 
-     public static function decimalToHoursMinutes($decimalHours): string {
+    public static function decimalToHoursMinutes($decimalHours): string
+    {
         $hours = floor($decimalHours);
         $minutes = round(($decimalHours - $hours) * 60);
 
@@ -1123,7 +1131,7 @@ public static function getWorkRatingAnalysisMonthly($empId)
     }
 
     // Ge emails of all users in a specific role
-     public static function fetchPOP3($host, $port, $username, $password, $ssl = false)
+    public static function fetchPOP3($host, $port, $username, $password, $ssl = false)
     {
         $response = Http::post("http://127.0.0.1:5000/fetch-pop3-mails", [
             "host" => $host,

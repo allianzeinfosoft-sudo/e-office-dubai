@@ -84,6 +84,7 @@ class AttendanceController extends Controller{
         
         $data['isWorkingDay'] = $isWorkingDay;
         $data['todayName'] = $todayName;
+        $data['isHolidayToday'] = Holiday::where('holiday_group', $user->employee->holidayGroup ?? null)->whereDate('date', today())->exists();
         
         $shift              = Workshift::find($shift_id);
         
@@ -451,8 +452,6 @@ class AttendanceController extends Controller{
                            $yesterday = now()->subDay()->toDateString(); // yesterday
                            $dayBeforeYesterday = now()->subDays(2)->toDateString(); // day before yesterday
                            $today = now()->toDateString();
-                           
-                           $data['isHolidayToday'] = Holiday::where('holiday_group', $user->employee->holidayGroup)->whereDate('date', today())->exists();
                            
                            // Get last working date from helper
                            $lastWorkingDate = $getLastWorkingDate($yesterday);
@@ -1348,7 +1347,20 @@ class AttendanceController extends Controller{
         $signinDate = date('Y-m-d', strtotime($request->signin_date));
         $signinTime = CustomHelper::formatTimeToSeconds($request->signin_time); // $request->signin_time;
 
-        $Employee = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+        $employee = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+ 
+        // Check if the selected date is a scheduled working day for this employee
+        $dayName = Carbon::parse($signinDate)->format('l');
+        $isWorkingDay = WorkshiftDetail::where('workshift_id', $employee->shift_id)
+            ->where('day', $dayName)
+            ->exists();
+
+        if (!$isWorkingDay) {
+            return response()->json([
+                'success' => false,
+                'message' => "The selected date ($signinDate) is not a scheduled working day for this employee's shift."
+            ]);
+        }
 
         // Save or update Attendance
         $attendance = Attendance::updateOrCreate(
@@ -1357,7 +1369,7 @@ class AttendanceController extends Controller{
                 'signin_date' => $signinDate,
             ],
             [
-                'username' => $Employee->user->username,
+                'username' => $employee->user->username,
                 'signin_time' => $signinTime,
                 'signin_late_note' => $request->signin_late_note ?? null,
                 'punchin_type' => 'Custom',
@@ -1406,6 +1418,20 @@ class AttendanceController extends Controller{
 
         $employeeId = $validated['emp_id'];
         $user = Employee::with('user')->where('user_id', $employeeId)->firstOrFail();
+ 
+        // Check if the selected date is a scheduled working day for this employee
+        $signinDate = Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d');
+        $dayName = Carbon::parse($signinDate)->format('l');
+        $isWorkingDay = WorkshiftDetail::where('workshift_id', $user->shift_id)
+            ->where('day', $dayName)
+            ->exists();
+
+        if (!$isWorkingDay) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "The selected start date ($signinDate) is not a scheduled working day for this employee's shift."
+            ]);
+        }
 
         try {
             $attendanceData = [
@@ -1414,7 +1440,7 @@ class AttendanceController extends Controller{
                 'signin_date'      => Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'),
                 'signout_date'     => Carbon::createFromFormat('d-m-Y', $validated['signout_date'])->format('Y-m-d'),
                 'signin_time'      => CustomHelper::formatTimeToSeconds($validated['signin_time']),
-                'break_time'       => CustomHelper::formatTimeToSeconds($validated['break_time']),
+                'break_time'       => CustomHelper::formatTimeToSeconds($this->getBreakTime($employeeId, Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'))),
                 'signout_time'     => CustomHelper::formatTimeToSeconds($validated['signout_time']),
                 'working_hours'    => CustomHelper::formatTimeToSeconds($validated['working_hours']),
                 'signin_late_note' => $validated['signin_late_note'] ?? null,
@@ -1555,5 +1581,22 @@ class AttendanceController extends Controller{
     //     ]);
     //     return response()->json(['status' => 'success']);
     // }
+    public function getBreakTimeAjax(Request $request)
+    {
+        $userId = $request->user_id;
+        $date = $request->date;
+        
+        if (!$userId || !$date) {
+            return response()->json(['break_time' => '01:00:00']);
+        }
+
+        try {
+            $formattedDate = date('Y-m-d', strtotime($date));
+            $breakTime = $this->getBreakTime($userId, $formattedDate);
+            return response()->json(['break_time' => $breakTime]);
+        } catch (\Exception $e) {
+            return response()->json(['break_time' => '01:00:00']);
+        }
+    }
 
 }

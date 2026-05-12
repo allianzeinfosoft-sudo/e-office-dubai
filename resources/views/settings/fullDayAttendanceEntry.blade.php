@@ -57,8 +57,8 @@
                                             </div>
 
                                             <div class="col-3 mb-3">
-                                                <label for="break_time" class="form-label">Brake Time</label>
-                                                <input type="time" id="break_time" name="break_time" class="form-control" value="{{ date('H:i:s', strtotime('1:00')) }}"  placeholder="Time" />
+                                                <label for="break_time" class="form-label">Break Time</label>
+                                                <input type="time" id="break_time" name="break_time" class="form-control" value="01:00" readonly />
                                             </div>
 
                                             <div class="col-3 mb-3">
@@ -169,6 +169,27 @@ const CustomHelper = {
             var workingHours = CustomHelper.calculateWorkingHours(startTime, endTime, breakTime);
             var formattedHours = CustomHelper.convertHoursToTimeFormat(workingHours);
             $('#working_hours').val(formattedHours + ':00');       // '08:00'
+        });
+
+        $('#emp_id, #signin_date').on('change', function () {
+            var empId = $('#emp_id').val();
+            var date = $('#signin_date').val();
+            if (empId && date) {
+                $.ajax({
+                    url: "{{ route('attendance.get-break-time-ajax') }}",
+                    type: "GET",
+                    data: { user_id: empId, date: date },
+                    success: function (response) {
+                        if (response.break_time) {
+                            $('#break_time').val(response.break_time);
+                            // Trigger change to recalculate working hours if signout_time is already set
+                            if ($('#signout_time').val()) {
+                                $('#signout_time').trigger('change');
+                            }
+                        }
+                    }
+                });
+            }
         });
         
     });
