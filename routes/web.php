@@ -106,7 +106,7 @@ Route::middleware(['web'])->group(function () {
 Route::get('/password/change', [HomeController::class, 'showChangeForm'])->name('password.change.form')->middleware('auth');
 Route::post('/password/change', [HomeController::class, 'change'])->name('password.change')->middleware('auth');
 
-Route::middleware(['web', 'auth','force.password.change'])->group(function () {
+Route::middleware(['web', 'auth', 'protected', 'force.password.change'])->group(function () {
     /* Home */
     Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
     // Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -114,52 +114,55 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/leave-summary', [HomeController::class, 'getLeaveSummary'])->name('leave.summary');
 
     /* Attendance */
-    Route::get('/attendance',[AttendanceController::class, 'index'])->name('attendance');
-    Route::post('/attendance/mark-in',[AttendanceController::class, 'markIn'])->name('attendance.mark-in');
-    Route::post('/attendance/mark-out',[AttendanceController::class, 'markOut'])->name('attendance.mark-out');
-    Route::post('/attendance/custom-mark-in',[AttendanceController::class, 'customMarkIn'])->name('attendance.custom-mark-in');
-    Route::post('/attendance/emergency-mark',[AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
-    Route::post('/attendance/custom-mark-out/{id}',[AttendanceController::class, 'customMarkOut'])->name('attendance.custom-mark-out');
-    Route::get('/attendance/marked-in-list',[AttendanceController::class, 'markedInList'])->name('attendance.marked-in-list');
-    Route::get('/attendance/emplyee-markin/{id}',[AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin');
-    Route::delete('/attendance/destroy/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
-    Route::post('/attendance/custom-attendance-entry', [AttendanceController::class, 'customAttendanceEntry'])->name('attendance.custom-attendance-entry');
-    Route::post('attendance/full-day-attendance-entry', [AttendanceController::class, 'storeFullDayEntry'])->name('attendance.full-day-attendance-entry');
-    Route::get('attendance/incomplete-working-hours', [AttendanceController::class, 'getIncompleteWorkingHours'])->name('attendance.incomplete-working-hours');
-    Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
-    Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
-    Route::get('/update-brake-time/{id}', [AttendanceController::class, 'update_brake_time'])->name('update-brake-time');
-    Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
-    Route::post('/store-markout-history', [AttendanceController::class, 'storeMarkoutHistory']);
+    Route::middleware('protected:permission,view attendance')->group(function () {
+        Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
+        Route::post('/attendance/mark-in', [AttendanceController::class, 'markIn'])->name('attendance.mark-in');
+        Route::post('/attendance/mark-out', [AttendanceController::class, 'markOut'])->name('attendance.mark-out');
+        Route::post('/attendance/custom-mark-in', [AttendanceController::class, 'customMarkIn'])->name('attendance.custom-mark-in');
+        Route::post('/attendance/emergency-mark', [AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
+        Route::post('/attendance/custom-mark-out/{id}', [AttendanceController::class, 'customMarkOut'])->name('attendance.custom-mark-out');
+        Route::get('/attendance/marked-in-list', [AttendanceController::class, 'markedInList'])->name('attendance.marked-in-list');
+        Route::get('/attendance/emplyee-markin/{id}', [AttendanceController::class, 'employeeMarkin'])->name('attendance.emplyee-markin');
+        Route::delete('/attendance/destroy/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+        Route::post('/attendance/custom-attendance-entry', [AttendanceController::class, 'customAttendanceEntry'])->name('attendance.custom-attendance-entry');
+        Route::post('attendance/full-day-attendance-entry', [AttendanceController::class, 'storeFullDayEntry'])->name('attendance.full-day-attendance-entry');
+        Route::get('attendance/incomplete-working-hours', [AttendanceController::class, 'getIncompleteWorkingHours'])->name('attendance.incomplete-working-hours');
+        Route::get('attendance/get-incomplete-working-hours-report', [AttendanceController::class, 'getIncompleteWorkingHoursReport'])->name('attendance.get-incomplete-working-hours-report');
+        Route::get('/attendance/incomplete/approve/{id}', [AttendanceController::class, 'approveIncompleteAttendance'])->name('attendance.incomplete.approve');
+        Route::get('/update-brake-time/{id}', [AttendanceController::class, 'update_brake_time'])->name('update-brake-time');
+        Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+        Route::post('/store-markout-history', [AttendanceController::class, 'storeMarkoutHistory']);
+    });
 
     /* roles */
-    Route::resource('roles', RoleController::class);
-    Route::get('/user/roles',[RoleController::class, 'getroles']);
-    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
-    Route::get('/roles/{role}/permissions', [RoleController::class, 'getRolePermissions']);
+    Route::resource('roles', RoleController::class)->middleware('protected:permission,manage roles');
+    Route::get('/user/roles', [RoleController::class, 'getroles'])->middleware('protected:permission,view roles and permission');
+    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy')->middleware('protected:permission,manage roles');
+    Route::get('/roles/{role}/permissions', [RoleController::class, 'getRolePermissions'])->middleware('protected:permission,view roles and permission');
+
 
     /* Permissions */
-    Route::resource('permissions', PermissionController::class);
-    Route::delete('/permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
-    Route::get('/permissions-list', [PermissionController::class, 'getPermissions']);
+    Route::resource('permissions', PermissionController::class)->middleware('protected:permission,manage permissions');
+    Route::delete('/permissions/{id}', [PermissionController::class, 'destroy'])->name('permissions.destroy')->middleware('protected:permission,manage permissions');
+    Route::get('/permissions-list', [PermissionController::class, 'getPermissions'])->middleware('protected:permission,manage permissions');
 
     /* users */
-    Route::resource('users', UserController::class);
-    Route::get('/user-list',[UserController::class, 'getUsers']);
-    Route::get('/locked-users-list',[UserController::class, 'lockedUsers'])->name('locked.users.view');
-    Route::get('/locked-users',[UserController::class, 'locked_index'])->name('locked.users');
+    Route::resource('users', UserController::class)->middleware('protected:permission,view users');
+    Route::get('/user-list', [UserController::class, 'getUsers']);
+    Route::get('/locked-users-list', [UserController::class, 'lockedUsers'])->name('locked.users.view');
+    Route::get('/locked-users', [UserController::class, 'locked_index'])->name('locked.users');
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::get('/users/{id}/limited-edit', [UserController::class, 'limited_edit'])->name('users.limited.edit');
 
-    Route::post('/users/{id}/limited-update', [UserController::class,'limitedUpdate'])->name('users.limited_update');
+    Route::post('/users/{id}/limited-update', [UserController::class, 'limitedUpdate'])->name('users.limited_update');
 
-    Route::get('/user/profile/{userid}' ,[UserController::class, 'userProfile'])->name('user.profile');
+    Route::get('/user/profile/{userid}', [UserController::class, 'userProfile'])->name('user.profile');
     Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::post('/user-restore/{userId}', [UserController::class, 'restore_user'])->name('user.restore');
     Route::get('/users/{userId}/profile-edit', [UserController::class, 'profileEdit'])->name('users.profile-edit');
     Route::post('/users/store-or-update/{id?}', [UserController::class, 'storeOrUpdate'])->name('users.storeOrUpdate');
-    Route::get('/lock-profile/{id}',[UserController::class,'lockProfile'])->name('user.lock_profile');
-    Route::post('/change-password',[UserController::class,'change_password'])->name('change_password');
+    Route::get('/lock-profile/{id}', [UserController::class, 'lockProfile'])->name('user.lock_profile');
+    Route::post('/change-password', [UserController::class, 'change_password'])->name('change_password');
     Route::post('/check-old-password', [UserController::class, 'checkOldPassword'])->name('check_old_password');
     Route::get('/assign_open_work', [UserController::class, 'assign_open_work'])->name('assign_open_work');
     Route::post('/open_work_assign', [UserController::class, 'open_work_assign'])->name('open.work.assign');
@@ -186,50 +189,50 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/change-user-password', [UserController::class, 'ChangeUserPassword'])->name('user_change_password');
 
     Route::get('/get-all-employees', [UserController::class, 'getAllEmployees']);
-    Route::get('/get-employee-department',[UserController::class, 'getEmployeeDepartment']);
+    Route::get('/get-employee-department', [UserController::class, 'getEmployeeDepartment']);
 
     /* department */
-    Route::resource('departments',DepartmentController::class);
-    Route::post('/department/save',[BranchController::class, 'department_store'])->name('department.store');
-    Route::post('/designation/create',[DepartmentController::class, 'designation_store'])->name('create.designation');
+    Route::resource('departments', DepartmentController::class);
+    Route::post('/department/save', [BranchController::class, 'department_store'])->name('department.store');
+    Route::post('/designation/create', [DepartmentController::class, 'designation_store'])->name('create.designation');
 
     /* Branches */
-    Route::resource('branchs',BranchController::class);
-    Route::get('/branch-list',[BranchController::class, 'getBranches']);
+    Route::resource('branchs', BranchController::class);
+    Route::get('/branch-list', [BranchController::class, 'getBranches']);
     Route::get('/branches/{branch}/departments', [BranchController::class, 'getDepartments'])->name('branch.departments');
 
     /* designiations */
     Route::get('/departments/{department}/designations', [BranchController::class, 'getDesignations'])->name('department.designations');
-    Route::post('/designation/save',[BranchController::class, 'designation_store'])->name('designation.store');
+    Route::post('/designation/save', [BranchController::class, 'designation_store'])->name('designation.store');
 
-    
+
 
 
     // leave route
-    Route::resource('leaves',LeaveController::class);
-    Route::get('/leave-list',[LeaveController::class, 'leave_list']);
-    Route::get('leave-status',[LeaveController::class,'show_leave_status'])->name('leaves.status');
-    Route::get('/leave-status/{user_id}',[LeaveController::class, 'leave_status'])->name('leave.status');
-    Route::get('/pending-leaves',[LeaveController::class,'leave_pending_show'])->name('leaves.pending.show');
-    Route::get('/leave-pending',[LeaveController::class, 'pending_leaves'])->name('leaves.pending');
+    Route::resource('leaves', LeaveController::class);
+    Route::get('/leave-list', [LeaveController::class, 'leave_list']);
+    Route::get('leave-status', [LeaveController::class, 'show_leave_status'])->name('leaves.status');
+    Route::get('/leave-status/{user_id}', [LeaveController::class, 'leave_status'])->name('leave.status');
+    Route::get('/pending-leaves', [LeaveController::class, 'leave_pending_show'])->name('leaves.pending.show');
+    Route::get('/leave-pending', [LeaveController::class, 'pending_leaves'])->name('leaves.pending');
     Route::post('leave/action', [LeaveController::class, 'leave_action'])->name('leaves.leave_action');
-    Route::get('/leave-allocation',[LeaveController::class,'leave_allocation'])->name('leaves.allocation');
+    Route::get('/leave-allocation', [LeaveController::class, 'leave_allocation'])->name('leaves.allocation');
     Route::get('/allocated-leaves', [LeaveController::class, 'allocated_leaves'])->name('leaves.allocated_leaves');
-    Route::post('/leave_allocate',[LeaveController::class,'leave_allocate'])->name('leaves.leave_allocate');
-    Route::post('/check-leave' ,[LeaveController::class, 'checkLeave'])->name('check.leave');
-    Route::post('/get-leave-details',[LeaveController::class, 'getLeaveDetails'])->name('leave.leave.details');
-    Route::post('/update-leave-allocation',[LeaveController::class, 'updateLeaveAllocation'])->name('leave.update_leave_allocation');
+    Route::post('/leave_allocate', [LeaveController::class, 'leave_allocate'])->name('leaves.leave_allocate');
+    Route::post('/check-leave', [LeaveController::class, 'checkLeave'])->name('check.leave');
+    Route::post('/get-leave-details', [LeaveController::class, 'getLeaveDetails'])->name('leave.leave.details');
+    Route::post('/update-leave-allocation', [LeaveController::class, 'updateLeaveAllocation'])->name('leave.update_leave_allocation');
     Route::delete('/leaves/{id}', [LeaveController::class, 'destroy'])->name('leaves.destroy');
     Route::delete('/approver-delete/{id}', [LeaveController::class, 'leave_approval_delete'])->name('approver.destroy');
-    Route::get('/custom_leave',[LeaveController::class,'custom_leave'])->name('custom.leave');
-    Route::get('/leave_approver/list',[LeaveController::class, 'leave_approver'])->name('leave.approver');
-    Route::post('/leave_approval_store',[LeaveController::class, 'leave_approval_store'])->name('leave_approval_store');
+    Route::get('/custom_leave', [LeaveController::class, 'custom_leave'])->name('custom.leave');
+    Route::get('/leave_approver/list', [LeaveController::class, 'leave_approver'])->name('leave.approver');
+    Route::post('/leave_approval_store', [LeaveController::class, 'leave_approval_store'])->name('leave_approval_store');
 
     // Route::post('/leave_summary_filter', [LeaveController::class, 'myWorkReportsData'])->name('reports.my-work-report-data');
 
 
     /* Prjects */
-    Route::get('/projects',[ProjectController::class, 'index'])->name('projects');
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/projects/get-projects', [ProjectController::class, 'getProject'])->name('projects.get-projects');
     Route::get('/project/create', [ProjectController::class, 'create'])->name('project.create');
@@ -265,16 +268,16 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/work-report/get-productivity-target', [WorkReportController::class, 'getProductivityTarget'])->name('work-report.get-productivity-target');
 
     /* Works Module */
-    Route::get('works/status',[AttendanceController::class, 'index'])->name('works.status');
-    Route::get('works/sud-project-status',[WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
-    Route::get('works/temporary-status',[WorksController::class, 'temporaryStatus'])->name('works.temporary-status');
-    Route::get('works/entry-open',[WorksController::class, 'entryOpen'])->name('works.entry-open');
+    Route::get('works/status', [AttendanceController::class, 'index'])->name('works.status');
+    Route::get('works/sud-project-status', [WorksController::class, 'sudProjectStatus'])->name('works.sud-project-status');
+    Route::get('works/temporary-status', [WorksController::class, 'temporaryStatus'])->name('works.temporary-status');
+    Route::get('works/entry-open', [WorksController::class, 'entryOpen'])->name('works.entry-open');
 
     /* Holiday */
-    Route::resource('holidays',HolidayController::class);
-    Route::get('/holiday/list', [HolidayController::class, 'getHolidayList'])->name('holiday.list');
-    Route::delete('/holiday-delete/{holidayId}', [HolidayController::class, 'destroy'])->name('holiday.destroy');
-    Route::get('/view-holidays',[HolidayController::class, 'show_holiday'])->name('view.holiday');
+    Route::resource('holidays', HolidayController::class)->middleware('protected:permission,view holiday');
+    Route::get('/holiday/list', [HolidayController::class, 'getHolidayList'])->name('holiday.list')->middleware('protected:permission,view holiday');
+    Route::delete('/holiday-delete/{holidayId}', [HolidayController::class, 'destroy'])->name('holiday.destroy')->middleware('protected:permission,delete holiday');
+    Route::get('/view-holidays', [HolidayController::class, 'show_holiday'])->name('view.holiday')->middleware('protected:permission,view holiday');
 
     /* Notification */
     // Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
@@ -284,8 +287,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
 
     /*salary*/
-    Route::get('/salarySlip/view',[SalaryController::class, 'view_salary_slip'])->name('view.salary.slip');
-    Route::get('/fetch/salarySlip',[SalaryController::class,'fetch_salary_slip'])->name('fetch.salarySlip');
+    Route::get('/salarySlip/view', [SalaryController::class, 'view_salary_slip'])->name('view.salary.slip');
+    Route::get('/fetch/salarySlip', [SalaryController::class, 'fetch_salary_slip'])->name('fetch.salarySlip');
     Route::post('/salary/upload', [SalaryController::class, 'upload'])->name('upload.salary.file');
 
     /* Recruitments */
@@ -310,16 +313,16 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/recruitments/reject', [RecruitmentController::class, 'reject'])->name('recruitments.reject');
 
     /*feeds*/
-    Route::get('/feeds',[FeedsController::class, 'show_feeds'])->name('show.feeds');
+    Route::get('/feeds', [FeedsController::class, 'show_feeds'])->name('show.feeds');
 
     /*Thoughts*/
-    Route::resource('thoughts',ThoughtsController::class);
+    Route::resource('thoughts', ThoughtsController::class);
     Route::get('/thoughts/{thought}/edit', [ThoughtsController::class, 'edit'])->name('thoughts.edit');
     Route::post('/thoughts/{thought}/update', [ThoughtsController::class, 'update'])->name('thoughts.update');
     Route::get('/thoughts_view', [ThoughtsController::class, 'view_thoughts'])->name('thoughts.view');
 
     /* Training */
-    Route::resource('trainings',TrainingController::class);
+    Route::resource('trainings', TrainingController::class);
     Route::get('/trainings/{training}/edit', [TrainingController::class, 'edit'])->name('trainings.edit');
     Route::post('/trainings/{training}/update', [TrainingController::class, 'update'])->name('trainings.update');
     Route::get('/trainings_view', [TrainingController::class, 'view_trainings'])->name('trainings.view');
@@ -336,7 +339,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/training-tests/{trainingTest}/update', [TrainingTestController::class, 'update'])->name('training-tests.update');
     Route::get('/training-tests/{id}/view', [TrainingTestController::class, 'view'])->name('training-tests.view');
     Route::get('training-tests/{id}', [TrainingTestController::class, 'show'])->name('training-tests.show');
-    Route::get('training-tests/{id}/question-paper',[TrainingTestController::class, 'questionPaper']);
+    Route::get('training-tests/{id}/question-paper', [TrainingTestController::class, 'questionPaper']);
     Route::get('training-tests/{id}/attend', [TrainingTestController::class, 'attend'])->name('training-tests.attend');
     Route::post('training-tests/{id}/submit', [TrainingTestController::class, 'submit'])->name('training-tests.submit');
     Route::get('training-tests/{id}/certificate', [TrainingTestController::class, 'certificate'])->name('training-tests.certificate');
@@ -391,7 +394,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
 
     /*Appreciation*/
     Route::resource('appreciation', AppreciationController::class);
-    Route::get('/appreciation_view',[AppreciationController::class, 'view_appreciation'])->name('view_appreciation');
+    Route::get('/appreciation_view', [AppreciationController::class, 'view_appreciation'])->name('view_appreciation');
     /* Mailbox */
 
     // Route::get('/mail-box', [MailBoxController::class, 'index'])->name('mailbox.index');
@@ -409,33 +412,33 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::resource('banner', BannerController::class);
 
     /* Reminder */
-    Route::resource('reminder',ReminderController::class);
+    Route::resource('reminder', ReminderController::class);
 
     /* Settings */
-    Route::get('/settings/userstastus',[SettingsController::class, 'list_user_status'])->name('userstatus');
-    Route::get('/settings/workshift',[SettingsController::class, 'list_work_shift'])->name('workshift');
-    Route::post('/settings/workshift/save',[SettingsController::class, 'store_work_shift'])->name('store.workshift');
-    Route::post('/settings/workshift/details/save',[SettingsController::class, 'store_work_shift_details'])->name('store.workshift.details');
-    Route::get('/settings/workshift/details/fetch/{id}',[SettingsController::class, 'fetch_work_shift_detail']);
-    Route::get('/settings/workshift/details/{id}/{day}',[SettingsController::class, 'get_work_shift_details']);
-    Route::get('/settings/workshift/all-details/{id}',[SettingsController::class, 'get_all_work_shift_details']);
-    Route::delete('/settings/workshift/details/delete/{id}',[SettingsController::class, 'delete_work_shift_detail'])->name('delete.workshift.detail');
-    Route::get('/workshift/list',[SettingsController::class, 'getWorkShift']);
+    Route::get('/settings/userstastus', [SettingsController::class, 'list_user_status'])->name('userstatus');
+    Route::get('/settings/workshift', [SettingsController::class, 'list_work_shift'])->name('workshift');
+    Route::post('/settings/workshift/save', [SettingsController::class, 'store_work_shift'])->name('store.workshift');
+    Route::post('/settings/workshift/details/save', [SettingsController::class, 'store_work_shift_details'])->name('store.workshift.details');
+    Route::get('/settings/workshift/details/fetch/{id}', [SettingsController::class, 'fetch_work_shift_detail']);
+    Route::get('/settings/workshift/details/{id}/{day}', [SettingsController::class, 'get_work_shift_details']);
+    Route::get('/settings/workshift/all-details/{id}', [SettingsController::class, 'get_all_work_shift_details']);
+    Route::delete('/settings/workshift/details/delete/{id}', [SettingsController::class, 'delete_work_shift_detail'])->name('delete.workshift.detail');
+    Route::get('/workshift/list', [SettingsController::class, 'getWorkShift']);
     Route::get('/settings/custom-mark-out', [SettingsController::class, 'customMakeOut'])->name('settings.custom-mark-out');
     Route::get('/settings/custom-attendance-entry', [SettingsController::class, 'customAttendanceEntry'])->name('settings.custom-attendance-entry');
     Route::delete('/workshift/delete/{workshiftId}', [SettingsController::class, 'delete_work_shift'])->name('workshift.destroy');
-    Route::get('/workshift/{targetId}/edit',[SettingsController::class, 'edit_work_shift'])->name('workshift.edit');
-    Route::post('/change-shift-time',[SettingsController::class, 'change_shift'])->name('change_shift');
-    Route::get('/shift-times',[SettingsController::class, 'userShifts'])->name('users.shifts');
+    Route::get('/workshift/{targetId}/edit', [SettingsController::class, 'edit_work_shift'])->name('workshift.edit');
+    Route::post('/change-shift-time', [SettingsController::class, 'change_shift'])->name('change_shift');
+    Route::get('/shift-times', [SettingsController::class, 'userShifts'])->name('users.shifts');
     Route::post('/update-user-shift', [SettingsController::class, 'update_user_shift'])->name('update.user.shift');
-    Route::post('/save-login-limited-time',[SettingsController::class,'store_login_limited_time'])->name('save.login_limited_time');
+    Route::post('/save-login-limited-time', [SettingsController::class, 'store_login_limited_time'])->name('save.login_limited_time');
     Route::get('/settings/full-day-attendance-entry', [SettingsController::class, 'fullDayAttendanceEntry'])->name('settings.full-day-attendance-entry');
     Route::get('/settings/custom-work-report-entry', [SettingsController::class, 'customWorkReportEntry'])->name('settings.custom-work-report-entry');
     Route::get('/settings/edit-daily-attendance', [SettingsController::class, 'editDailyAttendance'])->name('settings.edit-daily-attendance');
     Route::get('/settings/get-attendance-data', [SettingsController::class, 'getAttendanceData'])->name('settings.get-attendance-data');
     Route::post('/settings/update-attendance-data/{id}', [SettingsController::class, 'updateAttendance'])->name('settings.update-attendance-data');
     Route::get('/get-user-shifts/{userId}', [SettingsController::class, 'getUserShifts']);
-    Route::get('/settings/get-working-hours', [SettingsController::class, 'getWorkingHours']) ->name('settings.get-working-hours');
+    Route::get('/settings/get-working-hours', [SettingsController::class, 'getWorkingHours'])->name('settings.get-working-hours');
     Route::get('/settings/login-history', [SettingsController::class, 'loginHistory'])->name('settings.login-history');
     Route::get('attendance/get-break-time-ajax', [AttendanceController::class, 'getBreakTimeAjax'])->name('attendance.get-break-time-ajax');
     /* shifts */
@@ -450,6 +453,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/custom-attendance/reject-custom-mark-in/{id}', [CustomAttendanceController::class, 'rejectCustomMarkIn'])->name('custom-attendance.reject-custom-mark-in');
 
     /* Reports  */
+    Route::middleware('protected:permission,view reports')->group(function () {
     Route::get('/reports/my-overview', [ReportController::class, 'my_overview'])->name('reports.my-overview');
     Route::get('/reports/my-attendance-report', [ReportController::class, 'myAttendanceReport'])->name('reports.my-attendance-report');
     Route::get('/reports/my-work-report', [ReportController::class, 'myWorkReport'])->name('reports.my-work-report');
@@ -469,16 +473,17 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::post('/reports/all-work-report', [ReportController::class, 'allWorkReportData'])->name('reports.all-work-report');
     Route::get('/reports/over-all-work-report', [ReportController::class, 'overAllWorkReport'])->name('reports.over-all-work-report');
     Route::get('/reports/get-projects-by-employee', [ReportController::class, 'getProjectsByEmployee'])->name('reports.get-projects-by-employee');
-    Route::post('/reports/get-employee-reports', [ReportController::class, 'getFilteredReports']) ->name('reports.get-employee-reports');
-    Route::get('/reports/emergency-reports', [ReportController::class, 'emergencyAttendanceReport']) ->name('reports.emergency-reports');
-    Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance']) ->name('reports.get-emergency-attendance');
+    Route::post('/reports/get-employee-reports', [ReportController::class, 'getFilteredReports'])->name('reports.get-employee-reports');
+    Route::get('/reports/emergency-reports', [ReportController::class, 'emergencyAttendanceReport'])->name('reports.emergency-reports');
+    Route::post('/reports/get-emergency-attendance', [ReportController::class, 'getEmergencyAttendance'])->name('reports.get-emergency-attendance');
     Route::post('/check-leave-overlap', [LeaveController::class, 'checkOverlap'])->name('check.leave.overlap');
     Route::post('/leave_summary_filter', [LeaveController::class, 'leave_summary_filter'])->name('leave_summary_filter');
     Route::get('/check-leave-allocation/{user}', [LeaveController::class, 'check_leave_allocated']);
-    Route::get('/reports/all-users-report', [ReportController::class, 'allUserReport']) ->name('reports.all-user-reports');
+    Route::get('/reports/all-users-report', [ReportController::class, 'allUserReport'])->name('reports.all-user-reports');
     Route::get('/reports/all-user-report-data', [ReportController::class, 'allUserReportData'])->name('reports.all-user-data');
     Route::get('/reports/all-wfs-wfs-work-report', [ReportController::class, 'allWfhWorkReport'])->name('reports.all-wfs-wfh-work-report');
     Route::post('/reports/all-wfs-wfs-work-report-data', [ReportController::class, 'allWfsWorkReportData'])->name('reports.all-wfs-wfh-work-report');
+});
 
     /*Galley*/
     Route::resource('gallery', GalleryController::class);
@@ -576,13 +581,13 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::resource('sartemplate', SarTemplateController::class);
     Route::get('/sartemplate/{id}/fetch', [SarTemplateController::class, 'fetch']);
     Route::get('/sartemplate-assign', [SarTemplateController::class, 'assign_template'])->name('sar.user.assign');
-    Route::post('/store-sar-assign',[SarTemplateController::class, 'store_assign_template'])->name('store.sar.assign');
+    Route::post('/store-sar-assign', [SarTemplateController::class, 'store_assign_template'])->name('store.sar.assign');
 
     Route::get('/branches/{branch}/sar_templates', [SarTemplateController::class, 'getTemplates'])->name('branch.sar_emplates');
     Route::get('/sar-assign-edit', [SarTemplateController::class, 'sar_edit'])->name('sar_assigning.edit');
     Route::delete('/sar_assign/{id}', [SarTemplateController::class, 'destroyAssign'])->name('sar.assign.delete');
 
-    Route::get('/user-sars',[SarTemplateController::class, 'user_sars'])->name('user.sars');
+    Route::get('/user-sars', [SarTemplateController::class, 'user_sars'])->name('user.sars');
     Route::get('/usersars/{id}/sarfetch', [SarTemplateController::class, 'sarsfetch']);
     Route::get('/usersars/{id}/saranswerfetch', [SarTemplateController::class, 'sarAnswerfetch']);
     Route::resource('self-appraisal', SelfAppraisalReportController::class);
@@ -590,7 +595,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/usersars/{id}/generate-pdf', [SarTemplateController::class, 'generatePdf']);
     Route::delete('/sartemplate/{sarTemplate}', [SarTemplateController::class, 'destroy'])->name('sartemplate.destroy');
 
-    Route::get('/sar-report',[SelfAppraisalReportController::class, 'sar_report'])->name('sar.report.list');
+    Route::get('/sar-report', [SelfAppraisalReportController::class, 'sar_report'])->name('sar.report.list');
     Route::get('/usersars/{id}/export', [SelfAppraisalReportController::class, 'exportSarReport'])->name('sar.export');
 
 
@@ -598,13 +603,13 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::resource('partemplate', ParTemplateController::class);
     Route::get('/partemplate/{id}/fetch', [ParTemplateController::class, 'fetch']);
     Route::get('/partemplate-assign', [ParTemplateController::class, 'assign_template'])->name('par.user.assign');
-    Route::post('/store-par-assign',[ParTemplateController::class, 'store_assign_template'])->name('store.par.assign');
+    Route::post('/store-par-assign', [ParTemplateController::class, 'store_assign_template'])->name('store.par.assign');
 
     Route::get('/branches/{branch}/par_templates', [ParTemplateController::class, 'getTemplates'])->name('branch.par_templates');
     Route::get('/par-assign-edit', [ParTemplateController::class, 'par_edit'])->name('par_assigning.edit');
     Route::delete('/par_assign/{id}', [ParTemplateController::class, 'destroyAssign'])->name('par.assign.delete');
 
-    Route::get('/user-pars',[ParTemplateController::class, 'user_pars'])->name('user.pars');
+    Route::get('/user-pars', [ParTemplateController::class, 'user_pars'])->name('user.pars');
     Route::get('/userpars/{id}/parfetch', [ParTemplateController::class, 'parsfetch']);
     Route::get('/userpars/{id}/paranswerfetch', [ParTemplateController::class, 'parAnswerfetch']);
     Route::resource('performance-appraisal', PerformanceAppraisalReportController::class);
@@ -612,7 +617,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/userpars/{id}/generate-pdf', [ParTemplateController::class, 'generatePdf']);
     Route::delete('/partemplate/{parTemplate}', [ParTemplateController::class, 'destroy'])->name('partemplate.destroy');
 
-    Route::get('/par-report',[PerformanceAppraisalReportController::class, 'par_report'])->name('par.report.list');
+    Route::get('/par-report', [PerformanceAppraisalReportController::class, 'par_report'])->name('par.report.list');
     Route::get('/userpars/{id}/export', [PerformanceAppraisalReportController::class, 'exportParReport'])->name('par.export');
 
 
@@ -620,32 +625,32 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::resource('surveytemplate', SurveyTemplateController::class);
     Route::get('/surveytemplate/{id}/fetch', [SurveyTemplateController::class, 'fetch']);
     Route::get('/surveytemplate-assign', [SurveyTemplateController::class, 'assign_template'])->name('survey.user.assign');
-    Route::post('/store-survey-assign',[SurveyTemplateController::class, 'store_assign_template'])->name('store.survey.assign');
+    Route::post('/store-survey-assign', [SurveyTemplateController::class, 'store_assign_template'])->name('store.survey.assign');
 
     Route::get('/branches/{branch}/survey_templates', [SurveyTemplateController::class, 'getTemplates'])->name('branch.survey_templates');
     Route::get('/survey-assign-edit', [SurveyTemplateController::class, 'survey_edit'])->name('survey_assigning.edit');
     Route::delete('/survey_assign/{id}', [SurveyTemplateController::class, 'destroyAssign'])->name('survey.assign.delete');
 
-    Route::get('/user-surveys',[SurveyTemplateController::class, 'user_surveys'])->name('user.surveys');
+    Route::get('/user-surveys', [SurveyTemplateController::class, 'user_surveys'])->name('user.surveys');
     Route::get('/usersurveys/{id}/surveyfetch', [SurveyTemplateController::class, 'surveysfetch']);
     Route::get('/usersurveys/{id}/surveyanswerfetch', [SurveyTemplateController::class, 'surveyAnswerfetch']);
     Route::resource('survey', SurveyReportController::class);
 
     Route::get('/usersurveys/{id}/generate-pdf', [SurveyTemplateController::class, 'generatePdf']);
-    Route::get('/survey-report',[SurveyReportController::class, 'survey_report'])->name('survey.report.list');
+    Route::get('/survey-report', [SurveyReportController::class, 'survey_report'])->name('survey.report.list');
     Route::get('/survey/{id}/export', [SurveyReportController::class, 'exportSurveyReport'])->name('survey.export');
 
-      //FEEDBACK
+    //FEEDBACK
     Route::resource('feedback', FeedbackController::class);
     Route::get('/feedback/{id}/fetch', [FeedbackController::class, 'fetch']);
     Route::get('/feedback-assign', [FeedbackController::class, 'assign_feedback'])->name('feedback.user.assign');
-    Route::post('/store-feedback-assign',[FeedbackController::class, 'store_assign_feedback'])->name('store.feedback.assign');
+    Route::post('/store-feedback-assign', [FeedbackController::class, 'store_assign_feedback'])->name('store.feedback.assign');
 
     Route::get('/branches/{branch}/feedbacks', [FeedbackController::class, 'getFeedbacks'])->name('branch.feedback');
     Route::get('/feedback-assign-edit', [FeedbackController::class, 'feedback_edit'])->name('feedback_assigning.edit');
     Route::delete('/feedback_assign/{id}', [FeedbackController::class, 'destroyAssign'])->name('feedback.assign.delete');
 
-    Route::get('/user-feedbacks',[FeedbackController::class, 'user_feedbacks'])->name('user.feedbacks');
+    Route::get('/user-feedbacks', [FeedbackController::class, 'user_feedbacks'])->name('user.feedbacks');
     Route::get('/userfeedbacks/{id}/feedbackfetch', [FeedbackController::class, 'feedbackfetch']);
     Route::get('/userfeedbacks/{id}/feedbackanswerfetch', [FeedbackController::class, 'feedbackAnswerfetch']);
     Route::resource('feedback_report', FeedbackReportController::class);
@@ -653,7 +658,7 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/userfeedbacks/{id}/generate-pdf', [FeedbackController::class, 'generatePdf']);
     Route::delete('/feedbacktemplate/{feedbackTemplate}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
 
-    Route::get('/feedback-report',[FeedbackReportController::class, 'feedback_report'])->name('feedback.report.list');
+    Route::get('/feedback-report', [FeedbackReportController::class, 'feedback_report'])->name('feedback.report.list');
 
     Route::get('/feedbacks/{id}/export', [FeedbackReportController::class, 'exportFeedbackReport'])->name('feedback.export');
 
@@ -665,8 +670,8 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::get('/job/{job}/show', [JobController::class, 'show'])->name('job.show');
     Route::post('/job/comment', [JobController::class, 'storeComment'])->name('job.comment.store');
 
-     /*Ticket Raising*/
-    Route::resource('tickets',TicketRaisingController::class);
+    /*Ticket Raising*/
+    Route::resource('tickets', TicketRaisingController::class);
     Route::get('/tickets/{ticket}/edit', [TicketRaisingController::class, 'edit'])->name('tickets.edit');
     Route::post('/tickets/{ticket}/update', [TicketRaisingController::class, 'update'])->name('tickets.update');
     Route::get('/tickets_view', [TicketRaisingController::class, 'view_tickets'])->name('tickets.view');
@@ -688,9 +693,9 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
     Route::delete('/category/{assetCategory}', [AssetCategoryController::class, 'destroy'])->name('category.destroy');
 
     /* Asset Type*/
-    Route::prefix('assets')->name('assets.')->group(function () {
-        Route::get('all',[AssetAllocationController::class,'allAssets'])->name('all');
-        Route::get('items',[AssetRegisterController::class,'registered_items'])->name('register.items');
+    Route::prefix('assets')->name('assets.')->middleware('protected:permission,view asset reports')->group(function () {
+        Route::get('all', [AssetAllocationController::class, 'allAssets'])->name('all');
+        Route::get('items', [AssetRegisterController::class, 'registered_items'])->name('register.items');
         Route::get('edit/item/{id}', [AssetRegisterController::class, 'edit_item'])->name('item.edit');
         Route::post('update/item', [AssetRegisterController::class, 'update_item'])->name('register.update_item');
 
@@ -713,11 +718,11 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::post('scrap-register/get-model-no', [ScrapRegisterController::class, 'getItemModel'])->name('scrap-register.get-model-no');
         Route::post('scrap-register/get-asset-id', [ScrapRegisterController::class, 'getAssetId'])->name('scrap-register.get-asset-id');
         Route::resource('repair-register', RepairRegisterController::class)->names('repair-register');
-        Route::get('repare-register/items', [RepairRegisterController::class,'Items'])->name('repare-register.items');
+        Route::get('repare-register/items', [RepairRegisterController::class, 'Items'])->name('repare-register.items');
         Route::post('repair-register/update-item', [RepairRegisterController::class, 'updateItem'])->name('repair-register.update-item');
         Route::post('repair-register/return-store/{id}', [RepairRegisterController::class, 'returnStore'])->name('repair-register.return-store');
 
-        Route::post('alloted-item-search',[AssetAllocationController::class, 'allotedItemSearch'])->name('alloted-item-search');
+        Route::post('alloted-item-search', [AssetAllocationController::class, 'allotedItemSearch'])->name('alloted-item-search');
         /* Scrap report */
         Route::get('reports/scrap-items', [ScrapRegisterController::class, 'reportScrapItems'])->name('reports.scrap-items');
         Route::get('reports/scrap-items-data', [ScrapRegisterController::class, 'scrapItemsReport'])->name('reports.scrap-items-data');
@@ -732,17 +737,17 @@ Route::middleware(['web', 'auth','force.password.change'])->group(function () {
         Route::delete('items/delete/{id}', [AssetRegisterController::class, 'deleteAssetItem'])->name('items.delete');
 
         Route::post('return/{allocation}', [AssetAllocationController::class, 'returnToStore'])->name('return');
-        Route::get('reports/allocated-items',[AssetAllocationController::class, 'reportAllocatedItems'])->name('reports.allocated-items');
+        Route::get('reports/allocated-items', [AssetAllocationController::class, 'reportAllocatedItems'])->name('reports.allocated-items');
         Route::get('reports/allocated-items-data', [AssetAllocationController::class, 'allocatedItemsReport'])->name('reports.allocated-items-data');
         Route::get('/reports/stock-items-data', [AssetRegisterController::class, 'stockItemReport'])->name('reports.stock-items-data');
-        Route::get('/dashboard',[AssetDashboardController::class,'index'])->name('dashboard');
+        Route::get('/dashboard', [AssetDashboardController::class, 'index'])->name('dashboard');
     });
 
     Route::get('/get-all-locations', [AssetLocationController::class, 'getAllLocations']);
     Route::get('/get-asset-models', [AssetAllocationController::class, 'getModels']);
-    Route::get('/get-asset-code',[AssetAllocationController::class, 'getAssetCode']);
-    Route::get('/get-scrap-asset-code',[ScrapRegisterController::class, 'getScrapAssetCode']);
-    Route::get('/get-repair-asset-code',[RepairRegisterController::class, 'getRepairAssetCode']);
+    Route::get('/get-asset-code', [AssetAllocationController::class, 'getAssetCode']);
+    Route::get('/get-scrap-asset-code', [ScrapRegisterController::class, 'getScrapAssetCode']);
+    Route::get('/get-repair-asset-code', [RepairRegisterController::class, 'getRepairAssetCode']);
     Route::get('/get-asset-serials', [AssetAllocationController::class, 'getSerials']);
     Route::get('/get-asset-qty', [AssetAllocationController::class, 'getQty']);
     Route::get('/get-asset-ids', [AssetAllocationController::class, 'getAssetId']);
