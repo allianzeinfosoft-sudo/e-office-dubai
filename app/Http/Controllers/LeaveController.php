@@ -701,8 +701,6 @@ class LeaveController extends Controller
             'remaining_leaves' => 'required|numeric',
         ]);
 
-
-
          // Use updateOrCreate to either update an existing record or create a new one
         try {
 
