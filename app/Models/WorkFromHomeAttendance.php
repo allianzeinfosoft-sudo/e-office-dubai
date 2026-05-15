@@ -22,7 +22,8 @@ class WorkFromHomeAttendance extends Model
         'is_incomplete',
         'created_by',
     ];
-    public function employee(){
-        return $this->belongsTo(Employee::class, 'emp_id');
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'emp_id', 'user_id');
     }
 }
