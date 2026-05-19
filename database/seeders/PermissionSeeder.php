@@ -15,129 +15,365 @@ class PermissionSeeder extends Seeder
     {
         $categoriesWithPermissions = [
             'User Management' => [
-                'view users', 'create users', 'edit users', 'delete users',
-                'assign roles', 'reset user password', 'search users', 'user switching','view birthday','view resigned users'
+                'view users',
+                'create users',
+                'edit users',
+                'delete users',
+                'assign roles',
+                'reset user password',
+                'search users',
+                'user switching',
+                'view birthday',
+                'view resigned users'
             ],
-            'Account' =>[
-                'view profile','change password', 'edit profile','lock profile'
+            'Account' => [
+                'view profile',
+                'change password',
+                'edit profile',
+                'lock profile'
             ],
             'Attendance Management' => [
-                'view attendance', 'mark attendance', 'edit attendance', 'delete attendance', 'approve attendance',
-                'custom attendance', 'custom markout', 'full day entry', 'custom attendance approval', 'incomplete working hour approval'
+                'view attendance',
+                'mark attendance',
+                'edit attendance',
+                'delete attendance',
+                'approve attendance',
+                'custom attendance',
+                'custom markout',
+                'full day entry',
+                'custom attendance approval',
+                'incomplete working hour approval'
+            ],
+            'WFH/WOS Management' => [
+                'view wfh wos request list',
+                'approve wfh wos request',
+                'reject wfh wos request',
+                'view wfh wos approval list',
+                'approve wfh wos attendance',
+                'reject wfh wos attendance',
             ],
             'Leave Management' => [
-                'view leave requests', 'create leave request', 'edit leave request', 'delete leave request',
-                'approve leave', 'reject leave', 'custom leave', 'leave status', 'leave allocation','pending leave request','leave summary','All Leave Request'
+                'view leave requests',
+                'create leave request',
+                'edit leave request',
+                'delete leave request',
+                'approve leave',
+                'reject leave',
+                'custom leave',
+                'leave status',
+                'leave allocation',
+                'pending leave request',
+                'leave summary',
+                'All Leave Request'
             ],
             'Project Management' => [
-                'view projects', 'create project', 'edit project', 'delete project',
-                'assign project members', 'change project status', 'view project tasks' ,'create project task',
-                'delete project task', 'view productivity task', 'create productivity task', 'edit productivity task',
+                'view projects',
+                'create project',
+                'edit project',
+                'delete project',
+                'assign project members',
+                'change project status',
+                'view project tasks',
+                'create project task',
+                'delete project task',
+                'view productivity task',
+                'create productivity task',
+                'edit productivity task',
                 'delete productivity task',
             ],
             'Work Management' => [
-                'view work', 'view work status', 'view temporary status','open markin','custom work report entry'
+                'view work',
+                'view work status',
+                'view temporary status',
+                'open markin',
+                'custom work report entry'
             ],
             'Reports Management' => [
-                'view reports', 'generate reports', 'export reports', 'delete reports','view my overview', 'view attendance report', 'view my work report',
-                'view emergency report', 'view salary slip', 'seen status report', 'view monthly overview', 'view leave report', 'view all attendance report',
-                'view all work report', 'view over all work report', 'view emergency attendance report', 'view all emergency work report', 'view my attendance report',
+                'view reports',
+                'generate reports',
+                'export reports',
+                'delete reports',
+                'view my overview',
+                'view attendance report',
+                'view my work report',
+                'view emergency report',
+                'view salary slip',
+                'seen status report',
+                'view monthly overview',
+                'view leave report',
+                'view all attendance report',
+                'view all work report',
+                'view over all work report',
+                'view emergency attendance report',
+                'view all emergency work report',
+                'view my attendance report',
                 'view user overview'
             ],
             'Survey Management' => [
-                'view surveys', 'create survey', 'edit survey', 'delete survey', 'submit survey response', 'assign survey', 'survey report'
+                'view surveys',
+                'create survey',
+                'edit survey',
+                'delete survey',
+                'submit survey response',
+                'assign survey',
+                'survey report'
             ],
             'SAR Management' => [
-                'view SARs', 'create SAR', 'edit SAR', 'delete SAR', 'review SAR', 'assign SAR', 'view SARs report', 'view feedback report'
+                'view SARs',
+                'create SAR',
+                'edit SAR',
+                'delete SAR',
+                'review SAR',
+                'assign SAR',
+                'view SARs report',
+                'view feedback report'
             ],
             'PAR Management' => [
-                'view PARs', 'create PAR', 'edit PAR', 'delete PAR', 'review PAR', 'assign PAR', 'view PARs report'
+                'view PARs',
+                'create PAR',
+                'edit PAR',
+                'delete PAR',
+                'review PAR',
+                'assign PAR',
+                'view PARs report'
             ],
             'Feedback Management' => [
-                'view feedback','create feedback','edit feedback', 'delete feedback', 'review feedback', 'assign feedback'
+                'view feedback',
+                'create feedback',
+                'edit feedback',
+                'delete feedback',
+                'review feedback',
+                'assign feedback'
             ],
             'Conference Hall Management' => [
-                'view bookings', 'create booking', 'edit booking', 'cancel booking', 'approve booking', 'asssigned booking'
+                'view bookings',
+                'create booking',
+                'edit booking',
+                'cancel booking',
+                'approve booking',
+                'asssigned booking'
             ],
-            'Salary Management' => [
-                'view salary', 'generate salary', 'edit salary', 'delete salary', 'upload salary'
+            'Payroll Management' => [
+                'view payroll',
+                'view salary structures',
+                'create salary structures',
+                'edit salary structures',
+                'delete salary structures',
+                'view salary assignments',
+                'view components',
+                'create salary assignments',
+                'edit salary assignments',
+                'delete salary assignments',
+                'manage payroll batches',
+                'generate payroll batches',
+                'approve payroll batches',
+                'view payroll reports',
+                'export bank file',
+                'export payroll summary',
+                'manage loans',
+                'manage loan repayments'
+            ],
+            'Employee Self-Service' => [
+                'view my payroll',
+                'view my payslips',
+                'download my payslips',
+                'view my yearly statement',
+                'view my loans'
             ],
             'KSP Management' => [
-                'view KSP', 'create KSP', 'edit KSP', 'delete KSP'
+                'view KSP',
+                'create KSP',
+                'edit KSP',
+                'delete KSP'
             ],
             'Quick Note Management' => [
-                'view quick notes', 'create quick note', 'edit quick note', 'delete quick note',
+                'view quick notes',
+                'create quick note',
+                'edit quick note',
+                'delete quick note',
             ],
             'Event Calendar Management' => [
-                'view event calendar', 'create event calendar', 'edit event calendar', 'delete event calendar',
+                'view event calendar',
+                'create event calendar',
+                'edit event calendar',
+                'delete event calendar',
             ],
             'Recruitment Management' => [
-                'view job applications', 'create job posting', 'edit job posting', 'delete job posting',
-                'approve job applications','shortlist candidates', 'schedule interviews'
+                'view job applications',
+                'create job posting',
+                'edit job posting',
+                'delete job posting',
+                'approve job applications',
+                'shortlist candidates',
+                'schedule interviews'
             ],
             'E-Library Management' => [
-                'view e-library', 'add books', 'edit books', 'delete books','issue books', 'view e-library',
-                'view books category', 'view e-library reports','view issued books report', 'view pending books report', 'view damage or loss report',
+                'view e-library',
+                'add books',
+                'edit books',
+                'delete books',
+                'issue books',
+                'view e-library',
+                'view books category',
+                'view e-library reports',
+                'view issued books report',
+                'view pending books report',
+                'view damage or loss report',
             ],
             'Thought Management' => [
-                'create thought', 'view thought','edit thought', 'delete thought', 'publish thought'
+                'create thought',
+                'view thought',
+                'edit thought',
+                'delete thought',
+                'publish thought'
             ],
             'Appreciation Management' => [
-                'create appreciation', 'view appreciation', 'edit appreciation', 'delete appreciation', 'publish appreciation'
+                'create appreciation',
+                'view appreciation',
+                'edit appreciation',
+                'delete appreciation',
+                'publish appreciation'
             ],
             'Announcement Management' => [
-                'create announcement', 'view announcement', 'edit announcement', 'delete announcement','publish announcement'
+                'create announcement',
+                'view announcement',
+                'edit announcement',
+                'delete announcement',
+                'publish announcement'
             ],
             'Event Management' => [
-                'create event', 'view event', 'edit event', 'delete event', 'publish event'
+                'create event',
+                'view event',
+                'edit event',
+                'delete event',
+                'publish event'
             ],
             'Holiday Management' => [
-                'create holiday', 'view holiday', 'edit holiday', 'delete holiday', 'publish holiday'
+                'create holiday',
+                'view holiday',
+                'edit holiday',
+                'delete holiday',
+                'publish holiday'
             ],
             'Policy Management' => [
-                'create policy', 'view policy', 'edit policy', 'delete policy', 'public policy'
+                'create policy',
+                'view policy',
+                'edit policy',
+                'delete policy',
+                'public policy'
             ],
             'MOM Management' => [
-                'create MOM', 'View MOM', 'edit MOM', 'delete MOM', 'assign MOM', 'view user moms'
+                'create MOM',
+                'View MOM',
+                'edit MOM',
+                'delete MOM',
+                'assign MOM',
+                'view user moms'
             ],
             'Gallery Management' => [
-                'view gallery', 'upload media', 'edit media', 'delete media'
+                'view gallery',
+                'upload media',
+                'edit media',
+                'delete media'
             ],
             'Reminder Management' => [
-                'view reminder','create reminder', 'edit reminder', 'delete reminder', 'publish reminder'
+                'view reminder',
+                'create reminder',
+                'edit reminder',
+                'delete reminder',
+                'publish reminder'
             ],
             'Notification Management' => [
-                'view user notification', 'view attendance notification', 'leave notification', 'project notification',
-                'report notification', 'survey notification', 'PAR notification', 'SAR notification', 'salary notification',
-                'tools notification', 'recruitment notification', 'feeds notification', 'thoughts notification',
-                'appreciation notification', 'birthday notification', 'announcement notification', 'events notification',
-                'holiday notification', 'reminder notification', 'policy notification', 'MOM notification', 'email notification',
-                'jobs notification', 'settings notification',
+                'view user notification',
+                'view attendance notification',
+                'leave notification',
+                'project notification',
+                'report notification',
+                'survey notification',
+                'PAR notification',
+                'SAR notification',
+                'salary notification',
+                'tools notification',
+                'recruitment notification',
+                'feeds notification',
+                'thoughts notification',
+                'appreciation notification',
+                'birthday notification',
+                'announcement notification',
+                'events notification',
+                'holiday notification',
+                'reminder notification',
+                'policy notification',
+                'MOM notification',
+                'email notification',
+                'jobs notification',
+                'settings notification',
             ],
             'Email Management' => [
-                'view emails', 'send email', 'edit email template', 'delete email', 'view starred', 'trashed mail'
+                'view emails',
+                'send email',
+                'edit email template',
+                'delete email',
+                'view starred',
+                'trashed mail'
             ],
             'Jobs Management' => [
-                'view jobs', 'post job', 'edit job', 'delete job', 'publish job', 'assign job'
+                'view jobs',
+                'post job',
+                'edit job',
+                'delete job',
+                'publish job',
+                'assign job'
             ],
             'Quick Notes' => [
-                    'create quick notes','view quick notes', 'delete quick notes'
+                'create quick notes',
+                'view quick notes',
+                'delete quick notes'
             ],
             'Ticket Raising' => [
-                'create tickets','view tickets','close tickets','delete tickets'
+                'create tickets',
+                'view tickets',
+                'close tickets',
+                'delete tickets'
             ],
             'Assets' => [
-                'create assets','allocate assets','view asset reports','delete assets'
+                'create assets',
+                'allocate assets',
+                'view asset reports',
+                'delete assets'
             ],
             'DB Backup' => [
-                'generate db backup','download db backup'
+                'generate db backup',
+                'download db backup'
             ],
             'Settings Management' => [
-                'view settings', 'update settings', 'manage roles', 'manage permissions', 'change appearence', 'view department',
-                'create department', 'edit department', 'delete department', 'view designation', 'create designation', 'edit designation',
-                'delete designation', 'assign designation', 'assign open work', 'view roles and permission', 'assign designation',
-                'view shift time', 'create shift time', 'edit shift time', 'delete shift time', 'assign shift time', 'view dashboard', 'change shift time',
-                'view feeds', 'leave approvals', 'view login history',
+                'view settings',
+                'update settings',
+                'manage roles',
+                'manage permissions',
+                'change appearence',
+                'view department',
+                'create department',
+                'edit department',
+                'delete department',
+                'view designation',
+                'create designation',
+                'edit designation',
+                'delete designation',
+                'assign designation',
+                'assign open work',
+                'view roles and permission',
+                'assign designation',
+                'view shift time',
+                'create shift time',
+                'edit shift time',
+                'delete shift time',
+                'assign shift time',
+                'view dashboard',
+                'change shift time',
+                'view feeds',
+                'leave approvals',
+                'view login history',
             ]
         ];
 
@@ -156,8 +392,6 @@ class PermissionSeeder extends Seeder
                     'permission_category_id' => $category->id
                 ]);
             }
-
         }
     }
-
 }

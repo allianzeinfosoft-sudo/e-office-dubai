@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionSeeder::class);
         $this->call(RolePermissionSeeder::class);
         $this->call(PositionSeeder::class);
+        $this->call(SalaryComponentSeeder::class);
+        $this->call(OfficeIpSeeder::class);
         // Create admin user
         $user = User::updateOrCreate(
             ['email' => 'admin@mail.com'],

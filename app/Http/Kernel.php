@@ -47,6 +47,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // other middlewares ...
         'force.password.change' => \App\Http\Middleware\ForcePasswordChange::class, // ✅ Correct place
+        'valid.ip' => \App\Http\Middleware\ValidIpMiddleware::class,
     ];
 
     /**
