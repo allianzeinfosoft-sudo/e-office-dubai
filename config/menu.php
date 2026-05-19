@@ -16,9 +16,26 @@ return [
     [
         'title' => 'Attendance',
         'icon' => 'ti ti-alarm',
-        'route' => 'attendance',
+        'route' => 'javascript:void(0);',
         'permission' => ['view attendance'],
-        'isActive' => ['attendance*'],
+        'isActive' => ['attendance*', 'wfs-wfh*'],
+        'submenu' => [
+            [
+                'title' => 'Mark In / Mark Out',
+                'route' => 'attendance',
+                'permission' => ['view attendance'],
+            ],
+            [
+                'title' => 'WFH/WOS Requests',
+                'route' => 'wfs-wfh-request-list',
+                'permission' => ['view wfh wos request list'],
+            ],
+            [
+                'title' => 'WFH/WOS Approvals',
+                'route' => 'wfs-wfh-approval-list',
+                'permission' => ['view wfh wos approval list'],
+            ],
+        ]
     ],
     [
         'header' => 'Modules'

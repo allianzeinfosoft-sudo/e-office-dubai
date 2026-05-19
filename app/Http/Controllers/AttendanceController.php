@@ -1467,7 +1467,8 @@ class AttendanceController extends Controller
         $request->validate([
             'employee' => 'required',
             'signin_date' => 'required',
-            'signin_time' => 'required'
+            'signin_time' => 'required',
+            'attendance_type' => 'required|in:Custom,wfh,wfs'
         ]);
 
         $employeeId = $request->employee;
@@ -1499,13 +1500,42 @@ class AttendanceController extends Controller
                 'username' => $employee->user->username,
                 'signin_time' => $signinTime,
                 'signin_late_note' => $request->signin_late_note ?? null,
-                'punchin_type' => 'Custom',
+                'punchin_type' => $request->attendance_type ?? 'Custom',
                 'break_time' => $this->getBreakTime($employee->user_id, $signinDate),
                 'ipaddress' => $request->ip(),
                 'status' => 'custom',
                 'custom_status' => '1'
             ]
         );
+
+        // Also update WorkFromHomeAttendance if it's WFH or WFS
+        if (in_array($request->attendance_type, ['wfh', 'wfs'])) {
+            $wfhStatus = ($request->attendance_type == 'wfh') ? 'wfh' : 'wos';
+
+            // Find approved request to get status/approver info
+            $wfhRequest = \App\Models\WorkFromHomeRequest::where('emp_id', $employeeId)
+                ->where('status', 1)
+                ->where('from_date', '<=', $signinDate)
+                ->where('to_date', '>=', $signinDate)
+                ->where('request_type', $wfhStatus)
+                ->first();
+
+            \App\Models\WorkFromHomeAttendance::updateOrCreate(
+                [
+                    'emp_id' => $employeeId,
+                    'signin_date' => $signinDate,
+                ],
+                [
+                    'username' => $employee->user->username,
+                    'signin_time' => $signinTime,
+                    'status' => $wfhStatus,
+                    'ipaddress' => $request->ip(),
+                    'created_by' => Auth::id(),
+                    'approvel_status' => $wfhRequest?->status ?? 0,
+                    'approved_by' => $wfhRequest?->approved_by,
+                ]
+            );
+        }
 
         // Save or update CustomAttendance
         /* CustomAttendance::updateOrCreate(

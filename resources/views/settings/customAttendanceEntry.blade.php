@@ -41,6 +41,14 @@
                                                     @endif
                                                 </select>
                                             </div>
+                                            <div class="col-12 mb-3">
+                                                <label for="attendance_type">Attendance Type</label>
+                                                <select class="form-control select2" name="attendance_type" id="attendance_type">
+                                                    <option value="Custom">Normal</option>
+                                                    <option value="wfh">WFH</option>
+                                                    <option value="wfs">WFS</option>
+                                                </select>
+                                            </div>
                                             <div class="col-6 mb-3">
                                                 <label for="signin_date" class="form-label">Date</label>
                                                 <input type="text" id="signin_date" name="signin_date" class="form-control flatpickr-input" value=""  placeholder="Date" />
@@ -90,6 +98,8 @@
 @push('js')
 <script>
     $(function(){
+
+        $('.select2').select2();
 
         $('#signin_date').flatpickr({
             monthSelectorType: 'static',
