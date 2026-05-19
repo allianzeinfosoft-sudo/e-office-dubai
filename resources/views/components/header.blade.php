@@ -170,7 +170,7 @@
           <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class="ti ti-bell ti-md"></i>
             <span class="badge bg-danger rounded-pill badge-notifications" id="notif-count">
-              {{ CustomHelper::customAttendanceCount() + CustomHelper::getBlockedUsersCount() + CustomHelper::pendingIncompleteWorkCount() + CustomHelper::customPendingLeaveCount() + CustomHelper::wfhWfsAttendanceCount() + CustomHelper::trainingPendingAcceptanceCount() }}
+              {{ CustomHelper::customAttendanceCount() + CustomHelper::getBlockedUsersCount() + CustomHelper::pendingIncompleteWorkCount() + CustomHelper::customPendingLeaveCount() + CustomHelper::wfhWfsAttendanceCount() + CustomHelper::trainingPendingAcceptanceCount() + CustomHelper::wfhWfsRequestCount() }}
             </span>
           </a>
           
@@ -250,6 +250,22 @@
                       <div class="flex-shrink-0 dropdown-notifications-actions">
                         <a href="{{ route('leaves.pending.show') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
                           {{ CustomHelper::customPendingLeaveCount() }}
+                        </a>
+                      </div>
+                    </div>
+                  </li>
+                  
+                  <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                    <div class="d-flex">
+                      <div class="flex-shrink-0 me-3">
+                        <i class="menu-icon tf-icons ti ti-login"></i>
+                      </div>
+                      <div class="flex-grow-1">
+                        <a href="{{ route('wfs-wfh-request-list') }}"> <h6 class="mb-1">WFH / WFS Requests &nbsp; &nbsp;<small class="text-muted"></small></h6></a>
+                      </div>
+                      <div class="flex-shrink-0 dropdown-notifications-actions">
+                        <a href="{{ route('wfs-wfh-request-list') }}" class="btn btn-sm btn-icon rounded-pill btn-google-plus waves-effect waves-light">
+                          {{ CustomHelper::wfhWfsRequestCount() }}
                         </a>
                       </div>
                     </div>

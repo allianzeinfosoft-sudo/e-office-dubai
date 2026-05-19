@@ -1026,6 +1026,11 @@ class CustomHelper
         return WorkFromHomeAttendance::where(['approvel_status' => 0])->count();
     }
 
+    public static function wfhWfsRequestCount()
+    {
+        return \App\Models\WorkFromHomeRequest::where(['status' => 0])->count();
+    }
+
     public static function SurveyNotification()
     {
         if (Auth::check()) {
