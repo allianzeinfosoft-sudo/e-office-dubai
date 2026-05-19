@@ -5,11 +5,9 @@
         .w-35 {
             width: 35% !important;
         }
-
         .w-45 {
             width: 45% !important;
         }
-
         .offcanvas-close {
             position: absolute;
             top: 0px;
@@ -20,14 +18,12 @@
             padding: 28px 10px;
             border-radius: 0px;
         }
-      
         .marking-card {
             background-color: #f8fafc;
             border: none;
             border-radius: 12px;
             padding: 1rem;
         }
-
         .marking-icon-box {
             background-color: #fff;
             border-radius: 8px;
@@ -36,8 +32,6 @@
             margin-bottom: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-
-       
         .wfh-btn-primary {
             background-color: #fb923c !important;
             border: none;
