@@ -29,10 +29,10 @@ class LeaveController extends Controller
     public function index()
     {
 
-            $user_id = Auth::user()->id;
-            $current_year = (string) date('Y');
-            $leave_account_details = LeaveAllocation::whereRaw("TRIM(user_id) = ? AND TRIM(year) = ?", [$user_id, $current_year])->first();
-            return view('leave.summary',compact('leave_account_details'));
+        $user_id = Auth::user()->id;
+        $current_year = (string) date('Y');
+        $leave_account_details = LeaveAllocation::whereRaw("TRIM(user_id) = ? AND TRIM(year) = ?", [$user_id, $current_year])->first();
+        return view('leave.summary', compact('leave_account_details'));
 
 
     }
@@ -40,39 +40,39 @@ class LeaveController extends Controller
     {
         $user_id = Auth::user()->id;
         $leaves = Leave::with('employee', 'user')
-                    ->when(auth()->user()->hasRole('G5'), function ($query) use ($user_id) {
-                        $query->where('user_id', $user_id);
-                    })
-                    ->when(auth()->user()->hasAnyRole(['G4', 'G3']), function ($query) use ($user_id) {
-                        // Subquery to get user_ids of employees who report to current user
-                        $reportingUserIds = Employee::where('reporting_to', $user_id)
-                        ->pluck('user_id')
-                        ->toArray();
-                        $userIds = collect($reportingUserIds)
-                        ->push($user_id)
-                        ->map(fn($id) => (int) $id)
-                        ->unique()
-                        ->values()
-                        ->toArray();
+            ->when(auth()->user()->hasRole('G5'), function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })
+            ->when(auth()->user()->hasAnyRole(['G4', 'G3']), function ($query) use ($user_id) {
+                // Subquery to get user_ids of employees who report to current user
+                $reportingUserIds = Employee::where('reporting_to', $user_id)
+                    ->pluck('user_id')
+                    ->toArray();
+                $userIds = collect($reportingUserIds)
+                    ->push($user_id)
+                    ->map(fn($id) => (int) $id)
+                    ->unique()
+                    ->values()
+                    ->toArray();
 
-                        $query->whereIn('user_id', $userIds);
-                    })
-                    ->get()
-                ->map(function ($leaves) {
-                    return [
-                        'id' => $leaves->id,
-                        'full_name' => $leaves->employee->full_name ?? '',
-                        'employee_id' => $leaves->employee->id ?? '',
-                        'leave_from' => $leaves->leave_from ? $this->formatDateDayMonthYear($leaves->leave_from) : '',
-                        'leave_to' => $leaves->leave_to ? $this->formatDateDayMonthYear($leaves->leave_to) : '',
-                        'leave_type' => $leaves->leave_type ?? '',
-                        'leave_reason' => $leaves->reason ?? '',
-                        'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
-                        'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
-                        'leave_count' => $leaves->leave_day_count ?? '0.0',
-                        'status' => $leaves->status ?? ''
-                    ];
-                });
+                $query->whereIn('user_id', $userIds);
+            })
+            ->get()
+            ->map(function ($leaves) {
+                return [
+                    'id' => $leaves->id,
+                    'full_name' => $leaves->employee->full_name ?? '',
+                    'employee_id' => $leaves->employee->id ?? '',
+                    'leave_from' => $leaves->leave_from ? $this->formatDateDayMonthYear($leaves->leave_from) : '',
+                    'leave_to' => $leaves->leave_to ? $this->formatDateDayMonthYear($leaves->leave_to) : '',
+                    'leave_type' => $leaves->leave_type ?? '',
+                    'leave_reason' => $leaves->reason ?? '',
+                    'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
+                    'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
+                    'leave_count' => $leaves->leave_day_count ?? '0.0',
+                    'status' => $leaves->status ?? ''
+                ];
+            });
 
         $response = response()->json(['data' => $leaves]);
         $json_data = json_decode($response->getContent(), true)['data'];
@@ -84,14 +84,14 @@ class LeaveController extends Controller
      */
     public function create()
     {
-       return view('leave.apply');
+        return view('leave.apply');
     }
 
 
     public function custom_leave()
     {
-        $users = User::with('employee')->where('username','!=','administrator')->get();
-        return view('leave.custom_leave_apply',compact('users'));
+        $users = User::with('employee')->where('username', '!=', 'administrator')->get();
+        return view('leave.custom_leave_apply', compact('users'));
     }
 
 
@@ -102,8 +102,8 @@ class LeaveController extends Controller
 
     public function edit($id)
     {
-        $leave = Leave::where('id',$id)->first();
-        return view('leave.apply',compact('leave'));
+        $leave = Leave::where('id', $id)->first();
+        return view('leave.apply', compact('leave'));
     }
 
     /**
@@ -113,10 +113,10 @@ class LeaveController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'user_id'       => 'required|exists:users,id',
-            'leave_from'    => 'required|date|before_or_equal:leave_to',
-            'leave_to'      => 'required|date|after_or_equal:leave_from',
-            'reason'        => 'nullable|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'leave_from' => 'required|date|before_or_equal:leave_to',
+            'leave_to' => 'required|date|after_or_equal:leave_from',
+            'reason' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -128,28 +128,21 @@ class LeaveController extends Controller
 
 
         $user_id = $request['user_id'];
-        if($request->leave_category === 'leave')
-        {
-            if($request->leave_type === 'half_day')
-            {
+        if ($request->leave_category === 'leave') {
+            if ($request->leave_type === 'half_day') {
                 $leave_days = 0.5;
                 $leave_type = 'half_day';
-            }
-            else
-            {
+            } else {
                 $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
                 $leave_type = 'full_day';
             }
 
-        }else{
+        } else {
 
-            if($request->leave_type === 'half_day')
-            {
+            if ($request->leave_type === 'half_day') {
                 $leave_days = 0.5;
                 $leave_type = 'off_day';
-            }
-            else
-            {
+            } else {
                 $leave_days = Leave::calculateDaysBetween($request->leave_from, $request->leave_to);
                 $leave_type = 'off_day';
             }
@@ -160,28 +153,23 @@ class LeaveController extends Controller
         $user_department = $user_info->employee->department_id;
         $current_leave_days = Leave::getTotalLeavesTakenInCurrentMonth();
 
-        $total_leave_days = $leave_days +  $current_leave_days;
+        $total_leave_days = $leave_days + $current_leave_days;
 
 
-        if($total_leave_days <= 1)
-         {
+        if ($total_leave_days <= 1) {
             $approver = $user_info->employee->reporting_to;
-         }
-         elseif($total_leave_days > 1 && $total_leave_days <= 3)
-         {
-            $approver = LeaveApprovalLevel::where('department',$user_department)->where('approval_level',2)->value('approver');
-         }
-         else
-         {
+        } elseif ($total_leave_days > 1 && $total_leave_days <= 3) {
+            $approver = LeaveApprovalLevel::where('department', $user_department)->where('approval_level', 2)->value('approver');
+        } else {
             $approver = User::where('email', 'binojn@mail.allianzegroup.com')->first()?->id;
-         }
+        }
 
         $leaveData = [
-            'user_id'        => $request->user_id,
-            'leave_from'     => $request->leave_from,
-            'leave_to'       => $request->leave_to,
-            'reason'         => $request->reason,
-            'leave_type'     => $leave_type,
+            'user_id' => $request->user_id,
+            'leave_from' => $request->leave_from,
+            'leave_to' => $request->leave_to,
+            'reason' => $request->reason,
+            'leave_type' => $leave_type,
             'leave_day_count' => $leave_days,
             'initial_approver_id' => $approver,
         ];
@@ -195,28 +183,28 @@ class LeaveController extends Controller
         // }
 
         // store approver
-        $user_details = Employee::select('full_name', 'employeeID','reporting_to')
-                            ->where('user_id', $request->user_id)
-                            ->first();
+        $user_details = Employee::select('full_name', 'employeeID', 'reporting_to')
+            ->where('user_id', $request->user_id)
+            ->first();
 
         if (!$user_details) {
             return redirect()->back()->with('error', 'Invalid user!');
         }
 
         $startDate = Carbon::parse($leave->leave_from);
-        $endDate   = Carbon::parse($leave->leave_to);
+        $endDate = Carbon::parse($leave->leave_to);
 
         $totalLeaveDays = $leave->leave_type === 'half_day'
-        ? 0.5
-        : $endDate->diffInDays($startDate) + 1;
+            ? 0.5
+            : $endDate->diffInDays($startDate) + 1;
 
 
         $leaveDetails = [
-              // Optional: Get dynamically
-            'employee'   => $user_details,
-            'leave_details'   => $leave,
-            'days_count'      => $totalLeaveDays,
-            'employee_email'  => Auth::user()->email ?? 'no-email@example.com',
+            // Optional: Get dynamically
+            'employee' => $user_details,
+            'leave_details' => $leave,
+            'days_count' => $totalLeaveDays,
+            'employee_email' => Auth::user()->email ?? 'no-email@example.com',
         ];
 
         $type = 'leave_apply';
@@ -235,27 +223,25 @@ class LeaveController extends Controller
             'start_date' => $request->leave_from,
             'end_date' => $request->leave_to,
             'leave_reason' => strip_tags($request->reason),
-            'employee_name' =>  $user_details->full_name,
+            'employee_name' => $user_details->full_name,
             'employeeID' => $user_details->employeeID,
             'leave_type' => $leave_type,
             'days_count' => $leave_days,
 
         ];
         // Send notification email
-        $email=[];
+        $email = [];
         $apporver_email = '';
 
         $htmlBody = view('emails.leave_application_template', $data)->render();
         $apporver_email = User::find($approver)?->email;
-        $hr_mail =  'hr@mail.allianzegroup.com';
-        if (!empty($approver_email))
-        {
+        $hr_mail = 'hr@mail.allianzegroup.com';
+        if (!empty($approver_email)) {
             $email[] = $approver_email;
         }
         $email[] = $hr_mail;
 
-        if($email)
-        {
+        if ($email) {
             CustomHelper::sendNotificationMail(
                 $email,
                 'New Leave Application',
@@ -271,35 +257,35 @@ class LeaveController extends Controller
 
     public function show_leave_status()
     {
-       return view('leave.leave_status');
+        return view('leave.leave_status');
     }
 
     public function leave_status($user_id)
     {
 
-        $leaves = Leave::with('employee','user')
-        ->where('status','=',1)->where('user_id',$user_id)
-        ->with('employee','user') // Ensure roles relationship is loaded
-        ->get()
-        ->map(function ($leaves) {
-            return [
-                'id' => $leaves->id,
-                'full_name' => $leaves->employee->full_name ?? '',
-                'employee_id' => $leaves->employee->id ?? '',
-                'leave_from' => $leaves->leave_from ? $this->formatDateDayMonthYear($leaves->leave_from) : '',
-                'leave_to' => $leaves->leave_to ? $this->formatDateDayMonthYear($leaves->leave_to) : '',
-                'leave_type' => $leaves->leave_type ?? '',
-                'leave_reason' => $leaves->reason ?? '',
-                'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
-                'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
-                'leave_count' => $leaves->leave_day_count ?? '',
-                'status' => $leaves->status ?? ''
-            ];
-        });
+        $leaves = Leave::with('employee', 'user')
+            ->where('status', '=', 1)->where('user_id', $user_id)
+            ->with('employee', 'user') // Ensure roles relationship is loaded
+            ->get()
+            ->map(function ($leaves) {
+                return [
+                    'id' => $leaves->id,
+                    'full_name' => $leaves->employee->full_name ?? '',
+                    'employee_id' => $leaves->employee->id ?? '',
+                    'leave_from' => $leaves->leave_from ? $this->formatDateDayMonthYear($leaves->leave_from) : '',
+                    'leave_to' => $leaves->leave_to ? $this->formatDateDayMonthYear($leaves->leave_to) : '',
+                    'leave_type' => $leaves->leave_type ?? '',
+                    'leave_reason' => $leaves->reason ?? '',
+                    'apply_date' => $leaves->created_at ? $this->formatDateDayMonthYear($leaves->created_at) : '',
+                    'approved_cancel_date' => $leaves->approved_cancel_date ? $this->formatDateDayMonthYear($leaves->approved_cancel_date) : '',
+                    'leave_count' => $leaves->leave_day_count ?? '',
+                    'status' => $leaves->status ?? ''
+                ];
+            });
 
-    $response = response()->json(['data' => $leaves]);
-    $json_data = json_decode($response->getContent(), true)['data'];
-    return json_encode(['data' => $json_data]);
+        $response = response()->json(['data' => $leaves]);
+        $json_data = json_decode($response->getContent(), true)['data'];
+        return json_encode(['data' => $json_data]);
 
     }
 
@@ -315,51 +301,51 @@ class LeaveController extends Controller
         $user_id = Auth::user()->id;
         // Get count of leaves for this month
         $thisMonthLeaveCount = Leave::where('status', 1)
-                            ->get()
-                            ->sum(function ($leave) use ($currentMonthStart, $currentMonthEnd) {
-                                $leaveFrom = Carbon::parse($leave->leave_from);
-                                $leaveTo = Carbon::parse($leave->leave_to);
+            ->get()
+            ->sum(function ($leave) use ($currentMonthStart, $currentMonthEnd) {
+                $leaveFrom = Carbon::parse($leave->leave_from);
+                $leaveTo = Carbon::parse($leave->leave_to);
 
-                                // Get the effective leave period within this month
-                                $effectiveFrom = $leaveFrom->greaterThanOrEqualTo($currentMonthStart) ? $leaveFrom : $currentMonthStart;
-                                $effectiveTo = $leaveTo->lessThanOrEqualTo($currentMonthEnd) ? $leaveTo : $currentMonthEnd;
+                // Get the effective leave period within this month
+                $effectiveFrom = $leaveFrom->greaterThanOrEqualTo($currentMonthStart) ? $leaveFrom : $currentMonthStart;
+                $effectiveTo = $leaveTo->lessThanOrEqualTo($currentMonthEnd) ? $leaveTo : $currentMonthEnd;
 
-                                // Ensure valid range
-                                if ($effectiveFrom->greaterThan($effectiveTo)) {
-                                    return 0;
-                                }
+                // Ensure valid range
+                if ($effectiveFrom->greaterThan($effectiveTo)) {
+                    return 0;
+                }
 
-                                // Calculate the number of leave days in this month
-                                return $effectiveFrom->diffInDays($effectiveTo) + 1;
-                            });
+                // Calculate the number of leave days in this month
+                return $effectiveFrom->diffInDays($effectiveTo) + 1;
+            });
 
 
-            $leaves = Leave::with('employee','user','initialApprover')
+        $leaves = Leave::with('employee', 'user', 'initialApprover')
 
-                    ->when(auth()->user()->hasRole('G5'), function ($query) use ($user_id) {
-                        $query->where('user_id', $user_id);
-                    })
-                    ->when(auth()->user()->hasAnyRole(['G4', 'G3']), function ($query) use ($user_id) {
-                        // Subquery to get user_ids of employees who report to current user
-                        $reportingUserIds = Employee::where('reporting_to', $user_id)
-                        ->pluck('user_id')
-                        ->toArray();
-                        $userIds = collect($reportingUserIds)
-                        ->push($user_id)
-                        ->map(fn($id) => (int) $id)
-                        ->unique()
-                        ->values()
-                        ->toArray();
+            ->when(auth()->user()->hasRole('G5'), function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })
+            ->when(auth()->user()->hasAnyRole(['G4', 'G3']), function ($query) use ($user_id) {
+                // Subquery to get user_ids of employees who report to current user
+                $reportingUserIds = Employee::where('reporting_to', $user_id)
+                    ->pluck('user_id')
+                    ->toArray();
+                $userIds = collect($reportingUserIds)
+                    ->push($user_id)
+                    ->map(fn($id) => (int) $id)
+                    ->unique()
+                    ->values()
+                    ->toArray();
 
-                        $query->whereIn('user_id', $userIds);
-                    })
+                $query->whereIn('user_id', $userIds);
+            })
 
-            ->where('status','=',1)
+            ->where('status', '=', 1)
             ->get()
             ->map(function ($leaves) use ($thisMonthLeaveCount) {
                 return [
                     'id' => $leaves->id,
-                    'user_id' =>$leaves->user_id,
+                    'user_id' => $leaves->user_id,
                     'full_name' => $leaves->employee->full_name ?? 'N/A',
                     'avatar' => $leaves->employee->profile_image ?? '',
                     'employee_id' => $leaves->employee->id ?? 'N/A',
@@ -401,90 +387,75 @@ class LeaveController extends Controller
         $id = $request['modalLeaveId'];
         $action = $request['modalFunctionType'];
 
-        if($action == 1) //action 1 is related to approve
+        if ($action == 1) //action 1 is related to approve
         {
             $leave = Leave::find($id);
             if ($leave) {
 
-                if($approver->role != 'HR')
-                {
-                     if($leave->initial_approve_status == 0)
-                        {
-                            $leave->initial_approve_status = 1;
-                            $leave->approved_cancel_date = date('Y-m-d H:i:s');
-                            if($leave->save())
-                            {
+                if ($approver->role != 'HR') {
+                    if ($leave->initial_approve_status == 0) {
+                        $leave->initial_approve_status = 1;
+                        $leave->approved_cancel_date = date('Y-m-d H:i:s');
+                        if ($leave->save()) {
 
-                                $startDate = Carbon::parse($leave->leave_from);
-                                $endDate = Carbon::parse($leave->leave_to);
+                            $startDate = Carbon::parse($leave->leave_from);
+                            $endDate = Carbon::parse($leave->leave_to);
 
 
-                                if($leave->leave_type === 'half_day')
-                                {
-                                    $leaveDays = 0.5;
-                                }
-                                else
-                                {
-                                    $leaveDays =  $startDate->diffInDays($endDate) + 1;
-
-                                }
-
-
-                                $data['details'] = [
-                                    'start_date' => $leave->leave_from,
-                                    'end_date' => $leave->leave_to,
-                                    'leave_reason' => strip_tags($leave->reason),
-                                    'employee_name' =>  $leave->employee->full_name,
-                                    'employeeID' => $leave->employee->employeeID,
-                                    'leave_type' => $leave->leave_type,
-                                    'days_count' => $leave->leave_day_count,
-
-                                ];
-                                // Send notification email
-                                $htmlBody = view('emails.leave_approve_template', $data)->render();
-                                $email = $leave->user->email ?? '';
-                                if($email)
-                                {
-                                    CustomHelper::sendNotificationMail(
-                                        $email,
-                                        'Your Leave Application Is Approved',
-                                        $htmlBody,
-                                    );
-                                }
-
-                                return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
+                            if ($leave->leave_type === 'half_day') {
+                                $leaveDays = 0.5;
+                            } else {
+                                $leaveDays = $startDate->diffInDays($endDate) + 1;
 
                             }
-                        }
-                        else{
-                            return response()->json(['error' => true, 'message' => 'Fail to update the leave request!']);
-                        }
 
-                }
-                else
-                {
+
+                            $data['details'] = [
+                                'start_date' => $leave->leave_from,
+                                'end_date' => $leave->leave_to,
+                                'leave_reason' => strip_tags($leave->reason),
+                                'employee_name' => $leave->employee->full_name,
+                                'employeeID' => $leave->employee->employeeID,
+                                'leave_type' => $leave->leave_type,
+                                'days_count' => $leave->leave_day_count,
+
+                            ];
+                            // Send notification email
+                            $htmlBody = view('emails.leave_approve_template', $data)->render();
+                            $email = $leave->user->email ?? '';
+                            if ($email) {
+                                CustomHelper::sendNotificationMail(
+                                    $email,
+                                    'Your Leave Application Is Approved',
+                                    $htmlBody,
+                                );
+                            }
+
+                            return response()->json(['success' => true, 'message' => 'Leave Approved successfully!']);
+
+                        }
+                    } else {
+                        return response()->json(['error' => true, 'message' => 'Fail to update the leave request!']);
+                    }
+
+                } else {
                     $leave->comment = $request['comment'];
                     $leave->approved_cancel_date = date('Y-m-d H:i:s');
                     $leave->status = 2;
-                    if($leave->save())
-                    {
+                    if ($leave->save()) {
 
                         $startDate = Carbon::parse($leave->leave_from);
                         $endDate = Carbon::parse($leave->leave_to);
 
 
-                        if($leave->leave_type === 'half_day')
-                        {
+                        if ($leave->leave_type === 'half_day') {
                             $leaveDays = 0.5;
-                        }
-                        else
-                        {
-                            $leaveDays =  $startDate->diffInDays($endDate) + 1;
+                        } else {
+                            $leaveDays = $startDate->diffInDays($endDate) + 1;
 
                         }
 
-                        if($leave->leave_type != 'off_day')
-                        {
+                        if ($leave->leave_type != 'off_day') {
                             LeaveAllocation::where('user_id', $leave->user_id)
                                 ->where('year', Carbon::parse($leave->leave_from)->year)
                                 ->update([
@@ -493,13 +464,11 @@ class LeaveController extends Controller
                                 ]);
                         }
 
-
-
                         $data['details'] = [
                             'start_date' => $leave->leave_from,
                             'end_date' => $leave->leave_to,
                             'leave_reason' => strip_tags($leave->reason),
-                            'employee_name' =>  $leave->employee->full_name,
+                            'employee_name' => $leave->employee->full_name,
                             'employeeID' => $leave->employee->employeeID,
                             'leave_type' => $leave->leave_type,
                             'days_count' => $leave->leave_day_count,
@@ -508,8 +477,7 @@ class LeaveController extends Controller
                         // Send notification email
                         $htmlBody = view('emails.leave_approve_template', $data)->render();
                         $email = $leave->user->email ?? '';
-                        if($email)
-                        {
+                        if ($email) {
                             CustomHelper::sendNotificationMail(
                                 $email,
                                 'Your Leave Application Is Approved',
@@ -522,29 +490,24 @@ class LeaveController extends Controller
                     }
                 }
 
-
             } else {
                 return response()->json(['error' => true, 'message' => 'Invalid user!']);
             }
-        }
-        elseif($action == 2) //action 2 is leave rejection
+        } elseif ($action == 2) //action 2 is leave rejection
         {
             $leave = Leave::find($id);
             if ($leave) {
 
-                if($approver->role != 'HR')
-                {
+                if ($approver->role != 'HR') {
                     $leave->initial_approve_status = 1;
                     $leave->initial_approver_id = $approver->id;
                     $leave->initial_approver_id = $approver->id;
                     $leave->initial_approved_date = date('Y-m-d');
                     $leave->approved_cancel_date = date('Y-m-d');
                     $leave->status = 3;
-                    if($leave->save())
-                    {
+                    if ($leave->save()) {
                         return redirect()->back()->with('success', 'Leave Rejected successfully!');
                     }
-
                 }
 
                 $leave->status = 3;
@@ -556,7 +519,7 @@ class LeaveController extends Controller
                     'start_date' => $leave->leave_from,
                     'end_date' => $leave->leave_to,
                     'leave_reason' => strip_tags($leave->reason),
-                    'employee_name' =>  $leave->employee->full_name,
+                    'employee_name' => $leave->employee->full_name,
                     'employeeID' => $leave->employee->employeeID,
                     'leave_type' => $leave->leave_type,
                     'days_count' => $leave->leave_day_count,
@@ -565,8 +528,7 @@ class LeaveController extends Controller
                 // Send notification email
                 $htmlBody = view('emails.leave_reject_template', $data)->render();
                 $email = $leave->user->email ?? '';
-                if($email)
-                {
+                if ($email) {
                     CustomHelper::sendNotificationMail(
                         $email,
                         'Your Leave Application Is Rejected',
@@ -610,33 +572,33 @@ class LeaveController extends Controller
         //             });
 
         $thisyear = date('Y');
-        $users_leaves = Employee::leftJoin('leave_allocations', function($join) use ($thisyear) {
+        $users_leaves = Employee::leftJoin('leave_allocations', function ($join) use ($thisyear) {
             $join->on('employees.user_id', '=', 'leave_allocations.user_id')
-            ->where('leave_allocations.year', $thisyear);
-                })
-                ->Where('employees.status',2)
-                ->select(
-                    'employees.user_id as userId', // User ID
-                    'employees.full_name',
-                    DB::raw('COALESCE(leave_allocations.id, 0) as leave_id'), // Leave ID from AllotedLeave
-                    DB::raw('COALESCE(leave_allocations.total_leaves, 0) as total_leaves'),
-                    DB::raw('COALESCE(leave_allocations.used_leaves, 0) as used_leaves'),
-                    DB::raw('COALESCE(leave_allocations.remaining_leaves, 0) as remaining_leaves'),
-                    DB::raw('COALESCE(leave_allocations.year, 0) as year'),
-                    'leave_allocations.created_at',
-                    'leave_allocations.updated_at'
-                )->get()
-                ->map(function ($users_leaves) {
-                        return [
-                            'id' => $users_leaves->leave_id,
-                            'user_id' => $users_leaves->userId ?? '',
-                            'full_name' => $users_leaves->full_name ?? '',
-                            'total_leaves' => $users_leaves->total_leaves ?? '',
-                            'used_leaves' => $users_leaves->used_leaves ?? '',
-                            'remaining_leaves' => $users_leaves->remaining_leaves ?? '',
-                            'year' => $users_leaves->year ?? '',
-                        ];
-                    });
+                ->where('leave_allocations.year', $thisyear);
+        })
+            ->Where('employees.status', 2)
+            ->select(
+                'employees.user_id as userId', // User ID
+                'employees.full_name',
+                DB::raw('COALESCE(leave_allocations.id, 0) as leave_id'), // Leave ID from AllotedLeave
+                DB::raw('COALESCE(leave_allocations.total_leaves, 0) as total_leaves'),
+                DB::raw('COALESCE(leave_allocations.used_leaves, 0) as used_leaves'),
+                DB::raw('COALESCE(leave_allocations.remaining_leaves, 0) as remaining_leaves'),
+                DB::raw('COALESCE(leave_allocations.year, 0) as year'),
+                'leave_allocations.created_at',
+                'leave_allocations.updated_at'
+            )->get()
+            ->map(function ($users_leaves) {
+                return [
+                    'id' => $users_leaves->leave_id,
+                    'user_id' => $users_leaves->userId ?? '',
+                    'full_name' => $users_leaves->full_name ?? '',
+                    'total_leaves' => $users_leaves->total_leaves ?? '',
+                    'used_leaves' => $users_leaves->used_leaves ?? '',
+                    'remaining_leaves' => $users_leaves->remaining_leaves ?? '',
+                    'year' => $users_leaves->year ?? '',
+                ];
+            });
 
 
 
@@ -701,7 +663,7 @@ class LeaveController extends Controller
             'remaining_leaves' => 'required|numeric',
         ]);
 
-         // Use updateOrCreate to either update an existing record or create a new one
+        // Use updateOrCreate to either update an existing record or create a new one
         try {
 
             $leave = LeaveAllocation::updateOrCreate(
@@ -732,8 +694,8 @@ class LeaveController extends Controller
         if ($leave->delete()) {
 
             $leaveBalance = LeaveAllocation::where('user_id', $user_id)
-            ->where('year', $year)
-            ->first();
+                ->where('year', $year)
+                ->first();
 
             if ($leaveBalance) {
                 $leaveBalance->used_leaves = (float) $leaveBalance->used_leaves - $leave_count;
@@ -751,20 +713,20 @@ class LeaveController extends Controller
 
     public function leave_approver(Request $request)
     {
-          /* ajax request */
+        /* ajax request */
 
         if ($request->ajax()) {
 
             $leaveApprover = LeaveApprovalLevel::get()
-            ->map(function ($leaveApprover) {
-                return [
-                    'id' => $leaveApprover->id,
-                    'department' => $leaveApprover->department ? $leaveApprover->dept->department : '',
-                    'approver' => $leaveApprover->employee ? $leaveApprover->employee->full_name : '',
-                    'level' => $leaveApprover->approval_level ? $leaveApprover->approval_level : '',
-                    // 'count' => $leaveApprover->approve_count ? $leaveApprover->approve_count : '',
-                ];
-            });
+                ->map(function ($leaveApprover) {
+                    return [
+                        'id' => $leaveApprover->id,
+                        'department' => $leaveApprover->department ? $leaveApprover->dept->department : '',
+                        'approver' => $leaveApprover->employee ? $leaveApprover->employee->full_name : '',
+                        'level' => $leaveApprover->approval_level ? $leaveApprover->approval_level : '',
+                        // 'count' => $leaveApprover->approve_count ? $leaveApprover->approve_count : '',
+                    ];
+                });
 
             return response()->json([
                 'data' => $leaveApprover
@@ -780,16 +742,16 @@ class LeaveController extends Controller
     public function leave_approval_store(Request $request)
     {
         $banner = LeaveApprovalLevel::create([
-                'department'   => $request->department,
-                'approver'    => $request->approver,
-                'approval_level'  => $request->approval_level,
-                // 'approve_count'  => $request->approve_count
-            ]);
+            'department' => $request->department,
+            'approver' => $request->approver,
+            'approval_level' => $request->approval_level,
+            // 'approve_count'  => $request->approve_count
+        ]);
 
         return redirect()->back()->with('success', 'Leave approver created successfully!');
     }
 
-   public function leave_approval_delete($id)
+    public function leave_approval_delete($id)
     {
         $leave_approver = LeaveApprovalLevel::find($id);
         if (!$leave_approver) {
@@ -809,13 +771,13 @@ class LeaveController extends Controller
 
         $overlap = Leave::where('user_id', $userId)
             ->whereIn('status', [1, 2])
-            ->where(function($q) use ($from, $to) {
+            ->where(function ($q) use ($from, $to) {
                 $q->whereBetween('leave_from', [$from, $to])
-                ->orWhereBetween('leave_to', [$from, $to])
-                ->orWhere(function ($query) use ($from, $to) {
-                    $query->where('leave_from', '<=', $from)
+                    ->orWhereBetween('leave_to', [$from, $to])
+                    ->orWhere(function ($query) use ($from, $to) {
+                        $query->where('leave_from', '<=', $from)
                             ->where('leave_to', '>=', $to);
-                });
+                    });
             })
             ->exists();
 
@@ -823,12 +785,12 @@ class LeaveController extends Controller
     }
 
 
-    public function leave_summary_filter( Request $request)
+    public function leave_summary_filter(Request $request)
     {
 
         $user = auth()->user();
         $user_id = $user->id;
-        $query = Leave::with(['employee', 'user','initialApprover']);
+        $query = Leave::with(['employee', 'user', 'initialApprover']);
 
         if ($user->hasRole('G5')) {
             $query->where('user_id', $user_id);
