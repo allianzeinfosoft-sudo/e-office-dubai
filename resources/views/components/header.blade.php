@@ -271,7 +271,7 @@
                     </div>
                   </li>
                   
-                  <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                  <!-- <li class="list-group-item list-group-item-action dropdown-notifications-item">
                     <div class="d-flex">
                       <div class="flex-shrink-0 me-3">
                         <i class="menu-icon tf-icons ti ti-login"></i>
@@ -285,7 +285,7 @@
                         </a>
                       </div>
                     </div>
-                  </li>
+                  </li> -->
                   
                   @if (Auth::user()->hasRole(['HR','Developer','G2']))
 
