@@ -5,26 +5,44 @@
   .w-35 {
     width: 35% !important;
   }
+
   .w-45 {
     width: 45% !important;
   }
-  .offcanvas-close{
+
+  .offcanvas-close {
     position: absolute;
     top: 0px;
-    left: -32px;  /* Moves the button outside the offcanvas */
-    z-index: 1055; /* Ensures it stays on top */
+    left: -32px;
+    /* Moves the button outside the offcanvas */
+    z-index: 1055;
+    /* Ensures it stays on top */
     padding: 28px 10px;
     border-radius: 0px;
+  }
+
+  .wfh-btn-primary {
+    background-color: #fb923c !important;
+    border: none;
+    color: white !important;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .wfh-btn-primary:hover {
+    background-color: #f97316 !important;
+    transform: translateY(-1px);
   }
 </style>
 @stop
 
 @section('content')
-<div class="layout-wrapper layout-content-navbar">
+  <div class="layout-wrapper layout-content-navbar">
 
-  <div class="layout-container {{ $background_class ?? 'bg-eoffice' }} ">
-    
-    <x-menu /> <!-- Load the menu component here -->
+    <div class="layout-container {{ $background_class ?? 'bg-eoffice' }} ">
+
+      <x-menu /> <!-- Load the menu component here -->
 
       <!-- Layout container -->
       <div class="layout-page">
@@ -43,208 +61,245 @@
 
             <div class="row">
 
-                <!-- Statistics -->
-                <div class="col-12 col-xl-12 col-lg-12">
-                  <div class="row g-4 mb-4 justify-content-center">
-                    <div class="col-sm-6 col-xl-4">
-                      <div class="card card-bg">
-                        <div class="card-body">
-                          <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                              <div class="d-flex align-items-center my-1">
-                                <h4 class="mb-0 me-2">{{ $days_of_worked ?? '0' }}</h4>                               
-                              </div>
-                              <span>No of Working Days</span>
+              <!-- Statistics -->
+              <div class="col-12 col-xl-12 col-lg-12">
+                <div class="row g-4 mb-4 justify-content-center">
+                  <div class="col-sm-6 col-xl-4">
+                    <div class="card card-bg">
+                      <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                          <div class="content-left">
+                            <div class="d-flex align-items-center my-1">
+                              <h4 class="mb-0 me-2">{{ $days_of_worked ?? '0' }}</h4>
                             </div>
-                            <span class="badge bg-label-warning rounded p-2">
-                              <i class="ti ti-calendar ti-sm"></i>
-                            </span>
+                            <span>No of Working Days</span>
                           </div>
+                          <span class="badge bg-label-warning rounded p-2">
+                            <i class="ti ti-calendar ti-sm"></i>
+                          </span>
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div class="col-sm-6 col-xl-4">
-                      <div class="card card-bg ">
-                        <div class="card-body">
-                          <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                              <div class="d-flex align-items-center my-1">
-                                <h4 class="mb-0 me-2">{{ $totalWorkedHours ?? '0' }}</h4>
-                              </div>
-                              <span>Total Working Hours</span>
+                  <div class="col-sm-6 col-xl-4">
+                    <div class="card card-bg ">
+                      <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                          <div class="content-left">
+                            <div class="d-flex align-items-center my-1">
+                              <h4 class="mb-0 me-2">{{ $totalWorkedHours ?? '0' }}</h4>
                             </div>
-                            <span class="badge bg-label-warning rounded p-2">
-                              <i class="ti ti-hourglass-high  ti-sm"></i>
-                            </span>
+                            <span>Total Working Hours</span>
                           </div>
+                          <span class="badge bg-label-warning rounded p-2">
+                            <i class="ti ti-hourglass-high  ti-sm"></i>
+                          </span>
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div class="col-sm-6 col-xl-4">
-                      <div class="card card-bg ">
-                        <div class="card-body">
-                          <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                              <div class="d-flex align-items-center my-1">
-                                <h4 class="mb-0 me-2">{{ $avgWorkedHours ?? '0' }}</h4>
-                              </div>
-                              <span>Avg. Working Hour(s)</span>
+                  <div class="col-sm-6 col-xl-4">
+                    <div class="card card-bg ">
+                      <div class="card-body">
+                        <div class="d-flex align-items-start justify-content-between">
+                          <div class="content-left">
+                            <div class="d-flex align-items-center my-1">
+                              <h4 class="mb-0 me-2">{{ $avgWorkedHours ?? '0' }}</h4>
                             </div>
-                            <span class="badge bg-label-warning rounded p-2">
-                              <i class="ti ti-info-circle ti-sm"></i>
-                            </span>
+                            <span>Avg. Working Hour(s)</span>
                           </div>
+                          <span class="badge bg-label-warning rounded p-2">
+                            <i class="ti ti-info-circle ti-sm"></i>
+                          </span>
                         </div>
                       </div>
-                    </div>                    
+                    </div>
                   </div>
                 </div>
-                <!--/ Statistics -->                
-             
-                <div class="col-12 col-xl-12 col-lg-12 ">
-                  <div class="row g-4 mb-4 align-items-center">
-                  
-                    <!-- Markin module -->
-                    <div class="col-12 col-xl-8 col-lg-8">
-                      <div class="card card-sm">
-                        <div class="card-header">
-                            <h4 class="card-title mb-1"> <i class="ti ti-user ti-sm"></i> {{ ucfirst(Auth::user()->username ?? 'N/A') }} </h4>
-                        </div>
-                        
-                        <div class="card-body">                     
-                          <div class="row mb-4 g-4">
+              </div>
+              <!--/ Statistics -->
 
-                            <div class="col-sm-6 col-xl-6">
-                              <div class="card">
-                                <div class="card-body">
-                                  <div class="d-flex align-items-start justify-content-between">
-                                    <div class="content-left">
-                                      <div class="d-flex align-items-center my-1">
-                                        <h4 class="mb-0 me-2">{{ date('d-m-Y') }}</h4>                               
-                                      </div>
-                                      <span>{{ date('l') }}</span>
-                                    </div>
-                                    <span class="badge bg-label-warning rounded p-2">
-                                      <i class="ti ti-calendar ti-sm"></i>
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+              <div class="col-12 col-xl-12 col-lg-12 ">
+                <div class="row g-4 mb-4 align-items-center">
 
-                            <div class="col-sm-6 col-xl-6">
-                              <div class="card">
-                                <div class="card-body">
-                                  <div class="d-flex align-items-start justify-content-between">
-                                    <div class="content-left">
-                                      <div class="d-flex align-items-center my-1">
-                                        <h4 class="mb-0 me-2"><span id="attendance_clock">00:00:00 </span> </h4>
-                                      </div>
-                                      <span>Time</span>
-                                    </div>
-                                    <span class="badge bg-label-warning rounded p-2">
-                                      <i class="ti ti-clock  ti-sm"></i>
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                          </div>
-
-                          <div class="row g-4">
-                            <div class="col-lg-12">
-                                <div class="badge bg-label-danger p-3 w-100" id="last-punch-time" role="alert">
-                                    <strong>{!! $error ?? '' !!}</strong> <br /> Please contact your supervisor.
-                                </div>
-                            </div>
-  
-                            <div class="text-center d-grid gap-2 col-lg-12">
-                              
-                                  <div class="text-center">
-                                    <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 disabled" >  Mark-in <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
-                                  </div>
-
-                            </div>
-
-                          </div>
-
-                        </div>
+                  <!-- Markin module -->
+                  <div class="col-12 col-xl-8 col-lg-8">
+                    <div class="card card-sm">
+                      <div class="card-header">
+                        <h4 class="card-title mb-1"> <i class="ti ti-user ti-sm"></i>
+                          {{ ucfirst(Auth::user()->username ?? 'N/A') }} </h4>
                       </div>
-                    </div>
-                    <!--/ Markin module -->
-                    
-                    <!-- Custom module -->
-                    <div class="col-12 col-xl-4  col-lg-4">
-                      <div class="card card-bg pt-3">
-                        <div class="row g-4 p-3">
-                          <!-- custom -->
-                          <div class="col-12 col-md-6 col-xl-12 col-lg-12 pt-2">
-                            <button type="button" class="btn p-3 btn-info w-100 disabled" >Custom <i class="mx-1 ti ti-arrow-big-right-lines ti-sm"></i></button>
-                          </div>  
-                          <!--/ custom -->
 
-                          <!-- emergency -->
-                          <div class="col-12 col-md-6 col-xl-12 col-lg-12"> 
-                            <button type="button" class="btn p-3 btn-warning w-100 disabled">Emergency <i class="mx-1 ti ti-bolt ti-sm"></i></button>
-                          </div>
-                          <!--/ emergency -->
+                      <div class="card-body">
+                        <div class="row mb-4 g-4">
 
-                          <!-- work from home -->
-                            <div class="col-6 col-md-6 col-xl-6 col-lg-6">
-                              <button type="button" class="btn btn-primary w-100" onclick="wfh_attendance()">Work From Home</button>
-                            </div>
-
-                            <div class="col-6 col-md-6 col-xl-6 col-lg-6">
-                              <button type="button" class="btn btn-danger w-100" onclick="wos_attendance()">Work On Site</button>
-                            </div>
-                          <!--/ work from home -->
-
-                          <div class="col-12 col-xl-12 col-lg-12 pb-4">
-                            <div class="card badge bg-label-dark w-100 pt-3 pb-3">
+                          <div class="col-sm-6 col-xl-6">
+                            <div class="card">
+                              <div class="card-body">
                                 <div class="d-flex align-items-start justify-content-between">
                                   <div class="content-left">
                                     <div class="d-flex align-items-center my-1">
-                                      <h4 class="mb-0 me-2">{{ $todayWorkedHours ?? '0' }}</h4>
+                                      <h4 class="mb-0 me-2">{{ date('d-m-Y') }}</h4>
                                     </div>
-                                    <span>Total Hours You Spent</span>
+                                    <span>{{ date('l') }}</span>
                                   </div>
-                                  <div class="card-action-element">
-                                    <ul class="list-inline mb-0">
-                                      <li class="list-inline-item">
-                                        <a href="javascript:void(0);" class="card-reload"><i class="tf-icons ti ti-rotate-clockwise-2 scaleX-n1-rtl ti-sm"></i></a>
-                                      </li>
-                                    </ul>
-                                  </div>
+                                  <span class="badge bg-label-warning rounded p-2">
+                                    <i class="ti ti-calendar ti-sm"></i>
+                                  </span>
                                 </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-sm-6 col-xl-6">
+                            <div class="card">
+                              <div class="card-body">
+                                <div class="d-flex align-items-start justify-content-between">
+                                  <div class="content-left">
+                                    <div class="d-flex align-items-center my-1">
+                                      <h4 class="mb-0 me-2"><span id="attendance_clock">00:00:00 </span> </h4>
+                                    </div>
+                                    <span>Time</span>
+                                  </div>
+                                  <span class="badge bg-label-warning rounded p-2">
+                                    <i class="ti ti-clock  ti-sm"></i>
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
 
                         </div>
+
+                        <div class="row g-4">
+                          <div class="col-lg-12">
+                            <div class="badge bg-label-danger p-3 w-100" id="last-punch-time" role="alert">
+                              <strong>{!! $error ?? '' !!}</strong> <br /> Please contact your supervisor.
+                            </div>
+                          </div>
+
+                          <div class="text-center d-grid gap-2 col-lg-12">
+
+                            <div class="text-center">
+                              @if(isset($missingMarkOut) && $missingMarkOut)
+                                <button type="button" id="mark-out-btn" class="btn p-3 btn-success w-100">
+                                  <i class="ti ti-arrow-big-left-lines ti-sm"></i> Mark-out
+                                </button>
+                                <input type="hidden" name="attendance_id" id="attendance_id"
+                                  value="{{ $missingMarkOut->id }}" />
+                              @else
+                                <button type="button" id="mark-in-btn" class="btn p-3 btn-primary w-100 disabled"> Mark-in
+                                  <i class="ti ti-arrow-big-right-lines ti-sm"></i> </button>
+                              @endif
+                            </div>
+
+                          </div>
+
+                        </div>
+
                       </div>
                     </div>
-                    
-                    <!-- Custom module -->
-
                   </div>
-                </div>
-              </div>  
+                  <!--/ Markin module -->
 
-           
+                  <!-- Custom module -->
+                  <div class="col-12 col-xl-4  col-lg-4">
+                    <div class="card card-bg pt-3">
+                      <div class="row g-4 p-3">
+                        <!-- custom -->
+                        <div class="col-12 col-md-6 col-xl-12 col-lg-12 pt-2">
+                          <button type="button" class="btn p-3 btn-info w-100 disabled">Custom <i
+                              class="mx-1 ti ti-arrow-big-right-lines ti-sm"></i></button>
+                        </div>
+                        <!--/ custom -->
+
+                        <!-- emergency -->
+                        <div class="col-12 col-md-6 col-xl-12 col-lg-12">
+                          <button type="button" class="btn p-3 btn-warning w-100 disabled">Emergency <i
+                              class="mx-1 ti ti-bolt ti-sm"></i></button>
+                        </div>
+                        <!--/ emergency -->
+
+                        <!-- work from home -->
+                        <div class="col-6 col-md-6 col-xl-6 col-lg-6">
+                          <button type="button" id="wfh-dash-btn"
+                            class="btn {{ (isset($wfhAttendanceToday) && $wfhAttendanceToday) ? ($wfhAttendanceToday->signout_time ? 'btn-label-success' : 'btn-success') : 'wfh-btn-primary' }} w-100"
+                            onclick="wfh_attendance()">
+                            @if(isset($wfhAttendanceToday) && $wfhAttendanceToday)
+                              @if($wfhAttendanceToday->signout_time)
+                                WFH Done <i class="ti ti-check ti-xs"></i>
+                              @else
+                                WFH In <i class="ti ti-clock ti-xs"></i>
+                              @endif
+                            @else
+                              Work From Home
+                            @endif
+                          </button>
+                        </div>
+
+                        <div class="col-6 col-md-6 col-xl-6 col-lg-6">
+                          <button type="button" id="wos-dash-btn"
+                            class="btn {{ (isset($wosAttendanceToday) && $wosAttendanceToday) ? ($wosAttendanceToday->signout_time ? 'btn-label-success' : 'btn-success') : 'wfh-btn-primary' }} w-100"
+                            onclick="wos_attendance()">
+                            @if(isset($wosAttendanceToday) && $wosAttendanceToday)
+                              @if($wosAttendanceToday->signout_time)
+                                WOS Done <i class="ti ti-check ti-xs"></i>
+                              @else
+                                WOS In <i class="ti ti-clock ti-xs"></i>
+                              @endif
+                            @else
+                              Work On Site
+                            @endif
+                          </button>
+                        </div>
+                        <!--/ work from home -->
+
+                        <div class="col-12 col-xl-12 col-lg-12 pb-4">
+                          <div class="card badge bg-label-dark w-100 pt-3 pb-3">
+                            <div class="d-flex align-items-start justify-content-between">
+                              <div class="content-left">
+                                <div class="d-flex align-items-center my-1">
+                                  <h4 class="mb-0 me-2">{{ $todayWorkedHours ?? '0' }}</h4>
+                                </div>
+                                <span>Total Hours You Spent</span>
+                              </div>
+                              <div class="card-action-element">
+                                <ul class="list-inline mb-0">
+                                  <li class="list-inline-item">
+                                    <a href="javascript:void(0);" class="card-reload"><i
+                                        class="tf-icons ti ti-rotate-clockwise-2 scaleX-n1-rtl ti-sm"></i></a>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Custom module -->
+
+                </div>
+              </div>
+            </div>
+
+
           </div>
           <!-- / Content -->
 
           <!-- Footer -->
-          <x-footer /> 
+          <x-footer />
           <!-- / Footer -->
 
           <div class="content-backdrop fade"> </div>
 
           <!-- Overlay -->
           <div class="layout-overlay layout-menu-toggle"></div>
-      
+
           <!-- Drag Target Area To SlideIn Menu On Small Screens -->
           <div class="drag-target"></div>
 
@@ -258,162 +313,190 @@
   <!-- / Layout wrapper -->
 
 
-<!-- work from home -->
- <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wfhOffcanvas" aria-labelledby="staticBackdropLabel">
-  <div class="offcanvas-header bg-primary">
-      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  WFH Attendance & Report </h5>
-      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="row">
-          <x-work-from-home-attendance-report type="wfh" />
+  <!-- work from home -->
+  <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wfhOffcanvas"
+    aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas-header bg-primary">
+      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>
+        WFH Attendance & Report </h5>
+      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i
+          class="fa fa-close"></i> </button>
     </div>
-  </div>
-  <div class="offcanvas-footer"></div>
-</div>
-
-
-<!-- work from site -->
-
-<div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wosOffcanvas" aria-labelledby="staticBackdropLabel">
-  <div class="offcanvas-header bg-primary">
-      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>  Work On Site & Report </h5>
-      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i class="fa fa-close"></i>  </button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="row">
-          <x-work-from-home-attendance-report type="wfs" />
+    <div class="offcanvas-body">
+      <div class="row">
+        {{-- <x-work-from-home-attendance-report type="wfh" /> --}}
+        <div class="col-lg-12">
+          <div class="badge bg-label-danger p-3 w-100 mb-3" id="last-punch-time" role="alert">
+            <strong>{!! $error ?? '' !!}</strong> <br /> Please contact your supervisor.
+          </div>
+          @if(isset($wfhAttendanceToday) && $wfhAttendanceToday && !$wfhAttendanceToday->signout_time)
+            <button type="button" onclick="wfhMarkOut()" class="btn p-3 btn-success w-100" id="wfh-markout-btn">
+              <i class="ti ti-report ti-sm me-1"></i> Mark-out WFH
+            </button>
+          @endif
+        </div>
+      </div>
     </div>
+    <div class="offcanvas-footer"></div>
   </div>
-  <div class="offcanvas-footer"></div>
-</div>
+
+
+  <!-- work from site -->
+
+  <div class="offcanvas offcanvas-end w-75" data-bs-backdrop="static" tabindex="-1" id="wosOffcanvas"
+    aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas-header bg-primary">
+      <h5 class="offcanvas-title text-white" id="staticBackdropLabel"> <i class="ti ti-hourglass float-start fs-3"></i>
+        Work On Site & Report </h5>
+      <button type="button" class="btn btn-danger offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Close"><i
+          class="fa fa-close"></i> </button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="row">
+        {{-- <x-work-from-home-attendance-report type="wfs" /> --}}
+        <div class="col-lg-12">
+          <div class="badge bg-label-danger p-3 w-100 mb-3" id="last-punch-time" role="alert">
+            <strong>{!! $error ?? '' !!}</strong> <br /> Please contact your supervisor.
+          </div>
+          @if(isset($wosAttendanceToday) && $wosAttendanceToday && !$wosAttendanceToday->signout_time)
+            <button type="button" onclick="wosMarkOut()" class="btn p-3 btn-success w-100" id="wos-markout-btn">
+              <i class="ti ti-report ti-sm me-1"></i> Mark-out WOS
+            </button>
+          @endif
+        </div>
+      </div>
+    </div>
+    <div class="offcanvas-footer"></div>
+  </div>
 
 @endsection
 
 
 @section('js')
 <script>
-  
-  $(function(){
+
+  $(function () {
 
     /* Mark in function */
-    $('#mark-in-btn').on('click', function() {
+    $('#mark-in-btn').on('click', function () {
       $.ajax({
-          url: '{{ route('attendance.mark-in') }}',
-          type: 'POST',
-          headers: {
-              'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          contentType: 'application/json',
-          data: JSON.stringify({}),
-          success: function(data) {
-            if (data.success) {
-                
-                toastr["success"](data.message);
-                toastr.options = {
-                  "closeButton": false,
-                  "debug": false,
-                  "newestOnTop": false,
-                  "progressBar": false,
-                  "positionClass": "toast-top-right",
-                  "preventDuplicates": false,
-                  "onclick": null,
-                  "showDuration": "300",
-                  "hideDuration": "1000",
-                  "timeOut": "5000",
-                  "extendedTimeOut": "1000",
-                  "showEasing": "swing",
-                  "hideEasing": "linear",
-                  "showMethod": "fadeIn",
-                  "hideMethod": "fadeOut"
-                }
-                //  alert(data.message);
-                $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
-                window.location.reload();
-              } else {
-                toastr["success"](data.message);
-                toastr.options = {
-                  "closeButton": false,
-                  "debug": false,
-                  "newestOnTop": false,
-                  "progressBar": false,
-                  "positionClass": "toast-top-right",
-                  "preventDuplicates": false,
-                  "onclick": null,
-                  "showDuration": "300",
-                  "hideDuration": "1000",
-                  "timeOut": "5000",
-                  "extendedTimeOut": "1000",
-                  "showEasing": "swing",
-                  "hideEasing": "linear",
-                  "showMethod": "fadeIn",
-                  "hideMethod": "fadeOut"
-                }
-                  if (data.data.signin_time) {
-                      $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
-                  }
-              }
-          },
-          error: function(xhr, status, error) {
-              console.error('Error:', error);
+        url: '{{ route('attendance.mark-in') }}',
+        type: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        contentType: 'application/json',
+        data: JSON.stringify({}),
+        success: function (data) {
+          if (data.success) {
+
+            toastr["success"](data.message);
+            toastr.options = {
+              "closeButton": false,
+              "debug": false,
+              "newestOnTop": false,
+              "progressBar": false,
+              "positionClass": "toast-top-right",
+              "preventDuplicates": false,
+              "onclick": null,
+              "showDuration": "300",
+              "hideDuration": "1000",
+              "timeOut": "5000",
+              "extendedTimeOut": "1000",
+              "showEasing": "swing",
+              "hideEasing": "linear",
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            //  alert(data.message);
+            $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+            window.location.reload();
+          } else {
+            toastr["success"](data.message);
+            toastr.options = {
+              "closeButton": false,
+              "debug": false,
+              "newestOnTop": false,
+              "progressBar": false,
+              "positionClass": "toast-top-right",
+              "preventDuplicates": false,
+              "onclick": null,
+              "showDuration": "300",
+              "hideDuration": "1000",
+              "timeOut": "5000",
+              "extendedTimeOut": "1000",
+              "showEasing": "swing",
+              "hideEasing": "linear",
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+            if (data.data.signin_time) {
+              $('#last-punch-time').text(`Last punch In Time: ${data.data.signin_time}`);
+            }
           }
+        },
+        error: function (xhr, status, error) {
+          console.error('Error:', error);
+        }
       });
     });
 
     /* Mark out function */
-    $('#mark-out-btn').on('click', function() {
+    $('#mark-out-btn').on('click', function () {
       $.ajax({
-            url: '{{ route('attendance.mark-out') }}',
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            contentType: 'application/json',
-            data: JSON.stringify({}),
-            success: function(data) {
-                if (data.success) {
-                      toastr["success"](data.message);
-                      toastr.options = {
-                      "closeButton": false,
-                      "debug": false,
-                      "newestOnTop": false,
-                      "progressBar": false,
-                      "positionClass": "toast-top-right",
-                      "preventDuplicates": false,
-                      "onclick": null,
-                      "showDuration": "300",
-                      "hideDuration": "1000",
-                      "timeOut": "5000",
-                      "extendedTimeOut": "1000",
-                      "showEasing": "swing",
-                      "hideEasing": "linear",
-                      "showMethod": "fadeIn",
-                      "hideMethod": "fadeOut"
-                    }
-                    $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
-                    $('#mark-out-btn').prop('disabled', true);
-                    window.location.reload();
-                } else {
-                    alert(data.message);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
+        url: '{{ route('attendance.mark-out') }}',
+        type: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        contentType: 'application/json',
+        data: JSON.stringify({
+          'attendanceId': $('#attendance_id').val()
+        }),
+        success: function (data) {
+          if (data.success) {
+            toastr["success"](data.message);
+            toastr.options = {
+              "closeButton": false,
+              "debug": false,
+              "newestOnTop": false,
+              "progressBar": false,
+              "positionClass": "toast-top-right",
+              "preventDuplicates": false,
+              "onclick": null,
+              "showDuration": "300",
+              "hideDuration": "1000",
+              "timeOut": "5000",
+              "extendedTimeOut": "1000",
+              "showEasing": "swing",
+              "hideEasing": "linear",
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
             }
-        });
+            $('#last-punch-out-time').text(`Last punch Out Time: ${data.data.signout_time}`);
+            $('#mark-out-btn').prop('disabled', true);
+            window.location.reload();
+          } else {
+            alert(data.message);
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error('Error:', error);
+        }
+      });
     });
-    
+
 
   });
 
-  function customModal(){
+  function customModal() {
     var offcanvasElement = $('#customMarkingOffcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
     //$('#modelCustom').modal('show');
   }
 
-  function emergencyModal(){
+  function emergencyModal() {
     var offcanvasElement = $('#emergencyMarkingOffcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
@@ -422,134 +505,206 @@
 
   function customMarking() {
     const formData = {
-        _token: $('input[name="_token"]').val(), // CSRF token
-        signin_time: $('#signin_time').val(),
-        signin_date: $('#signin_date').val(),
-        signin_late_note: $('#signin_late_note').val()
+      _token: $('input[name="_token"]').val(), // CSRF token
+      signin_time: $('#signin_time').val(),
+      signin_date: $('#signin_date').val(),
+      signin_late_note: $('#signin_late_note').val()
     };
 
     $.ajax({
-        type: "POST",
-        url: $('#customMarkingForm').attr('action'),
-        data: formData,
-        dataType: "json",
-        success: function (response) {
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
+      type: "POST",
+      url: $('#customMarkingForm').attr('action'),
+      data: formData,
+      dataType: "json",
+      success: function (response) {
+        toastr.options = {
+          "closeButton": true,
+          "progressBar": true,
+          "positionClass": "toast-top-right",
+          "timeOut": "5000",
+          "extendedTimeOut": "1000",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+        };
 
-            if (response.success) {
-                toastr.success(response.message);
-                $('#customMarkingForm')[0].reset(); // Clear form after success
-                const offcanvasElement = document.getElementById('customMarkingOffcanvas');
-                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-                if (offcanvas) offcanvas.hide();
-            } else {
-                toastr.error(response.message);
-            }
-        },
-        error: function (xhr) {
-            let errors = xhr.responseJSON?.errors;
-            if (errors) {
-                let errorMessages = Object.values(errors).flat().join('\n');
-                toastr.error('Error:\n' + errorMessages);
-            } else {
-                toastr.error('An error occurred. Please try again.');
-            }
+        if (response.success) {
+          toastr.success(response.message);
+          $('#customMarkingForm')[0].reset(); // Clear form after success
+          const offcanvasElement = document.getElementById('customMarkingOffcanvas');
+          const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+          if (offcanvas) offcanvas.hide();
+        } else {
+          toastr.error(response.message);
         }
+      },
+      error: function (xhr) {
+        let errors = xhr.responseJSON?.errors;
+        if (errors) {
+          let errorMessages = Object.values(errors).flat().join('\n');
+          toastr.error('Error:\n' + errorMessages);
+        } else {
+          toastr.error('An error occurred. Please try again.');
+        }
+      }
     });
-}
+  }
 
-/* Emergency marking section js */
+  /* Emergency marking section js */
 
-function emergencyMarkIn() {
+  function emergencyMarkIn() {
     emergencyMark('mark-in');
-}
+  }
 
-function emergencyMarkOut() {
+  function emergencyMarkOut() {
     emergencyMark('mark-out');
-}
+  }
 
-function emergencyMark(type) {
+  function emergencyMark(type) {
     const formData = {
-        _token: $('input[name="_token"]').val(),
-        signin_date: $('#signin_date').val(),
-        signin_late_note: $('#signin_late_note').val(),
-        time_in_out: $('#time_in_out').val(),
-        type: type // 'mark-in' or 'mark-out'
+      _token: $('input[name="_token"]').val(),
+      signin_date: $('#signin_date').val(),
+      signin_late_note: $('#signin_late_note').val(),
+      time_in_out: $('#time_in_out').val(),
+      type: type // 'mark-in' or 'mark-out'
     };
 
     $.ajax({
-        type: 'POST',
-        url: $('#emergencyMarkingForm').attr('action'),
-        data: formData,
-        dataType: 'json',
-        success: function (response) {
-            toastr.options = {
-                closeButton: true,
-                progressBar: true,
-                positionClass: 'toast-top-right',
-                timeOut: '4000',
-                extendedTimeOut: '1000',
-                showMethod: 'fadeIn',
-                hideMethod: 'fadeOut'
-            };
+      type: 'POST',
+      url: $('#emergencyMarkingForm').attr('action'),
+      data: formData,
+      dataType: 'json',
+      success: function (response) {
+        toastr.options = {
+          closeButton: true,
+          progressBar: true,
+          positionClass: 'toast-top-right',
+          timeOut: '4000',
+          extendedTimeOut: '1000',
+          showMethod: 'fadeIn',
+          hideMethod: 'fadeOut'
+        };
 
-            if (response.success) {
-                toastr.success(response.message);
-                $('#emergencyMarkingForm')[0].reset(); // Clear form after success
-                $('#emergencyMarking').modal('hide'); // Close modal after success
-                window.location.reload();
-            } else {
-                toastr.error(response.message);
-            }
-        },
-        error: function (xhr) {
-            let errors = xhr.responseJSON?.errors;
-            if (errors) {
-                let errorMessages = Object.values(errors).flat().join('\n');
-                toastr.error('Error:\n' + errorMessages);
-            } else {
-                toastr.error('An error occurred. Please try again.');
-            }
+        if (response.success) {
+          toastr.success(response.message);
+          $('#emergencyMarkingForm')[0].reset(); // Clear form after success
+          $('#emergencyMarking').modal('hide'); // Close modal after success
+          window.location.reload();
+        } else {
+          toastr.error(response.message);
         }
+      },
+      error: function (xhr) {
+        let errors = xhr.responseJSON?.errors;
+        if (errors) {
+          let errorMessages = Object.values(errors).flat().join('\n');
+          toastr.error('Error:\n' + errorMessages);
+        } else {
+          toastr.error('An error occurred. Please try again.');
+        }
+      }
     });
-}
+  }
+
+  function wfhMarkOut() {
+    const $btn = $('#wfh-markout-btn');
+    if ($btn.prop('disabled')) return;
+    $btn.prop('disabled', true).text('Processing...');
+
+    const formData = {
+      signout_date: "{{ date('Y-m-d') }}",
+      signout_time: new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Dubai', hour12: false }),
+      signout_note: 'WFH Mark Out'
+    };
+
+    $.ajax({
+      type: 'POST',
+      url: '{{ route("attendance.wfh-mark-out") }}',
+      data: JSON.stringify(formData),
+      contentType: 'application/json',
+      headers: {
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      },
+      success: function (response) {
+        if (response.success) {
+          toastr.success(response.message);
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
+        } else {
+          toastr.error(response.message);
+          $btn.prop('disabled', false).text('Mark-out WFH');
+        }
+      },
+      error: function (xhr) {
+        toastr.error('An error occurred.');
+        $btn.prop('disabled', false).text('Mark-out WFH');
+      }
+    });
+  }
+
+  function wosMarkOut() {
+    const $btn = $('#wos-markout-btn');
+    if ($btn.prop('disabled')) return;
+    $btn.prop('disabled', true).text('Processing...');
+
+    const formData = {
+      _token: '{{ csrf_token() }}',
+      signout_time: new Date().toLocaleTimeString('en-GB', { timeZone: 'Asia/Dubai', hour12: false }),
+      signout_date: "{{ date('Y-m-d') }}",
+      signout_note: 'WOS Mark Out'
+    };
+
+    $.ajax({
+      type: 'POST',
+      url: '{{ route("attendance.wos-mark-out") }}',
+      data: formData,
+      dataType: 'json',
+      success: function (response) {
+        if (response.success) {
+          toastr.success(response.message);
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
+        } else {
+          toastr.error(response.message);
+          $btn.prop('disabled', false).text('Mark-out WOS');
+        }
+      },
+      error: function (xhr) {
+        toastr.error('An error occurred.');
+        $btn.prop('disabled', false).text('Mark-out WOS');
+      }
+    });
+  }
 
 
-function wfh_attendance(){
+  function wfh_attendance() {
     var offcanvasElement = $('#wfhOffcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
     const workType = 'wfh';
     //$('#modelCustom').modal('show');
     $('#' + workType + '_signin_date, #' + workType + '_signout_date').flatpickr({
-        monthSelectorType: 'static',
-        altInput: true,
-        altFormat: 'd-m-Y',
-        dateFormat: 'd-m-Y'
+      monthSelectorType: 'static',
+      altInput: true,
+      altFormat: 'd-m-Y',
+      dateFormat: 'd-m-Y'
     });
-}
+  }
 
-function wos_attendance(){
+  function wos_attendance() {
     var offcanvasElement = $('#wosOffcanvas');
     var offcanvas = new bootstrap.Offcanvas(offcanvasElement);
     offcanvas.show();
     const workType = 'wfs';
     //$('#modelCustom').modal('show');
     $('#' + workType + '_signin_date, #' + workType + '_signout_date').flatpickr({
-        monthSelectorType: 'static',
-        altInput: true,
-        altFormat: 'd-m-Y',
-        dateFormat: 'd-m-Y'
+      monthSelectorType: 'static',
+      altInput: true,
+      altFormat: 'd-m-Y',
+      dateFormat: 'd-m-Y'
     });
-}
+  }
 
 </script>
 @stop

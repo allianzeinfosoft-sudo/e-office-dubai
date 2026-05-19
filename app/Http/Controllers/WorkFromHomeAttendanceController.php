@@ -19,9 +19,35 @@ class WorkFromHomeAttendanceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function storeRequest(Request $request)
     {
-        //
+        $request->validate([
+            'from_date'         => 'required|date',
+            'to_date'           => 'required|date|after_or_equal:from_date',
+            'request_type'      => 'required|in:wfh,wos',
+            'attendance_option' => 'required|in:personal,company',
+            'reason'            => 'required|string',
+        ]);
+
+        $wfhRequest = \App\Models\WorkFromHomeRequest::create([
+            'emp_id'            => Auth::id(), // assuming user_id = emp_id in this context, or Auth::user()->employee->user_id
+            'from_date'         => $request->from_date,
+            'to_date'           => $request->to_date,
+            'request_type'      => $request->request_type,
+            'attendance_option' => $request->attendance_option,
+            'reason'            => $request->reason,
+            'status'            => 0, // Pending
+        ]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Your request has been submitted successfully.',
+                'data' => $wfhRequest
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Your request has been submitted successfully and is pending approval.');
     }
 
     /**
@@ -45,9 +71,7 @@ class WorkFromHomeAttendanceController extends Controller
             'signout_time'  => 'required',
             'work_type'     => 'required',
         ]);
-
         $employee = Employee::with('user')->where('user_id', $validatedData['employee_id'])->firstOrFail();
-
         $signinDate   = date('Y-m-d', strtotime($validatedData['signin_date']));
         $signoutDate  = date('Y-m-d', strtotime($validatedData['signout_date']));
         $signinTime   = CustomHelper::formatTimeToSeconds($validatedData['signin_time']);
@@ -55,9 +79,7 @@ class WorkFromHomeAttendanceController extends Controller
         $breakTime    = CustomHelper::formatTimeToSeconds($validatedData['brake_time']);
         $workingHrs   = CustomHelper::calculateTotalWorkingTime($signinDate, $signinTime, $signoutDate, $signoutTime, $breakTime);
         $totalWorkingTime = $workingHrs['total_working_time'] ?? '00:00:00';
-
         $is_incomplete = 0; //(strtotime($totalWorkingTime) < strtotime('08:00:00')) ? 1 : 0;
-
         if ($is_incomplete) {
             CustomHelper::addToBlockList([
                 'user_id'    => $validatedData['employee_id'],
@@ -66,7 +88,6 @@ class WorkFromHomeAttendanceController extends Controller
                 'full_name'  => $employee->full_name,
             ]);
         }
-
         // Create or update attendance and get ID
         $attendance = WorkFromHomeAttendance::updateOrCreate(
             [
@@ -88,9 +109,13 @@ class WorkFromHomeAttendanceController extends Controller
                 'created_by'    => Auth::id(),
             ]
         );
-
         // Always delete previous reports for this date and employee before inserting new
         WorkFromHomeReport::where([
+            'emp_id'      => $validatedData['employee_id'],
+            'report_date' => $signinDate,
+        ])->delete();
+
+        workReport::where([
             'emp_id'      => $validatedData['employee_id'],
             'report_date' => $signinDate,
         ])->delete();
@@ -98,20 +123,36 @@ class WorkFromHomeAttendanceController extends Controller
         // Insert fresh report lines
         foreach ($request->input('reports', []) as $report) {
             if (!empty($report['project_id']) && !empty($report['type_of_work'])) {
-                WorkFromHomeReport::create([
+                $reportData = [
                     'username'           => $employee->user->username,
                     'emp_id'             => $validatedData['employee_id'],
                     'project_name'       => $report['project_id'],
                     'type_of_work'       => $report['type_of_work'],
                     'time_of_work'       => CustomHelper::formatTimeToSeconds($workingHrs['total_working_time']),
-                    'total_time'         => $report['total_time'] ?? null,
+                    'total_time'         => CustomHelper::formatTimeToSeconds($report['total_time']) ?? null,
                     'comments'           => $report['comments'] ?? null,
                     'report_date'        => $signinDate,
                     'total_records'      => $report['total_records'] ?? null,
                     'productivity_hour'  => $report['productivity_hour'] ?? null,
-                    'wfh_attendance_id'  => $attendance->id, // always use ID from updateOrCreate
-                ]);
+                ];
+
+                WorkFromHomeReport::create(array_merge($reportData, [
+                    'wfh_attendance_id'  => $attendance->id,
+                ]));
+
+                workReport::create(array_merge($reportData, [
+                    'emergency' => 0,
+                    'break_time' => $breakTime
+                ]));
             }
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Attendance and work reports saved successfully!',
+                'balance_time' => '00:00' // Optional: calculate actual balance
+            ]);
         }
 
         return redirect()->back()->with('success', 'Work From Home attendance saved successfully!');
@@ -160,7 +201,6 @@ class WorkFromHomeAttendanceController extends Controller
     public function approval_wfs_wfh($id, Request $request){
         $wfh = WorkFromHomeAttendance::find($id);
         $WfhReport = WorkFromHomeReport::where('wfh_attendance_id', $id)->get();
-
         if($wfh){
                 $attendanceData = [
                     'username'         => $wfh->username,
@@ -187,7 +227,6 @@ class WorkFromHomeAttendanceController extends Controller
                     ],
                     $attendanceData
                 );           
-
             $wfh->approvel_status = 1;
             $wfh->approved_by = Auth::user()->id;
             $wfh->save();
@@ -210,7 +249,7 @@ class WorkFromHomeAttendanceController extends Controller
                         'project_name'      => $value->project_name,
                         'type_of_work'      => $value->type_of_work,
                         'time_of_work'      => $value->time_of_work,
-                        'total_time'        => $value->total_time,
+                        'total_time'        => CustomHelper::formatTimeToSeconds($value->total_time),
                         'comments'          => $value->comments,
                         'report_date'       => $value->report_date,
                         'total_records'     => $value->total_records,
@@ -246,7 +285,69 @@ class WorkFromHomeAttendanceController extends Controller
             })
         ->get();
         $data['html'] = view('wfs-wfh-attendance.attendance_report', $data);
-        return response()->json(['status' => 'success', 'html' => $data['html'] ->render()]);
-
+        return response()->json(['status' => 'success', 'html' => $data['html']->render()]);
     }
+
+    public function getRequestApprovalList(Request $request)
+    {
+        $data['meta_title'] = 'WFS / WFH Request Report';
+        $data['employees'] = Employee::where('status', 2)->get();
+        
+        $query = \App\Models\WorkFromHomeRequest::with('employee');
+        
+        if ($request->filled('from_date')) {
+            $query->where('from_date', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $query->where('to_date', '<=', $request->to_date);
+        }
+        if ($request->filled('emp_id')) {
+            $query->where('emp_id', $request->emp_id);
+        }
+        if ($request->filled('request_type')) {
+            $query->where('request_type', $request->request_type);
+        }
+
+        // If no filters are applied, default to pending requests
+        if (!$request->anyFilled(['from_date', 'to_date', 'emp_id', 'request_type'])) {
+            $query->where('status', 0);
+            $data['meta_title'] = 'WFS / WFH Request Approval List';
+        }
+
+        $data['requests'] = $query->orderBy('created_at', 'desc')->get();
+        return view('wfs-wfh-attendance.request_approval_list', $data);
+    }
+
+    public function approveRequest($id)
+    {
+        $request = \App\Models\WorkFromHomeRequest::find($id);
+        if ($request) {
+            $request->status = 1; // Approved
+            $request->approved_by = Auth::id();
+            $request->save();
+            return redirect()->back()->with('success', 'Request approved successfully.');
+        }
+        return redirect()->back()->with('error', 'Request not found.');
+    }
+
+    public function rejectRequest($id)
+    {
+        $request = \App\Models\WorkFromHomeRequest::find($id);
+        if ($request) {
+            $request->status = 2; // Rejected
+            $request->approved_by = Auth::id();
+            $request->save();
+            return redirect()->back()->with('success', 'Request rejected successfully.');
+        }
+        return redirect()->back()->with('error', 'Request not found.');
+    }
+
+    public function delete_wfs_wfh_attendance($id){
+        $wfh = WorkFromHomeAttendance::find($id);
+        if($wfh){
+            WorkFromHomeReport::where('wfh_attendance_id', $id)->delete();
+            $wfh->delete();
+        }
+        return redirect()->back()->with('success', 'Wfh / wfs attendance deleted successfully!');
+    }   
 }

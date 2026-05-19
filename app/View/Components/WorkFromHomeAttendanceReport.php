@@ -15,16 +15,18 @@ class WorkFromHomeAttendanceReport extends Component{
     public $employees;
     public $projects;
     public $type;
+    public $hideDetails;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($type = 'wfh')
+    public function __construct($type = 'wfh', $hideDetails = false)
     {
         //
         $this->employees = Employee::all();
         $this->projects = Project::all();
         $this->type = $type;
+        $this->hideDetails = $hideDetails;
     }
 
     /**

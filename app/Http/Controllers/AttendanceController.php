@@ -220,6 +220,63 @@ class AttendanceController extends Controller
         /* If join date is today then set start day to 1 */
         $joinDate = Carbon::parse($user->employee?->join_date);
 
+        // WFH / WOS Logic Data
+        $data['today'] = $today;
+        $data['allWFHRequests'] = \App\Models\WorkFromHomeRequest::where('emp_id', $user->id)
+            ->where('request_type', 'wfh')
+            ->orderBy('id', 'desc')
+            ->take(5) // Show last 5 ranges
+            ->get();
+
+        $data['allWOSRequests'] = \App\Models\WorkFromHomeRequest::where('emp_id', $user->id)
+            ->where('request_type', 'wos')
+            ->orderBy('id', 'desc')
+            ->take(5) // Show last 5 ranges
+            ->get();
+
+        $data['approvedWFHRequestToday'] = \App\Models\WorkFromHomeRequest::where('emp_id', $user->id)
+            ->where('from_date', '<=', $today)
+            ->where('to_date', '>=', $today)
+            ->where('request_type', 'wfh')
+            ->where('status', 1)
+            ->first();
+
+        $data['approvedWOSRequestToday'] = \App\Models\WorkFromHomeRequest::where('emp_id', $user->id)
+            ->where('from_date', '<=', $today)
+            ->where('to_date', '>=', $today)
+            ->where('request_type', 'wos')
+            ->where('status', 1)
+            ->first();
+
+        $data['wfhAttendanceToday'] = \App\Models\WorkFromHomeAttendance::where('emp_id', $user->id)
+            ->where('status', 'wfh')
+            ->where(function ($query) use ($today) {
+                $query->where('signin_date', $today)
+                    ->orWhere(function ($q) use ($today) {
+                        $q->whereNull('signout_time')
+                            ->where('signin_date', '>=', now()->subDay()->format('Y-m-d'));
+                    });
+            })
+            ->orderByDesc('signin_date')
+            ->orderByDesc('id')
+            ->first();
+
+        $data['wosAttendanceToday'] = \App\Models\WorkFromHomeAttendance::where('emp_id', $user->id)
+            ->where('status', 'wos')
+            ->where(function ($query) use ($today) {
+                $query->where('signin_date', $today)
+                    ->orWhere(function ($q) use ($today) {
+                        $q->whereNull('signout_time')
+                            ->where('signin_date', '>=', now()->subDay()->format('Y-m-d'));
+                    });
+            })
+            ->orderByDesc('signin_date')
+            ->orderByDesc('id')
+            ->first();
+
+        $data['projects'] = Project::all();
+        $data['employees'] = Employee::where('status', 2)->get();
+
         if ($joinDate->isSameMonth($today)) {
             $startDay = $joinDate->day;
         } else {
@@ -492,7 +549,15 @@ class AttendanceController extends Controller
             if ($missingMarkOut) {
                 $data['meta_title'] = 'Mark Out First';
                 $data['missingMarkOut'] = $missingMarkOut;
-                $data['error'] = "You missed to Mark-out for the night shift on " . date('d-m-Y', strtotime($missingMarkOut->signin_date));
+                $missedType = "";
+                if ($missingMarkOut->punchin_type == 'wfh') {
+                    $missedType = "for Work From Home (WFH) ";
+                } elseif (in_array($missingMarkOut->punchin_type, ['wfs', 'wos'])) {
+                    $missedType = "for Work On Site (WOS) ";
+                } else {
+                    $missedType = "for the night shift ";
+                }
+                $data['error'] = "You missed to Mark-out " . $missedType . "on " . date('d-m-Y', strtotime($missingMarkOut->signin_date));
                 return view('attendance.no_action_from', $data);
             }
 
@@ -502,11 +567,52 @@ class AttendanceController extends Controller
             if ($start === '08:00:00' && $end === '07:55:00') {
                 $data['disableCustomMarkIn'] = false;
                 $data['shiftType'] = 'fullday';
-                $data['attendance'] = Attendance::where(['username' => $user->username, 'signout_date' => null, 'signout_time' => null,])->first();
+                $data['attendance'] = Attendance::where('username', $user->username)
+                    ->where(function ($query) use ($today) {
+                        $query->where('signin_date', $today)
+                            ->orWhere(function ($q) use ($today) {
+                                $q->whereNull('signout_time')
+                                    ->where('signin_date', '>=', now()->subDay()->format('Y-m-d'));
+                            });
+                    })
+                    ->orderByDesc('signin_date')
+                    ->orderByDesc('id')
+                    ->first();
                 $data['attendance_current'] = $data['attendance'];
 
+                $missingMarkOut = Attendance::with('employee')
+                    ->where('username', $user->username)
+                    ->where('signin_date', '<', $today)
+                    ->whereNull('signout_time')
+                    ->latest('signin_date')
+                    ->first();
+
+                if ($missingMarkOut) {
+                    $data['meta_title'] = 'Mark Out First';
+                    $data['missingMarkOut'] = $missingMarkOut;
+                    $missedType = "";
+                    if ($missingMarkOut->punchin_type == 'wfh') {
+                        $missedType = "for Work From Home (WFH) ";
+                    } elseif (in_array($missingMarkOut->punchin_type, ['wfs', 'wos'])) {
+                        $missedType = "for Work On Site (WOS) ";
+                    }
+
+                    $data['error'] = "You missed to Mark-out " . $missedType . "on " . date('d-m-Y', strtotime($missingMarkOut->signin_date));
+                    return view('attendance.no_action_from', $data);
+                }
+
             } else {
-                $data['attendance'] = Attendance::where(['username' => $user->username, 'signin_date' => $today,])->first();
+                $data['attendance'] = Attendance::where('username', $user->username)
+                    ->where(function ($query) use ($today) {
+                        $query->where('signin_date', $today)
+                            ->orWhere(function ($q) use ($today) {
+                                $q->whereNull('signout_time')
+                                    ->where('signin_date', '>=', now()->subDay()->format('Y-m-d'));
+                            });
+                    })
+                    ->orderByDesc('signin_date')
+                    ->orderByDesc('id')
+                    ->first();
                 $data['attendance_current'] = $data['attendance'];
 
                 $earliestMarkIn = $shiftStartTime->copy()->subMinutes(30);
@@ -524,7 +630,14 @@ class AttendanceController extends Controller
                 if ($missingMarkOut) {
                     $data['meta_title'] = 'Mark Out First';
                     $data['missingMarkOut'] = $missingMarkOut;
-                    $data['error'] = "You missed to Mark-out on " . date('d-m-Y', strtotime($missingMarkOut->signin_date));
+                    $missedType = "";
+                    if ($missingMarkOut->punchin_type == 'wfh') {
+                        $missedType = "for Work From Home (WFH) ";
+                    } elseif (in_array($missingMarkOut->punchin_type, ['wfs', 'wos'])) {
+                        $missedType = "for Work On Site (WOS) ";
+                    }
+
+                    $data['error'] = "You missed to Mark-out " . $missedType . "on " . date('d-m-Y', strtotime($missingMarkOut->signin_date));
                     return view('attendance.no_action_from', $data);
                 }
             }
@@ -793,7 +906,7 @@ class AttendanceController extends Controller
     {
         $attendance = Attendance::find($request->attendanceId);
         $shiftData = $this->getShiftData($attendance->emp_id, $attendance->signin_date);
-        
+
         if (!$shiftData) {
             return response()->json([
                 'success' => false,
@@ -1429,6 +1542,7 @@ class AttendanceController extends Controller
             'signout_time' => 'required',
             'working_hours' => 'required',
             'signin_late_note' => 'nullable',
+            'attendance_type' => 'required|in:Custom,wfh,wfs'
         ]);
 
         $employeeId = $validated['emp_id'];
@@ -1455,14 +1569,14 @@ class AttendanceController extends Controller
                 'signin_date' => Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'),
                 'signout_date' => Carbon::createFromFormat('d-m-Y', $validated['signout_date'])->format('Y-m-d'),
                 'signin_time' => CustomHelper::formatTimeToSeconds($validated['signin_time']),
-                'break_time' => CustomHelper::formatTimeToSeconds($this->getBreakTime($employeeId, Carbon::createFromFormat('d-m-Y', $validated['signin_date'])->format('Y-m-d'))),
+                'break_time' => CustomHelper::formatTimeToSeconds($validated['break_time']),
                 'signout_time' => CustomHelper::formatTimeToSeconds($validated['signout_time']),
                 'working_hours' => CustomHelper::formatTimeToSeconds($validated['working_hours']),
                 'signin_late_note' => $validated['signin_late_note'] ?? null,
                 'signout_late_note' => $validated['signin_late_note'] ?? null, // Use a separate input if needed
                 'status' => 'mark-out',
-                'punchin_type' => 'custom',
-                'punchout_type' => 'custom',
+                'punchin_type' => $validated['attendance_type'] ?? 'custom',
+                'punchout_type' => $validated['attendance_type'] ?? 'custom',
                 'custom_status' => '1',
                 'ipaddress' => $request->ip(),
             ];
@@ -1475,6 +1589,39 @@ class AttendanceController extends Controller
                 ],
                 $attendanceData
             );
+
+            // Also update WorkFromHomeAttendance if it's WFH or WFS
+            if (in_array($validated['attendance_type'], ['wfh', 'wfs'])) {
+                $wfhStatus = ($validated['attendance_type'] == 'wfh') ? 'wfh' : 'wos';
+                $signinDateFormatted = $attendanceData['signin_date'];
+
+                // Find approved request
+                $wfhRequest = \App\Models\WorkFromHomeRequest::where('emp_id', $employeeId)
+                    ->where('status', 1)
+                    ->where('from_date', '<=', $signinDateFormatted)
+                    ->where('to_date', '>=', $signinDateFormatted)
+                    ->where('request_type', $wfhStatus)
+                    ->first();
+
+                \App\Models\WorkFromHomeAttendance::updateOrCreate(
+                    [
+                        'emp_id' => $employeeId,
+                        'signin_date' => $signinDateFormatted,
+                    ],
+                    [
+                        'username' => $user->user->username,
+                        'signin_time' => $attendanceData['signin_time'],
+                        'signout_date' => $attendanceData['signout_date'],
+                        'signout_time' => $attendanceData['signout_time'],
+                        'working_hours' => $attendanceData['working_hours'],
+                        'status' => $wfhStatus,
+                        'ipaddress' => $request->ip(),
+                        'created_by' => Auth::id(),
+                        'approvel_status' => $wfhRequest?->status ?? 0,
+                        'approved_by' => $wfhRequest?->approved_by,
+                    ]
+                );
+            }
 
             return response()->json(['status' => 'success', 'message' => 'Full day attendance entry saved successfully.']);
         } catch (\Exception $e) {
@@ -1617,9 +1764,11 @@ class AttendanceController extends Controller
         }
     }
 
-    private function getShiftData($userId, $date) {
+    private function getShiftData($userId, $date)
+    {
         $employee = Employee::where("user_id", $userId)->first();
-        if (!$employee || !$employee->shift_id) return null;
+        if (!$employee || !$employee->shift_id)
+            return null;
 
         $dayName = Carbon::parse($date)->format("l");
         $detail = WorkshiftDetail::where("workshift_id", $employee->shift_id)
@@ -1627,7 +1776,8 @@ class AttendanceController extends Controller
             ->first();
 
         $shift = Workshift::find($employee->shift_id);
-        if (!$shift) return null;
+        if (!$shift)
+            return null;
 
         $start = $detail->shift_start_time ?? $shift->shift_start_time;
         $end = $detail->shift_end_time ?? $shift->shift_end_time;
@@ -1640,7 +1790,7 @@ class AttendanceController extends Controller
         }
 
         $duration = $carbonEnd->diffInSeconds($carbonStart);
-        
+
         $breakParts = explode(":", $break);
         $breakSeconds = ($breakParts[0] * 3600) + ($breakParts[1] * 60) + ($breakParts[2] ?? 0);
 
@@ -1652,5 +1802,304 @@ class AttendanceController extends Controller
             "required_seconds" => $duration - $breakSeconds - 3600,
             "shift_type" => (strtotime($start) < strtotime("16:00:00")) ? "day" : "night"
         ];
+    }
+
+    /**
+     * Work From Home Mark In
+     */
+    public function wfhMarkIn(Request $request)
+    {
+        $request->validate([
+            'signin_date' => 'required',
+            'signin_time' => 'required',
+            'signin_note' => 'sometimes'
+        ]);
+
+        $userId = Auth::user()->id;
+        $signinDate = date('Y-m-d', strtotime($request->signin_date));
+
+        // Check if already marked in today
+        $existingAttendance = Attendance::where('emp_id', $userId)
+            ->where('signin_date', $signinDate)
+            ->where('status', 'mark-in')
+            ->first();
+
+        if ($existingAttendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already marked WFH/WOS attendance today.',
+                'data' => ['signin_time' => date('h:i A', strtotime($existingAttendance->signin_time))]
+            ]);
+        }
+
+        $signinDate = date('Y-m-d', strtotime($request->signin_date));
+
+        // Check if already marked in today
+        $existingAttendance = Attendance::where('emp_id', $userId)
+            ->where('signin_date', $signinDate)
+            ->first();
+
+        if ($existingAttendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already marked attendance today.',
+            ]);
+        }
+
+        $employee = Employee::with('workshift')->where('user_id', $userId)->first();
+        $breakTime = $employee?->workshift?->max_break_time ?? '00:30:00';
+
+        // Create new WFH attendance record in Attendances table
+        $attendance = Attendance::create([
+            'username' => Auth::user()->email,
+            'emp_id' => $userId,
+            'signin_date' => $signinDate,
+            'signin_time' => CustomHelper::formatTimeToSeconds(date('H:i', strtotime($request->signin_time)) . ':00'),
+            'signin_late_note' => $request->signin_note ?: 'WFH Mark In',
+            'status' => 'mark-in',
+            'punchin_type' => 'wfh',
+            'break_time' => $breakTime,
+            'ipaddress' => $request->ip(),
+        ]);
+
+        // Find the approved WFH request for today
+        $wfhRequest = \App\Models\WorkFromHomeRequest::where('emp_id', $userId)
+            ->where('status', 1) // Approved
+            ->where('from_date', '<=', $signinDate)
+            ->where('to_date', '>=', $signinDate)
+            ->first();
+
+        // Also insert into work_from_home_attendances table
+        \App\Models\WorkFromHomeAttendance::create([
+            'username' => Auth::user()->email,
+            'emp_id' => $userId,
+            'signin_date' => $signinDate,
+            'signin_time' => CustomHelper::formatTimeToSeconds(date('H:i', strtotime($request->signin_time)) . ':00'),
+            'status' => 'wfh',
+            'ipaddress' => $request->ip(),
+            'created_by' => Auth::id(),
+            'approvel_status' => $wfhRequest?->status ?? 0,
+            'approved_by' => $wfhRequest?->approved_by,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Work From Home marked in successfully.',
+            'attendance_id' => $attendance->id
+        ]);
+    }
+
+    /**
+     * Work From Home Mark Out
+     */
+    public function wfhMarkOut(Request $request)
+    {
+        $request->validate([
+            'signout_date' => 'required',
+            'signout_time' => 'required',
+            'signout_note' => 'sometimes'
+        ]);
+
+        $userId = Auth::user()->id;
+        $signoutDate = date('Y-m-d', strtotime($request->signout_date));
+        $signoutTime = CustomHelper::formatTimeToSeconds(date('H:i', strtotime($request->signout_time)) . ':00');
+
+        // Find the WFH attendance record
+        $attendance = Attendance::where('emp_id', $userId)
+            ->where('status', 'mark-in')
+            ->where('punchin_type', 'wfh')
+            ->latest('signin_date')
+            ->first();
+
+        if (!$attendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No WFH mark-in found.'
+            ]);
+        }
+
+        // Calculate working hours
+        $workingTime = CustomHelper::calculateTotalWorkingTime(
+            $attendance->signin_date,
+            $attendance->signin_time,
+            $signoutDate,
+            $signoutTime,
+            $attendance->break_time
+        );
+
+        // Update Attendances table
+        $attendance->update([
+            'signout_date' => $signoutDate,
+            'signout_time' => $signoutTime,
+            'working_hours' => $workingTime['total_working_time'],
+            'signout_late_note' => $request->signout_note ?: 'WFH Mark Out',
+            'status' => 'mark-out',
+            'punchout_type' => 'wfh'
+        ]);
+
+        // Update work_from_home_attendances table
+        \App\Models\WorkFromHomeAttendance::where('emp_id', $userId)
+            ->where('signin_date', $attendance->signin_date)
+            ->where('status', 'wfh')
+            ->update([
+                'signout_date' => $signoutDate,
+                'signout_time' => $signoutTime,
+                'working_hours' => $workingTime['total_working_time'],
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Work From Home marked out successfully.',
+            'data' => [
+                'emp_id' => $userId,
+                'signin_date' => $attendance->signin_date,
+                'signin_time' => $attendance->signin_time,
+                'signout_date' => $signoutDate,
+                'signout_time' => $signoutTime,
+                'working_hours' => $workingTime['total_working_time']
+            ]
+        ]);
+    }
+
+    /**
+     * Work On Site Mark In
+     */
+    public function wosMarkIn(Request $request)
+    {
+        $request->validate([
+            'signin_date' => 'required',
+            'signin_time' => 'required',
+        ]);
+
+        $userId = Auth::user()->id;
+        $signinDate = date('Y-m-d', strtotime($request->signin_date));
+
+        // Check if already marked in today
+        $existingAttendance = Attendance::where('emp_id', $userId)
+            ->where('signin_date', $signinDate)
+            ->where('status', 'mark-in')
+            ->first();
+
+        if ($existingAttendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already marked WFH/WOS attendance today.',
+                'data' => ['signin_time' => date('h:i A', strtotime($existingAttendance->signin_time))]
+            ]);
+        }
+
+        $employee = Employee::with('workshift')->where('user_id', $userId)->first();
+        $breakTime = $employee?->workshift?->max_break_time ?? '00:30:00';
+
+        // Create new WOS attendance record in Attendances table
+        $attendance = Attendance::create([
+            'username' => Auth::user()->username,
+            'emp_id' => $userId,
+            'signin_date' => $signinDate,
+            'signin_time' => CustomHelper::formatTimeToSeconds(date('H:i', strtotime($request->signin_time)) . ':00'),
+            'signin_late_note' => $request->signin_note ?: 'WOS Mark In',
+            'status' => 'mark-in',
+            'punchin_type' => 'wfs',
+            'break_time' => $breakTime,
+            'ipaddress' => $request->ip(),
+        ]);
+
+        // Find the approved WOS request for today
+        $wosRequest = \App\Models\WorkFromHomeRequest::where('emp_id', $userId)
+            ->where('status', 1) // Approved
+            ->where('from_date', '<=', $signinDate)
+            ->where('to_date', '>=', $signinDate)
+            ->where('request_type', 'wos')
+            ->first();
+
+        // Also insert into work_from_home_attendances table (used for WOS as well based on schema)
+        \App\Models\WorkFromHomeAttendance::create([
+            'username' => Auth::user()->username,
+            'emp_id' => $userId,
+            'signin_date' => $signinDate,
+            'signin_time' => CustomHelper::formatTimeToSeconds(date('H:i', strtotime($request->signin_time)) . ':00'),
+            'status' => 'wos',
+            'ipaddress' => $request->ip(),
+            'created_by' => Auth::id(),
+            'approvel_status' => $wosRequest?->status ?? 0,
+            'approved_by' => $wosRequest?->approved_by,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Work On Site marked in successfully.',
+            'attendance_id' => $attendance->id
+        ]);
+    }
+
+    /**
+     * Work On Site Mark Out
+     */
+    public function wosMarkOut(Request $request)
+    {
+        $request->validate([
+            'signout_date' => 'required',
+            'signout_time' => 'required',
+        ]);
+
+        $userId = Auth::user()->id;
+        $signoutDate = date('Y-m-d', strtotime($request->signout_date));
+        $signoutTime = CustomHelper::formatTimeToSeconds(date('H:i', strtotime($request->signout_time)) . ':00');
+
+        // Find the WOS attendance record
+        $attendance = Attendance::where('emp_id', $userId)
+            ->where('status', 'mark-in')
+            ->where('punchin_type', 'wfs')
+            ->latest('signin_date')
+            ->first();
+
+        if (!$attendance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No WOS mark-in found.'
+            ]);
+        }
+
+        // Calculate working hours
+        $workingTime = CustomHelper::calculateTotalWorkingTime(
+            $attendance->signin_date,
+            $attendance->signin_time,
+            $signoutDate,
+            $signoutTime,
+            '00:00:00'
+        );
+
+        // Update Attendances table
+        $attendance->update([
+            'signout_date' => $signoutDate,
+            'signout_time' => $signoutTime,
+            'working_hours' => $workingTime['total_working_time'],
+            'signout_late_note' => $request->signout_note ?: 'WOS Mark Out',
+            'status' => 'mark-out',
+            'punchout_type' => 'wfs'
+        ]);
+
+        // Update work_from_home_attendances table
+        \App\Models\WorkFromHomeAttendance::where('emp_id', $userId)
+            ->where('signin_date', $attendance->signin_date)
+            ->where('status', 'wos')
+            ->update([
+                'signout_date' => $signoutDate,
+                'signout_time' => $signoutTime,
+                'working_hours' => $workingTime['total_working_time'],
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Work On Site marked out successfully.',
+            'data' => [
+                'emp_id' => $userId,
+                'signin_date' => $attendance->signin_date,
+                'signin_time' => $attendance->signin_time,
+                'signout_date' => $signoutDate,
+                'signout_time' => $signoutTime,
+                'working_hours' => $workingTime['total_working_time']
+            ]
+        ]);
     }
 }

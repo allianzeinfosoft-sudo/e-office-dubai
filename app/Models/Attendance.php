@@ -38,4 +38,14 @@ class Attendance extends Model
     public function employee() {
         return $this->belongsTo(Employee::class, 'emp_id', 'user_id');
     }
+
+    public function getSigninNoteAttribute()
+    {
+        return $this->signin_late_note;
+    }
+
+    public function getSignoutNoteAttribute()
+    {
+        return $this->signout_late_note;
+    }
 }

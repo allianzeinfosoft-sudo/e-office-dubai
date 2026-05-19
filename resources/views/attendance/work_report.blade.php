@@ -139,6 +139,8 @@
                                                                 <select class="form-control" type="text" name="break_time" id="break_time">
                                                                     <option value="01:00:00" {{ ($missingReport->break_time === "01:00:00") ? 'selected' : '' }}>01:00:00</option>
                                                                     <option value="00:30:00" {{ ($missingReport->break_time === "00:30:00") ? 'selected' : '' }}>00:30:00</option>
+                                                                    <option value="01:20:00" {{ ($missingReport->break_time === "01:20:00") ? 'selected' : '' }}>01:20:00</option>
+                                                                    <option value="00:40:00" {{ ($missingReport->break_time === "00:40:00") ? 'selected' : '' }}>00:40:00</option>
                                                                 </select>
                                                                 {{-- value="{{ ($missingReport->break_time) ?? $user_shift->mini_break_time }}" --}}
                                                                 </td>

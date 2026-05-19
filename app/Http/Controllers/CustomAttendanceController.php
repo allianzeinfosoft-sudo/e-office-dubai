@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomAttendance;
+use App\Models\Employee;
+use App\Models\Workshift;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,22 +16,22 @@ class CustomAttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->ajax()) {
-            
+        if ($request->ajax()) {
+
             $custom_attendances = CustomAttendance::with('employee')->where('status', '0')->orderBy('id', 'DESC')->get();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Attendance marked successfully',
                 'data' => $custom_attendances->map(function ($custom_attendance) {
                     return [
-                        'id'            => $custom_attendance->id,
-                        'emp_id'        => $custom_attendance->emp_id,
-                        'username'      => $custom_attendance->username,
+                        'id' => $custom_attendance->id,
+                        'emp_id' => $custom_attendance->emp_id,
+                        'username' => $custom_attendance->username,
                         'profile_image' => $custom_attendance->employee->profile_image,
-                        'signin_date'   => date('d-m-Y', strtotime($custom_attendance->signin_date)),
-                        'signin_time'   => $custom_attendance->picktime,
-                        'reason'        => $custom_attendance->reason,
+                        'signin_date' => date('d-m-Y', strtotime($custom_attendance->signin_date)),
+                        'signin_time' => $custom_attendance->picktime,
+                        'reason' => $custom_attendance->reason,
                     ];
                 }),
             ]);
@@ -88,36 +90,43 @@ class CustomAttendanceController extends Controller
         //
     }
 
-    public function acceptCustomMarkIn(Request $request, $id) {
+    public function acceptCustomMarkIn(Request $request, $id)
+    {
         $custom_attendance = CustomAttendance::findOrFail($id);
-            if($custom_attendance){
+        $employee = Employee::where('user_id', $custom_attendance->emp_id)->first();
+        $work_shift = Workshift::where('id', $employee->shift_id)->first();
+        if ($custom_attendance) {
 
-                $attendance = Attendance::updateOrCreate(
-                    [
-                        'username'    => $custom_attendance->username,
-                        'emp_id'      => $custom_attendance->emp_id,
-                        'signin_date' => $custom_attendance->signin_date,
-                    ],
-                    [
-                        'username'          => $custom_attendance->username,
-                        'emp_id'            => $custom_attendance->emp_id,
-                        'signin_date'       => $custom_attendance->signin_date,
-                        'signin_time'       => $custom_attendance->picktime,
-                        'signin_late_note'  => $custom_attendance->reason,
-                        'break_time'        => '01:00:00',
-                        'punchin_type'      => 'Custom',
-                        'ipaddress'         => $request->ip(),
-                        'status'            => 'mark-in',
-                        'custom_status'     => '1'
-                    ]
-                ); 
+            $employee = \App\Models\Employee::with('workshift')->where('user_id', $custom_attendance->emp_id)->first();
+            $breakTime = $employee?->workshift?->max_break_time ?? '00:30:00';
+
+            $attendance = Attendance::updateOrCreate(
+                [
+                    'username' => $custom_attendance->username,
+                    'emp_id' => $custom_attendance->emp_id,
+                    'signin_date' => $custom_attendance->signin_date,
+                ],
+                [
+                    'username' => $custom_attendance->username,
+                    'emp_id' => $custom_attendance->emp_id,
+                    'signin_date' => $custom_attendance->signin_date,
+                    'signin_time' => $custom_attendance->picktime,
+                    'signin_late_note' => $custom_attendance->reason,
+                    'break_time' => $work_shift->max_break_time,
+                    'punchin_type' => 'Custom',
+                    'ipaddress' => $request->ip(),
+                    'status' => 'mark-in',
+                    'custom_status' => '1'
+                ]
+            );
         }
         CustomAttendance::where('id', $id)->update(['status' => '1', 'approved_by' => Auth::user()->id]);
         return redirect()->back()->with('success', 'Custom Attendance Approved successfully');
     }
 
 
-    public function rejectCustomMarkIn($id) {
+    public function rejectCustomMarkIn($id)
+    {
         CustomAttendance::where('id', $id)->update(['status' => '2', 'approved_by' => Auth::user()->id]);
         return redirect()->back()->with('error', 'Custom Attendance Rejected successfully');
     }

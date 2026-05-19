@@ -15,6 +15,7 @@ class CustomAttendance extends Model
         'picktime',
         'reason',
         'signin_date',
+        'break_time',
         'status',
         'approved_by',
         'approver',

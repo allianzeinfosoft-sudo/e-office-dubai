@@ -2,7 +2,7 @@
 
 @section('css')
 <style>
-    .dt-buttons{
+    .dt-buttons {
         float: left;
         margin-top: 10px;
         margin-left: 10px;
@@ -23,107 +23,115 @@
 
             <div class="content-wrapper">
                 <div class="container-xxl flex-grow-1 container-p-y">
-                    <h4 class="fw-bold py-3 mb-4 text-muted"><span class="text-muted fw-light"> Report /</span> {{ $meta_title }}</h4>
+                    <h4 class="fw-bold py-3 mb-4 text-muted"><span class="text-muted fw-light"> Report /</span>
+                        {{ $meta_title }}</h4>
 
                     <div class="row">
 
-                        <div class="col-sm-10" >
-                            <div id="all-report-container" >
+                        <div class="col-sm-10">
+                            <div id="all-report-container">
                                 <div class="card card-bg">
                                     <div class="card-body">
                                         <div class="row d-flex align-items-center">
 
-                                                <div class="col-sm-6 mb-3">
-                                                    <div class="card bg-white">
-                                                        <div class="card-body">
-                                                            <!-- user avatar -->
-                                                            <div class="user-avatar-section">
-                                                                <div class="d-flex align-items-center jestify-content-center gap-3">
-                                                                <img class="img-fluid rounded mb-3 pt-1" src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image ) : '../../assets/img/avatars/default-avatar.png' }}" height="100" width="100" alt="User avatar">
+                                            <div class="col-sm-6 mb-3">
+                                                <div class="card bg-white">
+                                                    <div class="card-body">
+                                                        <!-- user avatar -->
+                                                        <div class="user-avatar-section">
+                                                            <div
+                                                                class="d-flex align-items-center jestify-content-center gap-3">
+                                                                <img class="img-fluid rounded mb-3 pt-1"
+                                                                    src="{{ $current_user->profile_image ? asset('storage/' . $current_user->profile_image) : '../../assets/img/avatars/15.png' }}"
+                                                                    height="100" width="100" alt="User avatar">
                                                                 <div class="user-info">
-                                                                    <h4 class="mb-2">{{ $current_user->full_name ?? '' }}</h4>
-                                                                    <span class="badge bg-label-danger mt-1">{{ $current_user->employeeID ?? '' }}</span>
-                                                                    <span class="badge bg-label-secondary mt-1">{{ $current_user->designation ? $current_user->designation->designation : '' }}</span>
+                                                                    <h4 class="mb-2">
+                                                                        {{ $current_user->full_name ?? '' }}</h4>
+                                                                    <span class="badge bg-label-danger mt-1">{{
+                                                                        $current_user->employeeID ?? '' }}</span>
+                                                                    <span class="badge bg-label-secondary mt-1">{{
+                                                                        $current_user->designation ?
+                                                                        $current_user->designation->designation : ''
+                                                                        }}</span>
                                                                     <h5 class="mt-2">Attendance Report</h5>
                                                                 </div>
-                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <div class="card card-bg">
-                                                        <div class="card-datatable">
-                                                            <div class="table-responsive">
-                                                                <table class="datatables-basic datatables-all-attendance-report table border-top table-stripedc table-hover table-striped" style="font-size: 12px">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th>#</th>
-                                                                            <th width="15%">Signin Date</th>
-                                                                            <th>Signin Time</th>
-                                                                            <th>Signout Time</th>
-                                                                            <th>Break Time</th>
-                                                                            <th>Working Hours</th>
-                                                                            <th>Signin Note</th>
-                                                                            <th>Signout Note</th>
-                                                                            <th>Status</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        @if ($attendance_report)
-                                                                            @foreach ($attendance_report as $row)
-                                                                                <tr>
-                                                                                    <td>{{ $row['#'] }}</td>
-                                                                                    <td>{{ $row['signin_date'] }}</td>
-                                                                                    <td>{{ $row['signin_time'] }}</td>
-                                                                                    <td>{{ $row['signout_time'] }}</td>
-                                                                                    <td>{{ $row['break_time'] }}</td>
-                                                                                    <td>{{ $row['working_hours'] }}</td>
-                                                                                    <td>{{ $row['signin_note'] }}</td>
-                                                                                    <td>{{ $row['signout_note'] }}</td>
-                                                                                    <td>{!! $row['status'] !!}</td>
-                                                                                </tr>
-                                                                            @endforeach
-                                                                        @else
-                                                                            <tr>
-                                                                                <td colspan="9">No data found</td>
-                                                                            </tr>
-                                                                        @endif
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="card card-bg">
+                                                    <div class="card-datatable">
+                                                        <div class="table-responsive">
+                                                            <table
+                                                                class="datatables-basic datatables-all-attendance-report table border-top table-stripedc table-hover table-striped"
+                                                                style="font-size: 12px">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>#</th>
+                                                                        <th width="15%">Signin Date</th>
+                                                                        <th>Signin Time</th>
+                                                                        <th>Signout Time</th>
+                                                                        <th>Break Time</th>
+                                                                        <th>Working Hours</th>
+                                                                        <th>Signin Note</th>
+                                                                        <th>Signout Note</th>
+                                                                        <th>Status</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @if ($attendance_report)
+                                                                    @foreach ($attendance_report as $row)
+                                                                    <tr>
+                                                                        <td>{{ $row['#'] }}</td>
+                                                                        <td>{{ $row['signin_date'] }}</td>
+                                                                        <td>{{ $row['signin_time'] }}</td>
+                                                                        <td>{{ $row['signout_time'] }}</td>
+                                                                        <td>{{ $row['break_time'] }}</td>
+                                                                        <td>{{ $row['working_hours'] }}</td>
+                                                                        <td>{{ $row['signin_note'] }}</td>
+                                                                        <td>{{ $row['signout_note'] }}</td>
+                                                                        <td>{!! $row['status'] !!}</td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                    @else
+                                                                    <tr>
+                                                                        <td colspan="9">No data found</td>
+                                                                    </tr>
+                                                                    @endif
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                             <div class="row mt-3">
+                            <div class="row mt-3">
                                 <div class="col-12">
                                     <div class="card card-bg">
                                         <div class="card-header">
-                                            <h5 class="card-title"> <i class="ti ti-filter ti-sm"></i> Avarage working hours</h5>
+                                            <h5 class="card-title"> <i class="ti ti-filter ti-sm"></i> Avarage working
+                                                hours</h5>
                                         </div>
                                         <div class="card-body">
-                                            <x-charts.apex-bar-chart
-                                                elementId="barChart"
-                                                :series="[
+                                            <x-charts.apex-bar-chart elementId="barChart" :series="[
                                                     [
-                                                    'name' => 'Working Hours',
-                                                    'data' => $barChartData['working_hours'] ?? [],
+                                                        'name' => 'Working Hours',
+                                                        'data' => $barChartData['working_hours'] ?? [],
                                                     ],
                                                     [
-                                                    'name' => 'Beak Hours',
-                                                    'data' => $barChartData['break_hours'] ?? [],
+                                                        'name' => 'Beak Hours',
+                                                        'data' => $barChartData['break_hours'] ?? [],
                                                     ],
-                                                ]"
-                                                :categories="$barChartData['dates'] ?? []"
-                                                height="300" />
+                                                ]" :categories="$barChartData['dates'] ?? []" height="300" />
                                         </div>
                                     </div>
                                 </div>
@@ -141,29 +149,33 @@
                                         <div class="col-sm-12">
 
                                             <form action="{{ route('reports.my-attendance-report') }}" method="GET">
-                                                    @csrf
-                                                    <div class="form-group mb-3">
-                                                        <label for="month">Month</label>
-                                                        <select name="month" id="month" class="form-control select2">
-                                                            @for ($m = 1; $m <= 12; $m++)
-                                                                @php $monthName = \Carbon\Carbon::create()->month($m)->format('F'); @endphp
-                                                                <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}" {{ now()->month == $m ? 'selected' : '' }} >{{ $monthName }}</option>
+                                                @csrf
+                                                <div class="form-group mb-3">
+                                                    <label for="month">Month</label>
+                                                    <select name="month" id="month" class="form-control select2">
+                                                        @for ($m = 1; $m <= 12; $m++) @php
+                                                            $monthName=\Carbon\Carbon::create()->month($m)->format('F');
+                                                            @endphp
+                                                            <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}" {{
+                                                                $month==$m ? 'selected' : '' }}>
+                                                                {{ $monthName }}</option>
                                                             @endfor
-                                                        </select>
-                                                    </div>
+                                                    </select>
+                                                </div>
 
-                                                    <div class="form-group mb-3">
-                                                        <label for="year">Year</label>
-                                                        <select name="year" id="year" class="form-control select2">
-                                                            @for ($y = now()->year; $y >= 2014; $y--)
-                                                                <option value="{{ $y }}" {{ now()->year == $y ? 'selected' : '' }} >{{ $y }}</option>
-                                                            @endfor
-                                                        </select>
-                                                    </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="year">Year</label>
+                                                    <select name="year" id="year" class="form-control select2">
+                                                        @for ($y = now()->year; $y >= 2014; $y--)
+                                                        <option value="{{ $y }}" {{ $year==$y ? 'selected' : '' }}>
+                                                            {{ $y }}</option>
+                                                        @endfor
+                                                    </select>
+                                                </div>
 
-                                                    <div class="form-group mb-3">
-                                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                                    </div>
+                                                <div class="form-group mb-3">
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </div>
                                             </form>
 
                                         </div>
@@ -197,55 +209,69 @@
 @push('js')
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script>
-    $(function () {
+    $(function() {
 
-        $('#report_date').flatpickr({
-            monthSelectorType: 'static',
-            altInput: true,
-            altFormat: 'd-m-Y',
-            dateFormat: 'd-m-Y'
-        });
-
-        $('.datatables-all-attendance-report').DataTable({
-            dom: 'Bfrtip',
-            pageLength: 50,
-            buttons: [
-                { extend: 'excelHtml5', title: 'All Attendance Report'},
-                { extend: 'pdfHtml5', title: 'All Attendance Report', orientation: 'landscape', pageSize: 'A4'},
-                { extend: 'print', title: 'All Attendance Report'}
-            ],
-        });
-
-        // Reload table on form submit
-        $('#filter-form').on('submit', function (e) {
-            e.preventDefault();
-            var url = "{{ route('reports.all-attendance-data') }}";
-            var data = $(this).serialize();
-            $.ajax({
-                type: "post",
-                url: url,
-                data: data,
-                dataType: "json",
-                success: function (response) {
-                    $('#all-report-container').html(response.html);
-                    $('.datatables-all-attendance-report').DataTable({
-                        dom: 'Bfrtip',
-                        buttons: [
-                            { extend: 'excelHtml5', title: 'All Attendance Report'},
-                            { extend: 'pdfHtml5', title: 'All Attendance Report', orientation: 'landscape', pageSize: 'A4'},
-                            { extend: 'print', title: 'All Attendance Report'}
-                        ],
-                    });
-                }
+            $('#report_date').flatpickr({
+                monthSelectorType: 'static',
+                altInput: true,
+                altFormat: 'd-m-Y',
+                dateFormat: 'd-m-Y'
             });
+
+            $('.datatables-all-attendance-report').DataTable({
+                dom: 'Bfrtip',
+                pageLength: 50,
+                buttons: [{
+                        extend: 'excelHtml5',
+                        title: 'All Attendance Report'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'All Attendance Report',
+                        orientation: 'landscape',
+                        pageSize: 'A4'
+                    },
+                    {
+                        extend: 'print',
+                        title: 'All Attendance Report'
+                    }
+                ],
+            });
+
+            // Reload table on form submit
+            $('#filter-form').on('submit', function(e) {
+                e.preventDefault();
+                var url = "{{ route('reports.all-attendance-data') }}";
+                var data = $(this).serialize();
+                $.ajax({
+                    type: "post",
+                    url: url,
+                    data: data,
+                    dataType: "json",
+                    success: function(response) {
+                        $('#all-report-container').html(response.html);
+                        $('.datatables-all-attendance-report').DataTable({
+                            dom: 'Bfrtip',
+                            buttons: [{
+                                    extend: 'excelHtml5',
+                                    title: 'All Attendance Report'
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    title: 'All Attendance Report',
+                                    orientation: 'landscape',
+                                    pageSize: 'A4'
+                                },
+                                {
+                                    extend: 'print',
+                                    title: 'All Attendance Report'
+                                }
+                            ],
+                        });
+                    }
+                });
+            });
+
         });
-
-    });
-
-
 </script>
 @endpush
-
-
-
-

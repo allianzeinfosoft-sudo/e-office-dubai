@@ -20,10 +20,11 @@ class WorkFromHomeAttendance extends Model
         'status',
         'ipaddress',
         'is_incomplete',
+        'approvel_status',
+        'approved_by',
         'created_by',
     ];
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class, 'emp_id', 'user_id');
+    public function employee(){
+        return $this->belongsTo(Employee::class, 'emp_id');
     }
 }

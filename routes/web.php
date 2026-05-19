@@ -109,7 +109,7 @@ Route::middleware(['web'])->group(function () {
 Route::get('/password/change', [HomeController::class, 'showChangeForm'])->name('password.change.form');
 Route::post('/password/change', [HomeController::class, 'change'])->name('password.change');
 
-Route::middleware(['auth', 'protected'])->group(function() {
+Route::middleware(['auth', 'protected'])->group(function () {
     Route::post('/user-documents/upload', [UserController::class, 'uploadDocument'])->name('user.documents.upload');
     Route::get('/user-documents/{userId}', [UserController::class, 'listDocuments'])->name('user.documents.list');
     Route::delete('/user-documents/{documentId}', [UserController::class, 'deleteDocument'])->name('user.documents.destroy');
@@ -523,7 +523,6 @@ Route::middleware(['web', 'auth', 'force.password.change', 'protected'])->group(
         Route::get('/reports/my-work-report', [ReportController::class, 'myWorkReport'])->name('reports.my-work-report');
         Route::get('/reports/user-work-report/{id}', [ReportController::class, 'userWorkReport'])->name('reports.user-work-report');
         Route::post('/reports/my-work-report-data', [ReportController::class, 'myWorkReportsData'])->name('reports.my-work-report-data');
-
         Route::get('/reports/user-overview', [ReportController::class, 'user_overview'])->name('reports.user-overview');
         Route::get('/reports/user-monthly-overview', [ReportController::class, 'monthlyOverview'])->name('reports.user-monthly-overview');
         Route::get('/reports/user-monthly-overview-data', [ReportController::class, 'monthlyOverviewReport'])->name('reports.user-monthly-overview-data');
@@ -557,7 +556,7 @@ Route::middleware(['web', 'auth', 'force.password.change', 'protected'])->group(
 
     /* workfrom home */
     Route::post('/work-from-home-request/store', [WorkFromHomeAttendanceController::class, 'storeRequest'])->name('work-from-home-request.store');
-    
+
     Route::group(['middleware' => ['can:view wfh wos request list']], function () {
         Route::get('/wfs-wfh-request-list', [WorkFromHomeAttendanceController::class, 'getRequestApprovalList'])->name('wfs-wfh-request-list');
         Route::get('/wfs-wfh-request-approve/{id}', [WorkFromHomeAttendanceController::class, 'approveRequest'])->name('wfs-wfh-request-approve');
