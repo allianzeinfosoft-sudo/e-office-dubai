@@ -614,14 +614,14 @@
             </button>
         </div>
         <div class="offcanvas-body">
-            @php
+            <!-- @php
                 $isOfficeNetwork = \App\Models\OfficeIp::pluck('ip_address')->contains(request()->ip());
             @endphp
             @if(!$isOfficeNetwork)
                 <div class="alert alert-warning" role="alert">
                     Custom marking is allow only office net work
                 </div>
-            @else
+            @else -->
             <div class="row">
                 <form id="customMarkingForm" action="{{ route('attendance.custom-mark-in') }}" method="post">
                     @csrf
@@ -654,7 +654,7 @@
                     </button>
                 </div>
             </div>
-            @endif
+            <!-- @endif -->
         </div>
         <div class="offcanvas-footer"></div>
     </div>
@@ -672,14 +672,14 @@
             </button>
         </div>
         <div class="offcanvas-body">
-            @php
+            <!-- @php
                 $isOfficeNetwork = \App\Models\OfficeIp::pluck('ip_address')->contains(request()->ip());
             @endphp
             @if(!$isOfficeNetwork)
                 <div class="alert alert-warning" role="alert">
                     Emergency marking is allow only office net work
                 </div>
-            @else
+            @else -->
             <div class="row">
                 <form id="emergencyMarkingForm" action="{{ route('attendance.emergency-mark') }}" method="post">
                     @csrf
@@ -713,7 +713,7 @@
                     Mark Out
                 </button>
             </div>
-            @endif
+            <!-- @endif -->
         </div>
         <div class="offcanvas-footer"></div>
     </div>

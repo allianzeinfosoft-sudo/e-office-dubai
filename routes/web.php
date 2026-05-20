@@ -166,9 +166,7 @@ Route::middleware(['web', 'auth', 'force.password.change', 'protected'])->group(
     Route::get('/locked-users', [UserController::class, 'locked_index'])->name('locked.users');
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::get('/users/{id}/limited-edit', [UserController::class, 'limited_edit'])->name('users.limited.edit');
-
     Route::post('/users/{id}/limited-update', [UserController::class, 'limitedUpdate'])->name('users.limited_update');
-
     Route::get('/user/profile/{userid}', [UserController::class, 'userProfile'])->name('user.profile');
     Route::delete('/user-delete/{userId}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::post('/user-restore/{userId}', [UserController::class, 'restore_user'])->name('user.restore');
@@ -189,7 +187,6 @@ Route::middleware(['web', 'auth', 'force.password.change', 'protected'])->group(
     Route::post('/check-electoral', [UserController::class, 'checkElectoral']);
     Route::post('/check-pan', [UserController::class, 'checkPAN']);
     Route::post('/check-account-number', [UserController::class, 'checkAccountNumber']);
-
     Route::get('/blacklist-users', [UserController::class, 'blockedUsers'])->name('blacklist-users.index');
     Route::get('/unblock-users/{id}', [UserController::class, 'unblockUser'])->name('unblock-users.index');
     Route::get('/list-of-latecomers', [UserController::class, 'listOfLatecomers'])->name('list-of-latecomers.index');
@@ -197,11 +194,8 @@ Route::middleware(['web', 'auth', 'force.password.change', 'protected'])->group(
     Route::get('/user-latecomers-list', [UserController::class, 'userLateCommers'])->name('user-latecomers-list');
     Route::get('/list-of-incomplete-work', [UserController::class, 'listOfIncompleteWork'])->name('list-of-incomplete-work.index');
     Route::get('/list-of-incomplete-work-data', [UserController::class, 'incompletData'])->name('list-of-incomplete-work-data');
-
     Route::get('/get-user-details/{userId}', [UserController::class, 'getUserDetails'])->name('get-user-details');
     Route::post('/change-user-password', [UserController::class, 'ChangeUserPassword'])->name('user_change_password');
-
-
     Route::get('/get-all-employees', [UserController::class, 'getAllEmployees']);
     Route::get('/get-employee-department', [UserController::class, 'getEmployeeDepartment']);
 
@@ -309,7 +303,6 @@ Route::middleware(['web', 'auth', 'force.password.change', 'protected'])->group(
             Route::get('assignments/get-structure-components/{structure}', [\App\Http\Controllers\Payroll\AssignmentController::class, 'getStructureComponents'])->name('assignments.get-components');
             Route::post("assignments/update-statutory/{employee}", [\App\Http\Controllers\Payroll\AssignmentController::class, "updateStatutory"])->name("assignments.update-statutory");
             Route::resource('assignments', \App\Http\Controllers\Payroll\AssignmentController::class);
-
             Route::get('batches', [\App\Http\Controllers\Payroll\BatchController::class, 'index'])->name('batches.index');
             Route::get('batches/create', [\App\Http\Controllers\Payroll\BatchController::class, 'create'])->name('batches.create');
             Route::post('batches/generate', [\App\Http\Controllers\Payroll\BatchController::class, 'generate'])->name('batches.generate');
@@ -426,7 +419,6 @@ Route::middleware(['web', 'auth', 'force.password.change', 'protected'])->group(
     Route::get('/others/announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('others.announcements.edit');
     Route::delete('/others/announcements/{announcement}/destroy', [AnnouncementController::class, 'destroy'])->name('others.announcements.destroy');
     Route::get('/announcement_view', [AnnouncementController::class, 'view_announcement'])->name('announcement_view');
-
     Route::post('/check-announcement', [AnnouncementController::class, 'checkAnnouncement']);
     Route::post('/mark-announcement-read', [AnnouncementController::class, 'markAsRead']);
 
