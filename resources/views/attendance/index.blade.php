@@ -614,6 +614,7 @@
             </button>
         </div>
         <div class="offcanvas-body">
+
             <!-- @php
                 $isOfficeNetwork = \App\Models\OfficeIp::pluck('ip_address')->contains(request()->ip());
             @endphp
@@ -622,6 +623,7 @@
                     Custom marking is allow only office net work
                 </div>
             @else -->
+
             <div class="row">
                 <form id="customMarkingForm" action="{{ route('attendance.custom-mark-in') }}" method="post">
                     @csrf
@@ -654,6 +656,7 @@
                     </button>
                 </div>
             </div>
+
             <!-- @endif -->
         </div>
         <div class="offcanvas-footer"></div>
@@ -1101,6 +1104,7 @@
     </div>
 
 @endsection
+
 
 @section('js')
     <script>
