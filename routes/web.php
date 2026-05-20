@@ -126,8 +126,8 @@ Route::middleware(['web', 'auth', 'force.password.change', 'protected'])->group(
     /* Attendance */
     Route::middleware('protected:permission,view attendance')->group(function () {
         Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
-        Route::post('/attendance/mark-in', [AttendanceController::class, 'markIn'])->middleware('valid.ip')->name('attendance.mark-in');
-        Route::post('/attendance/mark-out', [AttendanceController::class, 'markOut'])->middleware('valid.ip')->name('attendance.mark-out');
+        Route::post('/attendance/mark-in', [AttendanceController::class, 'markIn'])->name('attendance.mark-in');
+        Route::post('/attendance/mark-out', [AttendanceController::class, 'markOut'])->name('attendance.mark-out');
         Route::post('/attendance/custom-mark-in', [AttendanceController::class, 'customMarkIn'])->name('attendance.custom-mark-in');
         Route::post('/attendance/emergency-mark', [AttendanceController::class, 'emergencyMark'])->name('attendance.emergency-mark');
         Route::post('/attendance/custom-mark-out/{id}', [AttendanceController::class, 'customMarkOut'])->name('attendance.custom-mark-out');
